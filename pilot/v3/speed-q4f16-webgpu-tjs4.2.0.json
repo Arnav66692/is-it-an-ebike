@@ -1,0 +1,31 @@
+{
+ "step": "photo pilot v3 speed check",
+ "device": "webgpu",
+ "model": "Xenova/owlv2-base-patch16-ensemble",
+ "file": "onnx/model_q4f16.onnx",
+ "dtype": "q4f16",
+ "library": "@huggingface/transformers 4.2.0, https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/+esm",
+ "queries": [
+  "bicycle pedal",
+  "pedal crank arm",
+  "bicycle chain",
+  "motorcycle foot peg"
+ ],
+ "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/2.42304.0 Chrome/152.0.7977.149 Safari/537.36",
+ "cross_origin_isolated": false,
+ "started_at": "2026-10-17T19:46:39.758Z",
+ "adapter": {
+  "vendor": "apple",
+  "architecture": "metal-3"
+ },
+ "model_cached_before": true,
+ "import_ms": 303,
+ "error": "Error: Can't create a session. ERROR_CODE: 1, ERROR_MESSAGE: /mnt/vss/_work/1/s/onnxruntime/core/optimizer/transformer_memcpy.cc:254 bool onnxruntime::TransformerMemcpyImpl::IsNodeCompatibleWithProvider(const onnxruntime::Node &) const !node_provider_type.empty() was false. Provider type for Cast node with name '/class_head/Cast' is not set.\n\n    at F (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/webgpu/+esm:9:31149)\n    at ln (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/webgpu/+esm:10:22835)\n    at async Wo.loadModel (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/webgpu/+esm:10:35804)\n    at async yn.createInferenceSessionHandler (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/webgpu/+esm:10:37511)\n    at async jo.create (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/webgpu/+esm:7:19661)\n    at async nd (https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/+esm:16:31244)\n    at async https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/+esm:40:16945\n    at async Promise.all (index 0)\n    at async TT (https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/+esm:40:16800)\n    at async Promise.all (index 0)",
+ "ort_files": [
+  "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/webgpu/+esm",
+  "https://cdn.jsdelivr.net/npm/onnxruntime-common/+esm",
+  "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/dist/ort-wasm-simd-threaded.asyncify.wasm",
+  "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0-dev.20260416-b7804b056c/dist/ort-wasm-simd-threaded.asyncify.mjs"
+ ],
+ "finished_at": "2026-10-17T19:46:43.631Z"
+}

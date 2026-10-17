@@ -1,0 +1,63 @@
+{
+ "step": "photo pilot v3 speed check",
+ "device": "wasm",
+ "model": "Xenova/owlv2-base-patch16-ensemble",
+ "file": "onnx/model_fp16.onnx",
+ "dtype": "fp16",
+ "library": "@huggingface/transformers 3.8.1, https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js",
+ "queries": [
+  "bicycle pedal",
+  "pedal crank arm",
+  "bicycle chain",
+  "motorcycle foot peg"
+ ],
+ "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/2.42304.0 Chrome/152.0.7977.149 Safari/537.36",
+ "cross_origin_isolated": false,
+ "started_at": "2026-10-17T20:52:57.640Z",
+ "model_cached_before": true,
+ "import_ms": 27,
+ "load_ms": 6065,
+ "load_includes_download": false,
+ "ort_files": [],
+ "download_bytes": 307904711,
+ "warmup_ms": 97373,
+ "per_photo": [
+  {
+   "photo": "train/train_01.jpg",
+   "ms": 68542,
+   "detections": 28,
+   "top_scores": {
+    "bicycle pedal": 0,
+    "pedal crank arm": 0.1458437740802765,
+    "bicycle chain": 0.14730967581272125,
+    "motorcycle foot peg": 0.16667540371418
+   }
+  },
+  {
+   "photo": "train/train_02.jpg",
+   "ms": 68410,
+   "detections": 43,
+   "top_scores": {
+    "bicycle pedal": 0.42590367794036865,
+    "pedal crank arm": 0.16871994733810425,
+    "bicycle chain": 0.37995338439941406,
+    "motorcycle foot peg": 0.1617170125246048
+   }
+  },
+  {
+   "photo": "train/train_03.jpg",
+   "ms": 68295,
+   "detections": 11,
+   "top_scores": {
+    "bicycle pedal": 0,
+    "pedal crank arm": 0,
+    "bicycle chain": 0.13352815806865692,
+    "motorcycle foot peg": 0.16572809219360352
+   }
+  }
+ ],
+ "mean_ms": 68416,
+ "stop_rule": "mean over 15000 ms on WebGPU stops v3",
+ "over_15s": true,
+ "finished_at": "2026-10-17T20:58:06.376Z"
+}
