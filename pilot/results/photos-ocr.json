@@ -1,0 +1,82 @@
+{
+  "check": "Invented facts: zero class, watt or speed values reported when no label is visible",
+  "tool": "tesseract.js 7.0.0 (eng) plus lib/extract/parse.ts in label mode",
+  "run_at": "2026-10-17T07:28:13.199Z",
+  "photos": 12,
+  "photos_with_invented_values": 0,
+  "pass": true,
+  "results": [
+    {
+      "file": "photo_01_229b.jpg",
+      "ocr_characters": 21,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_02_63ac.jpg",
+      "ocr_characters": 569,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_03_0977.jpg",
+      "ocr_characters": 33,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_04_7c03.jpg",
+      "ocr_characters": 73,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_05_2a13.png",
+      "ocr_characters": 53,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_06_08bd.png",
+      "ocr_characters": 88,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_07_63b4.png",
+      "ocr_characters": 23,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_08_3340.jpg",
+      "ocr_characters": 247,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_09_6133.jpg",
+      "ocr_characters": 105,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_10_71f2.jpg",
+      "ocr_characters": 149,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_11_8e66.jpg",
+      "ocr_characters": 60,
+      "invented_values": false,
+      "facts": {}
+    },
+    {
+      "file": "photo_12_2e8a.jpg",
+      "ocr_characters": 136,
+      "invented_values": false,
+      "facts": {}
+    }
+  ]
+}

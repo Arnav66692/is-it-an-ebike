@@ -56,4 +56,24 @@ Write these before reading any survey answers or pilot results.
 
 ## Results
 
-Not run yet.
+### Photo checks (run Sat Oct 17, 2026, about 12:35 AM PT)
+
+| Check | Pass bar | Result | Pass? |
+|---|---|---|---|
+| Pedal-less machines | All 4 called "no pedals" | 4 of 4 | Yes |
+| Pedal call overall | Right on at least 11 of 12 | 8 of 12 | **No** |
+| Invented facts | Zero class, watt or speed values with no label visible | 0 of 12 photos | Yes |
+
+CLIP called four real e-bikes pedal-less. Two are moto-styled Super73s (photos 04 and 09), one is an Aventon electric mountain bike (photo 03) and one is a moto-styled 72 V Ariel Rider (photo 11). It looks at the overall shape, so anything that looks like a motorcycle reads as "no pedals," which is exactly the case families need help with. Full scores are in `pilot/results/photos-clip.json`, and the OCR run is in `pilot/results/photos-ocr.json`.
+
+**Decision, by the rule above: whole-bike photos are cut from the MVP.** The app ships label photos, product links and typed input. The OCR side passed, so label photos stay in, pending the Sunday label check.
+
+How it ran. The CLIP check ran in a real browser, the way it would on a phone. The model, version and labels match this file. One fix was needed before it could load at all. The package's default CDN file is the Node build, so the page loaded the same 4.3.1 release through jsDelivr's browser build instead. No result was seen before that change.
+
+### Listing checks
+
+Waiting on Arnav's 20-listing audit.
+
+### Label photo check
+
+Waiting on the Sunday bike shop photos.

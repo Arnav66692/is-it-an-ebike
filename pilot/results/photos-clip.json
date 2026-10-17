@@ -1,0 +1,119 @@
+{
+  "check": "Whole-bike photos, pedals or no pedals",
+  "tool": "Xenova/clip-vit-base-patch32 (q8) zero-shot through @huggingface/transformers 4.3.1 web build, run in a browser",
+  "labels": [
+    "a photo of an electric bicycle with pedals and a chain",
+    "a photo of an electric dirt bike or motorcycle with foot pegs and no pedals"
+  ],
+  "run_at": "2026-10-17T07:36:00Z",
+  "bars": {
+    "pedal_less_all_caught": {
+      "bar": "All 4 called no pedals",
+      "result": "4 of 4",
+      "pass": true
+    },
+    "pedal_call_overall": {
+      "bar": "Right on at least 11 of 12",
+      "result": "8 of 12",
+      "pass": false
+    }
+  },
+  "results": [
+    {
+      "file": "photo_01_229b.jpg",
+      "call": "pedals",
+      "pedals": 0.5292,
+      "no_pedals": 0.4708,
+      "truth_has_pedals": "yes",
+      "right": true
+    },
+    {
+      "file": "photo_02_63ac.jpg",
+      "call": "no pedals",
+      "pedals": 0.0776,
+      "no_pedals": 0.9224,
+      "truth_has_pedals": "no",
+      "right": true
+    },
+    {
+      "file": "photo_03_0977.jpg",
+      "call": "no pedals",
+      "pedals": 0.2594,
+      "no_pedals": 0.7406,
+      "truth_has_pedals": "yes",
+      "right": false
+    },
+    {
+      "file": "photo_04_7c03.jpg",
+      "call": "no pedals",
+      "pedals": 0.1634,
+      "no_pedals": 0.8366,
+      "truth_has_pedals": "yes",
+      "right": false
+    },
+    {
+      "file": "photo_05_2a13.png",
+      "call": "pedals",
+      "pedals": 0.8964,
+      "no_pedals": 0.1036,
+      "truth_has_pedals": "yes",
+      "right": true
+    },
+    {
+      "file": "photo_06_08bd.png",
+      "call": "pedals",
+      "pedals": 0.6424,
+      "no_pedals": 0.3576,
+      "truth_has_pedals": "yes",
+      "right": true
+    },
+    {
+      "file": "photo_07_63b4.png",
+      "call": "pedals",
+      "pedals": 0.6769,
+      "no_pedals": 0.3231,
+      "truth_has_pedals": "yes",
+      "right": true
+    },
+    {
+      "file": "photo_08_3340.jpg",
+      "call": "no pedals",
+      "pedals": 0.244,
+      "no_pedals": 0.756,
+      "truth_has_pedals": "no",
+      "right": true
+    },
+    {
+      "file": "photo_09_6133.jpg",
+      "call": "no pedals",
+      "pedals": 0.1736,
+      "no_pedals": 0.8264,
+      "truth_has_pedals": "yes",
+      "right": false
+    },
+    {
+      "file": "photo_10_71f2.jpg",
+      "call": "no pedals",
+      "pedals": 0.0414,
+      "no_pedals": 0.9586,
+      "truth_has_pedals": "no",
+      "right": true
+    },
+    {
+      "file": "photo_11_8e66.jpg",
+      "call": "no pedals",
+      "pedals": 0.1089,
+      "no_pedals": 0.8911,
+      "truth_has_pedals": "yes",
+      "right": false
+    },
+    {
+      "file": "photo_12_2e8a.jpg",
+      "call": "no pedals",
+      "pedals": 0.0047,
+      "no_pedals": 0.9953,
+      "truth_has_pedals": "no",
+      "right": true
+    }
+  ]
+}
