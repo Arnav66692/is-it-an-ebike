@@ -72,7 +72,12 @@ How it ran. The CLIP check ran in a real browser, the way it would on a phone. T
 
 ### Listing checks
 
-Waiting on Arnav's 20-listing audit.
+Waiting on Arnav's 20-listing audit. Method, fixed before the run:
+
+- Arnav writes the answer key in `pilot/listings.csv` by hand from each listing page before the script runs (steps in `docs/LISTING_AUDIT.md`).
+- `scripts/pilot-listings.ts` fetches each page, runs the parser, then runs the engine for an adult in California on Oct 17, 2026. It plays a trusting user: pedals answered from the key when the text doesn't say, and "no" to both fast-mode questions. So a false legal can only be avoided if the parser itself catches the spec that rules the bike out.
+- False legal counts a yes for any row Arnav marked `exceeds_class = yes`. Grounding checks that every snippet is in the text and every number is in its snippet. Usefulness compares the classes read with the class Arnav wrote down.
+- Listings a store blocks are reported as not fetched, outside the bars.
 
 ### Label photo check
 
