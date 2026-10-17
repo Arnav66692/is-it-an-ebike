@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>OWLv2 speed check</title></head>
+<body>
+<pre id="out">starting…</pre>
+<script type="module">
+// Photo pilot v3, step 1. Times OWLv2 on three dev photos after one warm-up run.
+// The download and model load are timed separately and are not part of the per-photo mean.
+const out = document.getElementById("out");
+const device = new URLSearchParams(location.search).get("device") === "wasm" ? "wasm" : "webgpu";
+const MODEL = "Xenova/owlv2-base-patch16-ensemble";
+const FILE_URL = "https://huggingface.co/" + MODEL + "/resolve/main/onnx/model_quantized.onnx";
+const QUERIES = ["bicycle pedal", "pedal crank arm", "bicycle chain", "motorcycle foot peg"];
+const PHOTOS = ["train/train_01.jpg", "train/train_02.jpg", "train/train_03.jpg"];
+const result = { step: "photo pilot v3 speed check", device, model: MODEL, file: "onnx/model_quantized.onnx", dtype: "q8", library: "@huggingface/transformers 4.3.1, jsDelivr +esm build", queries: QUERIES, browser: navigator.userAgent, cross_origin_isolated: self.crossOriginIsolated, started_at: new Date().toISOString() };
+async function cachedSize() {
+  try {
+    const c = await caches.open("transformers-cache");
+    const r = await c.match(FILE_URL);
+    if (!r) return null;
+    return (await r.blob()).size;
+  } catch {
+    return null;
+  }
+}
+try {
+  if (device === "webgpu") {
+    const a = await navigator.gpu?.requestAdapter();
+    const info = a ? (a.info || {}) : {};
+    result.adapter = a ? { vendor: info.vendor, architecture: info.architecture } : null;
+  }
+  result.model_cached_before = (await cachedSize()) !== null;
+  const t0 = performance.now();
+  const T = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm");
+  result.import_ms = Math.round(performance.now() - t0);
+  out.textContent = "loading model…";
+  const t1 = performance.now();
+  const detector = await T.pipeline("zero-shot-object-detection", MODEL, { dtype: "q8", device });
+  result.load_ms = Math.round(performance.now() - t1);
+  result.load_includes_download = !result.model_cached_before;
+  result.download_bytes = await cachedSize();
+  out.textContent = "warming up…";
+  const url = (p) => new URL(p, location.href).href;
+  const tw = performance.now();
+  await detector(url(PHOTOS[0]), QUERIES);
+  result.warmup_ms = Math.round(performance.now() - tw);
+  result.per_photo = [];
+  for (const p of PHOTOS) {
+    const t = performance.now();
+    const dets = await detector(url(p), QUERIES);
+    const ms = performance.now() - t;
+    const best = Object.fromEntries(QUERIES.map((q) => [q, 0]));
+    for (const d of dets) best[d.label] = Math.max(best[d.label], d.score);
+    result.per_photo.push({ photo: p, ms: Math.round(ms), detections: dets.length, top_scores: best });
+    out.textContent = `timed ${result.per_photo.length}/3`;
+  }
+  result.mean_ms = Math.round(result.per_photo.reduce((s, r) => s + r.ms, 0) / result.per_photo.length);
+  result.stop_rule = "mean over 15000 ms on WebGPU stops v3";
+  result.over_15s = result.mean_ms > 15000;
+  result.finished_at = new Date().toISOString();
+  const saved = await (await fetch(`http://127.0.0.1:8792/speed-${device}.json`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) })).json();
+  out.textContent = "DONE " + JSON.stringify({ device, load_ms: result.load_ms, warmup_ms: result.warmup_ms, per_photo_ms: result.per_photo.map((r) => r.ms), mean_ms: result.mean_ms, saved });
+} catch (e) {
+  result.error = String(e && e.stack ? e.stack : e);
+  result.finished_at = new Date().toISOString();
+  try {
+    await fetch(`http://127.0.0.1:8792/speed-${device}.json`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) });
+  } catch {}
+  out.textContent = "ERROR " + result.error;
+}
+</script>
+</body>
+</html>

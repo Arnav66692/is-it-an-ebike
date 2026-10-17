@@ -1,0 +1,21 @@
+{
+ "step": "photo pilot v3 speed check",
+ "device": "wasm",
+ "model": "Xenova/owlv2-base-patch16-ensemble",
+ "file": "onnx/model_quantized.onnx",
+ "dtype": "q8",
+ "library": "@huggingface/transformers 4.3.1, jsDelivr +esm build",
+ "queries": [
+  "bicycle pedal",
+  "pedal crank arm",
+  "bicycle chain",
+  "motorcycle foot peg"
+ ],
+ "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/2.42304.0 Chrome/152.0.7977.149 Safari/537.36",
+ "cross_origin_isolated": false,
+ "started_at": "2026-10-17T18:08:43.777Z",
+ "model_cached_before": true,
+ "import_ms": 16,
+ "error": "Error: Can't create a session. ERROR_CODE: 9, ERROR_MESSAGE: Could not find an implementation for Cast(13) node with name '/class_head/Cast'\n    at V (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:11:31281)\n    at Un (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:12:22160)\n    at async Ls.loadModel (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:12:35170)\n    at async kn.createInferenceSessionHandler (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:12:36890)\n    at async Ds.create (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:7:41780)\n    at async Vd (https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm:17:32385)\n    at async https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm:41:18110\n    at async Promise.all (index 0)\n    at async MA (https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm:41:17965)\n    at async Promise.all (index 0)",
+ "finished_at": "2026-10-17T18:08:46.013Z"
+}

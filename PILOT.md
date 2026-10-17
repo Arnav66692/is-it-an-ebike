@@ -182,6 +182,13 @@ Committed before any timing, on Sat Oct 17, 2026, PT. This is step 1 of v3 only.
 - **Stop rule.** If the WebGPU mean is over 15 seconds per photo, v3 stops.
 - **Phone worst case.** If WASM also runs, its time is recorded as a phone worst case, outside the stop rule.
 
-### Result
+### Result (Sat Oct 17, 2026, about 11:08 AM PT)
 
-Not run yet.
+**The approved file doesn't load, so nothing could be timed.**
+
+- **WebGPU.** Session creation failed with "Provider type for Cast node with name '/class_head/Cast' is not set." This attempt also did the one-time download (155,312,754 bytes, now cached in the browser). It failed about 40 seconds after it started.
+- **WASM.** With the model cached, session creation failed after about 2 seconds with "Could not find an implementation for Cast(13) node with name '/class_head/Cast'." That's the same node that stopped OWL-ViT in v2.
+- **Per-photo time.** None. No warm-up or timed run happened on either backend, so the 15-second rule could not be checked.
+- **Raw records.** `pilot/v3/speed-webgpu.json` and `pilot/v3/speed-wasm.json`. The timing page is `pilot/v3/owl-speed.html`.
+
+**Decision.** v3 can't go ahead with this file. The quantized class head uses a Cast step the browser runtime can't run on either backend. Other files exist for the same model: fp16 307.9 MB, q4f16 128.4 MB, q4 194.0 MB, bnb4 186.2 MB and uint8 163.2 MB. Each would be a new download and a new speed check, so none was tried without Arnav's OK.
