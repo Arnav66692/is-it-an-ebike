@@ -170,3 +170,18 @@ The six misses:
 - Three pedal bikes were called "no pedals": the SUPER73-ZX in a street photo, the moto-styled Macfox X7 and the Lectric XPeak2 mountain bike.
 
 **Decision, by the rule above: whole-bike photos stay cut.** The app keeps label photos, product links and typed input. A zero-shot model that looks at zoomed tiles still sees overall shape more than the pedal itself, and it gets confused by backgrounds in real photos. I did no second test run after seeing this result.
+
+## Photo pilot v3: speed check
+
+Committed before any timing, on Sat Oct 17, 2026, PT. This is step 1 of v3 only. Arnav approved v3 with OWLv2 on one condition: it has to run fast enough on the Mac.
+
+- **Model.** `Xenova/owlv2-base-patch16-ensemble`, file `onnx/model_quantized.onnx` (155,312,754 bytes), with the same `@huggingface/transformers` 4.3.1 jsDelivr browser build as v2, through the zero-shot-object-detection pipeline.
+- **Queries.** "bicycle pedal", "pedal crank arm", "bicycle chain" and "motorcycle foot peg".
+- **Backend: WebGPU.** The in-app Chromium (Chrome 152) on this Mac exposes `navigator.gpu` and returns an Apple Metal 3 adapter with shader-f16 support, checked before any model was loaded. So WebGPU is the backend the v3 pilot will use.
+- **Timing.** The mean per-photo inference time over three dev photos, `train_01`, `train_02` and `train_03` from `photo-pilot-v2/train/`, measured after one warm-up run on `train_01`. The one-time download and model load are timed separately and don't count.
+- **Stop rule.** If the WebGPU mean is over 15 seconds per photo, v3 stops.
+- **Phone worst case.** If WASM also runs, its time is recorded as a phone worst case, outside the stop rule.
+
+### Result
+
+Not run yet.
