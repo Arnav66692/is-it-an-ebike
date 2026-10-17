@@ -1,0 +1,25 @@
+{
+ "step": "photo pilot v3 speed check",
+ "device": "webgpu",
+ "model": "Xenova/owlv2-base-patch16-ensemble",
+ "file": "onnx/model_fp16.onnx",
+ "dtype": "fp16",
+ "library": "@huggingface/transformers 4.3.1, jsDelivr +esm build",
+ "queries": [
+  "bicycle pedal",
+  "pedal crank arm",
+  "bicycle chain",
+  "motorcycle foot peg"
+ ],
+ "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/2.42304.0 Chrome/152.0.7977.149 Safari/537.36",
+ "cross_origin_isolated": false,
+ "started_at": "2026-10-17T18:45:43.545Z",
+ "adapter": {
+  "vendor": "apple",
+  "architecture": "metal-3"
+ },
+ "model_cached_before": true,
+ "import_ms": 137,
+ "error": "Error: Can't create a session. ERROR_CODE: 1, ERROR_MESSAGE: /mnt/azure_nvme_temp/_work/1/s/onnxruntime/core/optimizer/transformer_memcpy.cc:254 bool onnxruntime::TransformerMemcpyImpl::IsNodeCompatibleWithProvider(const onnxruntime::Node &) const !node_provider_type.empty() was false. Provider type for Where node with name '/class_head/Where' is not set.\n\n    at V (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:11:31281)\n    at Un (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:12:22160)\n    at async Ls.loadModel (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:12:35170)\n    at async kn.createInferenceSessionHandler (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:12:36890)\n    at async Ds.create (https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/webgpu/+esm:7:41780)\n    at async Vd (https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm:17:32385)\n    at async https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm:41:18110\n    at async Promise.all (index 0)\n    at async MA (https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm:41:17965)\n    at async Promise.all (index 0)",
+ "finished_at": "2026-10-17T18:45:48.613Z"
+}

@@ -7,12 +7,25 @@
 // Photo pilot v3, step 1. Times OWLv2 on three dev photos after one warm-up run.
 // The download and model load are timed separately and are not part of the per-photo mean.
 const out = document.getElementById("out");
-const device = new URLSearchParams(location.search).get("device") === "wasm" ? "wasm" : "webgpu";
+const params = new URLSearchParams(location.search);
+const device = params.get("device") === "wasm" ? "wasm" : "webgpu";
+const FILES = { q8: "model_quantized.onnx", q4f16: "model_q4f16.onnx", fp16: "model_fp16.onnx" };
+const dtype = FILES[params.get("dtype")] ? params.get("dtype") : "q8";
+// Library versions, each pinned. 4.3.1 is the original. The older ones only change the onnxruntime-web build.
+const LIBS = {
+  "4.3.1": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm",
+  "4.2.0": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/+esm",
+  "3.8.1": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js",
+};
+const lib = LIBS[params.get("lib")] ? params.get("lib") : "4.3.1";
 const MODEL = "Xenova/owlv2-base-patch16-ensemble";
-const FILE_URL = "https://huggingface.co/" + MODEL + "/resolve/main/onnx/model_quantized.onnx";
+const FILE_URL = "https://huggingface.co/" + MODEL + "/resolve/main/onnx/" + FILES[dtype];
 const QUERIES = ["bicycle pedal", "pedal crank arm", "bicycle chain", "motorcycle foot peg"];
 const PHOTOS = ["train/train_01.jpg", "train/train_02.jpg", "train/train_03.jpg"];
-const result = { step: "photo pilot v3 speed check", device, model: MODEL, file: "onnx/model_quantized.onnx", dtype: "q8", library: "@huggingface/transformers 4.3.1, jsDelivr +esm build", queries: QUERIES, browser: navigator.userAgent, cross_origin_isolated: self.crossOriginIsolated, started_at: new Date().toISOString() };
+const result = { step: "photo pilot v3 speed check", device, model: MODEL, file: "onnx/" + FILES[dtype], dtype, library: `@huggingface/transformers ${lib}, ${LIBS[lib]}`, queries: QUERIES, browser: navigator.userAgent, cross_origin_isolated: self.crossOriginIsolated, started_at: new Date().toISOString() };
+const saveName = (lib === "4.3.1" ? (dtype === "q8" ? `speed-${device}` : `speed-${dtype}-${device}`) : `speed-${dtype}-${device}-tjs${lib}`) + ".json";
+// The onnxruntime-web files the page actually fetched, so the record names the exact runtime build.
+const ortFiles = () => [...new Set(performance.getEntriesByType("resource").map((e) => e.name).filter((n) => n.includes("onnxruntime")))];
 async function cachedSize() {
   try {
     const c = await caches.open("transformers-cache");
@@ -31,13 +44,14 @@ try {
   }
   result.model_cached_before = (await cachedSize()) !== null;
   const t0 = performance.now();
-  const T = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm");
+  const T = await import(LIBS[lib]);
   result.import_ms = Math.round(performance.now() - t0);
   out.textContent = "loading model…";
   const t1 = performance.now();
-  const detector = await T.pipeline("zero-shot-object-detection", MODEL, { dtype: "q8", device });
+  const detector = await T.pipeline("zero-shot-object-detection", MODEL, { dtype, device });
   result.load_ms = Math.round(performance.now() - t1);
   result.load_includes_download = !result.model_cached_before;
+  result.ort_files = ortFiles();
   result.download_bytes = await cachedSize();
   out.textContent = "warming up…";
   const url = (p) => new URL(p, location.href).href;
@@ -58,13 +72,14 @@ try {
   result.stop_rule = "mean over 15000 ms on WebGPU stops v3";
   result.over_15s = result.mean_ms > 15000;
   result.finished_at = new Date().toISOString();
-  const saved = await (await fetch(`http://127.0.0.1:8792/speed-${device}.json`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) })).json();
+  const saved = await (await fetch(`http://127.0.0.1:8792/${saveName}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) })).json();
   out.textContent = "DONE " + JSON.stringify({ device, load_ms: result.load_ms, warmup_ms: result.warmup_ms, per_photo_ms: result.per_photo.map((r) => r.ms), mean_ms: result.mean_ms, saved });
 } catch (e) {
   result.error = String(e && e.stack ? e.stack : e);
+  result.ort_files = ortFiles();
   result.finished_at = new Date().toISOString();
   try {
-    await fetch(`http://127.0.0.1:8792/speed-${device}.json`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) });
+    await fetch(`http://127.0.0.1:8792/${saveName}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) });
   } catch {}
   out.textContent = "ERROR " + result.error;
 }

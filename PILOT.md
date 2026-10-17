@@ -201,3 +201,12 @@ Committed before any timing, on Sat Oct 17, 2026, PT. This is step 1 of v3 only.
 - **Attempt B result.** It failed to load on WebGPU, at a different node: "Provider type for Where node with name '/class_head/Where' is not set." This attempt did the one-time download. No per-photo time exists. Raw record: `pilot/v3/speed-fp16-webgpu.json`. Under the rule above, v3 stopped here.
 - **Arnav said "Try again" after he saw this error, so the speed check continues.** No tuning and no test-set work.
 - **Attempt B retry, committed before it ran.** The same file, dtype, backend, library and settings, run once more from the browser cache. The q8 WASM record already shows a missing kernel ("Could not find an implementation for Cast(13) node with name '/class_head/Cast'"), so the same error is expected. Raw record: `pilot/v3/speed-fp16-webgpu-retry.json`.
+- **Attempt B retry result.** The same error, loaded from the browser cache. Raw record: `pilot/v3/speed-fp16-webgpu-retry.json`.
+- **Why it fails.** The onnxruntime-web build that transformers.js 4.3.1 pins (1.31.0-dev.20260914-8d85527a0) has no CPU kernel for these class_head nodes, as the q8 WASM error shows, and WebGPU doesn't take them either. So the next tries change only the library version. The two files, the backend, the timing method and the 15-second stop rule stay the same. Both files are already in the browser cache, so there are no new model downloads. The page now records the exact onnxruntime-web files it fetched (`pilot/v3/owl-speed.html`).
+- **Attempts C and D, committed before any of them ran.** Each one runs only if every earlier one failed to load.
+  1. C1 is `onnx/model_q4f16.onnx` (128,434,817 bytes), dtype q4f16, backend WebGPU, with transformers.js 4.2.0 (onnxruntime-web 1.26.0-dev.20260416-b7804b056c).
+  2. C2 is `onnx/model_fp16.onnx` (307,904,711 bytes), dtype fp16, backend WebGPU, with transformers.js 4.2.0.
+  3. D1 is `onnx/model_q4f16.onnx`, dtype q4f16, backend WebGPU, with transformers.js 3.8.1 (onnxruntime-web 1.22.0-dev.20250409-89f8206ba4).
+  4. D2 is `onnx/model_fp16.onnx`, dtype fp16, backend WebGPU, with transformers.js 3.8.1.
+
+  The first one that loads is timed, and it is the only one timed. If its mean is over 15 seconds, v3 stops and nothing else is tried. If all four fail to load, v3 stops. If one loads, WASM runs once with the same library and file as the phone worst case, outside the stop rule.
