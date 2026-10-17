@@ -1,0 +1,270 @@
+{
+  "about": "A hand-built layer on top of the verified rules table in data/rules/. Each entry points back to the field it was taken from (source_field, quoted in source_quote), so a reviewer can check it. Built Oct 17, 2026. The engine reads this file and the verified table, nothing else.",
+
+  "stop_pedaling_class2": {
+    "decided_by": "Arnav Singh",
+    "decided_on": "2026-10-16",
+    "decision": "These states say the motor must stop when the rider stops pedaling or brakes. Read literally, that clashes with a Class 2 throttle. The verifiers kept Class 2 legal. Class 2 stays legal here too, with one caution line.",
+    "source_field": "definition.notes",
+    "states": ["AL", "DE", "FL", "GA", "IA", "IN", "LA", "MO", "MS", "NH", "NV", "OK", "SD", "TX", "VA", "VT", "WI", "WV"]
+  },
+
+  "fast_mode_rule": {
+    "about": "Every e-bike class caps the motor alone at 20 mph and pedal assist at 28 mph. A bike that can go past either in any mode (throttle, unlock code, app, off-road mode) fits no class. Where verdict_cautions or supplemental_cautions name this, the engine says not an e-bike, and an unanswered question blocks a yes. Everywhere else it says can't confirm, and an unanswered question only adds a caution line."
+  },
+
+  "supplemental_cautions": [
+    {
+      "state": "CA",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "switchable_out_of_class or motor_only_max_mph > 20",
+      "verdict": "not_an_ebike",
+      "valid_until": null,
+      "reason": "Cal. Veh. Code 312.5(d) says a bike built to be modified past 20 mph on motor power alone, or one modified that way, is not an electric bicycle.",
+      "source_field": "definition.notes",
+      "source_quote": "312.5(d): not an e-bike if built to be modifiable past 20 mph on motor alone or 750 W, modified that way, or pedals removed."
+    },
+    {
+      "state": "MN",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "switchable_out_of_class",
+      "verdict": "not_an_ebike",
+      "valid_until": null,
+      "reason": "Minn. Stat. 169.011, subd. 27(b)-(c) says a vehicle designed or intended to be configured or modified to exceed its class is not an electric-assisted bicycle.",
+      "source_field": "definition.notes",
+      "source_quote": "says a vehicle is NOT an e-bike if it is designed or intended to be configured or modified (switch, button, app, motor change) to exceed its class."
+    },
+    {
+      "state": "IL",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "min_wheel_diameter_in < 12",
+      "verdict": "unclear",
+      "valid_until": null,
+      "reason": "Since Jan 1, 2026 an Illinois 'bicycle' needs wheels at least 12 inches across, so a smaller-wheel e-bike may fall outside the definition.",
+      "source_field": "definition.notes",
+      "source_quote": "Since P.A. 104-141 (eff. Jan 1, 2026), 'bicycle' (§ 1-106) covers low-speed e-bikes 'with 2 or more wheels not less than 12 inches in diameter, operable pedals, and designated seats'."
+    },
+    {
+      "state": "LA",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "(wheel_count == 2 and max_wheel_diameter_in < 16) or (wheel_count == 3 and max_wheel_diameter_in < 20)",
+      "verdict": "unclear",
+      "valid_until": null,
+      "reason": "Louisiana needs one wheel of 16 inches or more on a two-wheeler, or 20 inches or more on a three-wheeler, so a small-wheel e-bike may not qualify.",
+      "source_field": "definition.notes",
+      "source_quote": "WHEEL SIZE RULE: the bike needs a saddle or seat for each rider and either two tandem wheels, one of which is 16 inches or more in diameter, or three wheels, one of which is 20 inches or more. Small-wheel e-bikes may not qualify."
+    },
+    {
+      "state": "OR",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "(wheel_count == 2 and max_wheel_diameter_in <= 14) or (wheel_count == 3 and min_wheel_diameter_in <= 14)",
+      "verdict": "unclear",
+      "valid_until": null,
+      "reason": "An Oregon 'bicycle' needs wheels over 14 inches, so a small-wheel e-bike may not qualify.",
+      "source_field": "definition.notes",
+      "source_quote": "'Bicycle' (ORS 801.150) needs a seat, no more than 3 wheels, pedals, and every wheel over 14 inches (or two tandem wheels, either over 14 inches). Small-wheel bikes (14 inches or less) therefore may not qualify."
+    }
+  ],
+
+  "age_exceptions": [
+    {
+      "state": "HI",
+      "applies_to": "class_2",
+      "min_age": 16,
+      "type": "supervision",
+      "from_age": 0,
+      "source_field": "min_age[class_2].exceptions",
+      "source_quote": "Allowed under 16 with 'direct supervision': a supervising parent, guardian or person 18 or older who is physically present and close enough to observe and control the operation (§ 291C-143.5(b))."
+    },
+    {
+      "state": "HI",
+      "applies_to": "class_3",
+      "min_age": 16,
+      "type": "supervision",
+      "from_age": 0,
+      "source_field": "min_age[class_3].exceptions",
+      "source_quote": "Same supervision exception as Class 2. A parent, guardian or person 18 or older must be physically present and in reasonable proximity."
+    },
+    {
+      "state": "UT",
+      "applies_to": "all_ebikes",
+      "min_age": 14,
+      "type": "supervision",
+      "from_age": 8,
+      "source_field": "min_age[all_ebikes, 14].exceptions",
+      "source_quote": "Ages 8 to 13 may ride with the motor engaged only under the direct supervision of a parent or guardian."
+    },
+    {
+      "state": "VA",
+      "applies_to": "class_3",
+      "min_age": 14,
+      "type": "supervision",
+      "from_age": 0,
+      "source_field": "min_age[class_3].exceptions",
+      "source_quote": "Under 14 may ride a Class 3 bike under the immediate supervision of a person 18 or older."
+    }
+  ],
+
+  "license_detail": [
+    {
+      "state": "NJ",
+      "code": "nj_license_by_age",
+      "source_field": "min_age[all_ebikes].exceptions",
+      "source_quote": "Ages 15 and 16 need a motorized bicycle (moped, class F) license or permit. 17 and older need a basic driver's license or a moped license or permit."
+    }
+  ],
+
+  "watt_fallbacks": [
+    {
+      "state": "VT",
+      "from": null,
+      "min_watts": 750,
+      "max_watts": 1000,
+      "code": "vt_motor_assisted_bicycle",
+      "source_field": "non_ebike_devices.notes",
+      "source_quote": "An electric bike with pedals, a motor up to 1,000 W and a motor-only top speed of no more than 20 mph that does not meet a class (for example 750 W or more) is a 'motor-assisted bicycle'."
+    },
+    {
+      "state": "IL",
+      "from": "2027-01-01",
+      "min_watts": 750,
+      "max_watts": null,
+      "code": "il_motor_driven_cycle",
+      "source_field": "pending_changes[P.A. 104-0854].summary",
+      "source_quote": "Any electric bicycle that is not a low-speed e-bike (so any e-bike at 750 W or more, because the definition stays 'less than 750 watts'), and any electric motor rated greater than 750 W up to 8,000 W, is a motor driven cycle (§§ 1-140.10, 1-145.001)."
+    }
+  ],
+
+  "scheduled_changes": [
+    {
+      "state": "HI",
+      "effective_date": "2026-11-12",
+      "bill": "HB 2021 (2026), Act 259, Section 2",
+      "source_url": "https://www.capitol.hawaii.gov/session/measure_indiv.aspx?billtype=HB&billnumber=2021&year=2026",
+      "code": "hi_2026_11_12",
+      "effects": []
+    },
+    {
+      "state": "NC",
+      "effective_date": "2026-12-01",
+      "bill": "HB 1094, S.L. 2026-46, section 19",
+      "source_url": "https://www.ncleg.gov/EnactedLegislation/SessionLaws/HTML/2025-2026/SL2026-46.html",
+      "code": "nc_2026_12_01",
+      "effects": [
+        { "type": "end_age_rule", "applies_to": "class_3", "min_age": 16 },
+        { "type": "end_helmet_rule", "applies_to": "class_3", "all_ages": true },
+        {
+          "type": "add_helmet_rule",
+          "applies_to": "class_3",
+          "required_under_age": 18,
+          "all_ages": false,
+          "citation": "N.C. Gen. Stat. § 20-171.3 (S.L. 2026-46, s. 19)",
+          "source_quote": "New G.S. 20-171.3: e-bikes may use all roadways, bicycle lanes and multiuse paths, and riders and passengers under 18 on a Class 3 must wear a helmet."
+        },
+        { "type": "end_license_by_class", "applies_to": "class_3" }
+      ]
+    },
+    {
+      "state": "CA",
+      "effective_date": "2027-01-01",
+      "bill": "SB 1167 (ch. 846), AB 2346 (ch. 842), AB 2595 (ch. 843)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260SB1167",
+      "code": "ca_2027_01_01",
+      "effects": []
+    },
+    {
+      "state": "CO",
+      "effective_date": "2027-01-01",
+      "bill": "HB25-1197, 42-4-221(9)(c)",
+      "source_url": "https://leg.colorado.gov/laws/session-laws/HB25-1197/279/download",
+      "code": "co_2027_01_01",
+      "effects": []
+    },
+    {
+      "state": "IL",
+      "effective_date": "2027-01-01",
+      "bill": "SB 3484, Public Act 104-0854",
+      "source_url": "https://www.ilga.gov/Documents/legislation/publicacts/104/104-0854.htm",
+      "code": "il_2027_01_01",
+      "effects": [
+        {
+          "type": "add_age_rule",
+          "applies_to": "class_1",
+          "min_age": 15,
+          "citation": "625 ILCS 5/11-1517(h), as amended by P.A. 104-0854",
+          "source_quote": "(1) Class 1 and Class 2 riders must be 15 or older, and Class 3 stays 16+ (§ 11-1517(h))."
+        },
+        {
+          "type": "add_age_rule",
+          "applies_to": "class_2",
+          "min_age": 15,
+          "citation": "625 ILCS 5/11-1517(h), as amended by P.A. 104-0854",
+          "source_quote": "(1) Class 1 and Class 2 riders must be 15 or older, and Class 3 stays 16+ (§ 11-1517(h))."
+        }
+      ]
+    },
+    {
+      "state": "NJ",
+      "effective_date": "2027-01-01",
+      "bill": "P.L.2025, c.285, section 4",
+      "source_url": "https://pub.njleg.state.nj.us/Bills/2024/PL25/285_.PDF",
+      "code": "nj_2027_01_01",
+      "effects": []
+    },
+    {
+      "state": "OR",
+      "effective_date": "2027-01-01",
+      "bill": "HB 4007 (2026 Or. Laws ch. 101)",
+      "source_url": "https://www.oregonlegislature.gov/bills_laws/lawsstatutes/2026orlaw0101.pdf",
+      "code": "or_2027_01_01",
+      "effects": [
+        { "type": "end_age_rule", "applies_to": "all_ebikes", "min_age": 16 },
+        {
+          "type": "add_age_rule",
+          "applies_to": "class_1",
+          "min_age": 14,
+          "citation": "ORS 807.020, as amended by HB 4007 (2026 Or. Laws ch. 101)",
+          "source_quote": "Class 1 minimum age drops from 16 to 14, while class 2 and 3 stay at 16."
+        },
+        {
+          "type": "add_age_rule",
+          "applies_to": "class_2",
+          "min_age": 16,
+          "citation": "ORS 807.020, as amended by HB 4007 (2026 Or. Laws ch. 101)",
+          "source_quote": "Class 1 minimum age drops from 16 to 14, while class 2 and 3 stay at 16."
+        },
+        {
+          "type": "add_age_rule",
+          "applies_to": "class_3",
+          "min_age": 16,
+          "citation": "ORS 807.020, as amended by HB 4007 (2026 Or. Laws ch. 101)",
+          "source_quote": "Class 1 minimum age drops from 16 to 14, while class 2 and 3 stay at 16."
+        }
+      ]
+    },
+    {
+      "state": "UT",
+      "effective_date": "2027-05-05",
+      "bill": "HB 381 (2026), Laws of Utah 2026 ch. 334, delayed sections",
+      "source_url": "https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-S1115.5_2026050620270505.html",
+      "code": "ut_2027_05_05",
+      "effects": [
+        { "type": "end_age_rule", "applies_to": "class_3", "min_age": 16 },
+        { "type": "end_age_rule", "applies_to": "all_ebikes", "min_age": 14 },
+        {
+          "type": "add_age_rule",
+          "applies_to": "all_ebikes",
+          "min_age": 16,
+          "citation": "Utah Code § 41-6a-1115.5 (version effective May 5, 2027, HB 381 (2026))",
+          "source_quote": "Ages 8 to 15 may ride an e-bike with the motor engaged on a highway only with direct supervision of a parent or responsible adult OR a state personal electric vehicle safety certificate (new § 41-6a-1512, online course). Age 16+ may ride unsupervised. Under 8 barred on highways.",
+          "exception": { "type": "supervision_or_certificate", "from_age": 8 }
+        }
+      ]
+    }
+  ]
+}

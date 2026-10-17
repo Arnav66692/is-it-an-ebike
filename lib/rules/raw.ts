@@ -1,0 +1,194 @@
+// Shapes of the verified rules files in data/rules/ and the hand-built data/overlay.json.
+// Only the fields the engine reads are typed here.
+
+import type { AppliesTo, ClassKey } from "./types";
+
+export interface RawRef {
+  citation: string | null;
+  source_url: string | null;
+  quote: string | null;
+  effective_date: string | null;
+}
+
+export interface RawDefinition extends RawRef {
+  requires_pedals: boolean | null;
+  max_motor_watts: number | null;
+  motor_watts_comparison: "less_than" | "at_most" | "no_watt_cap" | "other";
+  max_motor_hp: number | null;
+  class1_assist_max_mph: number | null;
+  class2_throttle_max_mph: number | null;
+  class3_assist_max_mph: number | null;
+  notes: string | null;
+}
+
+export interface RawAgeRule extends RawRef {
+  applies_to: AppliesTo;
+  min_age: number;
+  exceptions: string | null;
+  notes: string | null;
+}
+
+export interface RawHelmetRule extends RawRef {
+  applies_to: AppliesTo;
+  required_under_age: number | null;
+  all_ages: boolean;
+  notes: string | null;
+}
+
+export interface RawFlags {
+  license_required: boolean | null;
+  registration_required: boolean | null;
+  insurance_required: boolean | null;
+}
+
+export interface RawLicense extends RawRef, RawFlags {
+  by_class: Record<ClassKey, RawFlags> | null;
+  notes: string | null;
+}
+
+export interface RawCaution {
+  applies_to: AppliesTo;
+  rider_under_age: number | null;
+  condition: string | null;
+  verdict: "not_an_ebike" | "unclear";
+  valid_until: string | null;
+  reason: string;
+}
+
+export interface RawPendingChange {
+  bill: string;
+  signed: string | null;
+  effective_date: string | null;
+  summary: string;
+  source_url: string;
+}
+
+export interface RawState {
+  code: string;
+  name: string;
+  last_checked: string;
+  confidence: string;
+  has_three_class_law: boolean;
+  definition: RawDefinition;
+  min_age_status: "rule" | "none_in_state_law" | "unknown";
+  min_age: RawAgeRule[] | null;
+  helmet_status: "rule" | "none_in_state_law" | "unknown";
+  helmet: RawHelmetRule[] | null;
+  license_registration_insurance: RawLicense;
+  local_authority: RawRef & {
+    can_add_age_limits_or_bans: boolean | null;
+    details: string | null;
+  };
+  non_ebike_devices: RawRef & {
+    treated_as: string | null;
+    license_needed: boolean | null;
+    min_age: number | null;
+    notes: string | null;
+  };
+  pending_changes: RawPendingChange[];
+  never_return_legal: boolean;
+  never_return_legal_reason: string | null;
+  verdict_cautions: RawCaution[];
+  verified_by_verifier: string | null;
+}
+
+export interface RawLocalRule {
+  rule: string;
+  applies_to: string[];
+  min_age?: number | null;
+  citation: string;
+  source_url: string;
+  quote: string;
+  effective_date: string | null;
+  citations_from?: string;
+  ends?: string;
+  source_type: string;
+  notes?: string;
+}
+
+export interface RawJurisdiction {
+  id: string;
+  jurisdiction: string;
+  type: string;
+  covers: string;
+  verified: string;
+  verified_note: string;
+  local_age_limits: RawLocalRule[];
+  campus_class_limits: RawLocalRule[];
+  tag_and_course_requirements: RawLocalRule[];
+  helmet_rules: RawLocalRule[];
+  emoto_enforcement: RawLocalRule[];
+  other_local_rules: RawLocalRule[];
+  open_questions: string[];
+}
+
+export interface RawSanDiego {
+  _meta: { last_checked: string };
+  statewide_baseline: RawLocalRule[];
+  jurisdictions: RawJurisdiction[];
+}
+
+export interface OverlayCaution extends RawCaution {
+  state: string;
+  source_field: string;
+  source_quote: string;
+}
+
+export interface OverlayAgeException {
+  state: string;
+  applies_to: AppliesTo;
+  min_age: number;
+  type: "supervision";
+  from_age: number;
+  source_field: string;
+  source_quote: string;
+}
+
+export type OverlayEffect =
+  | { type: "end_age_rule"; applies_to: AppliesTo; min_age: number }
+  | { type: "end_helmet_rule"; applies_to: AppliesTo; all_ages: boolean }
+  | {
+      type: "add_helmet_rule";
+      applies_to: AppliesTo;
+      required_under_age: number | null;
+      all_ages: boolean;
+      citation: string;
+      source_quote: string;
+    }
+  | { type: "end_license_by_class"; applies_to: ClassKey }
+  | {
+      type: "add_age_rule";
+      applies_to: AppliesTo;
+      min_age: number;
+      citation: string;
+      source_quote: string;
+      exception?: { type: "supervision_or_certificate"; from_age: number };
+    };
+
+export interface OverlayScheduledChange {
+  state: string;
+  effective_date: string;
+  bill: string;
+  source_url: string;
+  code: string;
+  effects: OverlayEffect[];
+}
+
+export interface OverlayWattFallback {
+  state: string;
+  from: string | null;
+  min_watts: number;
+  max_watts: number | null;
+  code: string;
+  source_field: string;
+  source_quote: string;
+}
+
+export interface Overlay {
+  stop_pedaling_class2: { states: string[]; decided_on: string; decided_by: string };
+  supplemental_cautions: OverlayCaution[];
+  age_exceptions: OverlayAgeException[];
+  license_detail: { state: string; code: string; source_quote: string }[];
+  watt_fallbacks: OverlayWattFallback[];
+  scheduled_changes: OverlayScheduledChange[];
+}
