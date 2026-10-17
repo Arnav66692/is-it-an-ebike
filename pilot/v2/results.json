@@ -1,0 +1,283 @@
+{
+  "pass": false,
+  "scored_at": "2026-10-17T17:50:53.731Z",
+  "method": "pedal-sorter-v2 (pilot/v2/method.json)",
+  "threshold": 0.014102635987677359,
+  "bars": {
+    "no_pedal_machines": {
+      "bar": "All 12 called no pedals",
+      "result": "9 of 12",
+      "pass": false
+    },
+    "pedal_call_overall": {
+      "bar": "Right on at least 22 of 24",
+      "result": "18 of 24",
+      "pass": false
+    },
+    "invented_facts": {
+      "bar": "Zero class, watt or speed values with no label visible",
+      "result": "0 of 24 photos",
+      "pass": true
+    }
+  },
+  "breakdown": {
+    "pedal_bikes": {
+      "right": 9,
+      "of": 12
+    },
+    "hard_cases": {
+      "right": 7,
+      "of": 10
+    },
+    "real_world": {
+      "right": 7,
+      "of": 10
+    },
+    "studio": {
+      "right": 11,
+      "of": 14
+    }
+  },
+  "rows": [
+    {
+      "file": "test_01.jpg",
+      "product": "Razor RSF650",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.011362307418016693,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_02.jpg",
+      "product": "Razor MX125 Dirt Rocket",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.011735192676068679,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_03.jpg",
+      "product": "Ruff Cycles The Ruffian",
+      "style": "moto_styled",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.03297209446600613,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_04.jpg",
+      "product": "KTM Freeride E-XC (2023)",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": 0.003910446144737845,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_05.jpg",
+      "product": "E Ride Pro SR",
+      "style": "emoto",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.006061718638971203,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_06.jpg",
+      "product": "Razor MX650 Dirt Rocket",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.013437871483379993,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_07.jpg",
+      "product": "Razor MX350 Dirt Rocket",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.006416300171764727,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_08.jpg",
+      "product": "Zero FX ZF5.7",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": 0.009164396606914482,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_09.jpg",
+      "product": "Jansno X70",
+      "style": "moto_styled",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.026450996153560835,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_10.jpg",
+      "product": "Lectric XPedition2",
+      "style": "cargo",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.03254988777506701,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_11.jpg",
+      "product": "Juiced Scrambler",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.02042542209240389,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_12.jpg",
+      "product": "SUPER73-K1D",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.014233269660805237,
+      "call": "pedals",
+      "right": false
+    },
+    {
+      "file": "test_13.jpg",
+      "product": "Macfox X7",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.008444547821888693,
+      "call": "no pedals",
+      "right": false
+    },
+    {
+      "file": "test_14.jpg",
+      "product": "Monday Motorbikes Anza (500S or 750S)",
+      "style": "moto_styled",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.014907550527970992,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_15.jpg",
+      "product": "Lectric XPeak2 High-Step",
+      "style": "mtb",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.008856126825195876,
+      "call": "no pedals",
+      "right": false
+    },
+    {
+      "file": "test_16.jpg",
+      "product": "Rad Power Bikes Radster Road",
+      "style": "commuter",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.027304410238346177,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_17.jpg",
+      "product": "E Ride Pro PRO SS 3.0",
+      "style": "emoto",
+      "setting": "studio",
+      "pedals": "no",
+      "score": 0.00914190551756161,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_18.jpg",
+      "product": "Hiboy DK1",
+      "style": "kids_dirt_bike",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": 0.009892295850489563,
+      "call": "no pedals",
+      "right": true
+    },
+    {
+      "file": "test_19.jpg",
+      "product": "Cake Kalk",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": 0.03689990507992974,
+      "call": "pedals",
+      "right": false
+    },
+    {
+      "file": "test_20.jpg",
+      "product": "Monday Motorbikes Piezo",
+      "style": "moto_styled",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.015578125852546032,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_21.jpg",
+      "product": "Ariel Rider X-Class 60V",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.016319168158217046,
+      "call": "pedals",
+      "right": true
+    },
+    {
+      "file": "test_22.jpg",
+      "product": "Stark VARG",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": 0.015031760996263688,
+      "call": "pedals",
+      "right": false
+    },
+    {
+      "file": "test_23.jpg",
+      "product": "SUPER73-ZX",
+      "style": "moto_styled",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.004354131276637363,
+      "call": "no pedals",
+      "right": false
+    },
+    {
+      "file": "test_24.jpg",
+      "product": "Ariel Rider Kepler 52V",
+      "style": "fat_tire",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.029302161460271675,
+      "call": "pedals",
+      "right": true
+    }
+  ]
+}

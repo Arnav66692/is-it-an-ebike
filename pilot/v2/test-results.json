@@ -1,0 +1,155 @@
+{
+ "run": "photo pilot v2, single test run",
+ "ran_at": "2026-10-17T17:50:13.714Z",
+ "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/2.42304.0 Chrome/152.0.7977.149 Safari/537.36",
+ "method_file_sha256": "f15c2e4d80e62a7a21a182ace9a577636ca9095a535cd4aaff94c63bfa8f4f65",
+ "threshold": 0.014102635987677359,
+ "photos": 24,
+ "ms_per_photo": 5459,
+ "rows": [
+  {
+   "photo": "test/test_01.jpg",
+   "score": 0.011362307418016693,
+   "call": "no pedals",
+   "ms": 5600
+  },
+  {
+   "photo": "test/test_02.jpg",
+   "score": 0.011735192676068679,
+   "call": "no pedals",
+   "ms": 5534
+  },
+  {
+   "photo": "test/test_03.jpg",
+   "score": 0.03297209446600613,
+   "call": "pedals",
+   "ms": 5339
+  },
+  {
+   "photo": "test/test_04.jpg",
+   "score": 0.003910446144737845,
+   "call": "no pedals",
+   "ms": 5459
+  },
+  {
+   "photo": "test/test_05.jpg",
+   "score": 0.006061718638971203,
+   "call": "no pedals",
+   "ms": 5528
+  },
+  {
+   "photo": "test/test_06.jpg",
+   "score": 0.013437871483379993,
+   "call": "no pedals",
+   "ms": 5513
+  },
+  {
+   "photo": "test/test_07.jpg",
+   "score": 0.006416300171764727,
+   "call": "no pedals",
+   "ms": 5464
+  },
+  {
+   "photo": "test/test_08.jpg",
+   "score": 0.009164396606914482,
+   "call": "no pedals",
+   "ms": 5425
+  },
+  {
+   "photo": "test/test_09.jpg",
+   "score": 0.026450996153560835,
+   "call": "pedals",
+   "ms": 5551
+  },
+  {
+   "photo": "test/test_10.jpg",
+   "score": 0.03254988777506701,
+   "call": "pedals",
+   "ms": 5591
+  },
+  {
+   "photo": "test/test_11.jpg",
+   "score": 0.02042542209240389,
+   "call": "pedals",
+   "ms": 5274
+  },
+  {
+   "photo": "test/test_12.jpg",
+   "score": 0.014233269660805237,
+   "call": "pedals",
+   "ms": 5340
+  },
+  {
+   "photo": "test/test_13.jpg",
+   "score": 0.008444547821888693,
+   "call": "no pedals",
+   "ms": 5442
+  },
+  {
+   "photo": "test/test_14.jpg",
+   "score": 0.014907550527970992,
+   "call": "pedals",
+   "ms": 5558
+  },
+  {
+   "photo": "test/test_15.jpg",
+   "score": 0.008856126825195876,
+   "call": "no pedals",
+   "ms": 5424
+  },
+  {
+   "photo": "test/test_16.jpg",
+   "score": 0.027304410238346177,
+   "call": "pedals",
+   "ms": 5343
+  },
+  {
+   "photo": "test/test_17.jpg",
+   "score": 0.00914190551756161,
+   "call": "no pedals",
+   "ms": 5383
+  },
+  {
+   "photo": "test/test_18.jpg",
+   "score": 0.009892295850489563,
+   "call": "no pedals",
+   "ms": 5628
+  },
+  {
+   "photo": "test/test_19.jpg",
+   "score": 0.03689990507992974,
+   "call": "pedals",
+   "ms": 5391
+  },
+  {
+   "photo": "test/test_20.jpg",
+   "score": 0.015578125852546032,
+   "call": "pedals",
+   "ms": 5335
+  },
+  {
+   "photo": "test/test_21.jpg",
+   "score": 0.016319168158217046,
+   "call": "pedals",
+   "ms": 5460
+  },
+  {
+   "photo": "test/test_22.jpg",
+   "score": 0.015031760996263688,
+   "call": "pedals",
+   "ms": 5578
+  },
+  {
+   "photo": "test/test_23.jpg",
+   "score": 0.004354131276637363,
+   "call": "no pedals",
+   "ms": 5445
+  },
+  {
+   "photo": "test/test_24.jpg",
+   "score": 0.029302161460271675,
+   "call": "pedals",
+   "ms": 5410
+  }
+ ]
+}
