@@ -39,9 +39,16 @@ function isPrivateIp(ip: string): boolean {
       a >= 224
     );
   }
+  if (isIP(ip) !== 6) return true;
   const x = ip.toLowerCase();
-  if (x.startsWith("::ffff:")) return isPrivateIp(x.slice(7));
-  return x === "::" || x === "::1" || x.startsWith("fc") || x.startsWith("fd") || x.startsWith("fe80");
+  // IPv4 inside IPv6, in either the dotted or the hex form, gets checked as IPv4 or refused.
+  if (x.startsWith("::ffff:")) {
+    const tail = x.slice(7);
+    return isIP(tail) === 4 ? isPrivateIp(tail) : true;
+  }
+  // Only ordinary global IPv6 is allowed. Teredo, 6to4 and NAT64 can reach IPv4 inside a network.
+  if (!/^[23]/.test(x)) return true;
+  return x.startsWith("2001:0:") || x.startsWith("2001::") || x.startsWith("2002:") || x.startsWith("64:ff9b");
 }
 
 async function assertPublic(url: URL): Promise<void> {

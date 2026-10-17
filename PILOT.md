@@ -81,4 +81,4 @@ Waiting on Arnav's 20-listing audit. Method, fixed before the run:
 
 ### Label photo check
 
-Waiting on the Sunday bike shop photos.
+Waiting on the Sunday bike shop photos. Method, fixed before the run: write the class printed on each label into `pilot/labels.csv` (columns `file,printed_class`, for example `shop_01.jpg,2`), keep the photos outside the repo, then run `npx tsx scripts/pilot-labels.ts <photo folder> <cache folder>`. A photo counts as right only if the classes read match exactly, and as can't confirm if no class is read. Any other class counts as wrong.
