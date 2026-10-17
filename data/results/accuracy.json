@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-17T07:55:07.080Z",
-  "commit": "3ba0299",
+  "generated_at": "2026-10-17T17:52:10.860Z",
+  "commit": "d2f2f2d",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
@@ -41,6 +41,44 @@
       "pass": true
     },
     "listings": null,
-    "labels": null
+    "labels": null,
+    "photos_v2": {
+      "pass": false,
+      "bars": {
+        "no_pedal_machines": {
+          "bar": "All 12 called no pedals",
+          "result": "9 of 12",
+          "pass": false
+        },
+        "pedal_call_overall": {
+          "bar": "Right on at least 22 of 24",
+          "result": "18 of 24",
+          "pass": false
+        },
+        "invented_facts": {
+          "bar": "Zero class, watt or speed values with no label visible",
+          "result": "0 of 24 photos",
+          "pass": true
+        }
+      },
+      "breakdown": {
+        "pedal_bikes": {
+          "right": 9,
+          "of": 12
+        },
+        "hard_cases": {
+          "right": 7,
+          "of": 10
+        },
+        "real_world": {
+          "right": 7,
+          "of": 10
+        },
+        "studio": {
+          "right": 11,
+          "of": 14
+        }
+      }
+    }
   }
 }

@@ -26,6 +26,7 @@ export default function AccuracyPage() {
   const share = (n: number) => `${((100 * n) / e.cases).toFixed(1)}%`;
   const clip = accuracy.pilot.photos_clip as Record<string, Bar> | null;
   const ocr = accuracy.pilot.photos_ocr as { photos: number; invented: number; pass: boolean } | null;
+  const v2 = (accuracy.pilot as { photos_v2?: { pass: boolean; bars: Record<string, Bar>; breakdown: Record<string, { right: number; of: number }> } | null }).photos_v2 ?? null;
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 space-y-5 px-4 py-6">
@@ -82,6 +83,29 @@ export default function AccuracyPage() {
           the bar, so whole-bike photos were cut. The app reads class labels and listings instead.
         </p>
       </section>
+
+      {v2 ? (
+        <section className="card space-y-3">
+          <h2 className="text-lg font-bold">Photo pilot, second try</h2>
+          <p className="text-sm text-muted">
+            A method that checks zoomed tiles of the lower bike was built on 47 photos, then run once on 24 fresh photos it had never seen.
+          </p>
+          <table className="w-full text-sm">
+            <tbody>
+              <Row label="No-pedal machines caught, need 12 of 12" value={`${v2.bars.no_pedal_machines.result}, ${v2.bars.no_pedal_machines.pass ? "pass" : "fail"}`} />
+              <Row label="Pedal call, need 22 of 24" value={`${v2.bars.pedal_call_overall.result}, ${v2.bars.pedal_call_overall.pass ? "pass" : "fail"}`} />
+              <Row label="Invented facts" value={`${v2.bars.invented_facts.result}, ${v2.bars.invented_facts.pass ? "pass" : "fail"}`} />
+              <Row label="Hard cases (moto-styled and similar)" value={`${v2.breakdown.hard_cases.right} of ${v2.breakdown.hard_cases.of}`} />
+              <Row label="Real-world photos" value={`${v2.breakdown.real_world.right} of ${v2.breakdown.real_world.of}`} />
+            </tbody>
+          </table>
+          <p className="text-sm">
+            {v2.pass
+              ? "It passed, so whole-bike photos sort pedals from no pedals. They never give a legal answer on their own."
+              : "It failed too, so whole-bike photos stay cut. A photo of the whole bike can't reliably show pedals on a moto-styled e-bike, and a kids' balance bike can look like an e-bike."}
+          </p>
+        </section>
+      ) : null}
     </main>
   );
 }

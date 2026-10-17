@@ -31,7 +31,7 @@ See `RESULTS.md` and the in-app accuracy page. The headline: on 334,080 generate
 
 Those tests prove the engine matches the table, not that the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (`data/rules/verification_report.md`, `data/rules/corrections.json`). The San Diego rows come from official city and district pages and press releases, because ordinance text wasn't available for most of them.
 
-The pilot in `PILOT.md` set pass bars before each run. A free CLIP model caught every pedal-less e-moto but called 4 of 8 real e-bikes pedal-less, so whole-bike photos were cut from the app.
+The pilot in `PILOT.md` set pass bars before each run. A free CLIP model caught every pedal-less e-moto but called 4 of 8 real e-bikes pedal-less, so whole-bike photos were cut from the app. A second, part-focused try was built on 47 photos and run once on 24 fresh ones. It caught only 9 of 12 no-pedal machines and got 18 of 24 overall against a bar of 22, so photos stay cut.
 
 ## Run it
 
@@ -75,7 +75,7 @@ This project was built during Neighborhood Hacks 2026 with AI help, as the rules
 
 - **Claude (Anthropic), through Claude Code**, wrote the code, tests and Spanish text, and ran the research that gathered and double-checked the state rules table. I didn't hand-write the code.
 - **My part.** I picked the problem from what I've seen around my school, chose the scope (every state, with a San Diego layer), and made the policy calls recorded in `data/overlay.json` and `PILOT.md`, including the Class 2 caution and using no paid AI. The pilot pass bars come from the research report and were committed before any run.
-- **Inside the product**, the only AI is open-source and free. Tesseract OCR reads label photos on the phone. A CLIP model was tested for whole-bike photos and cut after it missed the bar. No paid AI API is used.
+- **Inside the product**, the only AI is open-source and free. Tesseract OCR reads label photos on the phone. CLIP models were tested twice for whole-bike photos and cut after both missed the bar. No paid AI API is used.
 - **Data.** State e-bike statutes (linked on every card), San Diego County city pages and the SDUHSD Bike Safety page.
 - **Libraries.** Next.js, React, Tailwind CSS, tesseract.js, qrcode, Vitest.
 

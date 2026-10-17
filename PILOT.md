@@ -154,6 +154,19 @@ No second test run after seeing the result.
 - **Fail.** Whole-bike photos stay cut, and RESULTS.md says so plainly.
 - **Pass.** Whole-bike photos come back as a pedals or no-pedals sorter only, never a legal verdict by itself. When the score is close to the line, the app asks "Does it have pedals?". That is product behavior and isn't counted in the bar.
 
-### Results
+### Results (single run, Sat Oct 17, 2026, in the afternoon PT)
 
-Not run yet.
+| Check | Pass bar | Result | Pass? |
+|---|---|---|---|
+| No-pedal machines | All 12 called "no pedals" | 9 of 12 | **No** |
+| Pedal call overall | Right on at least 22 of 24 | 18 of 24 | **No** |
+| Invented facts | Zero class, watt or speed values with no label visible | 0 of 24 photos | Yes |
+
+Reported separately: pedal bikes 9 of 12, hard cases 7 of 10, real-world photos 7 of 10, studio photos 11 of 14. The run took about 5.5 seconds per photo. Raw output is in `pilot/v2/test-results.json` (sha256 `a85120a2d14e821ac6b0e5fdecbf357c361c4002ad000cc01504aa737dfbf39b`), the OCR check is in `pilot/v2/test-ocr.json`, and the scored rows are in `pilot/v2/results.json`.
+
+The six misses:
+
+- Three no-pedal machines were called "pedals." The SUPER73-K1D kids' balance bike, which is styled like a Super73 e-bike, landed just over the line (0.0142 against 0.0141). The Stark VARG and Cake Kalk were both photographed indoors at a show or shop. The Cake Kalk scored very high, probably from bicycles elsewhere in the frame.
+- Three pedal bikes were called "no pedals": the SUPER73-ZX in a street photo, the moto-styled Macfox X7 and the Lectric XPeak2 mountain bike.
+
+**Decision, by the rule above: whole-bike photos stay cut.** The app keeps label photos, product links and typed input. A zero-shot model that looks at zoomed tiles still sees overall shape more than the pedal itself, and it gets confused by backgrounds in real photos. I did no second test run after seeing this result.

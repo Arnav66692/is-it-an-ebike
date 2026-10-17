@@ -44,6 +44,12 @@ const vitest = read<VitestReport>(".cache/vitest.json");
 const clip = read<ClipResult>("pilot/results/photos-clip.json");
 const ocr = read<OcrResult>("pilot/results/photos-ocr.json");
 const listing = read<Record<string, unknown>>("pilot/results/listings.json");
+interface V2Result {
+  pass: boolean;
+  bars: Record<string, { bar: string; result: string; pass: boolean }>;
+  breakdown: Record<string, { right: number; of: number }>;
+}
+const v2 = read<V2Result>("pilot/v2/results.json");
 const labels = read<Record<string, unknown>>("pilot/results/labels.json");
 
 const pct = (n: number, d: number) => (d === 0 ? "n/a" : `${((100 * n) / d).toFixed(1)}%`);
@@ -69,6 +75,7 @@ const accuracy = {
     photos_ocr: ocr ? { photos: ocr.photos, invented: ocr.photos_with_invented_values, pass: ocr.pass } : null,
     listings: listing,
     labels,
+    photos_v2: v2 ? { pass: v2.pass, bars: v2.bars, breakdown: v2.breakdown } : null,
   },
 };
 
@@ -116,6 +123,20 @@ Mutation check, done once by hand on Oct 17. Turning off the never-legal rule, o
 | Bike shop label photos | Class right or can't confirm, never wrong | ${labels ? "see pilot/results/labels.json" : "waiting on Sunday photos"} | ${labels ? "see file" : "pending"} |
 
 Whole-bike photos were cut from the MVP because the pedal call missed the bar (rule in PILOT.md).
+
+## Photo pilot v2 (a second try, preregistered in PILOT.md)
+
+A part-focused method, zero-shot CLIP on 12 zoomed tiles of the lower bike, was built on 47 dev photos and then run once on 24 fresh held-out photos.
+
+${v2 ? `| Check | Bar | Result | Pass |
+|---|---|---|---|
+| No-pedal machines | All 12 called no pedals | ${v2.bars.no_pedal_machines.result} | ${v2.bars.no_pedal_machines.pass ? "Yes" : "**No**"} |
+| Pedal call overall | At least 22 of 24 | ${v2.bars.pedal_call_overall.result} | ${v2.bars.pedal_call_overall.pass ? "Yes" : "**No**"} |
+| Invented facts | Zero values with no label visible | ${v2.bars.invented_facts.result} | ${v2.bars.invented_facts.pass ? "Yes" : "**No**"} |
+
+Hard cases ${v2.breakdown.hard_cases.right} of ${v2.breakdown.hard_cases.of}, real-world photos ${v2.breakdown.real_world.right} of ${v2.breakdown.real_world.of}, pedal bikes ${v2.breakdown.pedal_bikes.right} of ${v2.breakdown.pedal_bikes.of}.
+
+${v2.pass ? "It passed, so whole-bike photos came back as a pedals sorter only." : "It failed, so whole-bike photos stay cut. The app reads class labels, product links and typed facts instead."}` : "Not run yet."}
 
 ## Still to measure
 
