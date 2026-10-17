@@ -9,7 +9,7 @@
 const out = document.getElementById("out");
 const params = new URLSearchParams(location.search);
 const device = params.get("device") === "wasm" ? "wasm" : "webgpu";
-const FILES = { q8: "model_quantized.onnx", q4f16: "model_q4f16.onnx", fp16: "model_fp16.onnx" };
+const FILES = { q8: "model_quantized.onnx", q4f16: "model_q4f16.onnx", fp16: "model_fp16.onnx", q4: "model_q4.onnx" };
 const dtype = FILES[params.get("dtype")] ? params.get("dtype") : "q8";
 // Library versions, each pinned. 4.3.1 is the original. The older ones only change the onnxruntime-web build.
 const LIBS = {
