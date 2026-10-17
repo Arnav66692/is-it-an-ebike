@@ -18,12 +18,14 @@ const LIBS = {
   "3.8.1": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js",
 };
 const lib = LIBS[params.get("lib")] ? params.get("lib") : "4.3.1";
+// threads=hc runs WASM on navigator.hardwareConcurrency threads. It needs a cross-origin isolated page.
+const threads = device === "wasm" && params.get("threads") === "hc" ? "hc" : "1";
 const MODEL = "Xenova/owlv2-base-patch16-ensemble";
 const FILE_URL = "https://huggingface.co/" + MODEL + "/resolve/main/onnx/" + FILES[dtype];
 const QUERIES = ["bicycle pedal", "pedal crank arm", "bicycle chain", "motorcycle foot peg"];
 const PHOTOS = ["train/train_01.jpg", "train/train_02.jpg", "train/train_03.jpg"];
 const result = { step: "photo pilot v3 speed check", device, model: MODEL, file: "onnx/" + FILES[dtype], dtype, library: `@huggingface/transformers ${lib}, ${LIBS[lib]}`, queries: QUERIES, browser: navigator.userAgent, cross_origin_isolated: self.crossOriginIsolated, started_at: new Date().toISOString() };
-const saveName = (lib === "4.3.1" ? (dtype === "q8" ? `speed-${device}` : `speed-${dtype}-${device}`) : `speed-${dtype}-${device}-tjs${lib}`) + ".json";
+const saveName = (lib === "4.3.1" ? (dtype === "q8" ? `speed-${device}` : `speed-${dtype}-${device}`) : `speed-${dtype}-${device}-tjs${lib}${threads === "hc" ? "-mt" : ""}`) + ".json";
 // The onnxruntime-web files the page actually fetched, so the record names the exact runtime build.
 const ortFiles = () => [...new Set(performance.getEntriesByType("resource").map((e) => e.name).filter((n) => n.includes("onnxruntime")))];
 async function cachedSize() {
@@ -46,6 +48,13 @@ try {
   const t0 = performance.now();
   const T = await import(LIBS[lib]);
   result.import_ms = Math.round(performance.now() - t0);
+  if (threads === "hc") {
+    const w = T.env?.backends?.onnx?.wasm;
+    if (!w) throw new Error("no onnx wasm settings to set threads on");
+    w.numThreads = navigator.hardwareConcurrency;
+    result.hardware_concurrency = navigator.hardwareConcurrency;
+    result.num_threads = w.numThreads;
+  }
   out.textContent = "loading model…";
   const t1 = performance.now();
   const detector = await T.pipeline("zero-shot-object-detection", MODEL, { dtype, device });
@@ -69,7 +78,7 @@ try {
     out.textContent = `timed ${result.per_photo.length}/3`;
   }
   result.mean_ms = Math.round(result.per_photo.reduce((s, r) => s + r.ms, 0) / result.per_photo.length);
-  result.stop_rule = "mean over 15000 ms on WebGPU stops v3";
+  result.stop_rule = "mean over 15000 ms stops v3";
   result.over_15s = result.mean_ms > 15000;
   result.finished_at = new Date().toISOString();
   const saved = await (await fetch(`http://127.0.0.1:8792/${saveName}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(result, null, 1) })).json();
