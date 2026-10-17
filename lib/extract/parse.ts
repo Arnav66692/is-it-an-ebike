@@ -58,8 +58,11 @@ function slice(text: string, from: number, to: number): string {
 
 /** Keeps evidence short and readable, and always a true substring of the text. */
 function snippet(text: string, index: number, length: number): Evidence {
-  const start = Math.max(0, index - 14);
-  const end = Math.min(text.length, index + length + 14);
+  let start = Math.max(0, index - 14);
+  let end = Math.min(text.length, index + length + 14);
+  // Widen to whole words so the card never shows "OTOR WATTAGE".
+  while (start > 0 && start > index - 30 && /\S/.test(text[start - 1])) start -= 1;
+  while (end < text.length && end < index + length + 30 && /\S/.test(text[end])) end += 1;
   return { text: text.slice(start, end).trim(), index: start };
 }
 
@@ -99,6 +102,30 @@ function parseClasses(text: string, out: Extraction): void {
   }
 }
 
+const RATED_WORDS = /\b(nominal|rated|continuous|sustained)\b/g;
+const PEAK_WORDS = /\b(peak|burst|max(?:imum)?|up to)\b/g;
+
+/** The qualifier word closest to the number decides, so "500W (sustained), 864W (peak)" reads right. */
+function wattKind(text: string, index: number, end: number): "rated" | "peak" | "plain" {
+  const from = Math.max(0, index - 18);
+  const window = slice(text, from, end + 18);
+  const start = index - from;
+  const stop = end - from;
+  const closest = (re: RegExp): number => {
+    let best = Number.POSITIVE_INFINITY;
+    for (const m of window.matchAll(re)) {
+      if (m.index === undefined) continue;
+      const d = m.index >= stop ? m.index - stop : start - (m.index + m[0].length);
+      best = Math.min(best, Math.max(0, d));
+    }
+    return best;
+  };
+  const rated = closest(RATED_WORDS);
+  const peak = closest(PEAK_WORDS);
+  if (!Number.isFinite(rated) && !Number.isFinite(peak)) return "plain";
+  return rated <= peak ? "rated" : "peak";
+}
+
 function parseWatts(text: string, out: Extraction, source: TextSource): void {
   const rated: number[] = [];
   const unqualified: number[] = [];
@@ -113,11 +140,11 @@ function parseWatts(text: string, out: Extraction, source: TextSource): void {
     const ctx = slice(text, m.index - 25, end + 25);
     if (/\b(charger|charging|headlight|lumens?|inverter)\b/.test(ctx)) continue;
     const ev = snippet(text, m.index, m[0].length);
-    const near = slice(text, m.index - 18, end + 18);
-    if (/\b(nominal|rated|continuous|sustained)\b/.test(near)) {
+    const kind = wattKind(text, m.index, end);
+    if (kind === "rated") {
       rated.push(value);
       push(out.evidence, "ratedWatts", ev);
-    } else if (/\b(peak|burst|max(?:imum)?|up to)\b/.test(near)) {
+    } else if (kind === "peak") {
       peak.push(value);
       push(out.evidence, "peakWatts", ev);
     } else {
@@ -245,7 +272,10 @@ function parsePedals(text: string, out: Extraction): void {
   }
 }
 
-function parseModesAndShape(text: string, out: Extraction): void {
+/** Store pages list other products in menus, so a listing's shape words only count near the top. */
+const LISTING_HEAD = 400;
+
+function parseModesAndShape(text: string, out: Extraction, source: TextSource): void {
   const pegs = firstMatch(text, /\b(foot ?pegs?|footrests?|foot rests?)\b/i);
   if (pegs) {
     out.facts.hasFootPegs = true;
@@ -266,7 +296,8 @@ function parseModesAndShape(text: string, out: Extraction): void {
     out.flags.push("sold_as_motorbike");
   }
 
-  const trike = firstMatch(text, /\b(tricycle|trike|three[- ]wheel(?:ed|er)?|3[- ]wheel(?:ed|er)?)\b/i);
+  const head = source === "listing" ? text.slice(0, LISTING_HEAD) : text;
+  const trike = firstMatch(head, /\b(tricycle|trike|three[- ]wheel(?:ed|er)?|3[- ]wheel(?:ed|er)?)\b/i);
   if (trike) {
     out.facts.wheelCount = 3;
     push(out.evidence, "wheelCount", snippet(text, trike.index, trike[0].length));
@@ -280,12 +311,13 @@ function parseWheels(text: string, out: Extraction): void {
     sizes.push(size);
     push(out.evidence, "wheelSize", snippet(text, index, length));
   };
-  // "20 x 4.0" or 26" x 2.25" tire sizes.
-  for (const m of text.matchAll(/\b([12][0-9])(?:\.\d)?\s?(?:"|”|'')?\s?x\s?\d(?:\.\d{1,2})?/gi)) {
+  // "20 x 4.0" or 26" x 2.25" tire sizes. The width is 1 to 5 inches, which skips "15x100mm"
+  // axles and "9/16 x 20 TPI" threads.
+  for (const m of text.matchAll(/(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?(?:"|”|'')?\s?x\s?[1-5](?:\.\d{1,2})?(?:"|”|'')?(?![\d.])/gi)) {
     if (m.index !== undefined) add(Number(m[1]), m.index, m[0].length);
   }
   // "20-inch wheels", 16" tires.
-  for (const m of text.matchAll(/\b([12][0-9])(?:\.\d)?\s?(?:"|”|''|-?\s?inch(?:es)?)\s?(?:fat\s)?(?:tires?|tyres?|wheels?)\b/gi)) {
+  for (const m of text.matchAll(/(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?(?:"|”|''|-?\s?inch(?:es)?)\s?(?:fat\s)?(?:tires?|tyres?|wheels?)\b/gi)) {
     if (m.index !== undefined) add(Number(m[1]), m.index, m[0].length);
   }
   const c700 = firstMatch(text, /\b700\s?c\b/i);
@@ -331,7 +363,7 @@ export function parseSpecText(raw: string, source: TextSource): Extraction {
   parseSpeeds(text, out);
   parseThrottle(text, out);
   parsePedals(text, out);
-  parseModesAndShape(text, out);
+  parseModesAndShape(text, out, source);
   parseWheels(text, out);
   parseWeight(text, out);
   return out;

@@ -110,6 +110,21 @@ describe("listings", () => {
     expect(allEvidenceGrounded(e)).toBe(true);
     expect(e.facts.weightLb).toBe(62);
   });
+  it("keeps 'sustained' and 'peak' with their own numbers when they sit side by side", () => {
+    const e = parseSpecText("Motor 36V, 500W (sustained), 864W (peak) Motor", "listing");
+    expect(e.facts.ratedWatts).toBe(500);
+    expect(e.facts.peakWatts).toBe(864);
+  });
+  it("doesn't read thread sizes or axles as wheel sizes", () => {
+    const e = parseSpecText('standard 9/16" x 20 TPI threading, 15x100mm thru-axle, tire 20" x 3.3"', "listing");
+    expect(e.facts.wheelFrontIn).toBe(20);
+    expect(e.facts.wheelRearIn).toBe(20);
+  });
+  it("only trusts trike words near the top of a listing, where the product is described", () => {
+    const menu = "Shop all bikes. " + "x".repeat(500) + " Cargo Family Tricycle Folding";
+    expect(parseSpecText(menu, "listing").facts.wheelCount).toBeUndefined();
+    expect(parseSpecText("Liberty Trike, a three-wheel e-bike", "listing").facts.wheelCount).toBe(3);
+  });
   it("returns nothing for empty input", () => {
     expect(parseSpecText("   ", "listing").facts).toEqual({});
   });

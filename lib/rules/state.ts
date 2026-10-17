@@ -328,10 +328,7 @@ function combineClass(cs: CompiledState, cls: ClassNum, dev: DeviceResult, rider
   };
 }
 
-function determineClasses(
-  f: BikeFacts,
-  cs: CompiledState,
-): { classes: ClassNum[]; problem: Line | null } {
+function determineClasses(f: BikeFacts): { classes: ClassNum[]; problem: Line | null } {
   const assist = f.assistMph ?? f.topSpeedMph;
   if (f.classes.length > 0) {
     const classes = [...new Set(f.classes)].sort() as ClassNum[];
@@ -480,7 +477,7 @@ export function evaluateState(input: EngineInput): StateEvaluation {
   const fe = factsEnv(f);
   if (fe.conflict) return single("cant_confirm", line("facts_conflict"));
 
-  const { classes, problem } = determineClasses(f, cs);
+  const { classes, problem } = determineClasses(f);
   const classesKnown = classes.length > 0 && problem === null;
   // When the class is unknown or contradicted, the bike could be any class, so check all three.
   const candidates: ClassNum[] = classesKnown ? classes : [1, 2, 3];
