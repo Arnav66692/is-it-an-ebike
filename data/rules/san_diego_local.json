@@ -1,0 +1,621 @@
+{
+  "_meta": {
+    "title": "San Diego local e-bike layer (North County focus)",
+    "last_checked": "2026-10-16",
+    "checked_by": "verifier pass",
+    "verified_values": {
+      "statute_verified": "The rule was read in enacted statute or ordinance text.",
+      "secondary_only": "Read only on an official city, county or district page, a press release or news. The enacted ordinance or board policy text was not read.",
+      "unclear": "Could not confirm whether a local rule exists."
+    },
+    "how_to_use": "Apply the statewide_baseline rules everywhere in California, then the record for the place the family rides. A local record never relaxes a state rule. The under-12 power in VC 21214.7 is repealed Jan 1, 2029.",
+    "notes_on_inputs": [
+      "ideas_red_team.md says VC 312.5(a) requires a motor 'under 750 watts'. The current text (SB 1271, effective Jan 1, 2025) says 'does not exceed 750 watts', so exactly 750 W qualifies. 'Less than 750 watts' was the pre-2025 wording, which the Carlsbad and Encinitas pages still repeat.",
+      "ideas_red_team.md gives a second reading of Jun 30, 2026 for the City of San Diego (from NBC 7). The City's own Jun 23 release says Jul 7, 2026. The City's Aug 7 release gives the effective date as Aug 13, 2026.",
+      "ideas_red_team.md left Carlsbad's effective date open. Carlsbad's Feb 25, 2026 news post says Mar 26, 2026, with warnings until May 25, 2026.",
+      "ideas_red_team.md left open whether state law bars Class 3 from Class I bike paths. It does not since AB 1909 (effective Jan 1, 2023). VC 21207.5(b) lets locals ban e-bikes or a class on equestrian, hiking and recreational trails, and VC 21206 lets locals regulate operation on bicycle facilities.",
+      "ideas_red_team.md said AB 2595 was signed in early October 2026. leginfo shows it approved Sep 30, 2026 (Stats. 2026, ch. 843)."
+    ]
+  },
+  "statewide_baseline": [
+    {
+      "rule": "local_under_12_authority",
+      "applies_to": ["class_1", "class_2"],
+      "citation": "Cal. Veh. Code 21214.7(b)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=VEH&division=11.&title=&part=&chapter=1.&article=4.",
+      "quote": "A local authority within the County of San Diego, or the County of San Diego in unincorporated areas, may, by ordinance or resolution, prohibit a person under 12 years of age from operating a class 1 or 2 electric bicycle.",
+      "effective_date": "2025-01-01",
+      "ends": "2029-01-01",
+      "source_type": "statute",
+      "notes": "First 60 days warnings only, then a $25 infraction. No court record if a parent shows a completed e-bike safety program within 120 days. Parent jointly liable. Current text amended by AB 1170 (Stats. 2025, ch. 67), effective Jan 1, 2026."
+    },
+    {
+      "rule": "helmet_under_18",
+      "applies_to": ["all_ebikes"],
+      "citation": "Cal. Veh. Code 21212(a), applied to e-bikes by 312.5(b)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=VEH&division=11.&title=&part=&chapter=1.&article=4.",
+      "quote": "A person under 18 years of age shall not operate a bicycle ... upon a street, bikeway ... or any other public bicycle path or trail unless they are wearing a properly fitted and fastened bicycle helmet",
+      "effective_date": "2026-01-01",
+      "source_type": "statute"
+    },
+    {
+      "rule": "class3_age_16_and_helmet_all_ages",
+      "applies_to": ["class_3"],
+      "citation": "Cal. Veh. Code 21213(a)-(b)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=VEH&division=11.&title=&part=&chapter=1.&article=4.",
+      "quote": "A person under 16 years of age shall not operate a class 3 electric bicycle.",
+      "effective_date": "2016-01-01",
+      "source_type": "statute",
+      "notes": "21213(b) also requires a helmet for every Class 3 operator and passenger."
+    },
+    {
+      "rule": "emoto_removal",
+      "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+      "citation": "Cal. Veh. Code 22651.08(a)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+      "quote": "operating a vehicle with fewer than four wheels that does not meet the definition of an electric bicycle ... capable of exclusively propelling the vehicle in excess of 20 miles per hour ... not licensed to operate the vehicle",
+      "effective_date": "2026-01-01",
+      "source_type": "statute",
+      "notes": "Added by AB 875 (Stats. 2025, ch. 168). Also allows removal of a Class 3 ridden by someone under 16. From Jan 1, 2027, SB 1167 adds VC 23135, which bars any 2- or 3-wheeled electric device able to exceed 20 mph on motor power alone from highways unless it fits a road-legal class."
+    },
+    {
+      "rule": "ebike_definition",
+      "applies_to": ["all_ebikes"],
+      "citation": "Cal. Veh. Code 312.5(a)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=312.5",
+      "quote": "An “electric bicycle” is a bicycle equipped with fully operable pedals and an electric motor that does not exceed 750 watts of power.",
+      "effective_date": "2025-01-01",
+      "source_type": "statute"
+    }
+  ],
+  "jurisdictions": [
+    {
+      "id": "city_of_san_diego",
+      "jurisdiction": "City of San Diego",
+      "type": "city",
+      "covers": "All city streets. Includes Carmel Valley, Pacific Highlands Ranch and the Canyon Crest Academy area.",
+      "verified": "secondary_only",
+      "verified_note": "Two official City press releases (Jun 23 and Aug 7, 2026) were read. The ordinance text, ordinance number and Municipal Code section were not found.",
+      "local_age_limits": [
+        {
+          "rule": "under_12_ban",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": 12,
+          "citation": "City of San Diego e-bike ordinance (Councilmember Campillo), adopted under Cal. Veh. Code 21214.7(b). Ordinance number not found.",
+          "source_url": "https://www.sandiego.gov/sites/default/files/2026-08/2026.08.07_e-bike.pc_.pr_4675.pdf",
+          "quote": "The newly approved e-bike regulations impose an age limit of 12 years for class one and two e-bikes",
+          "effective_date": "2026-08-13",
+          "citations_from": "2026-10-12",
+          "source_type": "press_release",
+          "notes": "Warnings for 60 days, then a $25 fine. Parents share liability. The Jun 23, 2026 release says the second reading was Jul 7, 2026."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [
+        {
+          "rule": "course_in_lieu_of_fine",
+          "applies_to": ["class_1", "class_2"],
+          "citation": "City of San Diego e-bike ordinance; Cal. Veh. Code 21214.7(c)(2)",
+          "source_url": "https://www.sandiego.gov/sites/default/files/2026-08/2026.08.07_e-bike.pc_.pr_4675.pdf",
+          "quote": "the option for cited individuals to complete an online e-bike safety course within 120 days in lieu of a $25 fine",
+          "effective_date": "2026-08-13",
+          "source_type": "press_release"
+        }
+      ],
+      "helmet_rules": [
+        {
+          "rule": "state_helmet_rules_apply",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a), 21213(b) (see statewide_baseline)",
+          "source_url": "https://www.sandiego.gov/sites/default/files/2026-06/2026.06.23_e-bike.council.pr__0.pdf",
+          "quote": "Reinforcing helmet requirements and passenger restrictions",
+          "effective_date": "2026-08-13",
+          "source_type": "press_release",
+          "notes": "No local helmet age beyond state law was found. Under 18 on any e-bike, all ages on Class 3."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "emoto_not_street_legal",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08 (see statewide_baseline); statement by City officials",
+          "source_url": "https://www.nbcsandiego.com/news/local/san-diego-city-council-approves-e-bike-regulations/4040526/",
+          "quote": "high-powered electric motorcycles are not street legal",
+          "effective_date": "2026-01-01",
+          "source_type": "news",
+          "notes": "No City-specific e-moto ordinance was found. State removal power applies."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "passengers_need_permanent_second_seat",
+          "applies_to": ["all_ebikes"],
+          "citation": "City of San Diego e-bike ordinance",
+          "source_url": "https://www.sandiego.gov/sites/default/files/2026-08/2026.08.07_e-bike.pc_.pr_4675.pdf",
+          "quote": "passengers are only allowed if the e-bike is specifically designed to accommodate multiple riders with a permanent second seat",
+          "effective_date": "2026-08-13",
+          "source_type": "press_release"
+        }
+      ],
+      "conflicts_with_statute": [
+        {
+          "source_says": "The Aug 7 release says the rules make 'a pedal bike the only bike approved for ages 12 and under'.",
+          "statute_says": "VC 21214.7(b) allows a ban only for riders 'under 12 years of age'. The same release also says 'If your child is under 12'.",
+          "citation": "Cal. Veh. Code 21214.7(b)",
+          "source_url": "https://www.sandiego.gov/sites/default/files/2026-08/2026.08.07_e-bike.pc_.pr_4675.pdf",
+          "engine_rule": "Treat 12-year-olds as allowed on Class 1 and 2 unless the ordinance text says otherwise. An ordinance cannot go past the statute."
+        }
+      ],
+      "open_questions": [
+        "Ordinance number and San Diego Municipal Code section are unknown. Read the clerk's record before citing a code section in the app.",
+        "Whether the ordinance text says 'under 12' (as the statute allows) or '12 and under' (one line of the Aug 7 release).",
+        "Reports say the ban covers streets, bike paths, parks, trails and boardwalks. Not confirmed in an official City source."
+      ]
+    },
+    {
+      "id": "carlsbad",
+      "jurisdiction": "City of Carlsbad",
+      "type": "city",
+      "covers": "All city streets, parks and trails.",
+      "verified": "secondary_only",
+      "verified_note": "City e-bike page and the Feb 25, 2026 city news post were read in the browser. The ordinance is inside a council agenda packet PDF that blocks scripted download and was not read.",
+      "local_age_limits": [
+        {
+          "rule": "under_12_ban",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": 12,
+          "citation": "Carlsbad e-bike ordinance adopted Feb 24, 2026 under Cal. Veh. Code 21214.7(b). Ordinance number not found.",
+          "source_url": "https://www.carlsbadca.gov/departments/streets-traffic/traffic-safety/electric-bikes",
+          "quote": "Anyone operating an e-bike must be at least 12 years old, as allowed by Assembly Bill 2234.",
+          "effective_date": "2026-03-26",
+          "citations_from": "2026-05-26",
+          "source_type": "official_page",
+          "notes": "City news (Feb 25, 2026) gives effective Mar 26, 2026 and a warning period ending May 25, 2026. The page says 'anyone', but the statute allows a ban only for Class 1 and 2. Class 3 is already 16+ under state law."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [
+        {
+          "rule": "in_person_course_to_recover_impounded_bike",
+          "applies_to": ["all_ebikes"],
+          "citation": "Carlsbad e-bike ordinance (2026)",
+          "source_url": "https://www.carlsbadca.gov/Home/Components/News/News/3564/18370",
+          "quote": "When a minor breaks the rules and creates an immediate or substantial public safety risk, their e-bike may be impounded. The minor must complete an in-person safety course to retrieve the e-bike",
+          "effective_date": "2026-03-26",
+          "source_type": "official_page",
+          "notes": "A parent or guardian must be present at release."
+        }
+      ],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Carlsbad e-bike ordinance (2026), restating Cal. Veh. Code 21212(a)",
+          "source_url": "https://www.carlsbadca.gov/Home/Components/News/News/3564/18370",
+          "quote": "Riders under 18 years old must wear a properly fitted and fastened helmet.",
+          "effective_date": "2026-03-26",
+          "source_type": "official_page"
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "emoto_impound",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Carlsbad e-bike ordinance (2026); Cal. Veh. Code 22651.08",
+          "source_url": "https://www.carlsbadca.gov/departments/streets-traffic/traffic-safety/electric-bikes",
+          "quote": "The Police Department can also impound e-motorcycles, which are not street legal.",
+          "effective_date": "2026-03-26",
+          "source_type": "official_page",
+          "notes": "The page names Sur-Ron, Talaria, 79-Bike, Rawrr Mantis and Stark as e-motorcycles needing a motorcycle endorsement, registration and insurance."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "park_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Carlsbad e-bike ordinance (2026)",
+          "source_url": "https://www.carlsbadca.gov/Home/Components/News/News/3564/18370",
+          "quote": "E-bikes are prohibited at Poinsettia and Pine Avenue Community Parks.",
+          "effective_date": "2026-03-26",
+          "source_type": "official_page"
+        },
+        {
+          "rule": "passengers_only_on_passenger_bikes",
+          "applies_to": ["all_ebikes"],
+          "citation": "Carlsbad e-bike ordinance (2026)",
+          "source_url": "https://www.carlsbadca.gov/Home/Components/News/News/3564/18370",
+          "quote": "Only e-bikes designed for passengers can carry more than one rider.",
+          "effective_date": "2026-03-26",
+          "source_type": "official_page"
+        }
+      ],
+      "conflicts_with_statute": [
+        {
+          "source_says": "The page defines an e-bike as having 'an electric motor of less than 750 watts' and reprints that wording as VC 312.5(a).",
+          "statute_says": "Since Jan 1, 2025, VC 312.5(a) says the motor 'does not exceed 750 watts of power'.",
+          "citation": "Cal. Veh. Code 312.5(a)",
+          "source_url": "https://www.carlsbadca.gov/departments/streets-traffic/traffic-safety/electric-bikes",
+          "engine_rule": "Use the statute. A 750 W label passes in California."
+        },
+        {
+          "source_says": "Class 3 is 'Allowed in bike lanes or separated bikeways adjacent to the roadway', and Class 4 bikeways are for 'Only Types 1 and 2'.",
+          "statute_says": "Since AB 1909 (Jan 1, 2023) VC 21207.5 has no state Class 3 ban on bike paths or bikeways. A local ordinance could restrict Class 3, but none was found in Carlsbad's summary of its new laws.",
+          "citation": "Cal. Veh. Code 21207.5",
+          "source_url": "https://www.carlsbadca.gov/departments/streets-traffic/traffic-safety/electric-bikes",
+          "engine_rule": "Show Class 3 path access in Carlsbad as unclear, not banned, until a Carlsbad code section is found."
+        }
+      ],
+      "open_questions": [
+        "Ordinance number and Carlsbad Municipal Code sections (the red-team notes cite 10.56.020 for sidewalks, not re-verified).",
+        "Whether Carlsbad code itself bars Class 3 from Class I paths or Class IV bikeways, as its page implies."
+      ]
+    },
+    {
+      "id": "encinitas",
+      "jurisdiction": "City of Encinitas",
+      "type": "city",
+      "covers": "All city streets, paths and trails.",
+      "verified": "secondary_only",
+      "verified_note": "City e-bike page read in the browser. No Encinitas ordinance adopting the under-12 ban was found in searches. The Encinitas Municipal Code was not read.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "City of Encinitas e-bike page (no under-12 ordinance found)",
+          "source_url": "https://www.encinitasca.gov/government/departments/public-safety/law-enforcement/electric-bikes",
+          "quote": "No minimum age",
+          "effective_date": null,
+          "source_type": "official_page",
+          "notes": "The city supported AB 2234 in 2024 and said it would bring an item to council, but no adoption was found."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_17_and_under",
+          "applies_to": ["class_1", "class_2"],
+          "citation": "Cal. Veh. Code 21212(a), as stated by the City",
+          "source_url": "https://www.encinitasca.gov/government/departments/public-safety/law-enforcement/electric-bikes",
+          "quote": "Helmet required for 17 and under",
+          "effective_date": null,
+          "source_type": "official_page",
+          "notes": "Matches state law (under 18). Class 3: helmet at all ages."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_rules_only",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08 (see statewide_baseline)",
+          "source_url": "https://www.encinitasca.gov/government/departments/public-safety/law-enforcement/electric-bikes",
+          "quote": "Electric bicycles with motors of more than 750 watts, and bicycles with gas motors are technically motorcycles according to the law and require Class M licenses, registration and insurance.",
+          "effective_date": null,
+          "source_type": "official_page",
+          "notes": "No Encinitas e-moto ordinance found."
+        }
+      ],
+      "other_local_rules": [],
+      "conflicts_with_statute": [
+        {
+          "source_says": "An e-bike has 'an electric motor of less than 750 watts'.",
+          "statute_says": "VC 312.5(a) (since Jan 1, 2025): motor 'does not exceed 750 watts of power'.",
+          "citation": "Cal. Veh. Code 312.5(a)",
+          "source_url": "https://www.encinitasca.gov/government/departments/public-safety/law-enforcement/electric-bikes",
+          "engine_rule": "Use the statute. A 750 W label passes."
+        },
+        {
+          "source_says": "Type 3 is 'Pedal or throttle-assisted'.",
+          "statute_says": "VC 312.5(a)(3): a Class 3 motor 'provides assistance only when the rider is pedaling' and is 'not capable of exclusively propelling the bicycle' beyond a 3.7 mph walk mode.",
+          "citation": "Cal. Veh. Code 312.5(a)(3)-(4)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=312.5",
+          "engine_rule": "A bike with a working throttle above 3.7 mph is not Class 3. If it assists to 28 mph it is not an e-bike."
+        },
+        {
+          "source_says": "Under 'Public right of way determined by CA Vehicle Code', Type 3 bikes 'are not allowed' on bike paths.",
+          "statute_says": "AB 1909 removed the state Class 3 bike-path ban effective Jan 1, 2023 (VC 21207.5).",
+          "citation": "Cal. Veh. Code 21207.5",
+          "source_url": "https://www.encinitasca.gov/government/departments/public-safety/law-enforcement/electric-bikes",
+          "engine_rule": "Show Class 3 path access in Encinitas as unclear unless a local ordinance is found."
+        },
+        {
+          "source_says": "'Type 3 e-bike riders must not transport passengers.'",
+          "statute_says": "VC 21213(b) sets helmet rules for Class 3 passengers, and no state section bars them. VC 21204(b) requires a separate seat for any passenger.",
+          "citation": "Cal. Veh. Code 21213(b), 21204(b)",
+          "source_url": "https://www.encinitasca.gov/government/departments/public-safety/law-enforcement/electric-bikes",
+          "engine_rule": "Do not tell users a Class 3 passenger ban is state law."
+        }
+      ],
+      "open_questions": [
+        "Did council adopt the January 2026 proposals (temporary confiscation, dismount zones, course-waived fix-it tickets)? Not confirmed.",
+        "Did Encinitas adopt an under-12 ban after Aug 2026? None found as of Oct 16, 2026."
+      ]
+    },
+    {
+      "id": "solana_beach",
+      "jurisdiction": "City of Solana Beach",
+      "type": "city",
+      "covers": "All city streets.",
+      "verified": "secondary_only",
+      "verified_note": "City biking page and the city e-bike flyer PDF were read. The Solana Beach Municipal Code bicycle sections (updated 2023 with a diversion program, per Del Mar staff) were not read.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "City of Solana Beach e-bike flyer (no under-12 rule)",
+          "source_url": "https://www.cityofsolanabeach.ca.gov/sites/default/files/Solana%20Beach/Environmental%20Sustainability/solana-beach-e-bike-flyer.pdf",
+          "quote": "16+ years old to ride",
+          "effective_date": null,
+          "source_type": "official_page",
+          "notes": "Only the state Class 3 age of 16 appears."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a), as stated in the city flyer",
+          "source_url": "https://www.cityofsolanabeach.ca.gov/sites/default/files/Solana%20Beach/Environmental%20Sustainability/solana-beach-e-bike-flyer.pdf",
+          "quote": "All riders under 18 must wear a helmet.",
+          "effective_date": null,
+          "source_type": "official_page"
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "emoto_needs_motorcycle_license",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08 (see statewide_baseline), as summarized in the city flyer",
+          "source_url": "https://www.cityofsolanabeach.ca.gov/sites/default/files/Solana%20Beach/Environmental%20Sustainability/solana-beach-e-bike-flyer.pdf",
+          "quote": "Operation on a roadway requires a valid motorcycle license, California DMV registration, and insurance.",
+          "effective_date": null,
+          "source_type": "official_page"
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "sidewalk_ban_in_business_district",
+          "applies_to": ["all_ebikes"],
+          "citation": "Solana Beach Municipal Code (section not identified), as stated in the city flyer",
+          "source_url": "https://www.cityofsolanabeach.ca.gov/sites/default/files/Solana%20Beach/Environmental%20Sustainability/solana-beach-e-bike-flyer.pdf",
+          "quote": "It is against the law to ride on sidewalks or crosswalks in a business district or on any street with a designated bike path.",
+          "effective_date": null,
+          "source_type": "official_page"
+        }
+      ],
+      "conflicts_with_statute": [
+        {
+          "source_says": "The city biking page says 'All riders 18 years and under must wear a helmet.'",
+          "statute_says": "VC 21212(a) covers riders 'under 18'. The city's own flyer says 'under 18'.",
+          "citation": "Cal. Veh. Code 21212(a)",
+          "source_url": "https://cityofsolanabeach.ca.gov/en/biking",
+          "engine_rule": "Use under 18 unless a Solana Beach code section requiring helmets at 18 is found."
+        }
+      ],
+      "open_questions": [
+        "Solana Beach Municipal Code section numbers for the sidewalk ban and the 2023 diversion program.",
+        "Whether any local helmet rule reaches 18-year-olds (city page wording)."
+      ]
+    },
+    {
+      "id": "del_mar",
+      "jurisdiction": "City of Del Mar",
+      "type": "city",
+      "covers": "All city streets, parks, preserves and the San Dieguito Lagoon trails.",
+      "verified": "secondary_only",
+      "verified_note": "Ordinance text adding DMMC Chapter 14.54 was read as introduced Apr 7, 2025. The Jul 7, 2025 adoption report and a Dec 18, 2025 city news post confirm adoption with revised sidewalk rules. The final adopted text was not read.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "Del Mar Municipal Code Chapter 14.54 (adopted Jul 7, 2025) contains no age rule",
+          "source_url": "https://www.delmar.ca.us/CivicAlerts.aspx?AID=1088",
+          "quote": "These restrictions were part of a comprehensive update to the bicycle code approved by the City Council July 7, 2025.",
+          "effective_date": null,
+          "source_type": "official_page",
+          "notes": "No under-12 adoption found as of Oct 16, 2026."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [
+        {
+          "rule": "diversion_course_for_first_offense",
+          "applies_to": ["all_ebikes"],
+          "citation": "Del Mar Municipal Code 14.54.050 (as introduced Apr 7, 2025)",
+          "source_url": "https://www.delmar.ca.us/DocumentCenter/View/9863/Item-10---Bike-and-E-Bike-Ordinance",
+          "quote": "the Sheriff or Chief of Police or designee may allow a first-time violator of this Chapter to complete an agency-approved bicycle training safety course",
+          "effective_date": null,
+          "source_type": "ordinance_text"
+        }
+      ],
+      "helmet_rules": [
+        {
+          "rule": "wear_state_required_helmet_properly",
+          "applies_to": ["all_ebikes"],
+          "citation": "Del Mar Municipal Code 14.54.030(C) (as introduced Apr 7, 2025)",
+          "source_url": "https://www.delmar.ca.us/DocumentCenter/View/9863/Item-10---Bike-and-E-Bike-Ordinance",
+          "quote": "It shall be unlawful for any person required by the California Vehicle Code to wear a helmet while operating or riding a Bicycle to wear the helmet in any way other than the fashion for which the helmet is designed",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Adds no new helmet age. State rules govern who must wear one."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_rules_only",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08 (see statewide_baseline)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+          "quote": "operating a vehicle with fewer than four wheels that does not meet the definition of an electric bicycle",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Del Mar e-moto ordinance found."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "park_sidewalk_and_lagoon_trail_bans",
+          "applies_to": ["all_ebikes"],
+          "citation": "Del Mar Municipal Code 14.54.040 and Chapter 8.12 (adopted Jul 7, 2025)",
+          "source_url": "https://www.delmar.ca.us/CivicAlerts.aspx?AID=1088",
+          "quote": "In Del Mar, it is illegal to ride bicycles or e-bikes in parks, preserves, sidewalks in commercial areas and on most trails around the San Dieguito Lagoon.",
+          "effective_date": null,
+          "source_type": "official_page"
+        },
+        {
+          "rule": "coast_to_crest_class1_and_2_allowed",
+          "applies_to": ["class_1", "class_2"],
+          "citation": "Del Mar Municipal Code Chapter 8.12 (amended Jul 7, 2025)",
+          "source_url": "https://www.delmar.ca.us/CivicAlerts.aspx?AID=1088",
+          "quote": "On the segment of the Coast to Crest Trail in the City of Del Mar bicycles, including Class 1 and 2 e-bikes, are permitted.",
+          "effective_date": null,
+          "source_type": "official_page",
+          "notes": "Class 3 is not named, so treat Class 3 on this trail as unclear."
+        }
+      ],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Final adopted text of Chapter 14.54 (sidewalk wording changed between Apr 7 and Jul 7, 2025).",
+        "Whether Class 3 may use the Coast to Crest Trail segment in Del Mar."
+      ]
+    },
+    {
+      "id": "unincorporated_san_diego_county",
+      "jurisdiction": "Unincorporated San Diego County",
+      "type": "county",
+      "covers": "Unincorporated communities such as Rancho Santa Fe and Fairbanks Ranch near SDUHSD.",
+      "verified": "unclear",
+      "verified_note": "Searches on Oct 16, 2026 found no Board of Supervisors ordinance adopting the under-12 ban. The Board's Aug to Oct 2026 agendas were not read directly. The County's only confirmed step is a 2026 provider health advisory.",
+      "local_age_limits": [
+        {
+          "rule": "authority_exists_no_adoption_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "Cal. Veh. Code 21214.7(b)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=VEH&division=11.&title=&part=&chapter=1.&article=4.",
+          "quote": "or the County of San Diego in unincorporated areas, may, by ordinance or resolution, prohibit a person under 12 years of age from operating a class 1 or 2 electric bicycle.",
+          "effective_date": "2025-01-01",
+          "source_type": "statute"
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "state_helmet_rules_apply",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a), 21213(b)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=VEH&division=11.&title=&part=&chapter=1.&article=4.",
+          "quote": "A person under 18 years of age shall not operate a bicycle ... unless they are wearing a properly fitted and fastened bicycle helmet",
+          "effective_date": "2026-01-01",
+          "source_type": "statute"
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_rules_only",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+          "quote": "operating a vehicle with fewer than four wheels that does not meet the definition of an electric bicycle",
+          "effective_date": "2026-01-01",
+          "source_type": "statute"
+        }
+      ],
+      "other_local_rules": [],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Has the Board of Supervisors adopted an under-12 ordinance? An undated forum post claims the County will ban under-12 riders. Check the Board's agendas and minutes before returning 'legal' for an under-12 rider in an unincorporated area.",
+        "Until confirmed, the engine should say 'unclear' for under-12 riders on Class 1 or 2 in unincorporated areas, not 'legal'."
+      ]
+    },
+    {
+      "id": "sduhsd_campuses",
+      "jurisdiction": "San Dieguito Union High School District campuses (including Canyon Crest Academy)",
+      "type": "school_district",
+      "covers": "Bringing a bicycle or e-bike onto any SDUHSD campus. These are district conditions, not traffic law.",
+      "verified": "secondary_only",
+      "verified_note": "District Bike Safety page read Oct 16, 2026. No board policy or administrative regulation number is cited on the page.",
+      "local_age_limits": [],
+      "campus_class_limits": [
+        {
+          "rule": "class_1_and_2_only_on_campus",
+          "applies_to": ["class_3", "non_ebike_electric_two_and_three_wheelers"],
+          "citation": "SDUHSD Bike Safety page, 'Legal E-Bikes and Age'",
+          "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
+          "quote": "Only Class 1 & Class 2 E-Bikes will be permitted on our campuses.",
+          "effective_date": "2026-08-28",
+          "source_type": "official_page",
+          "notes": "Grace period for training and tags ended Aug 28, 2026. Applies to all students, including riders 16 and older who may legally ride Class 3 on public roads."
+        }
+      ],
+      "tag_and_course_requirements": [
+        {
+          "rule": "district_tag_required",
+          "applies_to": ["all_bicycles_and_ebikes"],
+          "citation": "SDUHSD Bike Safety page",
+          "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
+          "quote": "Students who do not have a Bike Tag visibly affixed to their bicycle will not be permitted to bring it onto any SDUHSD campus.",
+          "effective_date": "2026-08-28",
+          "source_type": "official_page",
+          "notes": "Parents complete the online tag form after training. Tags can be revoked."
+        },
+        {
+          "rule": "safety_course_required",
+          "applies_to": ["all_bicycles_and_ebikes"],
+          "citation": "SDUHSD Bike Safety page",
+          "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
+          "quote": "All middle and high school students must complete an approved safety training program.",
+          "effective_date": "2026-08-28",
+          "source_type": "official_page",
+          "notes": "High school students use the CHP online e-bike course or a quarterly in-person class. The Canyon Crest Academy in-person date is Dec 9, 2026."
+        }
+      ],
+      "helmet_rules": [
+        {
+          "rule": "helmet_all_ages_for_campus_riders",
+          "applies_to": ["all_bicycles_and_ebikes"],
+          "citation": "SDUHSD Bike Safety page, 'Riding Rules/Laws'",
+          "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
+          "quote": "Helmets Required: Riders must wear a safety helmet with the safety strap buckled securely beneath the chin.",
+          "effective_date": "2026-08-28",
+          "source_type": "official_page",
+          "notes": "District expectation with no age cutoff, so it reaches 18-year-old seniors whom state law does not cover. Breaking it can cost the tag."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "emotos_not_permitted_on_campus",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "SDUHSD Bike Safety page (only Class 1 and 2 permitted)",
+          "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
+          "quote": "Only Class 1 & Class 2 E-Bikes will be permitted on our campuses.",
+          "effective_date": "2026-08-28",
+          "source_type": "official_page"
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "walk_bikes_on_campus_and_factory_passenger_seat",
+          "applies_to": ["all_bicycles_and_ebikes"],
+          "citation": "SDUHSD Bike Safety page",
+          "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
+          "quote": "Passengers are permitted to ride only on bikes with a factory-installed passenger seat and must wear a properly secured bike helmet.",
+          "effective_date": "2026-08-28",
+          "source_type": "official_page",
+          "notes": "Bikes must also be walked on school grounds, and campus charging is not allowed."
+        }
+      ],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Board policy or administrative regulation number behind the page.",
+        "Whether the tag and class rules apply to bikes parked just off campus."
+      ]
+    }
+  ]
+}

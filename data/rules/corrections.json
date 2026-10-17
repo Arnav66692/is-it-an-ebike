@@ -1,0 +1,1644 @@
+[
+ {
+  "code": "CA",
+  "field": "non_ebike_devices.notes",
+  "old": "22651.08 lets officers remove a non-e-bike electric vehicle capable of over 20 mph ridden by an unlicensed operator, or a Class 3 ridden by someone under 16.",
+  "new": "22651.08 is already in force (added by AB 875, Stats. 2025, ch. 168, effective Jan 1, 2026), not a 2027 change. It lets officers remove a vehicle with fewer than four wheels that is not an e-bike, can exceed 20 mph on motor power alone and is ridden by an unlicensed operator, or a Class 3 ridden by someone under 16. SB 1167 extends removal to devices barred by new 23135 from Jan 1, 2027.",
+  "evidence_quote": "(Added by Stats. 2025, Ch. 168, Sec. 1. (AB 875) Effective January 1, 2026.)",
+  "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "CA",
+  "field": "pending_changes[1].summary",
+  "old": "Lets locals set 10, 15 or 20 mph limits on bike paths and multiuse trails (21214.8).",
+  "new": "Lets locals set 15 or 20 mph limits on bike paths and multiuse trails, and 10 mph only in limited areas with high pedestrian volumes or sight-distance problems, with signs at each end (21214.8).",
+  "evidence_quote": "set a speed limit on a bicycle path of 15 or 20 miles per hour, or 10 miles per hour in limited areas with high pedestrian volumes or sight distance challenges",
+  "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2346",
+  "severity": "cosmetic",
+  "round": 1
+ },
+ {
+  "code": "CA",
+  "field": "where_allowed.paths_trails",
+  "old": "From Jan 1, 2027 locals may set 10, 15 or 20 mph limits on bike paths and multiuse trails (new 21214.8, AB 2346).",
+  "new": "From Jan 1, 2027 locals may set 15 or 20 mph limits on bike paths and multiuse trails, or 10 mph in limited high-pedestrian or low-visibility areas, with posted signs (new 21214.8, AB 2346).",
+  "evidence_quote": "A local authority that sets a speed limit pursuant to this section shall place appropriate signs that indicate the limits of the restricted zone",
+  "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260AB2346",
+  "severity": "cosmetic",
+  "round": 1
+ },
+ {
+  "code": "WV",
+  "field": "label_required.quote_note",
+  "old": null,
+  "new": "No labeling clause exists in W. Va. Code 17C-1-70 or 17C-11-8 (verifier read both on Oct 16, 2026). The quote is the anti-tampering clause. It does not itself show the absence of a label rule.",
+  "evidence_quote": "A person may not tamper with or modify an electric bicycle so as to change the motor-powered speed capability or motor engagement",
+  "source_url": "https://code.wvlegislature.gov/17C-11-8/",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "RI",
+  "field": "non_ebike_devices.citation",
+  "old": "§ 31-1-3(o)",
+  "new": "§ 31-1-3(p)",
+  "evidence_quote": "(p) “Motorized bicycles” means two-wheel (2) vehicles that may be propelled by human power or helper power, or by both, with a motor rated not more than four and nine-tenths (4.9) horsepower",
+  "source_url": "https://webserver.rilegislature.gov/Statutes/TITLE31/31-1/31-1-3.htm",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "RI",
+  "field": "non_ebike_devices.notes",
+  "old": "A 'motorized bicycle' (31-1-3(o))",
+  "new": "A 'motorized bicycle' (31-1-3(p))",
+  "evidence_quote": "(o) “Motor-driven cycle” means every motorcycle, including every motor scooter, with a motor of no greater than five (5) horsepower",
+  "source_url": "https://webserver.rilegislature.gov/Statutes/TITLE31/31-1/31-1-3.htm",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "RI",
+  "field": "license_registration_insurance.notes",
+  "old": "a separate defined term (31-1-3(o))",
+  "new": "a separate defined term (31-1-3(p))",
+  "evidence_quote": "(p) “Motorized bicycles” means two-wheel (2) vehicles that may be propelled by human power or helper power",
+  "source_url": "https://webserver.rilegislature.gov/Statutes/TITLE31/31-1/31-1-3.htm",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "RI",
+  "field": "open_questions",
+  "old": "2025 and 2026 RI bills (one secondary source mentions H 7789, 2026) were not verified on the official bill tracker.",
+  "new": "Resolved by verifier: 2026 H 7789 Sub A (retailer notice plus an under-16 road ban) passed the House but was held for further study in Senate Judiciary when the session ended June 11, 2026, so it is not law. No 2025 or 2026 e-bike act was found.",
+  "evidence_quote": "Amended bill H7789A passed unanimously in the House of Representatives. Senate bill S2604 was not amended. Result: Held for further study by the Senate Judiciary Committee",
+  "source_url": "https://bikenewportri.org/fy2026-legislative-wrap-up/",
+  "severity": "cosmetic",
+  "round": 1
+ },
+ {
+  "code": "SC",
+  "field": "never_return_legal",
+  "old": null,
+  "new": true,
+  "evidence_quote": "a top motor-powered speed of less than twenty miles an hour ... the electric motor disengages or ceases to function when their brakes are applied or the rider stops pedaling",
+  "source_url": "https://www.scstatehouse.gov/code/t56c001.php",
+  "severity": "would_cause_false_legal",
+  "round": 1
+ },
+ {
+  "code": "SC",
+  "field": "helmet_status",
+  "old": "[] read as no statewide helmet rule",
+  "new": "unknown",
+  "evidence_quote": "It shall be unlawful for any person under the age of twenty-one to operate or ride upon a two-wheeled motorized vehicle unless he wears a protective helmet",
+  "source_url": "https://www.scstatehouse.gov/code/t56c005.php",
+  "severity": "would_cause_false_legal",
+  "round": 1
+ },
+ {
+  "code": "SC",
+  "field": "non_ebike_devices.notes",
+  "old": "fits neither the e-bike nor the moped definition. Its status is unclear and the app should not call it legal.",
+  "new": "fits neither the e-bike nor the moped definition. Because 'motor vehicle' covers every self-propelled vehicle (56-1-10(7)) and 'motorcycle' excludes only tractors and mopeds (56-1-10(8)), a two-wheeled one most likely counts as a motorcycle (license, registration, insurance). The app should not call it legal.",
+  "evidence_quote": "\"Motorcycle\" means every motor vehicle having no more than two permanent functional wheels in contact with the ground or trailer and having a saddle for the use of the rider, but excluding a tractor and a moped.",
+  "source_url": "https://www.scstatehouse.gov/code/t56c001.php",
+  "severity": "cosmetic",
+  "round": 1
+ },
+ {
+  "code": "NC",
+  "field": "pending_changes[+]",
+  "old": null,
+  "new": {
+   "bill": "HB 1094, S.L. 2026-46, section 19 (Clarify the Definition of Electric Assisted Bicycle and Authorize Local Government Regulation)",
+   "signed": "2026-07-07",
+   "effective_date": "2026-12-01",
+   "summary": "Rewrites G.S. 20-4.01(7a): an e-bike has a seat, operable pedals and a motor of no more than 750 W and meets one of three classes (Class 1 pedal assist to 20 mph, Class 2 throttle to 20 mph, Class 3 pedal assist to 28 mph). The old 'no greater than 20 mph on motor alone' test is struck, so a Class 3 bike becomes an e-bike, not a moped. New G.S. 20-171.3: e-bikes may use all roadways, bicycle lanes and multiuse paths, and riders and passengers under 18 on a Class 3 must wear a helmet. New G.S. 160A-300.2 and 153A-245.1: cities and counties may regulate e-bikes on multiuse paths and sidewalks, restrict classes, set speed limits and require helmets for riders and passengers under 18 on Class 1 and 2. No state minimum age is added. Applies to offenses on or after Dec 1, 2026.",
+   "source_url": "https://www.ncleg.gov/EnactedLegislation/SessionLaws/HTML/2025-2026/SL2026-46.html"
+  },
+  "evidence_quote": "Class 3 electric assisted bicycle. ... ceases to assist once the bicycle reaches a speed of 28 miles per hour ... This section becomes effective December 1, 2026",
+  "source_url": "https://www.ncleg.gov/EnactedLegislation/SessionLaws/HTML/2025-2026/SL2026-46.html",
+  "severity": "would_cause_false_illegal",
+  "round": 1
+ },
+ {
+  "code": "NC",
+  "field": "has_three_class_law_notes",
+  "old": "Three-class bills SB 576 (2025), HB 1084 (2026) and SB 970 (2026) are all stuck in committee.",
+  "new": "Those stand-alone bills stalled, but the same three-class definition, a Class 3 helmet rule for riders under 18 and new city and county e-bike powers were enacted in HB 1094 (S.L. 2026-46, section 19, approved July 7, 2026), effective Dec 1, 2026. Until then the single category applies.",
+  "evidence_quote": "A person under the age of 18 operating or riding as a passenger on a Class 3 electric assisted bicycle shall wear a helmet that meets federal safety standards.",
+  "source_url": "https://www.ncleg.gov/EnactedLegislation/SessionLaws/HTML/2025-2026/SL2026-46.html",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "NC",
+  "field": "local_authority.details",
+  "old": "would come from pending SB 576 and SB 970 (proposed G.S. 160A-300.2)",
+  "new": "comes from new G.S. 160A-300.2 and 153A-245.1 (S.L. 2026-46, section 19), effective Dec 1, 2026",
+  "evidence_quote": "A city may regulate the use of electric assisted bicycles, as defined in G.S. 20-4.01, on any multiuse path or sidewalk within municipal limits.",
+  "source_url": "https://www.ncleg.gov/EnactedLegislation/SessionLaws/HTML/2025-2026/SL2026-46.html",
+  "severity": "citation_only",
+  "round": 1
+ },
+ {
+  "code": "NC",
+  "field": "open_questions",
+  "old": "The pending bills were not enacted as of their last actions (May 2026). Re-check whether the 2026 short session adjourned without action.",
+  "new": "Resolved by verifier: the stand-alone bills did not move, but HB 1094 (S.L. 2026-46) enacted the three-class change effective Dec 1, 2026. The engine needs a date switch on that day.",
+  "evidence_quote": "In the General Assembly read three times and ratified this the 2nd day of July, 2026.",
+  "source_url": "https://www.ncleg.gov/EnactedLegislation/SessionLaws/HTML/2025-2026/SL2026-46.html",
+  "severity": "cosmetic",
+  "round": 1
+ },
+ {
+  "code": "AK",
+  "field": "open_questions[1]",
+  "old": "Whether any 34th Legislature (2025 to 2026) e-bike bill passed. None found by web search, and Alaska Statutes 2025 show no e-bike definition. The 2026 session and akleg bill search were not checked directly.",
+  "new": "Resolved by verifier: no 34th Legislature (2025 to 2026) bill has 'bicycle' or 'bike' in its short title on akleg.gov, and no e-bike bill is filed under the Motor Vehicles, Transportation or Highways subjects. The only enacted motor vehicle bill, SB 239 (ch. 39 SLA 26), has no bicycle text, and AS 28.90.990 still has no e-bike definition.",
+  "evidence_quote": "An Act relating to commercial motor vehicle licensing examinations; relating to the registration and titling of legally imported motor vehicles; relating to proof of financial responsibility for suspension for nonpayment of judgments",
+  "source_url": "https://www.akleg.gov/basis/Bill/Detail/34?Root=SB%20239",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "definition.notes",
+  "old": "Motor must be LESS THAN 750 W, so a bike labeled exactly 750 W does not meet the text. Requires a saddle or seat. 32-5A-267(f) requires the motor to disengage when the rider stops pedaling or the brakes are applied. 32-5A-267(k) requires a speedometer on Class 3. Enacted by Act 2021-134 (HB 99). The ALISON code page shows no later amendment to 32-5A-267.",
+  "new": "Motor must be LESS THAN 750 W, so a bike labeled exactly 750 W does not meet the text. Requires a saddle or seat. 32-5A-267(f) requires the motor to disengage when the rider stops pedaling or the brakes are applied. 32-5A-267(k) requires a speedometer on Class 3. Enacted by Act 2021-134 (HB 99). The ALISON code page shows no later amendment to 32-5A-267. An e-bike must also be a 'bicycle' (32-1-1.1(4)), which needs two tandem wheels, either more than 14 inches in diameter. An electric trike, or a bike whose wheels are all 14 inches or smaller, does not fit the text and would fall under 'motorcycle'. 'Motorcycle' and 'motor-driven cycle' exclude electric bicycles (32-1-1.1(36), (37), 32-12-20).",
+  "evidence_quote": "BICYCLE. Every device propelled by human power upon which any individual may ride, having two tandem wheels either of which is more than 14 inches in diameter.",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-1-1.1",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "non_ebike_devices.min_age",
+  "old": null,
+  "new": 14,
+  "evidence_quote": "A Class M motorcycle license with a motor-driven cycle restriction shall be issued to any person 14 years and older if the person has passed a motorcycle knowledge test",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-12-22",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "non_ebike_devices.notes",
+  "old": "A device that fails the e-bike definition is a 'motor vehicle' (self-propelled, 32-1-1.1(35)), and a bicycle with a motor attached is a motor-driven cycle. Motor vehicle license, registration and insurance rules then apply. license_needed is set true from the motor vehicle status, but the license class, minimum age, helmet rule and registration details for motor-driven cycles were not verified in statute text.",
+  "new": "A device that fails the e-bike definition is a 'motor vehicle' (self-propelled, 32-1-1.1(35)), and a bicycle with a motor attached is a motor-driven cycle. Motor vehicle license, registration and insurance rules then apply. A motor-driven cycle needs a Class M license, and one with a motor-driven cycle restriction can be issued from age 14 after a knowledge test or an approved rider course (32-12-22(b)(1)). min_age 14 applies to motor-driven cycles only. Helmet and registration details for motor-driven cycles were not verified in statute text.",
+  "evidence_quote": "A Class M motorcycle license with a motor-driven cycle restriction shall be issued to any person 14 years and older if the person has passed a motorcycle knowledge test",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-12-22",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "open_questions[2]",
+  "old": "Motor-driven cycle license class, minimum age and helmet rules not verified.",
+  "new": "Partly resolved by verifier: a Class M license with a motor-driven cycle restriction is available from age 14 (32-12-22(b)(1)). Helmet and registration rules for motor-driven cycles were not verified.",
+  "evidence_quote": "A Class M motorcycle license with a motor-driven cycle restriction shall be issued to any person 14 years and older if the person has passed a motorcycle knowledge test",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-12-22",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "open_questions[3]",
+  "old": "The 2026 session adjourned Apr 9, 2026. I found no 2024 to 2026 e-bike act by web search, and the code page shows only Act 2021-134, but ALISON's bill search was not queried directly.",
+  "new": "Resolved by verifier: an ALISON full-text search of bills for 'electric bicycle' finds nothing from the 2025 or 2026 regular sessions. The latest hits are SB 73 of 2023, which died, and 2024 acts that changed other definitions. 32-5A-267 still cites only Act 2021-134.",
+  "evidence_quote": "HISTORY: (Act 2021-134, §2.)",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-5A-267",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "max_wheel_diameter_in <= 14",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "An electric bicycle must first be a 'bicycle', which needs two tandem wheels, either more than 14 inches in diameter (32-1-1.1(4)). A kids' e-bike with 14 inch or smaller wheels falls under 'motorcycle' instead."
+  },
+  "evidence_quote": "BICYCLE. Every device propelled by human power upon which any individual may ride, having two tandem wheels either of which is more than 14 inches in diameter.",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-1-1.1",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AL",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "wheel_count == 3",
+   "verdict": "unclear",
+   "valid_until": null,
+   "reason": "Alabama's 'bicycle' has two tandem wheels (32-1-1.1(4)), so an electric trike may not be an 'electric bicycle'. No source settles it."
+  },
+  "evidence_quote": "BICYCLE. Every device propelled by human power upon which any individual may ride, having two tandem wheels either of which is more than 14 inches in diameter.",
+  "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-1-1.1",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AR",
+  "field": "min_age[0].quote_note",
+  "old": null,
+  "new": "Wording confirmed in the official Act 956 of 2017 (sec. 3), which created 27-51-1706 and prints 'class 3' in lowercase. arkleg Code Sections Amended lists show no later amendment through the 2026 sessions.",
+  "evidence_quote": "(a)(1) A person under sixteen (16) years of age shall not operate a class 3 electric bicycle.",
+  "source_url": "https://arkleg.state.ar.us/Acts/FTPDocument?path=%2FACTS%2F2017R%2FPublic%2F&file=956.pdf&ddBienniumSession=2017%2F2017R",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AR",
+  "field": "helmet[0].quote_note",
+  "old": null,
+  "new": "Wording confirmed in the official Act 956 of 2017 (sec. 3), which created 27-51-1706(b) and prints 'class 3' in lowercase. No later amendment through the 2026 sessions.",
+  "evidence_quote": "(b) A person under twenty-one (21) years of age who is an operator of or a passenger on a class 3 electric bicycle shall wear a helmet",
+  "source_url": "https://arkleg.state.ar.us/Acts/FTPDocument?path=%2FACTS%2F2017R%2FPublic%2F&file=956.pdf&ddBienniumSession=2017%2F2017R",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AR",
+  "field": "open_questions[0]",
+  "old": "Currency gap: text verified against the 2017 enacted act and FindLaw's copy current to Mar 28, 2024. I found no 2025 or 2026 act amending 27-51-1701 to 1706 by web search, but could not query the official code (Lexis) or the arkleg 2025 act search directly.",
+  "new": "Resolved by verifier: arkleg 'Code Sections Amended' lists for the 2019, 2021, 2023 and 2025 regular sessions and the 2026 fiscal and extraordinary sessions show no act touching 27-51-1701 to 1706, and a full-text bill search of the 2025 and 2026 sessions for the phrase 'electric bicycle' returns no results. The official Lexis code was still not opened.",
+  "evidence_quote": "Regular Session, 2025; Fiscal Session, 2026; First Extraordinary Session, 2026 Exact Phrase: electric bicycle ... No results found!",
+  "source_url": "https://arkleg.state.ar.us/Bills/Search?ddBienniumSession=2025%2F2025R&tbExactPhrase=electric+bicycle&hdnSessions=z2025R%2Cz2026F%2Cz2026S1%2C&Search=Search",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "definition.notes",
+  "old": "Motor must be LESS THAN 750 W, so a label reading exactly 750 W does not meet the text. Class 1 and 3 assist only while pedaling (cut off at 20 and 28 mph). Class 2 'may be used exclusively to propel' the bike and cannot assist at 20 mph. No Class 3 speedometer requirement in the definition. Bicycle or tricycle only.",
+  "new": "Motor must be LESS THAN 750 W, so a label reading exactly 750 W does not meet the text. Class 1 and 3 assist only while pedaling (cut off at 20 and 28 mph). Class 2 'may be used exclusively to propel' the bike and cannot assist at 20 mph. No Class 3 speedometer requirement in the definition. Bicycle or tricycle only. An e-bike must also be a 'bicycle' or 'tricycle'. 28-101(11) defines 'bicycle' as having two tandem wheels, either more than 16 inches in diameter, or three wheels, any more than 16 inches. A two-wheel e-bike whose wheels are all 16 inches or smaller (many kids' and folding bikes) does not fit the text and would fall under 'motorcycle' or 'motor driven cycle' (license, registration, insurance).",
+  "evidence_quote": "\"Bicycle\" means a device, including a racing wheelchair, that is propelled by human power and on which a person may ride and that has either: (a) Two tandem wheels, either of which is more than sixteen inches in diameter.",
+  "source_url": "https://www.azleg.gov/ars/28/00101.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "local_authority.can_add_age_limits",
+  "old": null,
+  "new": true,
+  "evidence_quote": "Section 17-77.1 Prohibits persons under the age of sixteen (16) from operating class three electric bicycles, similar devices that can meet or exceed twenty-one (21) miles per hour (MPH) on city property.",
+  "source_url": "https://www.scottsdaleaz.gov/codes-and-ordinances/alternative-transportation-laws",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "local_authority.details",
+  "old": "The grant is broad and unqualified, and 28-819(A) says e-bikes follow bicycle rules 'except ... as otherwise regulated by a local authority.' Secondary sources (not verified) report Scottsdale bars riders under 16 from Class 3 and similar devices on city property from Jul 31, 2025, Tempe has an under-16 Class 3 rule, Phoenix reportedly sets age 16 and bans sidewalk riding, and Maricopa County scheduled a Nov 4, 2026 hearing on an unincorporated-area ordinance. The engine must check city rules in Arizona.",
+  "new": "The grant in 28-627(A)(14) is broad and unqualified, and 28-819(A) says e-bikes follow bicycle rules 'except ... as otherwise regulated by a local authority.' Cities use it to set age limits. Scottsdale Revised Code 17-77.1 (Ordinance 4680, effective Jul 31, 2025) bars riders under 16 from Class 3 e-bikes and similar devices that reach 21 mph on city property, confirmed on the city's website. Secondary sources (not verified) report Tempe has an under-16 Class 3 rule, Phoenix sets age 16 and bans sidewalk riding, and Maricopa County scheduled a Nov 4, 2026 hearing on an unincorporated-area ordinance. The engine must check city rules in Arizona.",
+  "evidence_quote": "Scottsdale Revised Code 17-77.1 prohibits people under the age of 16 from operating class 3 e-bikes or similar devices that meet or exceed 21 MPH",
+  "source_url": "https://www.scottsdaleaz.gov/news/details/new-scottsdale-e-bike-safety-ordinances-take-effect-july-31",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "open_questions[0]",
+  "old": "SB 1073 (2026, Kavanagh), 'speed limits; bicycles; sidewalk; paths', would amend 28-812 and 28-819 with a 15 mph path cap. azleg.gov shows only the prefiled version (no engrossed or chaptered text), so it appears not to have passed. Not confirmed from a bill status page.",
+  "new": "Resolved by verifier: SB 1073 (2026) was held in committee and its companion SB 1008 was held awaiting second reading (azleg bill status API), so neither passed. None of the 529 chaptered laws of the 2025 and 2026 sessions contains the word 'bicycle'.",
+  "evidence_quote": "SB1073 - speed limits; bicycles; sidewalk; paths ... FinalDisposition: Held in Committees",
+  "source_url": "https://apps.azleg.gov/api/Bill/?billNumber=SB1073&sessionId=130&legislativeBody=S",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "open_questions[1]",
+  "old": "News (Electrek, Jun 2024) says SB 1567 (2024) added driver license and training requirements for off-highway vehicle operators, which may reach e-bikes ridden off-highway because 28-1171(6) does not exclude e-bikes. I did not locate the license provision in the OHV article.",
+  "new": "28-3151(C), added by SB 1567 (2024 ch. 240), says 'A person may not drive an off-highway vehicle in this state without a valid driver license', and 28-1171(6) does not exclude e-bikes. But 28-819(B) exempts e-bikes from the Title 28 driver-license provisions, so the license rule likely does not reach a compliant e-bike. Whether an e-mountain bike ridden off-highway is an 'off-highway vehicle' (OHV decal, DOT helmet under 18 under 28-1179(B)) is still unsettled.",
+  "evidence_quote": "A person may not drive an off-highway vehicle in this state without a valid driver license as prescribed by this chapter.",
+  "source_url": "https://www.azleg.gov/ars/28/03151.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "open_questions[4]",
+  "old": "City ordinances (Phoenix, Scottsdale, Tempe, Tucson, Glendale, Pima County helmet rules) not verified from municipal code text.",
+  "new": "Scottsdale's rule was confirmed on the city's website (Revised Code 17-77.1). Phoenix, Tempe, Tucson, Glendale and Pima County rules were not verified from municipal code text.",
+  "evidence_quote": "Section 17-77.1 Prohibits persons under the age of sixteen (16) from operating class three electric bicycles, similar devices that can meet or exceed twenty-one (21) miles per hour (MPH) on city property.",
+  "source_url": "https://www.scottsdaleaz.gov/codes-and-ordinances/alternative-transportation-laws",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "AZ",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "wheel_count == 2 and max_wheel_diameter_in <= 16",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "An electric bicycle must be a 'bicycle' or 'tricycle', and a two-wheel 'bicycle' needs a wheel more than 16 inches in diameter (28-101(11)). A smaller-wheel bike falls under 'motorcycle' or 'motor driven cycle'."
+  },
+  "evidence_quote": "\"Bicycle\" means a device, including a racing wheelchair, that is propelled by human power and on which a person may ride and that has either: (a) Two tandem wheels, either of which is more than sixteen inches in diameter.",
+  "source_url": "https://www.azleg.gov/ars/28/00101.htm",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "CO",
+  "field": "open_questions[0]",
+  "old": "42-4-1412, 42-4-221 and 42-4-111 text was read on colorado.public.law, which reproduces the official CRS 2024 PDF. The OLLS 2025 and 2026 Red Books show no substantive later change to 42-4-1412 (only HB26-1237 replacing 'accident' with 'crash' in (13), effective Aug 12, 2026). The official CRS is published through Lexis, which I could not fetch.",
+  "new": "Resolved by verifier: the quoted text matches both colorado.public.law and the official CRS 2024 PDF on leg.colorado.gov. A text search of every 2025 and 2026 session law found e-bike rule changes only in HB25-1197. HB26-1237 (crash wording in 42-4-1412(13) and 42-4-221(12)), HB26-1426 (consumer-protection wording in 42-4-221(12)(c)) and HB25-1281 (kei vehicles added to 'motor vehicle') leave the e-bike rules unchanged. SB25-264, SB25-317, HB26-1289 and HB26-1362 only touch the e-bike tax credit and its cash fund.",
+  "evidence_quote": "Upon request, the law enforcement agency having jurisdiction shall complete a report concerning an injury or death incident that involves a bicycle, electrical assisted bicycle, or electric scooter",
+  "source_url": "https://leg.colorado.gov/laws/session-laws/HB26-1237/117/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "CO",
+  "field": "open_questions[1]",
+  "old": "HB26-1079 ('Cole Bradley Act', effective Aug 12, 2026 per news) requires parental consent for a minor's motorcycle instruction permit. One local outlet tied it to e-motos. Not verified from bill text.",
+  "new": "Resolved by verifier: HB26-1079, the Cole Bradley Act (2026 Colo. Sess. Laws ch. 149, effective Aug 12, 2026), only requires a minor to have written permission to get a motorcycle instruction permit. It does not change e-bike rules.",
+  "evidence_quote": "CONCERNING A REQUIREMENT THAT A MINOR HAVE WRITTEN PERMISSION TO OBTAIN AN INSTRUCTION PERMIT TO DRIVE A MOTORCYCLE.",
+  "source_url": "https://leg.colorado.gov/laws/session-laws/HB26-1079/149/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "CO",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "throttle_max_mph > 20 or switchable_out_of_class",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "Since Aug 6, 2025 the term excludes a vehicle modified out of every class or designed to be easily configured out of them by switch, software or app (42-1-102(28.5)(b)). A throttle above 20 mph fits no class, so the bike is a low-power scooter or motorcycle."
+  },
+  "evidence_quote": "A VEHICLE THAT IS DESIGNED, MANUFACTURED, OR INTENDED BY THE MANUFACTURER OR SELLER TO BE EASILY CONFIGURED SO AS NOT TO MEET THE REQUIREMENTS OF AN ELECTRICAL ASSISTED BICYCLE",
+  "source_url": "https://leg.colorado.gov/laws/session-laws/HB25-1197/279/download",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "CT",
+  "field": "open_questions[4]",
+  "old": "Effective date of P.A. 25-159 sections (reported as Oct 1, 2025) was taken from news, not the act text. It is in the 2026 Supplement, so it is in force either way.",
+  "new": "Resolved by verifier: P.A. 25-159 marks sec. 36 (14-289n) and sec. 37 (14-289k) 'Effective October 1, 2025', and the act was approved July 1, 2025.",
+  "evidence_quote": "Sec. 36. (NEW) (Effective October 1, 2025) (a) A vehicle equipped with an electric motor for propulsion is not an electric bicycle if such vehicle",
+  "source_url": "https://www.cga.ct.gov/2025/ACT/PA/PDF/2025PA-00159-R00HB-07160-PA.PDF",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "CT",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "throttle_max_mph > 20 or switchable_out_of_class",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "14-289n says a vehicle with a throttle that can exceed 20 mph on motor power in any mode, or one built or sold to be switched out of the definition, is not an electric bicycle. It is likely a motor-driven cycle needing a driver's license."
+  },
+  "evidence_quote": "has one or more operating modes, is equipped with a throttle and is capable of exceeding twenty miles per hour on motorized propulsion alone in any mode when the throttle is engaged",
+  "source_url": "https://www.cga.ct.gov/2026/sup/chap_248.htm",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "DC",
+  "field": "min_age[0].quote_note",
+  "old": null,
+  "new": "The DCMR text is offered only as a download, so the verifier did not re-read it. DC DMV's Non-Traditional Motor Vehicle Chart (rev. Mar 24, 2021) says a motorized bicycle operator 'must be at least 16 years of age', citing 18 DCMR 1200.10, and DCRegs lists 18-1200 as unchanged since May 1, 2008.",
+  "evidence_quote": "No but operator must be at least 16 years of age. [13] ... [13] D.C. Official Code § 50-1401.01(f) and 18 DCMR §1200.10.",
+  "source_url": "https://dmv.dc.gov/sites/default/files/dc/sites/dmv/publication/attachments/Non-Traditional%20Motor%20Vehicle%20Chart%20%283.24.21%29.pdf",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "DC",
+  "field": "open_questions[2]",
+  "old": "No e-bike bill from the current DC Council period (2025 to 2026) was found. A 2019 Electric Mobility Devices bill (Cheh) is not law as far as I found. Not checked on lims.dccouncil.gov.",
+  "new": "Resolved by verifier: none of D.C. Laws 26-1 to 26-195 or D.C. Acts 26-1 to 26-416 on code.dccouncil.gov changes motorized bicycle rules. Their bicycle mentions are budget, fee-schedule, streatery and plaza items. In DCMR, 18-1200 was last amended effective May 1, 2008 and 18-1201 on Dec 9, 2022, and the May 1, 2026 change to 18-9901 was the Intelligent Speed Assistance rulemaking.",
+  "evidence_quote": "18-1200 BICYCLES, MOTORIZED BICYCLES, AND PERSONAL MOBILITY DEVICES: GENERAL PROVISIONS View text 5/1/2008",
+  "source_url": "https://www.dcregs.dc.gov/Common/DCMR/RuleList.aspx?ChapterNum=18-12",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "DC",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "min_wheel_diameter_in < 16",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "A 'motorized bicycle' needs every wheel to be at least 16 inches in diameter (50-2201.02(11A)). A smaller-wheel e-bike is a motor vehicle, most likely a motor-driven cycle needing a driver's license."
+  },
+  "evidence_quote": "(ii) A vehicle with 2 or 3 wheels in contact with the ground, which are at least 16 inches in diameter;",
+  "source_url": "https://code.dccouncil.gov/us/dc/council/code/sections/50-2201.02",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "DE",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "throttle_max_mph > 20",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "Since Sep 24, 2026 a vehicle whose electric motor alone can propel it above 20 mph is a 'moped' (101(40)), which needs a driver's license, a plate and a helmet under 18, and may not use bike lanes, sidewalks or paths."
+  },
+  "evidence_quote": "an electric motor that produces less than 2,000 watts that may be used exclusively to propel the vehicle at a speed of more than 20 miles per hour",
+  "source_url": "https://legis.delaware.gov/BillDetail/143560",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "GA",
+  "field": "open_questions[0]",
+  "old": "The statute text came from FindLaw's copy, current as of March 28, 2024. Georgia General Assembly searches (2023-24 and 2025-26 sessions) found no enacted e-bike amendment. HB 986 (2026, Act 442, effective July 1, 2026) changes only the personal delivery device rules. HB 393 (2025, 'Safer Cycling in Georgia Act') was recommitted and appears to have died when the session ended. The site search is keyword based and could miss a bill, so check the official O.C.G.A. on LexisNexis.",
+  "new": "Resolved by verifier: all 1,056 bills on the governor's 2024, 2025 and 2026 signed-legislation pages were text-searched. None contains 'electric assisted bicycle' or amends 40-6-300 to 40-6-303, 40-6-296, 40-6-351 or 40-6-144, and the 40-1-1 changes in those years (SB 448 of 2024, SB 58 of 2025, HB 1268 of 2026) do not touch paragraphs (15.3) or (33). FindLaw's March 2024 text is therefore still current. The Lexis-hosted official code was not opened, and bills that became law without a signature were not checked.",
+  "evidence_quote": "Code Section 40-1-1, relating to definitions regarding general provisions of identification and regulation, by substituting \"organ transport vehicle\" for \"organ transplant vehicle\" and by inserting \"that\" following \"provided\" in paragraph (5).",
+  "source_url": "https://gov.georgia.gov/document/2026-signed-legislation/hb-1268/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "GA",
+  "field": "open_questions[2]",
+  "old": "Do mopeds (the over-limit e-bike category) need registration and insurance in Georgia? Not verified.",
+  "new": "Partly resolved by verifier: mopeds are exempt from registration under 40-2-20(b) ('To any moped'), an exemption SB 384 (2026) keeps when it renumbers the list from July 1, 2027. Moped insurance was not verified.",
+  "evidence_quote": "Subsection (a) of this Code section shall not apply: ... To any moped",
+  "source_url": "https://gov.georgia.gov/document/2026-signed-legislation/sb-384/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "GA",
+  "field": "non_ebike_devices.notes",
+  "old": "Age rule, same section: 'No person under 15 years of age shall operate a moped upon the highways in this state.' A device over 750 W, or with no operable pedals, is not an 'electric assisted bicycle' and becomes a self-propelled 'motor vehicle'. § 40-1-1(28) defines a moped as a motor driven cycle 'with or without foot pedals' with up to 2 brake horsepower (about 1,491 W) that cannot exceed 30 mph unassisted. Moped riders need a driver's license or permit (any class), must be at least 15 and must wear a DPS-approved helmet (§ 40-6-352). Faster or more powerful devices are motorcycles needing a motorcycle license and registration. Moped registration and insurance status was not verified.",
+  "new": "Age rule, same section: 'No person under 15 years of age shall operate a moped upon the highways in this state.' A device over 750 W, or with no operable pedals, is not an 'electric assisted bicycle' and becomes a self-propelled 'motor vehicle'. § 40-1-1(28) defines a moped as a motor driven cycle 'with or without foot pedals' with up to 2 brake horsepower (about 1,491 W) that cannot exceed 30 mph unassisted. Moped riders need a driver's license or permit (any class), must be at least 15 and must wear a DPS-approved helmet (§ 40-6-352). Faster or more powerful devices are motorcycles needing a motorcycle license and registration. Mopeds are exempt from registration (40-2-20(b)). Moped insurance was not verified.",
+  "evidence_quote": "Subsection (a) of this Code section shall not apply: ... To any moped",
+  "source_url": "https://gov.georgia.gov/document/2026-signed-legislation/sb-384/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "GA",
+  "field": "open_questions[3]",
+  "old": "The Class II definition says 'not capable of reaching a speed of 20 miles per hour'. A throttle bike capped at exactly 20 mph may technically fall outside it. The app should treat a 20 mph Class 2 label as matching the intended rule, but this is a drafting ambiguity.",
+  "new": "The Class II definition says 'not capable of reaching a speed of 20 miles per hour'. Verifier's reading: the base definition in 40-1-1(15.3) has no class or speed test, so a 20 mph throttle bike is still an 'electric assisted bicycle', excluded from 'motor vehicle' (40-1-1(33)), even if it misses the literal Class II wording. No rule restricts Class II beyond Class I, so a Class 2 label can stay legal.",
+  "evidence_quote": "'Electric assisted bicycle' means a device with two or three wheels which has a saddle and fully operative pedals for human propulsion and also has an electric motor having a power output of not more than 750 watts.",
+  "source_url": "https://gov.georgia.gov/document/signed-legislation/hb-454pdf/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "GA",
+  "field": "open_questions[4]",
+  "old": "The 2019-07-01 effective date for HB 454 comes from Georgia's default July 1 rule and secondary sources. It was not read from the act's history page.",
+  "new": "Verifier checked the signed HB 454 text. It has no effective-date section (its last section only repeals conflicting laws), so Georgia's default July 1 rule (O.C.G.A. 1-3-4) gives July 1, 2019. 1-3-4 itself was not re-read.",
+  "evidence_quote": "SECTION 7. All laws and parts of laws in conflict with this Act are repealed.",
+  "source_url": "https://gov.georgia.gov/document/signed-legislation/hb-454pdf/download",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "HI",
+  "field": "non_ebike_devices.min_age",
+  "old": null,
+  "new": 16,
+  "evidence_quote": "Notwithstanding section 286-81(b), no person: (1) Less than [fifteen] sixteen years of age shall drive a moped on a highway, street, or roadway, or any other public property in the State",
+  "source_url": "https://www.capitol.hawaii.gov/sessions/session2025/bills/SB30_CD1_.HTM",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "HI",
+  "field": "non_ebike_devices.notes",
+  "old": "'High-speed electric device' means a device with a motor over 750 W and capable of more than 28 mph, unless registered as a moped or motor vehicle. Such devices may not be ridden anywhere public, and police may seize them (§ 249-15(b)). A device that fails only one test (over 750 W but 28 mph or less, or no pedals) is neither an e-bike nor a high-speed device. It may be a moped under § 286-2, which needs a moped-category license (§ 286-102(b)(1)). Mopeds are now barred from bike lanes and paths. A new 'electric motorcycle' category (over 28 mph, road-registered) is also barred from bike facilities. Moped license minimum age was not pinned down: § 286-104 allows an instruction permit at 15.5 and a provisional license at 16.",
+  "new": "'High-speed electric device' means a device with a motor over 750 W and capable of more than 28 mph, unless registered as a moped or motor vehicle. Such devices may not be ridden anywhere public, and police may seize them (§ 249-15(b)). A device that fails only one test (over 750 W but 28 mph or less, or no pedals) is neither an e-bike nor a high-speed device. It may be a moped under § 286-2, which needs a moped-category license (§ 286-102(b)(1)). Mopeds are now barred from bike lanes and paths. A new 'electric motorcycle' category (over 28 mph, road-registered) is also barred from bike facilities. Since Act 222 (SLH 2025, effective June 25, 2025), no one under 16 may drive a moped on any public way, and every moped driver must wear a helmet (HRS 291C-195(a)). min_age 16 applies to mopeds.",
+  "evidence_quote": "Shall drive a moped unless the person wears a safety helmet securely fastened with a chin strap.",
+  "source_url": "https://www.capitol.hawaii.gov/sessions/session2025/bills/SB30_CD1_.HTM",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "HI",
+  "field": "open_questions[3]",
+  "old": "Minimum age to get a moped license (relevant for over-limit devices) was not confirmed.",
+  "new": "Resolved by verifier: Act 222 (SLH 2025, SB 30, effective June 25, 2025) amended HRS 291C-195(a) so that no one under 16 may drive a moped on public property and every moped driver must wear a helmet.",
+  "evidence_quote": "Notwithstanding section 286-81(b), no person: (1) Less than [fifteen] sixteen years of age shall drive a moped on a highway, street, or roadway, or any other public property in the State",
+  "source_url": "https://www.capitol.hawaii.gov/sessions/session2025/bills/SB30_CD1_.HTM",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "A"
+ },
+ {
+  "code": "IA",
+  "field": "definition.quote_note",
+  "old": null,
+  "new": "The quote is the amended wording as enacted. It appears in the enrolled SF 490 and 2026 Iowa Acts ch. 1053 only once the struck words 'of less than' are dropped (the PDF text layer shows 'motor of less than that produces not more than seven hundred fifty watts', with 'of less than' struck through). Iowa Code 2027, which will print the clean text, is not yet published.",
+  "evidence_quote": "Section 321.1, subsection 36A, unnumbered paragraph 1, Code 2025, is amended to read as follows",
+  "source_url": "https://www.legis.iowa.gov/docs/publications/iactc/91.2/CH1053.pdf",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "IA",
+  "field": "definition.notes",
+  "old": "The enrolled PDF does not mark strikethroughs, so the wording was confirmed with the bill's official explanation (...)",
+  "new": "The enrolled PDF and 2026 Iowa Acts ch. 1053 do mark the change when rendered: 'of less than' is struck through and 'that produces not more than' is underlined (text extraction drops this formatting). The new lead-in ends 'and is classified in accordance with the following requirements:', and the three class paragraphs are unchanged.",
+  "evidence_quote": "and an electric motor of less than that produces not more than seven hundred fifty watts that meets, and is classified in accordance with the following requirements",
+  "source_url": "https://www.legis.iowa.gov/docs/publications/iactc/91.2/CH1053.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "IA",
+  "field": "open_questions[0]",
+  "old": "SF 490 (2026 Acts ch. 1053) took effect July 1, 2026. Its exact final wording was reconstructed from the enrolled PDF plus the official explanation, because strikethroughs are not visible in text extraction. Check against Iowa Code 2027 when it is published (around Dec 2026).",
+  "new": "Resolved by verifier (Oct 16, 2026): the enrolled SF 490 and 2026 Iowa Acts ch. 1053 (approved April 30, 2026) were rendered as page images. 'of less than' is struck and 'that produces not more than' is added, so the codified text will read 'not more than seven hundred fifty watts'. The legislature's provisional list of sections amended in the 2025 and 2026 sessions shows no other change to § 321.1(36A), § 321.1(40), § 321.235B or § 321.236. Iowa Code 2027 is not yet published.",
+  "evidence_quote": "2025 Code - 321.1 (36A)(u1) Amend SF490, §1 2026-07-01 Signed 2026-04-30",
+  "source_url": "https://www.legis.iowa.gov/law/statutory/acts/amended",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "IA",
+  "field": "open_questions[+]",
+  "old": null,
+  "new": "§ 321.235B(4) requires every low-speed e-bike to be built so that the motor assist stops 'when the rider stops pedaling, applies the brakes, or the electric motor is disengaged'. Read literally, this conflicts with a Class 2 throttle. Class 2 is kept legal here, as in the other states with this clause, but no source settles it.",
+  "evidence_quote": "A low-speed electric bicycle shall be manufactured to operate in such a manner that when the rider stops pedaling, applies the brakes, or the electric motor is disengaged, the electric motor assist ceases to function.",
+  "source_url": "https://www.legis.iowa.gov/docs/code/321.235B.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "ID",
+  "field": "open_questions[2]",
+  "old": "HB 880 (2026) would have revised the e-bike definition to 'clarify what the term does not include'. It was referred back to Transportation & Defense on March 17, 2026 and appears to have died. Its text was not read.",
+  "new": "Resolved by verifier: H 880 (2026) did not pass. On March 17, 2026 it was taken off General Orders and referred back to House Transportation & Defense, with no later action. The official 2025 and 2026 session bill lists show no other e-bike bill besides H 500 (2026 ch. 24).",
+  "evidence_quote": "Take bill off General Orders; referred to Transportation & Defense",
+  "source_url": "https://legislature.idaho.gov/sessioninfo/2026/legislation/H0880/",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "IL",
+  "field": "pending_changes[0].summary",
+  "old": "(4) Any e-bike that is not a low-speed e-bike, or has a motor of 750 W to 8,000 W, is a motor driven cycle",
+  "new": "(4) Any electric bicycle that is not a low-speed e-bike (so any e-bike at 750 W or more, because the definition stays 'less than 750 watts'), and any electric motor rated greater than 750 W up to 8,000 W, is a motor driven cycle",
+  "evidence_quote": "an electric motor with a nominal power rating of greater than 750 watts but less than or equal to 8,000 watts, including motorized pedalcycles and every electric bicycle or gas-powered bicycle that is not a low-speed electric bicycle",
+  "source_url": "https://www.ilga.gov/Documents/legislation/ilcs/documents/062500050K1-145.001.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "IL",
+  "field": "non_ebike_devices.treated_as",
+  "old": "motor vehicle: moped or motor driven cycle (from 2027, expressly a motor driven cycle if 750 W to 8,000 W, or any e-bike that is not a low-speed e-bike)",
+  "new": "motor vehicle: moped or motor driven cycle (from 2027, expressly a motor driven cycle if it is any e-bike that is not a low-speed e-bike, including an exactly 750 W e-bike, or has an electric motor over 750 W up to 8,000 W)",
+  "evidence_quote": "Any electric bicycle that is not a low-speed electric bicycle shall be considered a motor driven cycle for purposes of this Code.",
+  "source_url": "https://www.ilga.gov/Documents/legislation/ilcs/documents/062500050K1-140.10.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "IN",
+  "field": "definition.notes",
+  "old": "IC 9-21-11-13.1: the bike must meet CPSC 16 CFR 1512, and the motor must disengage when the rider stops pedaling or brakes. Note that this applies to all classes, so a throttle Class 2 must still cut out under braking.",
+  "new": "IC 9-21-11-13.1(h)-(i): the bike must meet CPSC 16 CFR 1512, and every e-bike motor, of any class, must disengage or stop assisting when the operator stops pedaling or applies the brakes. Read literally, that conflicts with a Class 2 throttle (see open questions).",
+  "evidence_quote": "All electric bicycles shall be equipped with an electric motor that disengages or ceases to provide assistance when the operator: (1) stops pedaling; or (2) applies brakes.",
+  "source_url": "https://iga.in.gov/ic/2026/Title_9.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "KS",
+  "field": "open_questions[1]",
+  "old": "No 2023-2026 amendments were found. The 2026 Kansas Statutes show the 2022 text, and a web search found no 2025-26 bill amending 8-1592b. The legislature's bill search is JavaScript-only and was not exhaustively queried.",
+  "new": "Resolved by verifier: the legislature's own 2025-26 search (kslegislature.gov search API) finds one e-bike bill, HB 2459 (helmets for riders 17 and under on electric-assisted bicycles and scooters, amending K.S.A. 8-126, 8-1498 and 8-15,113). It died in House Transportation. No 2025 or 2026 act changed K.S.A. 8-1489 or 8-1592b, whose histories end with L. 2022, ch. 43.",
+  "evidence_quote": "Requiring any person who is 17 years of age and under to wear a helmet when operating an electric-assisted scooter or electric-assisted bicycle",
+  "source_url": "https://www.kslegislature.gov/b2025_26/bills/HB2459/",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "KY",
+  "field": "open_questions[2]",
+  "old": "No 2024, 2025 or 2026 e-bike bill was found. Bill titles in the 25RS and 26RS 'All Bills and Resolutions with Title' lists contain no bicycle, e-bike, moped or scooter terms. KRS 186.010 and 189.010 were amended effective July 15, 2026 (2026 Ky. Acts ch. 133, 135) without adding an e-bike definition.",
+  "new": "No 2024, 2025 or 2026 e-bike law was found. Kentucky bill titles are generic ('AN ACT relating to motor vehicles'), so the verifier also read the summaries and index headings of every enacted measure on the LRC 'Law' lists (162 for 2025 RS, 201 for 2026 RS). None mentions bicycles, e-bikes, mopeds or scooters. KRS 186.010 and 189.010 were amended effective July 15, 2026 (2026 Ky. Acts ch. 133, 135) without adding an e-bike definition.",
+  "evidence_quote": "Legislative Research Commission Note (7/15/2026). This statute was amended by 2026 Ky. Acts chs. 133 and 135, which do not appear to be in conflict and have been codified together.",
+  "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57661",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "LA",
+  "field": "open_questions[3]",
+  "old": "A secondary source mentions a 2026 Louisiana act ('Act 951') changing red-light procedure for cyclists and e-bike riders from Aug 1, 2026. Not verified on legis.la.gov. It does not affect who may ride which class. R.S. 32:204 history shows only Acts 2020, No. 152.",
+  "new": "Resolved by verifier: Act 951 of 2026 (HB 723) became law without the Governor's signature, effective Aug 1, 2026. It amends R.S. 32:232(3) so the rider of a motorcycle, moped, bicycle 'or any electric bicycle' may go through a steady red at a vehicle-actuated signal after a full stop for two signal cycles or two minutes, treating it as a stop sign and yielding. It does not change who may ride which class. The 2025 and 2026 citator indexes show no change to R.S. 32:1(25) or 32:204, whose history still shows only Acts 2020, No. 152.",
+  "evidence_quote": "if the driver of a two or three-wheeled motorcycle, moped, or bicycle or any electric bicycle approaches an intersection influenced by a vehicle-actuated control, the driver may proceed through the intersection on a steady red light",
+  "source_url": "https://www.legis.la.gov/legis/ViewDocument.aspx?d=1481862",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "LA",
+  "field": "helmet_notes",
+  "old": null,
+  "new": "The under-17 helmet rule in R.S. 32:300.1.1(I) covers electric low-speed scooters only, not e-bikes. Some local police notices (for example Natchitoches, Aug 2026) cite that scooter statute next to the e-bike classes, so families may see an under-17 rule that does not apply to Class 1 or 2 e-bikes.",
+  "evidence_quote": "Any operator of an electric low-speed scooter under the age of seventeen years shall wear an approved helmet as provided in R.S. 32:199.",
+  "source_url": "https://www.legis.la.gov/legis/Law.aspx?d=1148278",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "MA",
+  "field": "open_questions[0]",
+  "old": "How does the RMV or a court actually classify a Class 3 (28 mph) e-bike? The 'motorized bicycle' definition uses a 50 cc cylinder test that does not fit electric motors. I treat Class 3 as a motorized bicycle (license, age 16, registration), which is the safe call, but no statute says so directly.",
+  "new": "How does the RMV or a court actually classify a Class 3 (28 mph) e-bike? The 'motorized bicycle' definition uses a 50 cc cylinder test that does not fit electric motors. It could instead be a 'motorized scooter' (any 2- or 3-wheeled device with handlebars, designed to be stood or sat upon, powered by an electric motor), which also needs a driver's license or learner's permit, a helmet and a 20 mph cap, with no night riding (ch. 90, § 1E). Either way an unlicensed rider cannot ride it legally, so the Class 3 not-an-e-bike caution holds. No statute names the category directly.",
+  "evidence_quote": "A motorized scooter shall not be operated on any way by a person not possessing a valid driver's license or learner's permit, nor at a speed in excess of 20 miles per hour.",
+  "source_url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXIV/Chapter90/Section1E",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "MA",
+  "field": "open_questions[3]",
+  "old": "S.3168 could still move in informal sessions before the 194th General Court ends in early January 2027. Re-check before launch.",
+  "new": "Checked Oct 16, 2026: S.3168 is still 'Referred to Senate Committee on Ways and Means' (last action Jul 6, 2026), and H.3758 is still in the Joint Committee on Transportation. The verifier searched the text of all 339 session laws of 2025 and 2026 (Acts 2025 ch. 1-101, Acts 2026 ch. 1-239) and found no e-bike, motorized bicycle or motorized scooter change. S.3168 could still pass in informal sessions before the 194th General Court ends in early January 2027, so re-check before launch.",
+  "evidence_quote": "Bill reported favorably by committee and referred to the committee on Senate Ways and Means",
+  "source_url": "https://malegislature.gov/Bills/194/S3168",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "MD",
+  "field": "open_questions[0]",
+  "old": "Some secondary sites say Class 3 riders of any age must wear a helmet in Maryland. I found no such rule in § 21-1205.2, § 21-1207.1 or § 22-420. Confirm before the app shows it.",
+  "new": "Resolved by verifier: §§ 21-1205.2, 21-1207.1 and 22-420 (read Oct 16, 2026) contain no all-ages Class 3 helmet rule. The only helmet rule is § 21-1207.1, for riders and passengers under 16 on any bicycle, which includes an e-bike under § 11-104, and it is enforced by warning.",
+  "evidence_quote": "A person to whom this section applies may not operate or ride as a passenger on a bicycle unless the person is wearing a helmet",
+  "source_url": "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gtr&section=21-1207.1&enactments=false",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "MD",
+  "field": "open_questions[3]",
+  "old": "I did not search every 2024 and 2025 Maryland bill. The current statute text read on 2026-10-16 is what the table reflects.",
+  "new": "Resolved by verifier: the General Assembly's open-data bill lists for the 2025 and 2026 sessions were searched. SB 14 (2025, e-bike title, registration and insurance) got an unfavorable report and was withdrawn, and SB 743 (2026 workgroup) never left Judicial Proceedings. The only enacted related law is Jay's Law (HB 375, Ch. 558 of 2025), which allows bicycle riding on sidewalks unless a local ordinance bans it. That is the § 21-1103(b)(2) text this record already uses. Ch. 418 of 2026 only funds sidewalk and bike path construction.",
+  "evidence_quote": "Authorizing a person to ride a bicycle, play vehicle, or unicycle on a sidewalk or sidewalk area unless prohibited by local ordinance",
+  "source_url": "https://mgaleg.maryland.gov/2025rs/misc/billsmasterlist/legislation.json",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "ME",
+  "field": "open_questions[1]",
+  "old": "The Class 2 definition ('not capable of propelling the bicycle at a speed of 20 miles per hour') literally means under 20 mph. A Class 2 label of exactly 20 mph is the intended match, but this is a drafting ambiguity.",
+  "new": "The Class 2 definition ('not capable of propelling the bicycle at a speed of 20 miles per hour') could be read as requiring a top motor speed under 20 mph. Verifier note: the better reading is that the motor stops at 20 mph, because § 2063(14)(C)(1) bars modifications letting the motor assist 'above the speed of' 20 mph when the bike is propelled by the motor alone. So a Class 2 label of 20 mph fits, and Class 2 is kept legal for riders 16 and over. This is not the South Carolina 'less than twenty' wording, but no Maine source settles it.",
+  "evidence_quote": "in a manner that allows the motor to provide assistance above the speed of: (1) Twenty miles per hour if the electric bicycle is being propelled exclusively by the motor",
+  "source_url": "https://legislature.maine.gov/statutes/29-A/title29-Asec2063.html",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "B"
+ },
+ {
+  "code": "MN",
+  "field": "pending_changes[0]",
+  "old": {
+   "bill": "HF 3785 / SF 4186 (2026) e-moto clarification bill",
+   "signed": "no (died at end of 2026 session)",
+   "effective_date": null,
+   "summary": "Would have clarified that e-motos are not e-bikes. Late amendments added a helmet mandate for ages 15-18, local 20 mph business-district limits and a DPS position. Not enacted. BikeMN warns the amendments are being shared online as if they were law.",
+   "source_url": "https://www.bikemn.org/no-minnesota-did-not-pass-new-e-bike-laws-this-session/"
+  },
+  "new": {
+   "bill": "HF 3785 / SF 4186 (2026) e-moto clarification bill",
+   "signed": "no. HF 3785's motion to suspend the rules failed 65-68 on May 16, 2026, SF 4186 stayed in Senate Rules, and both died when the 2025-2026 biennium ended",
+   "effective_date": null,
+   "summary": "Would have clarified that e-motos are not e-bikes. Late amendments added a helmet mandate for ages 15-18, local 20 mph business-district limits and a DPS position. Not enacted. BikeMN warns the amendments are being shared online as if they were law.",
+   "source_url": "https://www.revisor.mn.gov/bills/bill.php?b=House&f=HF3785&ssn=0&y=2026"
+  },
+  "evidence_quote": "05/16/2026 Motion to suspend rules pg. 7681 05/16/2026 Motion did not prevail pg. 7681 vote: 65-68",
+  "source_url": "https://www.revisor.mn.gov/bills/bill.php?b=House&f=HF3785&ssn=0&y=2026",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MN",
+  "field": "pending_changes[1]",
+  "old": {
+   "bill": "SF 3236 (2025-2026)",
+   "signed": "no (no evidence of passage)",
+   "effective_date": null,
+   "summary": "Would require helmets for e-bike riders under 18.",
+   "source_url": "https://track.mn/legislative_instruments/0942025-sf3236"
+  },
+  "new": {
+   "bill": "SF 3236 / HF 2811 (2025-2026)",
+   "signed": "no. Passed the Senate 34-33 on May 15, 2026, was referred to a House committee on May 16, 2026, and died when the biennium ended",
+   "effective_date": null,
+   "summary": "Would require helmets for e-bike riders under 18.",
+   "source_url": "https://www.revisor.mn.gov/bills/bill.php?b=Senate&f=SF3236&ssn=0&y=2026"
+  },
+  "evidence_quote": "05/15/2026 Third reading Passed pg. 10692 vote: 34-33",
+  "source_url": "https://www.revisor.mn.gov/bills/bill.php?b=Senate&f=SF3236&ssn=0&y=2026",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MO",
+  "field": "definition.notes",
+  "old": "WATT LIMIT IS STRICT: 'less than 750 watts', so a bike labeled exactly 750 W does NOT qualify. max_motor_watts is 749 only to encode that strict inequality for integer labels (749 is not a statutory number). Added by 2021 SB 176, effective Aug 28, 2021. Definition read in the § 301.010 version effective Aug 28, 2025. § 307.194 shows no version after 2021. Electric bicycles are excluded from 'motor vehicle', 'motorized bicycle', 'motortricycle', 'motorcycle' and 'vehicle' in § 301.010. § 307.194.6 says the motor must cut off 'when the rider stops pedaling or when the brakes are applied', which on its face conflicts with Class 2 throttle use. E-bikes must meet CPSC 16 CFR 1512 (§ 307.194.5). No statewide helmet rule and no minimum age for Class 1 or 2. Kansas City Ordinance 260508 (July 2026, per news) adds a helmet rule for riders under 18 inside Kansas City.",
+  "new": "The watt limit is strict. 'Less than 750 watts' means a bike labeled exactly 750 W does NOT qualify. max_motor_watts holds the statute's number (750) and motor_watts_comparison 'less_than' carries the strict test. Added by 2021 SB 176, effective Aug 28, 2021. Definition read in the § 301.010 version effective Aug 28, 2025. § 307.194 shows no version after 2021, and no 2025 or 2026 act touches e-bikes. Electric bicycles are excluded from 'motor vehicle', 'motorized bicycle', 'motortricycle', 'motorcycle' and 'vehicle' in § 301.010. § 307.194.6 says the motor must cut off 'when the rider stops pedaling or when the brakes are applied'. Class 2 still qualifies, because § 301.010(15)(b) lets a Class 2 motor 'be used exclusively to propel the bicycle' and § 307.194.6 is a separate operating rule. E-bikes must meet CPSC 16 CFR 1512 (§ 307.194.5). No statewide helmet rule and no minimum age for Class 1 or 2. Kansas City Ordinance 260508 (July 2026, per news) adds a helmet rule for riders under 18 inside Kansas City.",
+  "evidence_quote": "an electric motor of less than 750 watts that meets the requirements of one of the following three classes",
+  "source_url": "https://revisor.mo.gov/main/OneSection.aspx?section=301.010",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MO",
+  "field": "open_questions[0]",
+  "old": "§ 307.194.6 requires the motor to stop when the rider stops pedaling, which seems to bar Class 2 throttle use even though Class 2 is defined.",
+  "new": "Resolved by verifier. Class 2 throttle bikes qualify. § 301.010(15)(b) defines Class 2 as a motor that 'may be used exclusively to propel the bicycle', and the cut-off rule in § 307.194.6 does not change that. It sits in a separate operating section, so it does not take Class 2 out of the definition. Read with that definition, a brake cut-off satisfies it. A literal reading leaves a small equipment-citation risk, so no caution is set.",
+  "evidence_quote": "\"Class 2 electric bicycle\", an electric bicycle equipped with a motor that may be used exclusively to propel the bicycle",
+  "source_url": "https://revisor.mo.gov/main/OneSection.aspx?section=301.010",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MO",
+  "field": "open_questions[2]",
+  "old": "No 2026 bill amending § 307.194 was found, and the revisor shows only the 2021 version as of 2026-10-16. A full 2026 bill list was not checked.",
+  "new": "Resolved by verifier. The Senate's 2025 and 2026 'Truly Agreed To and Finally Passed' lists, the House bill lists for both years and the revisor's Recent Sections list, which also shows delayed-date sections, contain no e-bike act. § 307.194 is still the 2021 version and § 301.010 the Aug 28, 2025 version.",
+  "evidence_quote": "(L. 2021 S.B. 176)",
+  "source_url": "https://revisor.mo.gov/main/OneSection.aspx?section=307.194",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MS",
+  "field": "definition.notes",
+  "old": "WATT LIMIT IS STRICT: the statute says 'less than' 750 W, so a bike labeled exactly 750 W does NOT qualify. max_motor_watts is set to 749 to encode that strict inequality for integer labels (749 is not a statutory number). Classes: Class 1 pedal assist to 20 mph, Class 2 motor 'may be used exclusively to propel the bicycle' and stops at 20 mph, Class 3 pedal assist to 28 mph. Enacted by 2021 HB 1195 (signed Mar 17, 2021, effective July 1, 2021), creating § 63-3-1315. An e-bike is a vehicle to the same extent as a bicycle and is not a motor vehicle, motorcycle or motor scooter. § 63-3-1315(6) says the motor must cut off 'when the rider stops pedaling or when the brakes are applied', which on its face conflicts with Class 2 throttle use. E-bikes must meet CPSC 16 CFR 1512. Class 3 needs a speedometer. No statewide minimum age for Class 1 or 2. No helmet rule in the e-bike statute. Text read is the enrolled bill, because the codified Mississippi Code (Lexis) and Justia were not reachable.",
+  "new": "The watt limit is strict. The statute says 'less than' 750 W, so a bike labeled exactly 750 W does NOT qualify. max_motor_watts holds the statute's number (750) and motor_watts_comparison 'less_than' carries the strict test. The classes are Class 1 pedal assist to 20 mph, Class 2 with a motor that 'may be used exclusively to propel the bicycle' and stops at 20 mph, and Class 3 pedal assist to 28 mph. Enacted by 2021 HB 1195 (signed Mar 17, 2021, effective July 1, 2021), creating § 63-3-1315. 2023 HB 1003 (approved Mar 28, 2023) brought § 63-3-103 forward with the same e-bike definition, still lettered (l), and no enacted 2024 to 2026 bill touches § 63-3-103 or § 63-3-1315. An e-bike is a vehicle to the same extent as a bicycle and is not a motor vehicle, motorcycle or motor scooter. § 63-3-1315(6) says the motor must cut off 'when the rider stops pedaling or when the brakes are applied'. Class 2 still qualifies, because that separate operating rule does not change the definition. E-bikes must meet CPSC 16 CFR 1512. Class 3 needs a speedometer. No statewide minimum age for Class 1 or 2. No helmet rule in the e-bike statute.",
+  "evidence_quote": "(l) \"Electric bicycle\" means a bicycle or tricycle equipped with fully operable pedals, a saddle or seat for the rider, and an electric motor of less than seven hundred fifty (750) watts",
+  "source_url": "https://billstatus.ls.state.ms.us/documents/2023/html/HB/1000-1099/HB1003SG.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MS",
+  "field": "open_questions[0]",
+  "old": "Codified current text of §§ 63-3-103 and 63-3-1315 was not readable (Lexis and Justia blocked). I read the 2021 enrolled bill and scanned the Legislature's all-measures lists for 2022-2026, which show no bill with 'bicycle', 'moped' or 'micromobility' in its title except a 2023 bike-parking bill. An amendment under an unrelated title cannot be ruled out.",
+  "new": "Partly resolved by verifier. The Lexis public-access table of contents lists § 63-3-1315 'Electric bicycles' in Article 27, but the section text sits behind a CAPTCHA, and Justia and FindLaw block automated reads. The latest enactment of § 63-3-103 (2023 HB 1003) repeats the 2021 definition word for word, and a scan of 259 enacted 2024 to 2026 vehicle, traffic and local bills found none that amends § 63-3-103 or § 63-3-1315. A person can open the Lexis page by hand to confirm.",
+  "evidence_quote": "(l) \"Electric bicycle\" means a bicycle or tricycle equipped with fully operable pedals, a saddle or seat for the rider, and an electric motor of less than seven hundred fifty (750) watts",
+  "source_url": "https://billstatus.ls.state.ms.us/documents/2023/html/HB/1000-1099/HB1003SG.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "MS",
+  "field": "open_questions[1]",
+  "old": "§ 63-3-1315(6) requires the motor to stop when the rider stops pedaling, which seems to bar Class 2 throttle use even though Class 2 is defined. How Mississippi enforces this is unknown.",
+  "new": "Resolved by verifier. Class 2 throttle bikes qualify. § 63-3-103(l)(ii) defines Class 2 as a motor that 'may be used exclusively to propel the bicycle', and the cut-off rule in § 63-3-1315(6) does not change that. It sits in a separate operating section, so it does not take Class 2 out of the definition. Read with that definition, a brake cut-off satisfies it. A literal reading leaves a small equipment-citation risk, so no caution is set. Enforcement practice is still unknown.",
+  "evidence_quote": "(6) An electric bicycle shall operate in a manner so that the electric motor is disengaged or ceases to function when the rider stops pedaling or when the brakes are applied.",
+  "source_url": "https://billstatus.ls.state.ms.us/documents/2021/html/HB/1100-1199/HB1195SG.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "ND",
+  "field": "definition.notes",
+  "old": "'Bicycle' (39-01-01(3)) includes electric bicycles. E-bikes are excluded from 'motor vehicle' (47), 'motorcycle' (48), 'motorized bicycle' (49), 'motor-powered recreational vehicle' (50), 'recreational vehicle' (71) and 'vehicle' (104). Equipment must meet 16 CFR 1512. The motor must cut out when pedaling stops or the brakes are applied (39-10.1-09(3)).",
+  "new": "'Bicycle' (39-01-01(3)) includes electric bicycles. E-bikes are excluded from 'motor vehicle' (47), 'motorcycle' (48), 'motorized bicycle' (49), 'motor-powered recreational vehicle' (50), 'recreational vehicle' (71) and 'vehicle' (104). Equipment must meet 16 CFR 1512. 39-10.1-09(3) requires equipment so the motor 'can be disengaged or cease to function' when the rider stops pedaling or the brakes are applied. Because it says 'can', a Class 2 throttle bike complies, and Class 2 is defined as a motor 'capable of propelling the bicycle without the individual pedaling'. The watt test is 'seven hundred fifty or fewer watts', which means 750 W or less.",
+  "evidence_quote": "An electric bicycle must be equipped so the electric motor can be disengaged or cease to function when the individual operating the electric bicycle stops pedaling or when the brakes are applied.",
+  "source_url": "https://www.ndlegis.gov/cencode/t39c10-1.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "ND",
+  "field": "open_questions[0]",
+  "old": "No 2023 or 2025 bill amending the e-bike sections was found. The Century Code PDFs appear current through the 2025 session, but the update date was not confirmed.",
+  "new": "Resolved by verifier. The chapter 39-01, 39-06 and 39-10.1 PDFs on ndlegis.gov were generated June 30, 2025, after the 2025 session, and the Legislative Assembly holds no regular session in 2026. No 2025 change to the e-bike text was found.",
+  "evidence_quote": "an electric motor of seven hundred fifty or fewer watts which meets the requirements of one of the following three classes",
+  "source_url": "https://www.ndlegis.gov/cencode/t39c01.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NE",
+  "field": "license_registration_insurance.citation",
+  "old": "Neb. Rev. Stat. §§ 60-611(2), 60-640(1)",
+  "new": "Neb. Rev. Stat. §§ 60-611(2), 60-339, 60-471, 60-638, 60-640(1)",
+  "evidence_quote": "Motor vehicle does not include (1) mopeds ... and (10) bicycles as defined in section 60-611.",
+  "source_url": "https://nebraskalegislature.gov/laws/statutes.php?statute=60-339",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NE",
+  "field": "license_registration_insurance.notes",
+  "old": null,
+  "new": "'Bicycle' includes an electric bicycle (60-611(2)). The motor vehicle definitions for registration (60-339), operator's licenses (60-471) and the rules of the road (60-638) all exclude bicycles, so no registration, license or insurance applies. The quote shows an e-bike is also not a motor-driven cycle.",
+  "evidence_quote": "Motor vehicle shall mean every self-propelled land vehicle, not operated upon rails, except bicycles, mopeds",
+  "source_url": "https://nebraskalegislature.gov/laws/statutes.php?statute=60-638",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NE",
+  "field": "definition.notes",
+  "old": "Three classes created by Laws 2023, LB 138 §§ 37-41 (approved June 1, 2023). The act makes these sections operative three calendar months after the 2023 session adjourned (June 1, 2023), so about Sept 2, 2023. That date is derived, not printed in the act. Each class needs 2, 3 or 4 wheels, a saddle or seat, fully operative pedals, and a motor of 750 W or less that produces no more than 1 bhp. Class I pedal assist to 20 mph, Class II power whether or not pedaling to 20 mph, Class III pedal assist to 28 mph. 'Bicycle' includes an electric bicycle (§ 60-611), and electric bicycles are excluded from 'motor-driven cycle' (§ 60-640). Nebraska adopted only the definitions: no label rule, no Class 3 age limit, no Class 3 path rule, no speedometer rule, and no helmet rule were found. Nebraska did not appear in the PeopleForBikes index.",
+  "new": "Three classes created by Laws 2023, LB 138 §§ 37-41 (approved June 1, 2023). LB 138 § 57 makes those sections operative three calendar months after the session adjourned on June 1, 2023, and the Legislature's 2023 cross-reference table lists that date as Sept 2, 2023. Each class needs 2, 3 or 4 wheels, a saddle or seat, fully operative pedals, and a motor of 750 W or less that also produces no more than 1 bhp. The motor list ends with 'and', so both caps apply. 1 bhp is about 745.7 W, so a 746 to 750 W label fails the literal horsepower test even though the watt clause allows 750 W. Reading the horsepower clause as binding would make the 750 W clause pointless, and federal law equates 750 W with 1 h.p., so such labels stay 'unclear'. Class I pedal assist to 20 mph, Class II power whether or not pedaling to 20 mph, Class III pedal assist to 28 mph. 'Bicycle' includes an electric bicycle (§ 60-611), and electric bicycles are excluded from 'motor-driven cycle' (§ 60-640). Nebraska adopted only the definitions. No label rule, Class 3 age limit, Class 3 path rule, speedometer rule or helmet rule was found. Nebraska did not appear in the PeopleForBikes index.",
+  "evidence_quote": "41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, and 59 of this act become operative on September 2, 2023.",
+  "source_url": "https://www.NebraskaLegislature.gov/pdf/reports/revisor/datelist2023.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NE",
+  "field": "open_questions[0]",
+  "old": "Operative date of LB 138 e-bike sections is derived (three calendar months after the June 1, 2023 adjournment, about Sept 2, 2023). Confirm against a Nebraska source.",
+  "new": "Resolved by verifier. The Legislature's 2023 cross-reference table lists LB 138 §§ 37-41 as operative Sept 2, 2023.",
+  "evidence_quote": "41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, and 59 of this act become operative on September 2, 2023.",
+  "source_url": "https://www.NebraskaLegislature.gov/pdf/reports/revisor/datelist2023.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NE",
+  "field": "open_questions[1]",
+  "old": "No 2025-2026 bill changing e-bike rules was found (LB 23, a bike-share grant bill, was indefinitely postponed on 2026-04-17), but the full 109th Legislature bill list was not checked.",
+  "new": "Partly checked by verifier. The statute pages for §§ 60-611 and 60-614.02 to 60-618.03 show no amendment after LB 138, and the site includes at least 2024 laws (LB 1004 in § 60-6,279). The Unicameral Update shows no 2025 or 2026 e-bike rule bill (only a 2025 battery-recycling package). The agent's note that LB 23 (bike-share grants) was indefinitely postponed on 2026-04-17 was not re-checked. A full check of the 109th Legislature bill list is still open.",
+  "evidence_quote": "Laws 2023, LB138, § 37.",
+  "source_url": "https://nebraskalegislature.gov/laws/statutes.php?statute=60-611",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NH",
+  "field": "definition.notes",
+  "old": "WATT LIMIT IS STRICT: 'less than 750 watts', so a bike labeled exactly 750 W does NOT qualify. max_motor_watts is 749 only to encode that strict inequality for integer labels (749 is not a statutory number). Enacted by 2019 c. 93 (HB 148), approved June 19, 2019, effective Aug 18, 2019. Current RSA text shows no later amendment. 'Bicycle' includes an electric bicycle (RSA 259:6), so the general bicycle helmet rule (under 16) applies. E-bikes are excluded from 'moped', 'motorcycle' and 'motor-driven cycle'. RSA 265:144-a, VI requires the motor to cut off 'when the rider stops pedaling or when the brakes are applied', which on its face conflicts with Class 2 throttle use. E-bikes must meet CPSC 16 CFR 1512. Class 3 needs a speedometer. No minimum age for Class 1 or 2.",
+  "new": "The watt limit is strict. 'Less than 750 watts' means a bike labeled exactly 750 W does NOT qualify. max_motor_watts holds the statute's number (750) and motor_watts_comparison 'less_than' carries the strict test. Enacted by 2019 c. 93 (HB 148), approved June 19, 2019, effective Aug 18, 2019. Current RSA text shows no later amendment, and the official docket shows no 2025 or 2026 e-bike bill passed. 'Bicycle' includes an electric bicycle (RSA 259:6), so the general bicycle helmet rule (under 16) applies. E-bikes are excluded from 'moped', 'motorcycle' and 'motor-driven cycle'. RSA 265:144-a, VI requires the motor to cut off 'when the rider stops pedaling or when the brakes are applied'. Class 2 still qualifies, because RSA 259:27-a lets a Class 2 motor 'be used exclusively to propel the bicycle' and RSA 265:144-a, VI is a separate operating rule. E-bikes must meet CPSC 16 CFR 1512. Class 3 needs a speedometer. No minimum age for Class 1 or 2.",
+  "evidence_quote": "\"Electric bicycle\" shall mean a pedaled vehicle equipped with an electric motor of less than 750 watts that falls within one of the following 3 classes",
+  "source_url": "https://gc.nh.gov/rsa/html/XXI/259/259-27-a.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NH",
+  "field": "pending_changes[0].source_url",
+  "old": "https://bills.nhliberty.org/bills/2026/HB1533",
+  "new": "https://gc.nh.gov/bill_status/billinfo.aspx?id=1773",
+  "evidence_quote": "Refer for Interim Study: MA VV 02/19/2026 HJ 5 P. 35",
+  "source_url": "https://gc.nh.gov/bill_status/billinfo.aspx?id=1773",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NH",
+  "field": "pending_changes[1].source_url",
+  "old": "https://bills.nhliberty.org/bills/2026/HB1410",
+  "new": "https://gc.nh.gov/bill_status/billinfo.aspx?id=2296",
+  "evidence_quote": "Refer for Interim Study: MA VV 02/19/2026 HJ 5 P. 34",
+  "source_url": "https://gc.nh.gov/bill_status/billinfo.aspx?id=2296",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NH",
+  "field": "pending_changes[2].source_url",
+  "old": "https://bills.nhliberty.org/bills/2026/HB1703",
+  "new": "https://gc.nh.gov/bill_status/billinfo.aspx?id=2370",
+  "evidence_quote": "Inexpedient to Legislate: MA VV 02/19/2026 HJ 5 P. 36",
+  "source_url": "https://gc.nh.gov/bill_status/billinfo.aspx?id=2370",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NH",
+  "field": "open_questions[1]",
+  "old": "RSA 265:144-a, VI requires the motor to stop when the rider stops pedaling, which seems to bar Class 2 throttle use even though Class 2 is defined.",
+  "new": "Resolved by verifier. Class 2 throttle bikes qualify. RSA 259:27-a, II defines Class 2 as a motor that 'may be used exclusively to propel the bicycle', and the cut-off rule in RSA 265:144-a, VI does not change that. It sits in a separate operating section, so it does not take Class 2 out of the definition. Read with that definition, a brake cut-off satisfies it. A literal reading leaves a small equipment-citation risk, so no caution is set.",
+  "evidence_quote": "VI. An electric bicycle shall operate in a manner so that the electric motor is disengaged or ceases to function when the rider stops pedaling or when the brakes are applied.",
+  "source_url": "https://gc.nh.gov/rsa/html/XXI/265/265-144-a.htm",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NH",
+  "field": "open_questions[3]",
+  "old": "Bill statuses came from bills.nhliberty.org (a tracker), not the official gc.nh.gov docket.",
+  "new": "Resolved by verifier. The official gc.nh.gov docket shows HB 1533 and HB 1410 referred for interim study on Feb 19, 2026 and HB 1703 found inexpedient to legislate the same day. 2025 HB 715 (e-bikes) was killed on Mar 6, 2025. No 2025 or 2026 e-bike bill became law.",
+  "evidence_quote": "Inexpedient to Legislate: MA VV 03/06/2025 HJ 7 P. 21",
+  "source_url": "https://gc.nh.gov/dynamicdatadump/Docket.txt",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NM",
+  "field": "non_ebike_devices.treated_as",
+  "old": "electric mobility device, which is expressly a motor vehicle",
+  "new": "Without operable pedals and able to exceed 20 mph on motor power alone, it is an electric mobility device, which is expressly a motor vehicle. With operable pedals and 2 or 3 wheels but over 750 W or outside the class speeds, it is still an 'electric-assisted bicycle' under the general definition in 66-1-4.5(A) but in no class, so its status is unclear",
+  "evidence_quote": "\"electric-assisted bicycle\" means a vehicle having two or three wheels, fully operable pedals and an electric motor.",
+  "source_url": "https://nmlegis.gov/Sessions/23%20Regular/final/SB0069.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NM",
+  "field": "non_ebike_devices.notes",
+  "old": "A device over 750 W, with no pedals, or faster than the class limits, that can exceed 20 mph on motor power alone, is a motor vehicle. It is then presumably subject to registration, a driver or motorcycle license and insurance, though those sections were not read. Gap: a non-conforming device that CANNOT exceed 20 mph on motor alone (e.g. a 1000 W class 1 style bike) is neither an e-bike nor an electric mobility device. Treat its status as unclear.",
+  "new": "The general definition in 66-1-4.5(A) has no watt or speed cap. Each class adds a 750 W cap and a speed cut-off. An 'electric mobility device' must fail that general definition, so a pedal bike over 750 W is a classless 'electric-assisted bicycle', not a motor vehicle, and the class rules (paths, Class 3 age) do not clearly reach it. Treat it as unclear. A device without pedals that can exceed 20 mph on motor power alone is an electric mobility device and so a motor vehicle, presumably needing registration, a license and insurance (those sections were not read). A device without pedals that cannot exceed 20 mph fits neither term.",
+  "evidence_quote": "a two- or three-wheel vehicle with an electric motor for propulsion that does not meet the definition of an electric-assisted bicycle and is capable of exceeding a speed of twenty miles per hour on motor power alone",
+  "source_url": "https://nmlegis.gov/Sessions/23%20Regular/final/SB0069.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NM",
+  "field": "has_three_class_law_notes",
+  "old": "SB 69 (2023) was signed April 4, 2023 as Laws 2023, Chapter 93, and took effect July 1, 2023. No 2024 to 2026 amendment was found.",
+  "new": "SB 69 (2023) was signed April 4, 2023 as Laws 2023, Chapter 93, and took effect July 1, 2023. 2024 SB 88 re-enacted § 66-1-4.5 with the same e-bike text (it only added electronic-credential definitions), and 2025 SB 73 (Laws 2025, ch. 22) changed only how bicyclists treat stop and yield signs. No 2024 to 2026 act changed the e-bike rules.",
+  "evidence_quote": "SECTION 3. Section 66-1-4.5 NMSA 1978 (being Laws 1990, Chapter 120, Section 6, as amended) is amended to read",
+  "source_url": "https://www.nmlegis.gov/Sessions/24%20Regular/final/SB0088.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NM",
+  "field": "open_questions[0]",
+  "old": "No 2024 to 2026 bills amending 66-1-4.5, 66-3-708 or 66-3-709 were found, but the nmlegis.gov bill finder for the 2024, 2025 and 2026 sessions was not searched exhaustively.",
+  "new": "Resolved by verifier. The nmlegis.gov legislation lists for the 2024, 2025 and 2026 regular sessions and the 2024 and 2025 special sessions show no enacted e-bike bill. 2024 SB 88 re-enacted § 66-1-4.5 unchanged for e-bikes, and 2025 SB 73 covers bicycle stops only.",
+  "evidence_quote": "REQUIRE BICYCLE STOPS FOR SAFETY",
+  "source_url": "https://www.nmlegis.gov/Legislation/Legislation_List?Session=69",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NV",
+  "field": "definition.notes",
+  "old": "Three classes added in 2021 (Statutes of Nevada 2021, p. 1743). Effective date of Oct 1, 2021 is inferred from § 484B.784(2), which applies CPSC rules to e-bikes sold 'on or after October 1, 2021'. Not confirmed against the session law. The term does not include a moped or an electric scooter. E-bikes are excluded from 'vehicle' (NRS 484A.320, 482.135) and 'motor vehicle' (NRS 484A.130), and exempt from registration (NRS 482.210(1)(d)). § 484B.784(3) requires the motor to cut off when 'The rider stops pedaling' or brakes are applied, which on its face conflicts with Class 2 throttle use. No statewide minimum age and no statewide helmet rule for any class. Clark County reportedly requires helmets for riders under 18 by local ordinance (news report, not verified).",
+  "new": "Three classes added by 2021 SB 383 (Statutes of Nevada 2021, p. 1743). SB 383 has no effective-date section, so it took effect Oct 1, 2021 under NRS 218D.330(1), which matches NRS 484B.784(2). NRS 484B (revised Sept 9, 2026) shows no 2025 or later change to the e-bike sections. The term does not include a moped or an electric scooter. E-bikes are excluded from 'vehicle' (NRS 484A.320, 482.135) and 'motor vehicle' (NRS 484A.130), and exempt from registration (NRS 482.210(1)(d)). NRS 484B.784(3) requires equipment that stops the motor when the rider stops pedaling or the brakes are applied. Class 2 still qualifies, because NRS 484B.017 lets a Class 2 motor 'be used exclusively to propel the bicycle' and NRS 484B.784(3) is a separate equipment rule. No statewide minimum age and no statewide helmet rule for any class. Clark County reportedly requires helmets for riders under 18 by local ordinance (news report, not verified).",
+  "evidence_quote": "Each law and joint resolution passed by the Legislature becomes effective on October 1 following its passage, unless the law or joint resolution specifically prescribes a different effective date.",
+  "source_url": "https://www.leg.state.nv.us/NRS/NRS-218D.html",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NV",
+  "field": "pending_changes[0]",
+  "old": {
+   "bill": "ACR 4 (2025) interim study of e-bikes and e-scooters",
+   "signed": "resolution adopted (per news reports). Study began March 2026",
+   "effective_date": null,
+   "summary": "Interim study that may lead to a 2027 bill on age limits, statewide helmet rules, training, locations and fines. No rule change yet. The Legislature next meets in February 2027.",
+   "source_url": "https://www.fox5vegas.com/2026/03/10/nevada-lawmakers-kick-off-e-bike-e-scooter-study-future-laws"
+  },
+  "new": {
+   "bill": "ACR 4, 36th Special Session (2025), interim study of e-bikes, e-motorcycles and e-scooters",
+   "signed": "resolution adopted in the 36th Special Session (2025), effective on adoption. Study began March 2026",
+   "effective_date": null,
+   "summary": "Directs the Joint Interim Standing Committee on the Judiciary to review e-bike, e-motorcycle and e-scooter laws, school-zone penalties and local powers during the 2025-2026 interim and report to the 84th Session (February 2027). It may lead to a 2027 bill on age limits, helmets, training, locations and fines. No rule change yet.",
+   "source_url": "https://www.leg.state.nv.us/Session/36th2025Special/Bills/ACR/ACR4_EN.pdf"
+  },
+  "evidence_quote": "A review of the laws of this State concerning the operation of electric bicycles, electric motorcycles and electric scooters",
+  "source_url": "https://www.leg.state.nv.us/Session/36th2025Special/Bills/ACR/ACR4_EN.pdf",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NV",
+  "field": "open_questions[0]",
+  "old": "NRS 484B.784(3) requires the motor to stop when the rider stops pedaling, which seems to bar Class 2 throttle use even though Class 2 is defined.",
+  "new": "Resolved by verifier. Class 2 throttle bikes qualify. NRS 484B.017(2) defines Class 2 as a motor that 'may be used exclusively to propel the bicycle', and the cut-off rule in NRS 484B.784(3) does not change that. It sits in a separate operating section, so it does not take Class 2 out of the definition. Read with that definition, a brake cut-off satisfies it. A literal reading leaves a small equipment-citation risk, so no caution is set.",
+  "evidence_quote": "An electric bicycle operated in this State must be equipped in such a manner that the electric motor is disengaged or ceases to function when",
+  "source_url": "https://www.leg.state.nv.us/NRS/NRS-484B.html",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "NV",
+  "field": "open_questions[4]",
+  "old": "Exact effective date of the 2021 e-bike amendments was inferred, not read from the session law.",
+  "new": "Resolved by verifier. SB 383 (2021) has no effective-date section, so NRS 218D.330(1) makes it effective Oct 1, 2021.",
+  "evidence_quote": "Each law and joint resolution passed by the Legislature becomes effective on October 1 following its passage",
+  "source_url": "https://www.leg.state.nv.us/NRS/NRS-218D.html",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "C"
+ },
+ {
+  "code": "OH",
+  "field": "pending_changes[0].summary",
+  "old": "Would amend 4511.01, 4511.522 and others, and enact 4503.184 and 4508.081, to revise e-bike, low-speed micromobility and EPAMD law. Press reports describe an age floor (no riders 13 or younger), helmet rules and limits on high-powered e-bikes for under-18s. Introduced Oct 7, 2026 and in committee. Bill text not read.",
+  "new": "Bill text read (As Introduced PDF). It would bar riders under 14 from every e-bike, keep Class 3 for ages 16 and up, require a helmet for every e-bike rider and passenger at any age, bar riders under 18 from carrying passengers or renting an e-bike, cap motor-on speed on shared-use paths at 10 mph, and require $25 BMV registration for e-bikes used on public roads from six months after it takes effect, with proof of a license, permit or approved safety course. Introduced Oct 7, 2026, with no committee referral shown on Oct 16, 2026. Not law.",
+  "evidence_quote": "No person who is under ... fourteen years of age shall operate an electric bicycle.",
+  "source_url": "https://search-prod.lis.state.oh.us/api/v2/general_assembly_136/legislation/sb477/00_IN/pdf/",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "OH",
+  "field": "pending_changes[+]",
+  "old": null,
+  "new": {
+   "bill": "HB 948 (136th General Assembly), Reps. Andrea White and Kevin D. Miller",
+   "signed": null,
+   "effective_date": null,
+   "summary": "Would have ODOT and DPS publish an e-bike law summary and videos, require retailers to give each buyer an education leaflet, add sharing the road with e-bikes to online driver education, and order a DPS study of e-bike, e-moto and mini-bike rules, including Class 3 training. It does not change ages, helmets or the definition. Introduced May 19, 2026 and referred to House Transportation May 20, 2026. Not law.",
+   "source_url": "https://www.legislature.ohio.gov/legislation/136/hb948"
+  },
+  "evidence_quote": "No person shall sell at retail an electric bicycle without giving the purchaser, either on paper or electronically, a copy of the educational leaflet or pamphlet created by the department of transportation",
+  "source_url": "https://search-prod.lis.state.oh.us/api/v2/general_assembly_136/legislation/hb948/00_IN/pdf/",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "OH",
+  "field": "open_questions[0]",
+  "old": "SB 477 (introduced Oct 7, 2026) could add age limits for all e-bikes. Its text was not read. Watch it through the lame-duck session.",
+  "new": "SB 477 (introduced Oct 7, 2026) would add an under-14 ban, an all-ages helmet rule and BMV registration for every e-bike (bill text read by the verifier). It is not law. Watch it through the lame-duck session, since bills not passed by the end of 2026 die.",
+  "evidence_quote": "no person shall operate an electric bicycle ... on a public road or highway unless the electric bicycle or low-speed micromobility device is registered in accordance with this section.",
+  "source_url": "https://search-prod.lis.state.oh.us/api/v2/general_assembly_136/legislation/sb477/00_IN/pdf/",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "OH",
+  "field": "license_registration_insurance.citation",
+  "old": "Ohio Rev. Code § 4511.01(B)",
+  "new": "Ohio Rev. Code § 4511.01(B), § 4501.01(B)",
+  "evidence_quote": "As used in this chapter and Chapters 4503., 4505., 4507., 4509., 4510., 4513., 4515., and 4517. ... \"Motor vehicle\" does not include ... motorized bicycles, electric bicycles",
+  "source_url": "https://codes.ohio.gov/ohio-revised-code/section-4501.01",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "OK",
+  "field": "open_questions[0]",
+  "old": "The 2026 Oklahoma session: no e-bike enactment was found, but the oklegislature.gov 2026 bill list was not exhaustively searched. Laws passed in 2026 usually take effect Nov 1, 2026.",
+  "new": "Partly resolved by the verifier. OSCN's 2026 statutes already carry 2026 session laws that take effect Nov 1, 2026 (for example 47 O.S. 11-902, Laws 2026 c. 437), and they show no 2026 change to 1-104 or 11-1209 and no new e-bike section in Title 47. The Legislature's text search host did not resolve and its bill search needs a form, so neither was run. SB 51 (e-bike tax credit) never got past committee referral in 2025.",
+  "evidence_quote": "Laws 2019, HB 1265, c. 43, § 4, eff. November 1, 2019; Amended by Laws 2021, SB 184, c. 398, § 1, eff. November 1, 2021",
+  "source_url": "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=484120",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "OK",
+  "field": "non_ebike_devices.notes",
+  "old": "An electric moped's motor may not exceed 750 W (1-133.2), so a pedal bike over 750 W is not a moped. A 'motorized scooter' (up to 3 wheels, handlebars, a seat or foot support, electric and programmed to 35 mph or less) needs no registration, license or insurance unless a local ordinance says so, and its minimum age is 14 (1-133.3). Whether a non-conforming pedal e-bike counts as a motorized scooter or a motor-driven cycle is unresolved. Mopeds must be registered and may use streets only where a city ordinance or county board authorizes them (11-1116(E)). Moped license rules were not verified.",
+  "new": "An electric moped's motor may not exceed 750 W (1-133.2), so a pedal bike over 750 W is not a moped. A 'motorized scooter' (up to 3 wheels, handlebars, a seat or foot support, electric and programmed to 35 mph or less) needs no registration, license or insurance unless a local ordinance says so, and its minimum age is 14 (1-133.3). Whether a non-conforming pedal e-bike counts as a motorized scooter or a motor-driven cycle is unresolved. Mopeds must be registered and may use streets only where a city ordinance or county board authorizes them (11-1116(E)). Moped license rules were not verified. Two more definitions matter. A 'motor-driven cycle' (1-136) is a motor vehicle with a seat whose electric power source puts out less than 1,000 W, and a 'motorcycle' (1-135) has an electric motor of 1,000 W or more. So a pedal bike over 750 W and under 1,000 W fits the motor-driven cycle definition and may also fit the motorized scooter one.",
+  "evidence_quote": "if the power source is electric, has a power output of less than one thousand (1,000) watts",
+  "source_url": "https://www.oklegislature.gov/OK_Statutes/CompleteTitles/os47.rtf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "OK",
+  "field": "open_questions[+]",
+  "old": null,
+  "new": "1-104(B) says the motor must cut out 'when the rider stops pedaling or the brakes are applied'. The same section defines Class 2 as a throttle class, so Class 2 is kept legal, as round 1 did for similar states. No court or agency ruling was found.",
+  "evidence_quote": "shall operate in such a manner that the electric motor disengages or ceases to function when the rider stops pedaling or the brakes are applied",
+  "source_url": "https://www.oklegislature.gov/OK_Statutes/CompleteTitles/os47.rtf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "verdict_cautions[0]",
+  "old": {
+   "applies_to": "class_3",
+   "rider_under_age": null,
+   "condition": null,
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "Pennsylvania's single category is 20 mph on motor power alone. A 28 mph Class 3 is unrecognized and the agent recommends treating it as not an e-bike."
+  },
+  "new": {
+   "applies_to": "class_3",
+   "rider_under_age": null,
+   "condition": null,
+   "verdict": "unclear",
+   "valid_until": null,
+   "reason": "Pennsylvania's one category tests speed only 'when powered by the motor source only' (20 mph or less). A pedal-only 28 mph Class 3 meets that text literally, and PennDOT's crash manual (Pub 153, 07-26) codes Class 1 to 3 as bicycles, but no statute, rule or PennDOT ruling says a 28 mph assist bike is a pedalcycle with electric assist. One whose throttle goes above 20 mph fails. Return unclear, never legal."
+  },
+  "evidence_quote": "capable of a speed not more than 20 miles per hour on a level surface when powered by the motor source only",
+  "source_url": "https://www.legis.state.pa.us/WU01/LI/LI/CT/HTM/75/00.001.002.000..HTM",
+  "severity": "would_cause_false_illegal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "bike_weight_lb > 100 or min_wheel_diameter_in <= 11",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "The definition covers only a vehicle 'weighing not more than 100 pounds' with wheels 'more than 11 inches in diameter'. Heavy family cargo e-bikes over 100 lb are not pedalcycles with electric assist. One capped at 25 mph is likely a motorized pedalcycle (Class C license, registration, insurance, 16 and older). If the weight of a cargo or long-tail bike is unknown, return unclear."
+  },
+  "evidence_quote": "A vehicle weighing not more than 100 pounds with two or three wheels more than 11 inches in diameter",
+  "source_url": "https://www.legis.state.pa.us/WU01/LI/LI/CT/HTM/75/00.001.002.000..HTM",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "where_allowed.class3_restrictions",
+  "old": "Class 3 is not an e-bike in PA. See non_ebike_devices.",
+  "new": "Class 3 status is unclear (see verdict_cautions). If it counts as a pedalcycle with electric assist, the rules for other e-bikes apply, including the 16 and older age rule. If not, it is most likely a motor-driven cycle (license, registration, insurance).",
+  "evidence_quote": "\"Motor-driven cycle.\" A motorcycle, including a motor scooter, with a motor which produces not to exceed five brake horsepower.",
+  "source_url": "https://www.legis.state.pa.us/WU01/LI/LI/CT/HTM/75/00.001.002.000..HTM",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "definition.notes",
+  "old": "The definition continues: 'capable of a speed not more than 20 miles per hour on a level surface when powered by the motor source only.' Extra limits beyond the federal class model: a 100 lb maximum weight and wheels over 11 inches. 'Pedalcycle' includes a pedalcycle with electric assist, so all pedalcycle rules apply. Class 3 (28 mph assist) is not recognized. Whether a no-throttle class 3 meets 'when powered by the motor source only' is unresolved. Read conservatively, it is a motorized pedalcycle or motor-driven cycle. The legislative mirror page shows amendments through 2026.",
+  "new": "The definition ends with 'capable of a speed not more than 20 miles per hour on a level surface when powered by the motor source only.' It adds two limits beyond the federal class model, a 100 lb maximum weight and wheels over 11 inches. 'Pedalcycle' includes a pedalcycle with electric assist, so all pedalcycle rules apply. Class 3 (28 mph assist) is not named. A pedal-only Class 3 meets the 'motor source only' test literally, but no official source confirms it, so its status is unclear (see verdict_cautions). It cannot be a motorized pedalcycle, whose design speed is capped at 25 mph. The legislative mirror page shows amendments through 2026.",
+  "evidence_quote": "with a maximum design speed of no more than 25 miles per hour",
+  "source_url": "https://www.legis.state.pa.us/WU01/LI/LI/CT/HTM/75/00.001.002.000..HTM",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "non_ebike_devices.notes",
+  "old": "Per the PennDOT Micromobility Info Sheet (6/26): a motorized pedalcycle needs a Class C license and is exempt from registration. A helmet is not required. It is banned from limited-access highways. Minimum age 16. Over 25 mph, it is a motor-driven cycle: Class M or C license, registration, insurance, and a helmet under 21. Over 750 W, over 100 lb, or no pedals likewise falls outside the e-bike definition. PennDOT warns that devices not defined in the Vehicle Code may not be legally operated on highways, sidewalks or bike lanes.",
+  "new": "Per PennDOT Pub 944 (2-26 and 8-26), a motorized pedalcycle needs a Class C license, and motor-driven cycle rules apply, so it also needs registration and insurance (the 2-26 sheet marks both 'Yes'). No helmet is required. It is banned from limited-access highways, the minimum age is 16 and the design speed is capped at 25 mph. Over 25 mph it is a motor-driven cycle, which needs a Class M license (Class C if automatic and 50 cc or less), registration, insurance, and a helmet under 21. Over 750 W, over 100 lb, or no pedals likewise falls outside the e-bike definition. PennDOT warns that devices not defined in the Vehicle Code may not be legally operated on highways, sidewalks or bike lanes.",
+  "evidence_quote": "All laws that apply to motor-driven cycles (see motor scooter row) apply to motorized pedalcycles aside from the following",
+  "source_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/penndot/documents/public/pubsforms/publications/pub%20944.pdf",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "pending_changes[0]",
+  "old": {
+   "bill": "HB 2703 (2025-2026 session), Rep. Jill Cooper",
+   "signed": null,
+   "effective_date": null,
+   "summary": "Would create three classes (PeopleForBikes model), let municipalities adopt e-bike ordinances, raise fines, and bar license, registration or insurance requirements. In committee as of July 31, 2026 (WITF). Status on palegis.us not checked because the site is script-rendered.",
+   "source_url": "https://www.witf.org/2026/07/31/pa-lawmakers-push-for-changes-to-e-bike-rules-after-crashes-raise-safety-concerns/"
+  },
+  "new": {
+   "bill": "HB 2703 (2025-2026 session), Rep. Jill Cooper",
+   "signed": null,
+   "effective_date": null,
+   "summary": "Would replace the single definition with three classes (Class 3 is 28 mph pedal assist) and add a seat requirement, raise e-bike fines to $50 ($100 to $250 for careless injury), let PennDOT and local authorities limit or prohibit e-bikes on any highway or sidewalk, and bar license, registration or insurance mandates. It would take effect 60 days after enactment. Introduced July 14, 2026 and referred to House Transportation July 15, 2026, its last action as of Oct 16, 2026. Bills not passed by Nov 30, 2026 die.",
+   "source_url": "https://www.palegis.us/legislation/bills/2025/hb2703"
+  },
+  "evidence_quote": "Limiting or prohibiting their use on any highway, including the right-of-way, or sidewalks.",
+  "source_url": "https://www.palegis.us/legislation/bills/text/HTM/2025/0/HB2703/PN3779",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "pending_changes[1]",
+  "old": {
+   "bill": "SR 322 (Sen. James Malone)",
+   "signed": null,
+   "effective_date": null,
+   "summary": "Study resolution directing the Joint State Government Commission to study e-bike law. In committee.",
+   "source_url": "https://www.witf.org/2026/07/31/pa-lawmakers-push-for-changes-to-e-bike-rules-after-crashes-raise-safety-concerns/"
+  },
+  "new": {
+   "bill": "SR 322 (2025-2026 session), Sen. James Malone",
+   "signed": null,
+   "effective_date": null,
+   "summary": "Study resolution directing the Joint State Government Commission to study e-bikes and recommend an updated statutory and regulatory framework. Referred to Senate Transportation May 20, 2026, its last action as of Oct 16, 2026. A resolution cannot change the Vehicle Code.",
+   "source_url": "https://www.palegis.us/legislation/bills/2025/sr322"
+  },
+  "evidence_quote": "A Resolution directing the Joint State Government Commission to conduct a study and issue a report with recommendations for an updated statutory and regulatory framework for electric bicycles.",
+  "source_url": "https://www.palegis.us/legislation/bills/2025/sr322",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "open_questions",
+  "old": [
+   "Class 3 status: is a 28 mph pedal-assist bike with no throttle a 'pedalcycle with electric assist' under the 'powered by the motor source only' test? Treat it as NOT an e-bike until PennDOT says otherwise.",
+   "The statute text came from the legislature's legacy mirror (legis.state.pa.us/WU01), which shows 2026 amendments. The new palegis.us site is script-rendered and was not read.",
+   "Status of HB 2703 after July 2026 was not verified on the official site.",
+   "How far local ordinances can go under § 6101 uniformity is unclear."
+  ],
+  "new": [
+   "Class 3 status is unsettled. The 'motor source only' text literally admits a pedal-only 28 mph bike, and PennDOT's crash manual codes Class 3 as a bicycle, but secondary guides call it unrecognized. Treat it as unclear until PennDOT or a court rules or HB 2703 passes.",
+   "The statute text came from the legislature's legacy mirror (legis.state.pa.us/WU01), which shows 2026 amendments. The verifier read bill status on palegis.us.",
+   "Resolved by verifier. HB 2703 and SR 322 are still in the Transportation committees on palegis.us (referred July 15 and May 20, 2026).",
+   "How far local ordinances can go under § 6101 uniformity is unclear."
+  ],
+  "evidence_quote": "Last Action: Referred to Transportation, July 15, 2026",
+  "source_url": "https://www.palegis.us/legislation/bills/2025/hb2703",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "PA",
+  "field": "has_three_class_law_notes",
+  "old": "PA has a single 'pedalcycle with electric assist' category (Act 154 of 2014): 750 W, 20 mph on motor power alone, 100 lb maximum. A three-class bill, HB 2703 (Rep. Cooper, 2026), and a study resolution, SR 322, are in committee (WITF, July 31, 2026).",
+  "new": "PA has a single 'pedalcycle with electric assist' category (Act 154 of 2014) with a 750 W motor rating, 20 mph on motor power alone and a 100 lb maximum. A three-class bill, HB 2703 (Rep. Cooper), and a study resolution, SR 322, are in the Transportation committees (palegis.us, referred July 15 and May 20, 2026).",
+  "evidence_quote": "Referred to Transportation, May 20, 2026",
+  "source_url": "https://www.palegis.us/legislation/bills/2025/sr322",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "SD",
+  "field": "helmet[0].notes",
+  "old": null,
+  "new": "Passengers on a Class III must also wear a helmet at any age. Operators 18 and older need none.",
+  "evidence_quote": "any person who is a passenger on a Class III electric bicycle, regardless of age, shall wear a properly fitted and fastened bicycle helmet",
+  "source_url": "https://sdlegislature.gov/Statutes/32-20B-14",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "SD",
+  "field": "open_questions[3]",
+  "old": "No 2026 e-bike bill found. The 2025 Mickelson Trail change (SB 79, SL 2025, ch 178) is in force. The SD bill search was not run directly, so a 2026 bill could have been missed.",
+  "new": "Resolved by verifier. The Legislature's bill list (api/Bills/Session/71) shows no 2026 e-bike bill. In 2025 only SB 79 (Mickelson Trail, enacted as SL 2025, ch 178) and HB 1125 (a share-the-road plate) touched bicycles.",
+  "evidence_quote": "permit the operation of a Class I electric bicycle on the Mickelson Trail.",
+  "source_url": "https://sdlegislature.gov/api/Bills/Session/70",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "max_wheel_diameter_in < 20",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "Tennessee's definition needs two or three wheels 'any of which is twenty inches (20\") or more in diameter'. A kids' e-bike with 12 to 18 inch wheels is not an electric bicycle in Tennessee and loses the exemption from motor-vehicle law. If wheel size is unknown for a youth or compact bike, return unclear."
+  },
+  "evidence_quote": "equipped with two (2) or three (3) wheels, any of which is twenty inches (20\") or more in diameter",
+  "source_url": "https://publications.tnsosfiles.com/acts/109/pub/pc0823.pdf",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "pending_changes[0].signed",
+  "old": "2026-04-06",
+  "new": "2026-04-01",
+  "evidence_quote": "Signed by Governor. 04/01/2026",
+  "source_url": "https://wapp.capitol.tn.gov/apps/BillInfo/Default.aspx?BillNumber=SB1782&GA=114",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "pending_changes[0].effective_date",
+  "old": "2026-04-06 (Section 1, local and state-agency regulation, Class 3 path rule), 2026-07-01 (Section 2, Class 3 age 16)",
+  "new": "2026-04-01 (Section 1, local and state-agency regulation, Class 3 path rule), 2026-07-01 (Section 2, Class 3 age 16)",
+  "evidence_quote": "Effective date(s) 04/01/2026, 07/01/2026",
+  "source_url": "https://wapp.capitol.tn.gov/apps/BillInfo/Default.aspx?BillNumber=SB1782&GA=114",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "where_allowed.effective_date",
+  "old": "2026-04-06",
+  "new": "2026-04-01",
+  "evidence_quote": "Section 1 of this act takes effect upon becoming a law, the public welfare requiring it.",
+  "source_url": "https://publications.tnsosfiles.com/acts/114/pub/pc0651.pdf",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "where_allowed.roads",
+  "old": "Class 1 and 2 allowed anywhere bicycles may travel, but since April 6, 2026 a local government (by ordinance) or a state agency (by rule) may regulate or prohibit Class 1 and 2 on any part of a street or highway where bicycles travel, including state highways, for public safety. Class 3 needs a speedometer to be on a street or highway (§ 55-8-305(b)). Bicycle traffic rules apply (§ 55-8-172).",
+  "new": "Class 1 and 2 allowed anywhere bicycles may travel, but since April 1, 2026 a local government (by ordinance) or a state agency (by rule) may regulate or prohibit Class 1 and 2 on any part of a street or highway where bicycles travel, including state highways, for public safety. Class 3 needs a speedometer to be on a street or highway (§ 55-8-305(b)). Bicycle traffic rules apply (§ 55-8-172).",
+  "evidence_quote": "Signed by Governor. 04/01/2026",
+  "source_url": "https://wapp.capitol.tn.gov/apps/BillInfo/Default.aspx?BillNumber=SB1782&GA=114",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "local_authority.effective_date",
+  "old": "2026-04-06",
+  "new": "2026-04-01",
+  "evidence_quote": "Section 1 of this act takes effect upon becoming a law, the public welfare requiring it.",
+  "source_url": "https://publications.tnsosfiles.com/acts/114/pub/pc0651.pdf",
+  "severity": "citation_only",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "local_authority.details",
+  "old": "Since April 6, 2026 local governments can regulate or ban Class 1 and 2 on any street, highway (including state highways), bike lane, shoulder, path or trail in their jurisdiction if needed for public safety. State agencies (for example state parks) can do the same by rule or policy. Local rules must use the state class definitions (§ 55-8-306(a)(5)). On roadways, e-bikes may be restricted to the same extent as bicycles (§ 55-8-306(b)). 'Regulate' plausibly includes age limits, but no statute names age limits expressly.",
+  "new": "Since April 1, 2026 local governments can regulate or ban Class 1 and 2 on any street, highway (including state highways), bike lane, shoulder, path or trail in their jurisdiction if needed for public safety. State agencies (for example state parks) can do the same by rule or policy. Local rules must use the state class definitions (§ 55-8-306(a)(5)). On roadways, e-bikes may be restricted to the same extent as bicycles (§ 55-8-306(b)). 'Regulate' plausibly includes age limits, but no statute names age limits expressly.",
+  "evidence_quote": "Signed by Governor. 04/01/2026",
+  "source_url": "https://wapp.capitol.tn.gov/apps/BillInfo/Default.aspx?BillNumber=SB1782&GA=114",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TN",
+  "field": "open_questions[3]",
+  "old": "Could not open the official Lexis code. Text was read from the 2016 and 2026 enrolled acts plus the TDOT page. Amendments between 2017 and 2025 were not found in searches but cannot be fully ruled out.",
+  "new": "The verifier did not open Lexis either. General Assembly records show only Pub. Ch. 388 (2019, scooters, which amended 55-8-101 and not the e-bike definition) and Pub. Ch. 651 (2026) touching these sections since 2016, so the 2016 text of 55-8-301(4), with 'less than' 750 W and the 20 inch wheel rule, is very likely current.",
+  "evidence_quote": "excluding electric scooters, electric bicycles as defined in § 55-8-301, motorized bicycles",
+  "source_url": "https://publications.tnsosfiles.com/acts/111/pub/pc0388.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TX",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "max_wheel_diameter_in <= 14",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "An electric bicycle must first be a 'bicycle', which needs a wheel 'more than 14 inches in diameter' (541.201(2)). E-balance bikes and compact folders whose wheels are all 14 inches or smaller are not electric bicycles in Texas and lose the e-bike exemptions. If wheel size is unknown for a small bike, return unclear."
+  },
+  "evidence_quote": "two tandem wheels at least one of which is more than 14 inches in diameter",
+  "source_url": "https://statutes.capitol.texas.gov/Docs/TN/htm/TN.541.htm",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "TX",
+  "field": "open_questions[4]",
+  "old": "Texas has no regular session in 2026. 2025 e-bike bills SB 1865 and HB 4089 died in committee (per bill trackers, not confirmed on capitol.texas.gov). SB 2039 (2025) created a 'sidewalk user' term that covers bicycles, effective Sept 1, 2025, and was not reviewed in detail.",
+  "new": "Texas has no regular session in 2026. Confirmed on capitol.texas.gov that SB 1865 (referred to Transportation Mar 17, 2025) and HB 4089 (left pending in committee May 8, 2025) died. Chapters 551 and 664 show no 2025 amendments. SB 2039 (2025) only defined 'sidewalk user' (541.001), which includes bicycle riders on sidewalks.",
+  "evidence_quote": "05/08/2025 H Left pending in committee",
+  "source_url": "https://capitol.texas.gov/BillLookup/History.aspx?LegSess=89R&Bill=HB4089",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "UT",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "min_wheel_diameter_in < 14",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "Utah's 'bicycle' must have wheels 'not less than 14 inches in diameter', and an electric assisted bicycle must be a bicycle. A 12 inch e-balance bike is not an e-bike in Utah. If wheel size is unknown for a small bike, return unclear."
+  },
+  "evidence_quote": "whose wheels are not less than 14 inches in diameter",
+  "source_url": "https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-S102_2026050620261001.html",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "UT",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "throttle_max_mph > 20 or has_foot_pegs or needs_pedal_kit",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "The definition excludes a bike with foot pegs at manufacture, one that needs a pedal kit, and a multi-mode throttle bike with any mode above 20 mph on motor power alone. A throttle that tops out at exactly 20 mph is the Class 2 gray zone (see the class_2 caution). A class label does not show these, so ask before returning legal."
+  },
+  "evidence_quote": "if equipped with multiple operating modes and a throttle, has one or more modes that exceed 20 miles per hour on motor power alone",
+  "source_url": "https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-S102_2026050620261001.html",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "UT",
+  "field": "helmet[0].notes",
+  "old": null,
+  "new": "Applies on highways. Riders of a Class 1 e-bike rented from a business are exempt (41-6a-1505(3)).",
+  "evidence_quote": "This section does not apply to an individual operating a class 1 electric assisted bicycle or a motor assisted scooter rented from a business or corporate entity.",
+  "source_url": "https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-S1505_2026050620260506.html",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "UT",
+  "field": "open_questions[3]",
+  "old": "Laws of Utah 2026 ch. 292 also amended § 41-6a-102 effective Oct 1, 2026. Its subject was not identified. The text recorded here is the Oct 1, 2026 version.",
+  "new": "Resolved by verifier. Laws of Utah 2026 ch. 292 is HB 22, Vintage Vehicle Amendments (effective Oct 1, 2026). Its subject is vintage vehicles, and the Oct 1, 2026 text of the e-bike definitions matches the one recorded here.",
+  "evidence_quote": "HB0022S04 Vintage Vehicle Amendments Thurston, N. 02/26/2026 10/01/2026 GSIGN 03/23/2026 292",
+  "source_url": "https://le.utah.gov/asp/passedbills/passedbills.asp?session=2026GS",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "VA",
+  "field": "open_questions[0]",
+  "old": "What exactly 2026 Acts c. 114 changed in § 46.2-906.1 was not checked. The current text was read.",
+  "new": "Partly resolved by the verifier. LIS lists 46.2-906.1 (c. 114) as the only 2026 change among the e-bike sections, and its current text still lets localities require helmets for e-bike riders 14 and under. The 2026 update list shows no change to 46.2-100, 46.2-904.1 or 46.2-908.1.",
+  "evidence_quote": "The governing body of any county, city, or town may, by ordinance, provide that every person 14 years of age or younger shall wear a protective helmet",
+  "source_url": "https://law.lis.virginia.gov/vacode/title46.2/chapter8/section46.2-906.1/",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "WA",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "(wheel_count == 2 and max_wheel_diameter_in < 16) or (wheel_count == 3 and max_wheel_diameter_in < 20)",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "An electric-assisted bicycle must be a 'bicycle', and RCW 46.04.071 needs two tandem wheels 'either of which is sixteen inches or more', or three wheels with one of 20 inches or more. A 12 or 14 inch kids' e-bike likely counts as a moped (driver's license, moped permit). If wheel size is unknown for a small bike, return unclear."
+  },
+  "evidence_quote": "having two tandem wheels either of which is sixteen inches or more in diameter, or three wheels, any one of which is twenty inches or more in diameter",
+  "source_url": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.04.071",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "WA",
+  "field": "verdict_cautions[+]",
+  "old": null,
+  "new": {
+   "applies_to": "all_ebikes",
+   "rider_under_age": null,
+   "condition": "motor_only_max_mph > 20 or switchable_out_of_class",
+   "verdict": "not_an_ebike",
+   "valid_until": null,
+   "reason": "Since June 11, 2026 the definition excludes any vehicle that can exceed 20 mph on its motor alone and any bike sold to be easily switched out of the class limits by a button, setting or app. A Class 2 or 3 label does not show this, so ask before returning legal."
+  },
+  "evidence_quote": "Any vehicle capable of exceeding 20 miles per hour on solely its electric motor",
+  "source_url": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.04.169",
+  "severity": "would_cause_false_legal",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "WA",
+  "field": "pending_changes_notes",
+  "old": null,
+  "new": "HB 2374 (2026), 'Concerning electric-assisted bicycle and electric motorcycle regulation', died in House Rules when the 2026 session ended. No Washington e-bike law with a future effective date exists. Changes would come in the 2027 session, which starts in January, likely from the DOL work group's draft legislation.",
+  "evidence_quote": "Concerning electric-assisted bicycle and electric motorcycle regulation.",
+  "source_url": "https://app.leg.wa.gov/billsummary?BillNumber=2374&Year=2026",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ },
+ {
+  "code": "WY",
+  "field": "open_questions[4]",
+  "old": "No 2025 or 2026 e-bike amendments found. The May 8, 2026 Title 31 compilation shows the 2019 text unchanged.",
+  "new": "Confirmed by the verifier. The Legislature's 2025 and 2026 bill lists contain no e-bike bill, and the May 8, 2026 Title 31 compilation, made after the 2026 session, shows the 2019 text unchanged.",
+  "evidence_quote": "an electric motor of less than seven hundred fifty (750) watts that meets the requirements of one (1) of the following three (3) classes",
+  "source_url": "https://wyoleg.gov/statutes/compress/title31.pdf",
+  "severity": "cosmetic",
+  "round": 2,
+  "group": "D"
+ }
+]
