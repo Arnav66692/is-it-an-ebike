@@ -65,10 +65,11 @@ function weightInterval(f: BikeFacts): Interval {
   return ANY;
 }
 
-/** Rated watts. If only a peak figure is known, rated watts are at most the peak. */
+/** Rated watts. If only a peak or unlabeled figure is known, rated watts are at most that. */
 export function ratedWattsInterval(f: BikeFacts): Interval {
   if (f.ratedWatts !== null) return exactly(f.ratedWatts);
-  if (f.peakWatts !== null) return { lo: 0, loOpen: false, hi: f.peakWatts, hiOpen: false };
+  const bounds = [f.peakWatts, f.wattsUpTo].filter((v): v is number => v !== null);
+  if (bounds.length > 0) return { lo: 0, loOpen: false, hi: Math.min(...bounds), hiOpen: false };
   return ANY;
 }
 

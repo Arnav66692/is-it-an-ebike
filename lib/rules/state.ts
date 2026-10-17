@@ -123,7 +123,7 @@ function checkWatts(cs: CompiledState, f: BikeFacts, date: string): DeviceResult
   if (maxWatts === null && maxHp !== null) {
     const capW = maxHp * WATTS_PER_HP;
     if (compare(iv, "<", capW) === true) return ok;
-    if (f.ratedWatts === null && f.peakWatts === null) {
+    if (f.ratedWatts === null && f.peakWatts === null && f.wattsUpTo === null) {
       return device("cant_confirm", line("watts_unknown", undefined, cs.def.source));
     }
     return device("cant_confirm", line("hp_cap_unclear", { hp: maxHp }, cs.def.source));
@@ -159,6 +159,9 @@ function checkWatts(cs: CompiledState, f: BikeFacts, date: string): DeviceResult
 
   if (f.ratedWatts === null && f.peakWatts !== null) {
     return device("cant_confirm", line("watts_peak_only", { peak: f.peakWatts, cap: maxWatts }, cs.def.source));
+  }
+  if (f.ratedWatts === null && f.wattsUpTo !== null) {
+    return device("cant_confirm", line("watts_upper_only", { watts: f.wattsUpTo, cap: maxWatts }, cs.def.source));
   }
   return device("cant_confirm", line("watts_unknown", undefined, cs.def.source));
 }

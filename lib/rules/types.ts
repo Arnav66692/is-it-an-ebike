@@ -19,6 +19,8 @@ export interface BikeFacts {
   /** Rated, nominal or continuous motor watts. An unqualified number on a label counts as rated. */
   ratedWatts: number | null;
   peakWatts: number | null;
+  /** A watt figure from a listing that doesn't say rated or peak. Rated watts are at most this. */
+  wattsUpTo: number | null;
   hasThrottle: Tri;
   /** Top throttle speed stated for some mode. */
   throttleMph: number | null;
@@ -120,6 +122,7 @@ export function emptyFacts(): BikeFacts {
     classes: [],
     ratedWatts: null,
     peakWatts: null,
+    wattsUpTo: null,
     hasThrottle: null,
     throttleMph: null,
     assistMph: null,
