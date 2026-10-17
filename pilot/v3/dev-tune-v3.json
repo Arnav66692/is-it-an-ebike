@@ -1,0 +1,962 @@
+{
+ "photos": 71,
+ "complete": true,
+ "rule": {
+  "pedal_queries": [
+   "chain"
+  ],
+  "peg_queries": [],
+  "score_type": "max_logit",
+  "whole_object_weight": 1.0,
+  "whole_object_queries": {
+   "plus": [
+    "bicycle",
+    "electric bicycle"
+   ],
+   "minus": [
+    "motorcycle",
+    "dirt bike"
+   ]
+  },
+  "threshold": -0.10474004596471786
+ },
+ "candidates_searched": 1140,
+ "apparent_dev": {
+  "overall": {
+   "right": 66,
+   "of": 71
+  },
+  "no_pedal": {
+   "right": 31,
+   "of": 31
+  },
+  "pedal": {
+   "right": 35,
+   "of": 40
+  },
+  "hard_pedal_v2": {
+   "right": 22,
+   "of": 27
+  },
+  "real_world_v2": {
+   "right": 14,
+   "of": 19
+  },
+  "v1": {
+   "right": 12,
+   "of": 12
+  },
+  "v2_train": {
+   "right": 33,
+   "of": 35
+  },
+  "v2_test_spent": {
+   "right": 21,
+   "of": 24
+  }
+ },
+ "nested_leave_one_out": {
+  "overall": {
+   "right": 63,
+   "of": 71
+  },
+  "no_pedal": {
+   "right": 29,
+   "of": 31
+  },
+  "pedal": {
+   "right": 34,
+   "of": 40
+  },
+  "hard_pedal_v2": {
+   "right": 21,
+   "of": 27
+  },
+  "real_world_v2": {
+   "right": 14,
+   "of": 19
+  },
+  "v1": {
+   "right": 12,
+   "of": 12
+  },
+  "v2_train": {
+   "right": 32,
+   "of": 35
+  },
+  "v2_test_spent": {
+   "right": 19,
+   "of": 24
+  }
+ },
+ "loo_rule_picks": [
+  {
+   "count": 69,
+   "rule": {
+    "pedal_queries": [
+     "chain"
+    ],
+    "peg_queries": [],
+    "score_type": "max_logit",
+    "whole_object_weight": 1.0,
+    "whole_object_queries": {
+     "plus": [
+      "bicycle",
+      "electric bicycle"
+     ],
+     "minus": [
+      "motorcycle",
+      "dirt bike"
+     ]
+    },
+    "threshold": null
+   }
+  },
+  {
+   "count": 1,
+   "rule": {
+    "pedal_queries": [
+     "chain"
+    ],
+    "peg_queries": [
+     "footrest"
+    ],
+    "score_type": "max_prob",
+    "whole_object_weight": 1.0,
+    "whole_object_queries": {
+     "plus": [
+      "bicycle",
+      "electric bicycle"
+     ],
+     "minus": [
+      "motorcycle",
+      "dirt bike"
+     ]
+    },
+    "threshold": null
+   }
+  },
+  {
+   "count": 1,
+   "rule": {
+    "pedal_queries": [
+     "bicycle pedal",
+     "pedal",
+     "bicycle pedals",
+     "chainring",
+     "bicycle chainring",
+     "bicycle chain",
+     "chain"
+    ],
+    "peg_queries": [],
+    "score_type": "max_logit",
+    "whole_object_weight": 1.0,
+    "whole_object_queries": {
+     "plus": [
+      "bicycle",
+      "electric bicycle"
+     ],
+     "minus": [
+      "motorcycle",
+      "dirt bike"
+     ]
+    },
+    "threshold": null
+   }
+  }
+ ],
+ "context_best_threshold_any": {
+  "right": 66,
+  "of": 71,
+  "no_pedal_right": 31,
+  "threshold": -0.0860423743724823
+ },
+ "time_ms_20_queries": {
+  "mean_all": 10077,
+  "mean_long_side_le_1024": 9388,
+  "max": 22893
+ },
+ "per_photo": [
+  {
+   "file": "train_09.jpg",
+   "set": "v2_train",
+   "product": "Torrot Motocross (kids, MY26)",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -6.2852,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_16.jpg",
+   "set": "v2_train",
+   "product": "Razor SX500 McGrath Dirt Rocket",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -4.87,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_03.jpg",
+   "set": "v2_train",
+   "product": "Zero MX (2011)",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -3.9819,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_04.jpg",
+   "set": "v2_train",
+   "product": "Torrot Supermotard (kids)",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -3.9811,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_33.jpg",
+   "set": "v2_train",
+   "product": "Razor MX500 Dirt Rocket",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -3.623,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_04.jpg",
+   "set": "v2_test",
+   "product": "KTM Freeride E-XC (2023)",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -3.4954,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_30.jpg",
+   "set": "v2_train",
+   "product": "Zero X",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -3.4208,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "photo_12_2e8a.jpg",
+   "set": "v1",
+   "product": "MotoTec 48v Pro 1800W Electric Dirt Bike",
+   "pedals": "no",
+   "style": null,
+   "setting": null,
+   "score": -3.178,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_01.jpg",
+   "set": "v2_test",
+   "product": "Razor RSF650",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -3.1537,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "photo_10_71f2.jpg",
+   "set": "v1",
+   "product": "Sur-Ron Electric Dirt Bike 1a.jpg",
+   "pedals": "no",
+   "style": null,
+   "setting": null,
+   "score": -2.5176,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_07.jpg",
+   "set": "v2_train",
+   "product": "Torrot Electric T10 Trial (2015)",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "real_world",
+   "score": -2.4058,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_06.jpg",
+   "set": "v2_test",
+   "product": "Razor MX650 Dirt Rocket",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -2.3578,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_22.jpg",
+   "set": "v2_train",
+   "product": "E Ride Pro MINI R",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "studio",
+   "score": -2.3056,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_17.jpg",
+   "set": "v2_test",
+   "product": "E Ride Pro PRO SS 3.0",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "studio",
+   "score": -2.2756,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_07.jpg",
+   "set": "v2_test",
+   "product": "Razor MX350 Dirt Rocket",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -2.1065,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_31.jpg",
+   "set": "v2_train",
+   "product": "KTM SX-E 5 (2025)",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -1.8014,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_22.jpg",
+   "set": "v2_test",
+   "product": "Stark VARG",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -1.6888,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_18.jpg",
+   "set": "v2_test",
+   "product": "Hiboy DK1",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "real_world",
+   "score": -1.587,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_06.jpg",
+   "set": "v2_train",
+   "product": "STACYC 12eDRIVE",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -1.5245,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "photo_02_63ac.jpg",
+   "set": "v1",
+   "product": "Talaria Sting Pro 01.jpg",
+   "pedals": "no",
+   "style": null,
+   "setting": null,
+   "score": -1.4756,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "photo_08_3340.jpg",
+   "set": "v1",
+   "product": "Hiboy DM14 Electric Dirt Bike",
+   "pedals": "no",
+   "style": null,
+   "setting": null,
+   "score": -1.3283,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_01.jpg",
+   "set": "v2_train",
+   "product": "Kuberg Trial E (2014)",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "real_world",
+   "score": -1.2719,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_34.jpg",
+   "set": "v2_train",
+   "product": "SUPER73-R Adventure",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": -1.0304,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "file": "test_05.jpg",
+   "set": "v2_test",
+   "product": "E Ride Pro SR",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "studio",
+   "score": -0.9647,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_08.jpg",
+   "set": "v2_test",
+   "product": "Zero FX ZF5.7",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -0.8388,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_27.jpg",
+   "set": "v2_train",
+   "product": "79Bike Falcon Pro",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "studio",
+   "score": -0.7714,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_20.jpg",
+   "set": "v2_test",
+   "product": "Monday Motorbikes Piezo",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": -0.7274,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "file": "train_05.jpg",
+   "set": "v2_train",
+   "product": "79Bike Viper S",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "studio",
+   "score": -0.7229,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_02.jpg",
+   "set": "v2_train",
+   "product": "SONDORS Original (fat tire)",
+   "pedals": "yes",
+   "style": "fat_tire",
+   "setting": "real_world",
+   "score": -0.5382,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "file": "test_19.jpg",
+   "set": "v2_test",
+   "product": "Cake Kalk",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -0.4308,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_23.jpg",
+   "set": "v2_test",
+   "product": "SUPER73-ZX",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": -0.3315,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "file": "train_20.jpg",
+   "set": "v2_train",
+   "product": "Hiboy BK1",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -0.2762,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_12.jpg",
+   "set": "v2_test",
+   "product": "SUPER73-K1D",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -0.2409,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_14.jpg",
+   "set": "v2_test",
+   "product": "Monday Motorbikes Anza (500S or 750S)",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": -0.2379,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "file": "test_02.jpg",
+   "set": "v2_test",
+   "product": "Razor MX125 Dirt Rocket",
+   "pedals": "no",
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": -0.1287,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "train_26.jpg",
+   "set": "v2_train",
+   "product": "79Bike Lynx",
+   "pedals": "no",
+   "style": "emoto",
+   "setting": "studio",
+   "score": -0.1234,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "file": "test_11.jpg",
+   "set": "v2_test",
+   "product": "Juiced Scrambler",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": -0.086,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_29.jpg",
+   "set": "v2_train",
+   "product": "Rad Power Bikes RadWagon 5",
+   "pedals": "yes",
+   "style": "cargo",
+   "setting": "studio",
+   "score": -0.0118,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_21.jpg",
+   "set": "v2_train",
+   "product": "Rad Power Bikes RadExpand 5 Plus",
+   "pedals": "yes",
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.0044,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_11_8e66.jpg",
+   "set": "v1",
+   "product": "Grizzly 72V - PPB",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 0.1697,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_32.jpg",
+   "set": "v2_train",
+   "product": "Ride1Up Revv 1 FS",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.1845,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_25.jpg",
+   "set": "v2_train",
+   "product": "ENGWE M20 2.0",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.1935,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_13.jpg",
+   "set": "v2_test",
+   "product": "Macfox X7",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.1986,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_03_0977.jpg",
+   "set": "v1",
+   "product": "Ramblas ADV Ebike",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 0.2511,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_17.jpg",
+   "set": "v2_train",
+   "product": "Jansno X90",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.4481,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_15.jpg",
+   "set": "v2_train",
+   "product": "Coswheel R19",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.4779,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_08.jpg",
+   "set": "v2_train",
+   "product": "Monday Motorbikes Antero",
+   "pedals": "yes",
+   "style": "mtb",
+   "setting": "real_world",
+   "score": 0.5139,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_14.jpg",
+   "set": "v2_train",
+   "product": "Ariel Rider MUDD 72V PPB",
+   "pedals": "yes",
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.548,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_09.jpg",
+   "set": "v2_test",
+   "product": "Jansno X70",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": 0.5498,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_09_6133.jpg",
+   "set": "v1",
+   "product": "SUPER73-Z Miami",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 0.5702,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_24.jpg",
+   "set": "v2_test",
+   "product": "Ariel Rider Kepler 52V",
+   "pedals": "yes",
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.588,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_13.jpg",
+   "set": "v2_train",
+   "product": "HOVSCO HovGtrs",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.6369,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_18.jpg",
+   "set": "v2_train",
+   "product": "Jansno X50",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.6471,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_24.jpg",
+   "set": "v2_train",
+   "product": "Cyrusher Bronco",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.7523,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_04_7c03.jpg",
+   "set": "v1",
+   "product": "SUPER73-S2 SE",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 0.8113,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_21.jpg",
+   "set": "v2_test",
+   "product": "Ariel Rider X-Class 60V",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.9215,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_12.jpg",
+   "set": "v2_train",
+   "product": "Cyrusher Kommoda 3.0",
+   "pedals": "yes",
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.933,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_23.jpg",
+   "set": "v2_train",
+   "product": "Cyrusher Glider",
+   "pedals": "yes",
+   "style": "cargo",
+   "setting": "studio",
+   "score": 1.0046,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_35.jpg",
+   "set": "v2_train",
+   "product": "Jansno X80",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 1.0493,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_01_229b.jpg",
+   "set": "v1",
+   "product": "Level 3 Ebike",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 1.0826,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_07_63b4.png",
+   "set": "v1",
+   "product": "RadRunner\u2122 Plus Electric Cargo Utility Bike",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 1.1248,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_28.jpg",
+   "set": "v2_train",
+   "product": "Stromer ST5",
+   "pedals": "yes",
+   "style": "commuter",
+   "setting": "real_world",
+   "score": 1.128,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_11.jpg",
+   "set": "v2_train",
+   "product": "ENGWE L20 2.0",
+   "pedals": "yes",
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 1.1622,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_19.jpg",
+   "set": "v2_train",
+   "product": "SUPER73-R Brooklyn SE",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 1.2332,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_06_08bd.png",
+   "set": "v1",
+   "product": "XP4 750 Pine Green eBike [CA]",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 1.3626,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_15.jpg",
+   "set": "v2_test",
+   "product": "Lectric XPeak2 High-Step",
+   "pedals": "yes",
+   "style": "mtb",
+   "setting": "studio",
+   "score": 1.447,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "photo_05_2a13.png",
+   "set": "v1",
+   "product": "EB5 Roamer ST Ebike",
+   "pedals": "yes",
+   "style": null,
+   "setting": null,
+   "score": 1.5009,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_10.jpg",
+   "set": "v2_test",
+   "product": "Lectric XPedition2",
+   "pedals": "yes",
+   "style": "cargo",
+   "setting": "studio",
+   "score": 1.7133,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_03.jpg",
+   "set": "v2_test",
+   "product": "Ruff Cycles The Ruffian",
+   "pedals": "yes",
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": 1.7602,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "train_10.jpg",
+   "set": "v2_train",
+   "product": "CUBE Reaction Hybrid Pro 500 (2019)",
+   "pedals": "yes",
+   "style": "mtb",
+   "setting": "real_world",
+   "score": 1.8258,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "file": "test_16.jpg",
+   "set": "v2_test",
+   "product": "Rad Power Bikes Radster Road",
+   "pedals": "yes",
+   "style": "commuter",
+   "setting": "studio",
+   "score": 2.1228,
+   "call": "pedals",
+   "right": true
+  }
+ ]
+}
