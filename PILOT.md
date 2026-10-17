@@ -192,3 +192,7 @@ Committed before any timing, on Sat Oct 17, 2026, PT. This is step 1 of v3 only.
 - **Raw records.** `pilot/v3/speed-webgpu.json` and `pilot/v3/speed-wasm.json`. The timing page is `pilot/v3/owl-speed.html`.
 
 **Decision.** v3 can't go ahead with this file. The quantized class head uses a Cast step the browser runtime can't run on either backend. Other files exist for the same model: fp16 307.9 MB, q4f16 128.4 MB, q4 194.0 MB, bnb4 186.2 MB and uint8 163.2 MB. Each would be a new download and a new speed check, so none was tried without Arnav's OK.
+
+### Retry with other files (Arnav approved: q4f16 first, fp16 only if q4f16 fails to load, then stop)
+
+- **Attempt A, committed before it ran.** File `onnx/model_q4f16.onnx` from `Xenova/owlv2-base-patch16-ensemble` (128,434,817 bytes), dtype q4f16, backend WebGPU. The timing method and the stop rule are the same as above: the mean over `train_01` to `train_03` after one warm-up on `train_01`, with download and load not counted, and v3 stops if the mean is over 15 seconds. If it loads and the mean is over 15 seconds, v3 stops and fp16 is not tried.
