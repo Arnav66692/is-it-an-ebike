@@ -1,0 +1,477 @@
+{
+ "method": "pedal-sorter-v2 (tile score only)",
+ "note": "No trained weights, so these are plain scores. The prompt pair, tile grid and threshold were chosen on these same photos, so the dev numbers are optimistic.",
+ "threshold": 0.014102635987677359,
+ "rows": [
+  {
+   "photo": "train/train_01.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "real_world",
+   "score": 0.012742320928531031,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_02.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "fat_tire",
+   "setting": "real_world",
+   "score": -0.003939848350463626,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "photo": "train/train_03.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "real_world",
+   "score": 0.009205284988144047,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_04.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.012343892882105467,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_05.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "studio",
+   "score": 0.005083586570340359,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_06.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.01066240938768842,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_07.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "real_world",
+   "score": 0.011345012475383082,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_08.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "mtb",
+   "setting": "real_world",
+   "score": 0.020290184556427726,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_09.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.007347762848635947,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_10.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "mtb",
+   "setting": "real_world",
+   "score": 0.024494351024844374,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_11.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.02861966349458267,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_12.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.01863976203119272,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_13.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.011545774483214588,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "photo": "train/train_14.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.01814294414722145,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_15.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.014889051913727358,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_16.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.009858276802058447,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_17.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.012203041747605836,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "photo": "train/train_18.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.019268431453714985,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_19.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.01485458676476692,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_20.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.01034206397945775,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_21.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.015329717765446893,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_22.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "studio",
+   "score": 0.007457888211943986,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_23.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "cargo",
+   "setting": "studio",
+   "score": 0.02544982529742079,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_24.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.017219981653458116,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_25.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.022580647277784194,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_26.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "studio",
+   "score": 0.008279434060450619,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_27.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "studio",
+   "score": 0.009357385202012958,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_28.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "commuter",
+   "setting": "real_world",
+   "score": 0.028141585592533547,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_29.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "cargo",
+   "setting": "studio",
+   "score": 0.014809208201656376,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_30.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -0.004564627265415899,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_31.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.0012822041393215078,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_32.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.02224631223371132,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_33.jpg",
+   "set": "train",
+   "pedals": false,
+   "style": "kids_dirt_bike",
+   "setting": "studio",
+   "score": 0.008760917253895995,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "train/train_34.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "real_world",
+   "score": 0.01260838110393775,
+   "call": "no pedals",
+   "right": false
+  },
+  {
+   "photo": "train/train_35.jpg",
+   "set": "train",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.02495063448378626,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_01_229b.jpg",
+   "set": "v1",
+   "pedals": true,
+   "style": "commuter",
+   "setting": "studio",
+   "score": 0.031257427804095905,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_02_63ac.jpg",
+   "set": "v1",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -0.005721545740560552,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_03_0977.jpg",
+   "set": "v1",
+   "pedals": true,
+   "style": "mtb",
+   "setting": "studio",
+   "score": 0.021019549123741044,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_04_7c03.jpg",
+   "set": "v1",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.018455854884828538,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_05_2a13.png",
+   "set": "v1",
+   "pedals": true,
+   "style": "commuter",
+   "setting": "studio",
+   "score": 0.030322651294473174,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_06_08bd.png",
+   "set": "v1",
+   "pedals": true,
+   "style": "fat_tire",
+   "setting": "studio",
+   "score": 0.03566178357369104,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_07_63b4.png",
+   "set": "v1",
+   "pedals": true,
+   "style": "commuter",
+   "setting": "studio",
+   "score": 0.03157797802629281,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_08_3340.jpg",
+   "set": "v1",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "studio",
+   "score": 0.013396063773698341,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_09_6133.jpg",
+   "set": "v1",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.017654655095062532,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_10_71f2.jpg",
+   "set": "v1",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "real_world",
+   "score": -0.00007466254016852414,
+   "call": "no pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_11_8e66.jpg",
+   "set": "v1",
+   "pedals": true,
+   "style": "moto_styled",
+   "setting": "studio",
+   "score": 0.016050766657959264,
+   "call": "pedals",
+   "right": true
+  },
+  {
+   "photo": "photos/photo_12_2e8a.jpg",
+   "set": "v1",
+   "pedals": false,
+   "style": "emoto",
+   "setting": "studio",
+   "score": 0.004883448797885659,
+   "call": "no pedals",
+   "right": true
+  }
+ ]
+}

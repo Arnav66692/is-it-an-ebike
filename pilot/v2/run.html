@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Pedal sorter v2 run</title></head>
+<body>
+<pre id="out">loading…</pre>
+<script type="module">
+// Scores a list of photos with the frozen method in method.json. ?set=dev checks the pipeline
+// on dev photos. ?set=test is the single preregistered test run.
+const out = document.getElementById("out");
+const set = new URLSearchParams(location.search).get("set");
+function norm(a) { let s = 0; for (const v of a) s += v * v; s = Math.sqrt(s); return Array.from(a, (v) => v / s); }
+function dot(a, b) { let s = 0; for (let i = 0; i < a.length; i += 1) s += a[i] * b[i]; return s; }
+try {
+  const method = await (await fetch("method.json")).json();
+  const list = set === "test" ? await (await fetch("test-list.json")).json() : (await (await fetch("dev.json")).json()).map((d) => d.path);
+  const T = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm");
+  const processor = await T.AutoProcessor.from_pretrained(method.model);
+  const vision = await T.CLIPVisionModelWithProjection.from_pretrained(method.model, { dtype: method.dtype });
+  const rows = [];
+  for (const path of list) {
+    const t0 = performance.now();
+    const img = await T.RawImage.read(new URL(path, location.href).href);
+    const emb = {};
+    for (const [name, r] of Object.entries(method.regions)) {
+      const box = [Math.round(r[0] * img.width), Math.round(r[1] * img.height), Math.round(r[2] * img.width) - 1, Math.round(r[3] * img.height) - 1];
+      const region = await img.crop(box);
+      const { image_embeds } = await vision(await processor(region));
+      emb[name] = norm(image_embeds.data);
+    }
+    const score = Math.max(...Object.keys(method.regions).map((r) => dot(emb[r], method.pedal_text_embedding) - dot(emb[r], method.nopedal_text_embedding)));
+    rows.push({ photo: path, score, call: score > method.threshold ? "pedals" : "no pedals", ms: Math.round(performance.now() - t0) });
+    out.textContent = `RUNNING ${rows.length}/${list.length}`;
+  }
+  window.ROWS = rows;
+  out.textContent = "DONE " + JSON.stringify({ n: rows.length, ms_per_photo: Math.round(rows.reduce((a, r) => a + r.ms, 0) / rows.length) });
+} catch (e) {
+  out.textContent = "ERROR " + (e && e.stack ? e.stack : e);
+}
+</script>
+</body>
+</html>
