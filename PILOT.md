@@ -287,6 +287,8 @@ Every in-sample miss is a real-world photo of a moto-styled or fat-tire pedal bi
 
 My expectation before the run, so it's on record: a fail is likely, roughly two chances in three. The threshold is only 0.019 above the top two dev no-pedal machines, leave-one-out missed 2 of 31 no-pedal machines, and real-world pedal bikes were right only 5 of 10.
 
+**Expected result, from the dev leave-one-out estimate:** about 88.7% right, with 29 of 31 no-pedal machines caught. On 24 photos that is about 21 right and about 11 of 12 no-pedal machines, both short of the bars. Arnav gave the go after seeing these numbers, in his words: "Run it anyway. Preregister the chosen rule and the same bars, commit the fresh test labels, then run the fresh set once and report whatever happens." The go message gives the threshold as -0.105, which is -0.10474 rounded. The exact value in `method.json` decides.
+
 ### Bars (the same as v2)
 
 | Check | Pass bar |
