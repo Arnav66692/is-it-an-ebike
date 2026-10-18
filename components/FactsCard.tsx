@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import type { Evidence as Ev, FactKey } from "@/lib/extract/parse";
 import type { BikeFacts, ClassNum } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
+import { applyPedalCall } from "@/lib/photo/pedalRule";
 import { Card, Choice, Evidence, fromTri, NumberField, triValue } from "./controls";
+import { PedalPhotoCheck } from "./PedalPhotoCheck";
 
 type Tri3 = "yes" | "no" | "unsure";
 
@@ -14,7 +16,7 @@ interface Props {
   facts: BikeFacts;
   evidence: Partial<Record<FactKey, Ev[]>>;
   flags: string[];
-  onChange: (next: BikeFacts) => void;
+  onChange: Dispatch<SetStateAction<BikeFacts>>;
   onCheck: () => void;
 }
 
@@ -58,6 +60,14 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
           }}
         />
         {ev("hasPedals")}
+        <PedalPhotoCheck
+          lang={lang}
+          onCall={(call) => {
+            if (call === "ask") return;
+            setPedalsUi(call === "pedals" ? "yes" : "no");
+            onChange((prev) => applyPedalCall(prev, call));
+          }}
+        />
       </div>
 
       <fieldset className="space-y-2">

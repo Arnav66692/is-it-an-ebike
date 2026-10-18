@@ -50,6 +50,19 @@ interface V2Result {
   breakdown: Record<string, { right: number; of: number }>;
 }
 const v2 = read<V2Result>("pilot/v2/results.json");
+interface V3Result {
+  pass: boolean;
+  bars: Record<string, { bar: string; result: string; pass: boolean }>;
+  breakdown: {
+    pedal_bikes: { right: number; of: number };
+    hard_cases: { right: number; of: number };
+    real_world: { right: number; of: number };
+    studio: { right: number; of: number };
+    no_result: number;
+    mean_ms: number | null;
+  };
+}
+const v3 = read<V3Result>("pilot/v3/results.json");
 const labels = read<Record<string, unknown>>("pilot/results/labels.json");
 
 const pct = (n: number, d: number) => (d === 0 ? "n/a" : `${((100 * n) / d).toFixed(1)}%`);
@@ -76,6 +89,7 @@ const accuracy = {
     listings: listing,
     labels,
     photos_v2: v2 ? { pass: v2.pass, bars: v2.bars, breakdown: v2.breakdown } : null,
+    photos_v3: v3 ? { pass: v3.pass, bars: v3.bars, breakdown: v3.breakdown } : null,
   },
 };
 
@@ -136,7 +150,21 @@ ${v2 ? `| Check | Bar | Result | Pass |
 
 Hard cases ${v2.breakdown.hard_cases.right} of ${v2.breakdown.hard_cases.of}, real-world photos ${v2.breakdown.real_world.right} of ${v2.breakdown.real_world.of}, pedal bikes ${v2.breakdown.pedal_bikes.right} of ${v2.breakdown.pedal_bikes.of}.
 
-${v2.pass ? "It passed, so whole-bike photos came back as a pedals sorter only." : "It failed, so whole-bike photos stay cut. The app reads class labels, product links and typed facts instead."}` : "Not run yet."}
+${v2.pass ? "It passed, so whole-bike photos came back as a pedals sorter only." : v3?.pass ? "It failed, so whole-bike photos stayed cut until the third try below." : "It failed, so whole-bike photos stay cut. The app reads class labels, product links and typed facts instead."}` : "Not run yet."}
+
+## Photo pilot v3 (a third try, preregistered in PILOT.md)
+
+An open-vocabulary detector, OWLv2 (q4, 194 MB, run on WebGPU), scored each photo with one fixed rule: the best "chain" score, plus "bicycle", minus "motorcycle". The rule was picked on 71 dev photos and then run once on 24 fresh held-out photos. The expected result, stated before the run from the dev leave-one-out estimate, was 88.7% right with 29 of 31 no-pedal machines.
+
+${v3 ? `| Check | Bar | Result | Pass |
+|---|---|---|---|
+| No-pedal machines | All 12 called no pedals | ${v3.bars.no_pedal_machines.result} | ${v3.bars.no_pedal_machines.pass ? "Yes" : "**No**"} |
+| Pedal call overall | At least 22 of 24 | ${v3.bars.pedal_call_overall.result} | ${v3.bars.pedal_call_overall.pass ? "Yes" : "**No**"} |
+| Invented facts | Zero values with no label visible | ${v3.bars.invented_facts.result} | ${v3.bars.invented_facts.pass ? "Yes" : "**No**"} |
+
+Hard cases ${v3.breakdown.hard_cases.right} of ${v3.breakdown.hard_cases.of}, real-world photos ${v3.breakdown.real_world.right} of ${v3.breakdown.real_world.of}, pedal bikes ${v3.breakdown.pedal_bikes.right} of ${v3.breakdown.pedal_bikes.of}${v3.breakdown.mean_ms === null ? "" : `, about ${(v3.breakdown.mean_ms / 1000).toFixed(1)} seconds per photo on a Mac`}.
+
+${v3.pass ? "It passed, so whole-bike photos came back as an optional pedal sorter, never a verdict. It loads only when tapped, after showing the 194 MB download, it asks \"Does it have pedals?\" on close calls, and it only fills the pedals answer. One set of 24 photos can't pin accuracy closely (23 of 24 fits anything from 78.9% to 99.9%), so the dev estimate is the better guide to everyday accuracy." : "It failed, so whole-bike photos stay cut. The app reads class labels, product links and typed facts instead."}` : "Not run yet."}
 
 ## Still to measure
 

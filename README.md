@@ -12,7 +12,7 @@ The City of San Diego started citing riders under its new e-bike rules on Oct 13
 
 The AI only reads. A fixed rules table decides.
 
-1. **Reading the bike.** A label photo is read by Tesseract OCR right in the phone's browser, so the photo never leaves the phone. A product link is fetched once on the server. Then a fixed-rules parser pulls out the class, watts, speeds, throttle and pedals. It reports a value only when it finds it written in the text, and it shows the exact words it used.
+1. **Reading the bike.** A label photo is read by Tesseract OCR right in the phone's browser, so the photo never leaves the phone. A product link is fetched once on the server. Then a fixed-rules parser pulls out the class, watts, speeds, throttle and pedals. It reports a value only when it finds it written in the text, and it shows the exact words it used. If the user isn't sure whether the bike has pedals, an optional photo check can look at a side photo of the whole bike. It runs a free detector, OWLv2, on the phone with WebGPU, downloads 194 MB once and only after the user agrees, and only fills the pedals answer. On a close call it asks instead.
 2. **Checking the facts.** The "what I read" card shows every fact so the user can fix it before anything is decided.
 3. **Deciding.** A deterministic TypeScript engine (`lib/rules/`) applies the rules table in `data/rules/`. Every sentence on a verdict card comes from a template in `lib/i18n/verdicts.ts`, in both languages. No model writes legal text.
 4. **Saying "can't confirm."** If a fact the law depends on is missing, the engine asks a quick follow-up question (wheel size, fast modes, weight) or says it can't confirm. It never guesses toward "legal."
@@ -31,7 +31,7 @@ See `RESULTS.md` and the in-app accuracy page. The headline: on 334,080 generate
 
 Those tests prove the engine matches the table, not that the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (`data/rules/verification_report.md`, `data/rules/corrections.json`). The San Diego rows come from official city and district pages and press releases, because ordinance text wasn't available for most of them.
 
-The pilot in `PILOT.md` set pass bars before each run. A free CLIP model caught every pedal-less e-moto but called 4 of 8 real e-bikes pedal-less, so whole-bike photos were cut from the app. A second, part-focused try was built on 47 photos and run once on 24 fresh ones. It caught only 9 of 12 no-pedal machines and got 18 of 24 overall against a bar of 22, so photos stay cut.
+The pilot in `PILOT.md` set pass bars before each run. A free CLIP model caught every pedal-less e-moto but called 4 of 8 real e-bikes pedal-less, so whole-bike photos were cut from the app. A second, part-focused try was built on 47 photos and run once on 24 fresh ones. It caught only 9 of 12 no-pedal machines and got 18 of 24 overall against a bar of 22. A third try used OWLv2, a free open-vocabulary detector, with one rule picked on 71 photos. Before its single run on 24 fresh photos, the expected result was written down as 88.7%. It passed every bar, with 12 of 12 no-pedal machines and 23 of 24 overall, so whole-bike photos are back as an optional pedal check, never a verdict.
 
 ## Run it
 
@@ -60,6 +60,7 @@ npm run results
 | `data/overlay.json` | Dated rule changes, supervision exceptions and a few definition rules from the verified notes, each pointing back to its source line |
 | `lib/rules/` | The engine: conditions, facts, state rules, San Diego layer |
 | `lib/extract/` | Text parser for labels and listings, and the listing fetcher |
+| `lib/photo/` | The tested whole-bike pedal rule and the on-device photo check |
 | `lib/i18n/` | Every sentence the app shows, in English and Spanish |
 | `components/`, `app/` | The phone interface, accuracy page and QR flyer |
 | `tests/` | Golden cases, the generated matrix, the independent checker, parser and translation tests |
@@ -67,7 +68,7 @@ npm run results
 
 ## Privacy
 
-No accounts and no database. Label photos are read on the device and never uploaded. A product link is fetched once and nothing is stored. The listing route refuses private and internal addresses.
+No accounts and no database. Label photos are read on the device and never uploaded. The optional pedal photo check also runs on the device, and its model comes once from Hugging Face and jsDelivr. A product link is fetched once and nothing is stored. The listing route refuses private and internal addresses.
 
 ## AI disclosure
 
@@ -75,9 +76,9 @@ This project was built during Neighborhood Hacks 2026 with AI help, as the rules
 
 - **Claude (Anthropic), through Claude Code**, wrote the code, tests and Spanish text, and ran the research that gathered and double-checked the state rules table. I didn't hand-write the code.
 - **My part.** I picked the problem from what I've seen around my school, chose the scope (every state, with a San Diego layer), and made the policy calls recorded in `data/overlay.json` and `PILOT.md`, including the Class 2 caution and using no paid AI. The pilot pass bars come from the research report and were committed before any run.
-- **Inside the product**, the only AI is open-source and free. Tesseract OCR reads label photos on the phone. CLIP models were tested twice for whole-bike photos and cut after both missed the bar. No paid AI API is used.
+- **Inside the product**, the only AI is open-source and free. Tesseract OCR reads label photos on the phone. For whole-bike photos, CLIP models failed two preregistered tests, then OWLv2 passed a third. OWLv2 runs on the phone only when the user taps it, and it only answers whether the bike has pedals. No paid AI API is used.
 - **Data.** State e-bike statutes (linked on every card), San Diego County city pages and the SDUHSD Bike Safety page.
-- **Libraries.** Next.js, React, Tailwind CSS, tesseract.js, qrcode, Vitest.
+- **Libraries.** Next.js, React, Tailwind CSS, tesseract.js, transformers.js (loaded from jsDelivr only for the photo check), qrcode, Vitest.
 
 The Spanish text still needs a check by a fluent speaker.
 

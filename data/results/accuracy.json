@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-17T17:52:10.860Z",
-  "commit": "d2f2f2d",
+  "generated_at": "2026-10-18T00:27:27.040Z",
+  "commit": "028ffd7",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
@@ -18,8 +18,8 @@
     "missed_yes": 0
   },
   "tests": {
-    "total": 103,
-    "passed": 103,
+    "total": 111,
+    "passed": 111,
     "failed": 0
   },
   "pilot": {
@@ -78,6 +78,46 @@
           "right": 11,
           "of": 14
         }
+      }
+    },
+    "photos_v3": {
+      "pass": true,
+      "bars": {
+        "no_pedal_machines": {
+          "bar": "All 12 called no pedals",
+          "result": "12 of 12",
+          "pass": true
+        },
+        "pedal_call_overall": {
+          "bar": "Right on at least 22 of 24",
+          "result": "23 of 24",
+          "pass": true
+        },
+        "invented_facts": {
+          "bar": "Zero class, watt or speed values with no label visible",
+          "result": "0 of 24 photos",
+          "pass": true
+        }
+      },
+      "breakdown": {
+        "pedal_bikes": {
+          "right": 11,
+          "of": 12
+        },
+        "hard_cases": {
+          "right": 9,
+          "of": 10
+        },
+        "real_world": {
+          "right": 9,
+          "of": 10
+        },
+        "studio": {
+          "right": 14,
+          "of": 14
+        },
+        "no_result": 0,
+        "mean_ms": 6089
       }
     }
   }

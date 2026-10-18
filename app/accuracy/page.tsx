@@ -27,6 +27,7 @@ export default function AccuracyPage() {
   const clip = accuracy.pilot.photos_clip as Record<string, Bar> | null;
   const ocr = accuracy.pilot.photos_ocr as { photos: number; invented: number; pass: boolean } | null;
   const v2 = (accuracy.pilot as { photos_v2?: { pass: boolean; bars: Record<string, Bar>; breakdown: Record<string, { right: number; of: number }> } | null }).photos_v2 ?? null;
+  const v3 = (accuracy.pilot as { photos_v3?: { pass: boolean; bars: Record<string, Bar>; breakdown: { hard_cases: { right: number; of: number }; real_world: { right: number; of: number }; mean_ms: number | null } } | null }).photos_v3 ?? null;
 
   return (
     <main className="mx-auto w-full max-w-xl flex-1 space-y-5 px-4 py-6">
@@ -102,7 +103,33 @@ export default function AccuracyPage() {
           <p className="text-sm">
             {v2.pass
               ? "It passed, so whole-bike photos sort pedals from no pedals. They never give a legal answer on their own."
-              : "It failed too, so whole-bike photos stay cut. A photo of the whole bike can't reliably show pedals on a moto-styled e-bike, and a kids' balance bike can look like an e-bike."}
+              : v3?.pass
+                ? "It failed too, so whole-bike photos stayed cut until the third try below."
+                : "It failed too, so whole-bike photos stay cut. A photo of the whole bike can't reliably show pedals on a moto-styled e-bike, and a kids' balance bike can look like an e-bike."}
+          </p>
+        </section>
+      ) : null}
+
+      {v3 ? (
+        <section className="card space-y-3">
+          <h2 className="text-lg font-bold">Photo pilot, third try</h2>
+          <p className="text-sm text-muted">
+            A free detector called OWLv2 looks for a chain and for a bicycle or a motorcycle, with one fixed rule. The rule was picked on 71
+            photos, then run once on 24 fresh photos it had never seen. The expected result, written down before the run, was 88.7%.
+          </p>
+          <table className="w-full text-sm">
+            <tbody>
+              <Row label="No-pedal machines caught, need 12 of 12" value={`${v3.bars.no_pedal_machines.result}, ${v3.bars.no_pedal_machines.pass ? "pass" : "fail"}`} />
+              <Row label="Pedal call, need 22 of 24" value={`${v3.bars.pedal_call_overall.result}, ${v3.bars.pedal_call_overall.pass ? "pass" : "fail"}`} />
+              <Row label="Invented facts" value={`${v3.bars.invented_facts.result}, ${v3.bars.invented_facts.pass ? "pass" : "fail"}`} />
+              <Row label="Hard cases (moto-styled and similar)" value={`${v3.breakdown.hard_cases.right} of ${v3.breakdown.hard_cases.of}`} />
+              <Row label="Real-world photos" value={`${v3.breakdown.real_world.right} of ${v3.breakdown.real_world.of}`} />
+            </tbody>
+          </table>
+          <p className="text-sm">
+            {v3.pass
+              ? "It passed, so the app offers an optional photo check that looks for pedals. It loads only when tapped, asks you when the photo is a close call, and never decides if a bike is legal. One test of 24 photos can't pin accuracy down closely, so expect it to be right about nine times in ten."
+              : "It failed too, so whole-bike photos stay cut."}
           </p>
         </section>
       ) : null}
