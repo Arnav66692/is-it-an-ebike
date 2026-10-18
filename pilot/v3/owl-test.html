@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>OWLv2 test scores</title></head>
+<body>
+<pre id="out">starting…</pre>
+<script type="module">
+// Photo pilot v3, the single test run. The same code as owl-dev.html, so every score is computed exactly
+// as on dev: the same 20-query batch, processor and model file. Only the photo list and the saved file
+// name differ. The frozen rule in pilot/v3/method.json is applied afterwards by scripts/pilot-v3-score.ts.
+const out = document.getElementById("out");
+const LIB = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js";
+const MODEL = "Xenova/owlv2-base-patch16-ensemble";
+const FILE_URL = "https://huggingface.co/" + MODEL + "/resolve/main/onnx/model_q4.onnx";
+const QUERIES = [
+  "bicycle pedal", "pedal", "bicycle pedals", "pedal crank arm", "crank arm", "bicycle crankset", "chainring",
+  "bicycle chainring", "bicycle chain", "chain",
+  "motorcycle foot peg", "foot peg", "motorcycle foot pegs", "motorcycle footrest", "footrest", "footboard",
+  "bicycle", "electric bicycle", "motorcycle", "dirt bike",
+];
+const TOP_BOXES = 3;
+const STORE_KEY = "owl-test-v3-q4-" + QUERIES.length + "-" + QUERIES.join("|").length;
+const result = { step: "photo pilot v3 test scores", model: MODEL, file: "onnx/model_q4.onnx", dtype: "q4", device: "webgpu", library: `@huggingface/transformers 3.8.1, ${LIB}`, queries: QUERIES, browser: navigator.userAgent, started_at: new Date().toISOString() };
+
+function loadDone() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+function saveDone(rows) {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(rows));
+  } catch {}
+}
+async function post(body) {
+  const r = await fetch("http://127.0.0.1:8792/test-raw-v3.json", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  return r.json();
+}
+async function modelHash() {
+  const c = await caches.open("transformers-cache");
+  const r = await c.match(FILE_URL);
+  if (!r) return { model_sha256: null, model_bytes: null };
+  const buf = await r.arrayBuffer();
+  const digest = await crypto.subtle.digest("SHA-256", buf);
+  return { model_sha256: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join(""), model_bytes: buf.byteLength };
+}
+
+try {
+  const list = await (await fetch("test/list.json")).json();
+  const T = await import(LIB);
+  out.textContent = "loading model…";
+  const processor = await T.AutoProcessor.from_pretrained(MODEL);
+  const tokenizer = await T.AutoTokenizer.from_pretrained(MODEL);
+  const ModelClass = T.AutoModelForZeroShotObjectDetection ?? T.Owlv2ForObjectDetection;
+  const model = await ModelClass.from_pretrained(MODEL, { dtype: "q4", device: "webgpu" });
+  Object.assign(result, await modelHash());
+  const textInputs = tokenizer(QUERIES, { padding: true, truncation: true });
+  const Q = QUERIES.length;
+
+  async function scorePhoto(url) {
+    const t = performance.now();
+    const image = await T.RawImage.read(url);
+    const imageInputs = await processor(image);
+    const output = await model({ ...textInputs, pixel_values: imageInputs.pixel_values });
+    const logits = output.logits.data;
+    const boxes = output.pred_boxes.data;
+    const B = output.logits.dims[1];
+    const q = {};
+    for (let j = 0; j < Q; j += 1) {
+      const top = [];
+      for (let b = 0; b < B; b += 1) {
+        const l = logits[b * Q + j];
+        if (top.length < TOP_BOXES || l > top[top.length - 1][0]) {
+          top.push([l, b]);
+          top.sort((x, y) => y[0] - x[0]);
+          if (top.length > TOP_BOXES) top.pop();
+        }
+      }
+      const sig = (l) => 1 / (1 + Math.exp(-l));
+      q[QUERIES[j]] = {
+        max: sig(top[0][0]),
+        logit: top[0][0],
+        top: top.map(([l, b]) => [sig(l), ...Array.from(boxes.slice(b * 4, b * 4 + 4))]),
+      };
+    }
+    const ms = Math.round(performance.now() - t);
+    for (const v of [...Object.values(output), imageInputs.pixel_values]) v?.dispose?.();
+    return { ms, width: image.width, height: image.height, boxes: B, output_keys: Object.keys(output), q };
+  }
+
+  out.textContent = "warming up…";
+  const tw = performance.now();
+  await scorePhoto(new URL(list[0].file, location.href).href);
+  result.warmup_ms = Math.round(performance.now() - tw);
+
+  // Resume only from this browser's own store, so a crash mid-run doesn't mean a second run.
+  const done = loadDone();
+  const seen = new Set(done.map((r) => r.file));
+  result.resumed_with = done.length;
+  for (const { file } of list) {
+    if (seen.has(file)) continue;
+    const row = { file, ...(await scorePhoto(new URL(file, location.href).href)) };
+    done.push(row);
+    saveDone(done);
+    await post({ ...result, partial: true, photos: done });
+    out.textContent = `scored ${done.length}/${list.length}`;
+  }
+  result.photos = done;
+  result.mean_ms = Math.round(done.reduce((s, r) => s + r.ms, 0) / done.length);
+  result.finished_at = new Date().toISOString();
+  const saved = await post({ ...result, partial: false });
+  out.textContent = "DONE " + JSON.stringify({ photos: done.length, warmup_ms: result.warmup_ms, mean_ms: result.mean_ms, model_sha256: result.model_sha256, saved });
+} catch (e) {
+  result.error = String(e && e.stack ? e.stack : e);
+  result.finished_at = new Date().toISOString();
+  try {
+    await post({ ...result, partial: true, photos: loadDone() });
+  } catch {}
+  out.textContent = "ERROR " + result.error;
+}
+</script>
+</body>
+</html>

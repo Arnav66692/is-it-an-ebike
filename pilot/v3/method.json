@@ -1,0 +1,87 @@
+{
+ "name": "pedal-sorter-v3",
+ "model": "Xenova/owlv2-base-patch16-ensemble",
+ "model_file": "onnx/model_q4.onnx",
+ "model_bytes": 193982426,
+ "model_sha256": "8a2995ee3f01c053a8d7e99d109848622004df5c51ffb8d5718f93921cdb7445",
+ "dtype": "q4",
+ "device": "webgpu",
+ "library": "@huggingface/transformers 3.8.1, https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js, which carries onnxruntime-web 1.22.0-dev.20250409-89f8206ba4",
+ "preprocessing": "RawImage.read on the whole photo, then the OWLv2 processor (pad to square, resize to 960, normalize). One model call per photo.",
+ "text_batch": [
+  "bicycle pedal",
+  "pedal",
+  "bicycle pedals",
+  "pedal crank arm",
+  "crank arm",
+  "bicycle crankset",
+  "chainring",
+  "bicycle chainring",
+  "bicycle chain",
+  "chain",
+  "motorcycle foot peg",
+  "foot peg",
+  "motorcycle foot pegs",
+  "motorcycle footrest",
+  "footrest",
+  "footboard",
+  "bicycle",
+  "electric bicycle",
+  "motorcycle",
+  "dirt bike"
+ ],
+ "text_batch_note": "The same 20 queries in the same order as the dev run, so every score is computed exactly as on dev. Only the 5 queries in the rule affect the call.",
+ "box_score": "L(q) is the highest class logit for query q over all 3,600 boxes",
+ "score": "L(chain) + max(L(bicycle), L(electric bicycle)) - max(L(motorcycle), L(dirt bike))",
+ "rule": {
+  "pedal_queries": [
+   "chain"
+  ],
+  "peg_queries": [],
+  "whole_object_plus": [
+   "bicycle",
+   "electric bicycle"
+  ],
+  "whole_object_minus": [
+   "motorcycle",
+   "dirt bike"
+  ],
+  "whole_object_weight": 1.0
+ },
+ "threshold": -0.10474004596471786,
+ "decision": "pedals if score >= threshold, otherwise no pedals. Never an abstain. A photo with no score counts as wrong.",
+ "chosen_on": "71 dev photos only: the 12 v1 photos, the 35 photo-pilot-v2 train photos and the 24 spent photo-pilot-v2 test photos. 1,140 candidate rules. No trained weights, only the queries, the score form and the threshold were picked on dev.",
+ "dev_in_sample": {
+  "overall": "66 of 71",
+  "no_pedal": "31 of 31",
+  "pedal": "35 of 40",
+  "hard_pedal_v2": "22 of 27",
+  "real_world_v2": "14 of 19",
+  "v1": "12 of 12",
+  "v2_train": "33 of 35",
+  "v2_test_spent": "21 of 24"
+ },
+ "dev_nested_leave_one_out": {
+  "overall": "63 of 71",
+  "no_pedal": "29 of 31",
+  "pedal": "34 of 40",
+  "hard_pedal_v2": "21 of 27",
+  "real_world_v2": "14 of 19",
+  "v1": "12 of 12",
+  "v2_train": "32 of 35",
+  "v2_test_spent": "19 of 24"
+ },
+ "dev_time_ms": {
+  "mean_all": 10077,
+  "mean_long_side_le_1024": 9388,
+  "max": 22893
+ },
+ "bars": {
+  "no_pedal_machines": "All 12 called no pedals",
+  "pedal_call_overall": "Right on at least 22 of 24",
+  "invented_facts": "Zero class, watt or speed values reported when no label is visible"
+ },
+ "test_page": "pilot/v3/owl-test.html",
+ "ocr_check": "scripts/pilot-v2-ocr.ts (tesseract.js 7.0.0 eng plus lib/extract/parse.ts in label mode)",
+ "scoring_script": "scripts/pilot-v3-score.ts"
+}

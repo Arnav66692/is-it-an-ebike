@@ -252,3 +252,61 @@ Committed before any timing, on Sat Oct 17, 2026, PT. This is step 1 of v3 only.
 - **Why the in-sample pass is thin.** The two highest no-pedal machines (79Bike Lynx and Razor MX125 Dirt Rocket) sit only 0.019 and 0.024 logit units below the threshold, and four sit within 0.18 of it. All 5 pedal misses are real-world photos of moto-styled or fat-tire bikes, so real-world pedal bikes were right only 5 of 10.
 - **Time.** 9,388 ms a photo on average for photos up to 1,024 px, and 10,077 ms over all 71, with 20 queries. The chosen rule needs only 5 queries, so it is no slower. The first page slowed to about 20 seconds a photo before the restart, and the fresh page was back near 10 seconds.
 - **Verdict.** In sample, dev just clears the stop check (no no-pedal miss, 93.0% right). Every honest view falls short. Leave-one-out misses 2 no-pedal machines and gets 88.7%, and the spent v2 test photos score 21 and 19 of 24 against a bar of 22. So the preregistration was not written, and the held-out set stays unspent. My recommendation is to stop v3 here.
+
+## Photo pilot v3 preregistration
+
+Committed before the v3 test run, on Sat Oct 17, 2026, in the evening PT. After the dev results above, Arnav chose to go ahead, in his words: "Write the v3 preregistration with the chosen rule and the same bars, commit it, and wait for the test set hash and the go."
+
+### Data
+
+- **Dev set, 71 photos:** the 12 v1 photos, the 35 v2 train photos and the 24 spent v2 test photos. 40 have pedals and 31 don't. The method was built and tuned only on these.
+- **Test set, 24 held-out photos,** built by the coordinating session in `photo-pilot-v3/`. I have not opened, listed, viewed or run anything in that folder. At the go, its `test.csv` is checked against the hash the coordinating session sends and committed unchanged as `pilot/v3/test.csv` before the run.
+
+### The frozen method (`pilot/v3/method.json`, sha256 `ac6711ba7c42e5018b9922beecaec3387fef7c20a145e94853b8ee6f791a5174`)
+
+- **Model.** OWLv2, `Xenova/owlv2-base-patch16-ensemble`, file `onnx/model_q4.onnx` (193,982,426 bytes, sha256 `8a2995ee3f01c053a8d7e99d109848622004df5c51ffb8d5718f93921cdb7445`), dtype q4, on WebGPU with `@huggingface/transformers` 3.8.1 (onnxruntime-web 1.22.0-dev.20250409-89f8206ba4).
+- **One model call per photo,** on the whole photo. The OWLv2 processor pads it to a square and resizes it to 960 px. The text batch is the same 20 queries as the dev run, so each score is computed exactly as on dev. Only 5 of them enter the rule.
+- **Score.** L("chain"), plus the larger of L("bicycle") and L("electric bicycle"), minus the larger of L("motorcycle") and L("dirt bike"). L(q) is the highest class logit for query q over all 3,600 boxes.
+- **Threshold -0.10474.** "Pedals" if the score is at or above it, "no pedals" below it. It sits halfway between the highest dev no-pedal machine (-0.1234, the 79Bike Lynx) and the next pedal bike above it (-0.0860, the Juiced Scrambler). The method never abstains, and a photo with no score counts as wrong.
+- **Speed.** About 9.4 seconds per photo on this Mac for dev photos up to 1,024 px. The app would download the 194 MB model once, and it needs WebGPU.
+- **Frozen files.** The test page `pilot/v3/owl-test.html` (sha256 `f1c6ae1c8810d91351ec9ffc6ea8e0779066acdd4139c505bf9df5591462d8de`) is the dev page with only its photo list, output file and labels changed. The scorer `scripts/pilot-v3-score.ts` (sha256 `6b7d79ea2d02daa51e362ab891ffac5e14a1ebc81c7681f8c932db388457f712`) applies `method.json`, and on the dev scores it reproduces every dev call and score.
+
+### How it was chosen (dev photos only)
+
+The details are in "v3 step 2" above. 1,140 rules were searched, and nested leave-one-out reran the whole search with each photo held out.
+
+| | In sample | Nested leave-one-out |
+|---|---|---|
+| Overall | 66 of 71 (93.0%) | 63 of 71 (88.7%) |
+| No-pedal machines | 31 of 31 | 29 of 31 |
+| Hard pedal cases (v2) | 22 of 27 | 21 of 27 |
+| Real-world photos (v2) | 14 of 19 | 14 of 19 |
+| Spent v2 test photos | 21 of 24 | 19 of 24 |
+
+Every in-sample miss is a real-world photo of a moto-styled or fat-tire pedal bike. All 40 v2 studio photos were right.
+
+My expectation before the run, so it's on record: a fail is likely, roughly two chances in three. The threshold is only 0.019 above the top two dev no-pedal machines, leave-one-out missed 2 of 31 no-pedal machines, and real-world pedal bikes were right only 5 of 10.
+
+### Bars (the same as v2)
+
+| Check | Pass bar |
+|---|---|
+| No-pedal machines | All 12 called "no pedals" |
+| Pedal call overall | Right on at least 22 of 24 |
+| Invented facts | Zero class, watt or speed values reported when no label is visible |
+
+Any abstain or missing result counts as wrong. Hard cases, real-world photos, studio photos and time per photo are reported separately.
+
+### The single run
+
+1. At the go, check `photo-pilot-v3/test.csv` against the hash from the coordinating session, copy it unchanged to `pilot/v3/test.csv` and commit it. Copy the 24 photos next to `owl-test.html` and check each one against its sha256 in `test.csv`.
+2. Open `owl-test.html` once in the in-app browser. Its raw output is committed as `pilot/v3/test-raw-v3.json`.
+3. Run `npx tsx scripts/pilot-v2-ocr.ts` on the same 24 photos for the invented-facts check. Its output is committed as `pilot/v3/test-ocr.json`.
+4. Score with `npx tsx scripts/pilot-v3-score.ts`, which writes `pilot/v3/results.json`.
+
+No second test run after seeing the result. If the page crashes partway, it resumes from its own saved scores, so it is still one pass.
+
+### What happens on each outcome
+
+- **Fail.** Whole-bike photos stay cut for good, and RESULTS.md says so plainly.
+- **Pass.** Whole-bike photos come back as a pedals or no-pedals sorter only, never a legal verdict by itself, on phones with WebGPU. When the score is close to the line, the app asks "Does it have pedals?". That is product behavior and isn't counted in the bar.
