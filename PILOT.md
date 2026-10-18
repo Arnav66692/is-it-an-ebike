@@ -312,3 +312,19 @@ No second test run after seeing the result. If the page crashes partway, it resu
 
 - **Fail.** Whole-bike photos stay cut for good, and RESULTS.md says so plainly.
 - **Pass.** Whole-bike photos come back as a pedals or no-pedals sorter only, never a legal verdict by itself, on phones with WebGPU. When the score is close to the line, the app asks "Does it have pedals?". That is product behavior and isn't counted in the bar.
+
+### Results (single run, Sat Oct 17, 2026, about 5:25 PM PT)
+
+| Check | Pass bar | Result | Pass? |
+|---|---|---|---|
+| No-pedal machines | All 12 called "no pedals" | 12 of 12 | Yes |
+| Pedal call overall | Right on at least 22 of 24 | 23 of 24 | Yes |
+| Invented facts | Zero class, watt or speed values with no label visible | 0 of 24 photos | Yes |
+
+Reported separately: pedal bikes 11 of 12, hard cases 9 of 10, real-world photos 9 of 10, studio photos 14 of 14. The run took 6,089 ms per photo on average, 8,844 ms at the slowest, after a 6,623 ms warm-up, with no resume and no error. The page checked the model file hash again before the run. Raw output is in `pilot/v3/test-raw-v3.json` (sha256 `26517ec92e5e8ad08be72b2a2f245149d0b1b295fec43049bd55ba7edfef40e6`), the OCR check is in `pilot/v3/test-ocr.json`, and the scored rows are in `pilot/v3/results.json`.
+
+- **The one miss.** The Specialized Turbo Levo (2018), an electric mountain bike in a real-world photo, scored -0.279 and was called "no pedals."
+- **The closest calls.** The CAKE Ösa, a no-pedal e-moto in a real-world photo, scored -0.151, only 0.046 under the line. The nearest pedal bike, the EUNORAU FLASH 2.0, scored 0.061, 0.166 over it.
+- **It beat the prior.** The dev leave-one-out estimate was 88.7% with 29 of 31 no-pedal machines, and I expected a fail. One set of 24 photos can't pin accuracy closely. 23 of 24 fits a true rate anywhere from 78.9% to 99.9% (exact 95% interval), and 12 of 12 fits anything above 73.5%. So the dev estimate is still the better guide to everyday accuracy.
+
+**Decision, by the rule above: whole-bike photos come back as an optional pedals or no-pedals sorter, never a legal verdict by itself.** It loads only when tapped, after showing the 194 MB download, and it asks "Does it have pedals?" when the score is close to the line. I did no second test run.

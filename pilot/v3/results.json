@@ -1,0 +1,310 @@
+{
+  "pass": true,
+  "scored_at": "2026-10-18T00:19:33.489Z",
+  "method": "pedal-sorter-v3 (pilot/v3/method.json)",
+  "threshold": -0.10474004596471786,
+  "raw_error": null,
+  "bars": {
+    "no_pedal_machines": {
+      "bar": "All 12 called no pedals",
+      "result": "12 of 12",
+      "pass": true
+    },
+    "pedal_call_overall": {
+      "bar": "Right on at least 22 of 24",
+      "result": "23 of 24",
+      "pass": true
+    },
+    "invented_facts": {
+      "bar": "Zero class, watt or speed values with no label visible",
+      "result": "0 of 24 photos",
+      "pass": true
+    }
+  },
+  "breakdown": {
+    "pedal_bikes": {
+      "right": 11,
+      "of": 12
+    },
+    "hard_cases": {
+      "right": 9,
+      "of": 10
+    },
+    "real_world": {
+      "right": 9,
+      "of": 10
+    },
+    "studio": {
+      "right": 14,
+      "of": 14
+    },
+    "no_result": 0,
+    "mean_ms": 6089
+  },
+  "rows": [
+    {
+      "file": "test_01.jpg",
+      "product": "Gotrax Fitz16 Electric Dirt Bike",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -0.7349185943603516,
+      "call": "no pedals",
+      "right": true,
+      "ms": 7010
+    },
+    {
+      "file": "test_02.jpg",
+      "product": "Urban Arrow front-loader cargo e-bike (2019)",
+      "style": "cargo",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.759874552488327,
+      "call": "pedals",
+      "right": true,
+      "ms": 5800
+    },
+    {
+      "file": "test_03.jpg",
+      "product": "Kuberg Cross Hero",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -2.7205662727355957,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5751
+    },
+    {
+      "file": "test_04.jpg",
+      "product": "Razor Rambler 12",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -0.433596134185791,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5609
+    },
+    {
+      "file": "test_05.jpg",
+      "product": "Razor Rambler 20",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 1.1768652200698853,
+      "call": "pedals",
+      "right": true,
+      "ms": 6535
+    },
+    {
+      "file": "test_06.jpg",
+      "product": "EUNORAU S1",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -1.1095759868621826,
+      "call": "no pedals",
+      "right": true,
+      "ms": 6869
+    },
+    {
+      "file": "test_07.jpg",
+      "product": "Ampd Bros ACE-X",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.19007358327507973,
+      "call": "pedals",
+      "right": true,
+      "ms": 5905
+    },
+    {
+      "file": "test_08.jpg",
+      "product": "Specialized Turbo Levo (2018)",
+      "style": "mtb",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": -0.27863460779190063,
+      "call": "no pedals",
+      "right": false,
+      "ms": 5830
+    },
+    {
+      "file": "test_09.jpg",
+      "product": "Razor Rambler 16",
+      "style": "emoto",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -0.48526525497436523,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5713
+    },
+    {
+      "file": "test_10.jpg",
+      "product": "Zero DSR (2018)",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": -2.390361189842224,
+      "call": "no pedals",
+      "right": true,
+      "ms": 6109
+    },
+    {
+      "file": "test_11.jpg",
+      "product": "Rad Power Bikes RadRover (2017)",
+      "style": "fat_tire",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 1.576885163784027,
+      "call": "pedals",
+      "right": true,
+      "ms": 5614
+    },
+    {
+      "file": "test_12.jpg",
+      "product": "EUNORAU FLASH 2.0",
+      "style": "moto_styled",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.06064671277999878,
+      "call": "pedals",
+      "right": true,
+      "ms": 5615
+    },
+    {
+      "file": "test_13.jpg",
+      "product": "Velotric Discover 2",
+      "style": "commuter",
+      "setting": "real_world",
+      "pedals": "yes",
+      "score": 0.776103138923645,
+      "call": "pedals",
+      "right": true,
+      "ms": 5932
+    },
+    {
+      "file": "test_14.jpg",
+      "product": "Jetson Otto All-Terrain Electric Bike",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 1.2426108121871948,
+      "call": "pedals",
+      "right": true,
+      "ms": 5758
+    },
+    {
+      "file": "test_15.jpg",
+      "product": "CAKE Ösa",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": -0.15115785598754883,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5829
+    },
+    {
+      "file": "test_16.jpg",
+      "product": "Super Soco TC Max",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": -2.9356649219989777,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5893
+    },
+    {
+      "file": "test_17.jpg",
+      "product": "Razor Rambler MD1",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 2.4864859580993652,
+      "call": "pedals",
+      "right": true,
+      "ms": 5660
+    },
+    {
+      "file": "test_18.jpg",
+      "product": "Coswheel CT20",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.4389650225639343,
+      "call": "pedals",
+      "right": true,
+      "ms": 6129
+    },
+    {
+      "file": "test_19.jpg",
+      "product": "Tromox Mino",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": -2.8835836052894592,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5680
+    },
+    {
+      "file": "test_20.jpg",
+      "product": "Himiway D7 Pro (Cobra Pro)",
+      "style": "fat_tire",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 0.9908273071050644,
+      "call": "pedals",
+      "right": true,
+      "ms": 8844
+    },
+    {
+      "file": "test_21.jpg",
+      "product": "RFN Ares Rally Endurance Road",
+      "style": "emoto",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -0.5055460929870605,
+      "call": "no pedals",
+      "right": true,
+      "ms": 6658
+    },
+    {
+      "file": "test_22.jpg",
+      "product": "Jetson Horizon Electric Dirt Bike",
+      "style": "kids_dirt_bike",
+      "setting": "studio",
+      "pedals": "no",
+      "score": -2.397890329360962,
+      "call": "no pedals",
+      "right": true,
+      "ms": 6197
+    },
+    {
+      "file": "test_23.jpg",
+      "product": "Sondors Metacycle",
+      "style": "emoto",
+      "setting": "real_world",
+      "pedals": "no",
+      "score": -2.6719645261764526,
+      "call": "no pedals",
+      "right": true,
+      "ms": 5623
+    },
+    {
+      "file": "test_24.jpg",
+      "product": "Michael Blast Greaser",
+      "style": "moto_styled",
+      "setting": "studio",
+      "pedals": "yes",
+      "score": 1.5967127084732056,
+      "call": "pedals",
+      "right": true,
+      "ms": 5577
+    }
+  ]
+}
