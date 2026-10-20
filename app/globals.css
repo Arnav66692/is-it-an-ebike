@@ -233,6 +233,57 @@ body {
   color: var(--ask);
 }
 
+.bottom-line {
+  border-width: 3px;
+  border-color: var(--line);
+}
+.bottom-line[data-kind="yes"] {
+  border-color: var(--yes);
+}
+.bottom-line[data-kind="no_illegal"] {
+  border-color: var(--no);
+}
+.bottom-line[data-kind="no_unconfirmed"] {
+  border-color: var(--maybe);
+}
+
+.bl-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2.75rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.bl-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: none;
+  border-radius: 999px;
+  font-size: 1.9rem;
+}
+.bottom-line[data-kind="yes"] .bl-mark {
+  background: var(--yes-bg);
+  color: var(--yes);
+}
+.bottom-line[data-kind="no_illegal"] .bl-mark {
+  background: var(--no-bg);
+  color: var(--no);
+}
+.bottom-line[data-kind="no_unconfirmed"] .bl-mark {
+  background: var(--maybe-bg);
+  color: var(--maybe);
+}
+
+.bl-item {
+  border-left: 3px solid var(--line);
+  padding-left: 0.75rem;
+}
+
 .bar {
   height: 0.5rem;
   border-radius: 999px;

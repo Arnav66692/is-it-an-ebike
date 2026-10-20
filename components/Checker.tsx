@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, PLACE_IDS, STATE_CODES } from "@/lib/rules";
+import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, PLACE_IDS, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId } from "@/lib/rules/types";
 import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { BikeInput } from "./BikeInput";
+import { BottomLineCard } from "./BottomLineCard";
 import { Card } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
@@ -100,6 +101,8 @@ export function Checker() {
       otherPlaces,
     });
   }, [stage, ageValid, age, stateCode, date, facts, places, otherPlaces]);
+
+  const summary = useMemo(() => (result ? bottomLine(result, date) : null), [result, date]);
 
   const questions: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]
@@ -250,7 +253,7 @@ export function Checker() {
         ) : null}
       </div>
 
-      <div ref={resultsRef} className="scroll-mt-4 space-y-4" aria-live="polite">
+      <div ref={resultsRef} className="scroll-mt-4 space-y-4">
         {result ? (
           <>
             <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={setFacts} />
@@ -259,6 +262,14 @@ export function Checker() {
             {result.local.map((v) => (
               <VerdictCard key={v.id} verdict={v} lang={lang} stateCode={stateCode} />
             ))}
+          </>
+        ) : null}
+        {/* Always in the page, so screen readers announce the bottom line when it appears or changes. */}
+        <div role="status" aria-live="polite" aria-atomic="true">
+          {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} /> : null}
+        </div>
+        {result ? (
+          <>
             <div className="no-print flex flex-wrap gap-3">
               <button type="button" className="btn btn-quiet" onClick={() => scrollTo(factsRef)}>
                 {t(lang, "editFacts")}

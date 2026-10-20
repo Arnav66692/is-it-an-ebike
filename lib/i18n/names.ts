@@ -43,10 +43,11 @@ export function stateName(code: string, lang: Lang): string {
   return STATE_NAMES_EN[code] ?? code;
 }
 
-const PLACE_NAMES: Record<PlaceId, { en: string; es: string; hint: { en: string; es: string } }> = {
+const PLACE_NAMES: Record<PlaceId, { en: string; es: string; hint: { en: string; es: string }; inline?: { en: string; es: string } }> = {
   city_of_san_diego: {
     en: "City of San Diego",
     es: "Ciudad de San Diego",
+    inline: { en: "the City of San Diego", es: "la Ciudad de San Diego" },
     hint: { en: "Includes Carmel Valley, Pacific Highlands Ranch and the CCA area", es: "Incluye Carmel Valley, Pacific Highlands Ranch y la zona de CCA" },
   },
   carlsbad: { en: "Carlsbad", es: "Carlsbad", hint: { en: "", es: "" } },
@@ -56,11 +57,13 @@ const PLACE_NAMES: Record<PlaceId, { en: string; es: string; hint: { en: string;
   unincorporated_san_diego_county: {
     en: "Unincorporated San Diego County",
     es: "Zona no incorporada del condado de San Diego",
+    inline: { en: "unincorporated San Diego County", es: "la zona no incorporada del condado de San Diego" },
     hint: { en: "Rancho Santa Fe, Fairbanks Ranch and similar", es: "Rancho Santa Fe, Fairbanks Ranch y zonas parecidas" },
   },
   sduhsd_campuses: {
     en: "An SDUHSD campus",
     es: "Una escuela de SDUHSD",
+    inline: { en: "SDUHSD campus rules", es: "las reglas de las escuelas de SDUHSD" },
     hint: { en: "Canyon Crest Academy, Torrey Pines and the other district schools", es: "Canyon Crest Academy, Torrey Pines y las demás escuelas del distrito" },
   },
 };
@@ -70,8 +73,22 @@ export function placeName(id: string, lang: Lang): string {
   return p ? p[lang] : id;
 }
 
+/** The place name as it reads in the middle of a sentence. */
+export function placeNameInline(id: string, lang: Lang): string {
+  const p = PLACE_NAMES[id as PlaceId];
+  if (!p) return id;
+  return p.inline ? p.inline[lang] : p[lang];
+}
+
 export function placeHint(id: PlaceId, lang: Lang): string {
   return PLACE_NAMES[id].hint[lang];
+}
+
+/** "a, b and c" or "a, b y c", with no comma before the last item. */
+export function joinList(items: string[], lang: Lang): string {
+  if (items.length <= 1) return items[0] ?? "";
+  const last = items[items.length - 1];
+  return `${items.slice(0, -1).join(", ")} ${lang === "es" ? "y" : "and"} ${last}`;
 }
 
 export function formatDate(iso: string, lang: Lang): string {

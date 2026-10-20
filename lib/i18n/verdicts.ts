@@ -2,7 +2,7 @@
 // code and the numbers. These templates are the only legal text in the app.
 
 import type { Line, Status } from "@/lib/rules/types";
-import { formatDate, placeName, type Lang } from "./names";
+import { formatDate, joinList, placeName, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
 interface Ctx {
@@ -19,6 +19,27 @@ const aAge = (age: string | number | undefined): string => {
   return `${an ? "an" : "a"} ${n(age)}-year-old`;
 };
 const cls = (p: Params) => n(p.cls);
+
+/** State-law removal power for e-motos, shared by several San Diego notes (VC 22651.08). */
+const EMOTO_REMOVAL_EN =
+  "police can remove an e-moto that can top 20 mph on the motor alone when the rider has no license for it (VC 22651.08).";
+const EMOTO_REMOVAL_ES =
+  "la policía puede retirar una moto eléctrica que pase de 20 mph solo con el motor cuando quien la maneja no tiene licencia para ella (VC 22651.08).";
+
+const QUESTION_NAMES: Record<Lang, Record<string, string>> = {
+  en: { wheels: "wheel size", fast_mode: "fast modes", weight: "weight", pegs_kit: "foot pegs or a pedal kit" },
+  es: { wheels: "el tamaño de las ruedas", fast_mode: "los modos rápidos", weight: "el peso", pegs_kit: "los reposapiés o el kit de pedales" },
+};
+
+/** "fast_mode,wheels" becomes "fast modes and wheel size". */
+function questionList(ids: string, lang: Lang): string {
+  const names = ids
+    .split(",")
+    .filter(Boolean)
+    .map((id) => QUESTION_NAMES[lang][id] ?? id);
+  if (names.length === 0) return lang === "es" ? "la bicicleta" : "the bike";
+  return joinList(names, lang);
+}
 
 const EN: Record<string, Template> = {
   allowed: (p, c) =>
@@ -106,27 +127,77 @@ const EN: Record<string, Template> = {
   campus_allowed: (p) => `Class ${cls(p)} e-bikes are allowed on SDUHSD campuses, after these steps.`,
   campus_class3: () => "Only Class 1 and 2 e-bikes are allowed on SDUHSD campuses.",
   campus_no_emoto: () => "E-motos and other non-e-bikes aren't allowed on SDUHSD campuses.",
-  sd_course_in_lieu: () => "A cited rider can take an online e-bike safety course within 120 days instead of paying the $25 fine.",
+  sd_course_in_lieu: () =>
+    "No fine if a parent or guardian gives the City proof, within 120 days of the citation, that the rider finished the e-bike safety program posted by the CHP.",
   sd_warning_period: (p, c) => `Warnings only until ${formatDate(n(p.from), c.lang)}. Fines start then.`,
-  sd_age_12: () => "One City release says \"12 and under.\" State law only allows a ban under 12, so 12-year-olds are treated as allowed.",
-  sd_emoto: () => "City officials say high-powered e-motorcycles are not street legal.",
-  sd_passengers: () => "Passengers only on an e-bike built with a permanent second seat.",
-  carlsbad_emoto: () => "Carlsbad police can impound e-motorcycles.",
-  carlsbad_parks: () => "No e-bikes at Poinsettia or Pine Avenue Community Parks.",
-  carlsbad_impound: () => "A minor's e-bike can be impounded for risky riding. Getting it back takes an in-person safety course.",
+  sd_age_12: () => "SDMC 84.19 bans only riders under 12. A 12-year-old may ride Class 1 or 2.",
+  sd_emoto: () =>
+    `The City has no e-moto ordinance of its own. Under state law, ${EMOTO_REMOVAL_EN}`,
+  sd_passengers: () =>
+    "Passengers only if the e-bike was designed and manufactured to carry more than one person and has a separate seat or saddle for each passenger.",
+  sd_sidewalks: () =>
+    "No riding on sidewalks in front of businesses unless signs allow it (SDMC 84.09). Riding an e-bike on other sidewalks may also be barred (SDMC 84.04). Ride in the street or bike lane.",
+  sd_parks: () =>
+    "In City parks and on City beaches, ride only where signs allow bikes, on marked bikeways, on roads open to cars or on fire and service roads (SDMC 63.0102). Whether an e-bike counts there as a banned motorized vehicle is unclear. Ocean Front Walk and some Mission Bay paths have an 8 mph limit.",
+  sd_boardwalks: () =>
+    "No e-bikes, owned or rented, on Ocean Front Walk, Bayside Walk, the east Mission Bay walkway or the La Jolla Shores boardwalk (SDMC 84.18).",
+  carlsbad_emoto: () => `Under state law, ${EMOTO_REMOVAL_EN} Carlsbad code adds cost recovery (CMC 10.56.045).`,
+  carlsbad_parks: () =>
+    "No riding e-bikes in Poinsettia or Pine Avenue Community Parks where signs are posted. Walking one through is allowed unless signs say otherwise.",
+  carlsbad_impound: () =>
+    "A minor's e-bike can be impounded for risky riding. It is held at least 48 hours, and getting it back takes an in-person safety course at the police station with a parent there.",
   carlsbad_passengers: () => "Only e-bikes built for passengers can carry one.",
+  carlsbad_under_12_passengers: () =>
+    "Children under 12 can't ride as passengers on a Class 1 or 2 e-bike in Carlsbad either (CMC 10.56.030(A)). State law only mentions operating.",
+  carlsbad_disability: () =>
+    "Carlsbad's e-bike rules don't apply to devices used safely by people with a physical disability under the ADA (CMC 10.56.060(B)). This app can't check that.",
+  carlsbad_sidewalks: () =>
+    "No riding any bike or e-bike on any sidewalk in Carlsbad (CMC 10.56.020(B)). The seawall walk from Tamarack Ave to Pine St is for people on foot only.",
+  carlsbad_trail_dismount: () => "On a city trail narrower than 5 feet, get off and walk when a person or horse is within 50 feet.",
   carlsbad_class3_paths: () =>
-    "Carlsbad's page suggests Class 3 can't use some paths. State law has had no such ban since 2023, and we found no Carlsbad code that adds one, so treat it as unclear.",
+    "No Carlsbad code singles out Class 3 on bike lanes or bikeways. Trails are unclear. City code bars vehicles in parks and on public trails unless the City Manager allows them (CMC 11.32.030), and the city says Class 3 is not allowed on trails.",
   city_page_750: () => "This city's page still says \"less than 750 watts,\" the wording before 2025. State law now allows up to 750 W.",
-  encinitas_no_age_limit: () => "Encinitas has no local age limit. State rules apply.",
+  encinitas_no_age_limit: (p, c) =>
+    `Encinitas had no local age limit when checked on ${formatDate(n(p.date), c.lang)}. State rules apply. The council has discussed adding one, so check again before riding.`,
+  encinitas_emoto: () =>
+    "E-motorcycles are banned on Encinitas trails, beaches and parks, except on authorized roads (EMC 14.32.093, 8.04.010, 8.04.130).",
+  encinitas_sidewalks: () =>
+    "No riding on sidewalks in any business district, including South Coast Highway 101 from D Street to J Street (EMC 14.56.020). Other sidewalks are not confirmed as allowed. Anyone riding on a sidewalk must yield to people walking and obey posted signs.",
+  encinitas_parks_unclear: () =>
+    "Riding in Encinitas parks, on beaches and on recreational trails is unclear. City code bars self-propelled vehicles there without city approval (EMC 8.04.010, 8.04.130), and it isn't settled whether that covers e-bikes.",
+  encinitas_passengers: () => "No passengers on any bike unless it is built for them (EMC 14.56.030(B)).",
   encinitas_class3_paths: () =>
-    "Encinitas's page says Class 3 can't use bike paths. State law has had no such ban since 2023, so treat it as unclear.",
-  solana_emoto: () => "In Solana Beach, riding an e-moto on a road needs a motorcycle license, registration and insurance.",
-  solana_sidewalks: () => "No riding on sidewalks or crosswalks in the business district, or on any street with a bike path.",
+    "Encinitas's page says Class 3 can't use bike paths. No Encinitas ordinance says that, and state law has had no such ban since 2023. Obey posted signs.",
+  solana_emoto: () => `This is state law, not a Solana Beach rule. ${EMOTO_REMOVAL_EN.charAt(0).toUpperCase()}${EMOTO_REMOVAL_EN.slice(1)}`,
+  solana_sidewalks: () =>
+    "No riding on the sidewalk in a business district, or on the sidewalk of any street with a designated bike path or bike way (SBMC 10.44.010(B)).",
+  solana_parks_motor: () =>
+    "Solana Beach bars motor-powered vehicles in parks and on beaches, including the bluff tops, trails and access ways next to them, unless the City Manager allows it (SBMC 11.12.020(R)). Whether that covers e-bikes isn't settled.",
+  solana_passengers: () => "No passengers on any bike unless it is built for them (SBMC 10.44.010(C)).",
+  solana_course: () =>
+    "A first-time violator may be allowed to take a police-approved bike safety course instead of a penalty (SBMC 10.44.010(E)).",
   solana_helmet_18: () => "Solana Beach's web page says helmets for \"18 and under,\" but state law and the city's own flyer say under 18.",
-  del_mar_bans: () => "No bikes or e-bikes in Del Mar parks, preserves, commercial sidewalks or most San Dieguito Lagoon trails.",
+  del_mar_bans: () =>
+    "In Del Mar, no riding bikes or e-bikes on Village Center or commercial-zone sidewalks, on any sidewalk signed no riding, on the sidewalk of a street with a bike lane (ride in the lane, CVC 21208 exceptions apply), in parks and preserves, or on lagoon trails unless signed for bikes.",
+  del_mar_beaches: () =>
+    "Del Mar lifeguards treat e-bike riding on city beaches as illegal (DMMC 8.04.020 bans self-propelled vehicles on beaches).",
   del_mar_coast_to_crest: () => "Class 1 and 2 e-bikes are allowed on Del Mar's part of the Coast to Crest Trail. Class 3 is unclear.",
-  county_no_ordinance: () => "We found no county ordinance yet, but the county has the power to adopt one.",
+  county_no_ordinance: (p, c) =>
+    `As of ${formatDate(n(p.date), c.lang)} the County had adopted no under-12 ban, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
+  county_sidewalks: () => "County code bans riding bicycles on business-district sidewalks (SDCC 72.230). Treat e-bikes the same to be safe.",
+  county_parks: () => "In County parks, trails and preserves, ride e-bikes only in areas marked for them (SDCC 41.130(b)).",
+  county_dpr_sites: () =>
+    "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
+  county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
+  bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
+  bl_unsure_fast_mode: () =>
+    "You answered \"not sure\" about fast modes. A mode over 20 mph on the motor alone would make it not a legal e-bike.",
+  bl_unverified_state: (_p, c) => `${c.state}'s rules here were not confirmed against statute text.`,
+  bl_unverified_primary_partial: (p) =>
+    p.place === "sduhsd_campuses"
+      ? "The class, tag and course rules come only from the district's web page. No board policy or regulation has them, and the Board has not voted on them."
+      : "Only part of these rules was found in enacted text. The rest comes from an official web page.",
+  bl_unverified_primary_not_found: () => "The enacted text behind these rules was not found. They come from an official page or a release.",
 };
 
 const ES: Record<string, Template> = {
@@ -215,27 +286,78 @@ const ES: Record<string, Template> = {
   campus_allowed: (p) => `Las bicicletas eléctricas Clase ${cls(p)} se permiten en las escuelas de SDUHSD, después de estos pasos.`,
   campus_class3: () => "En las escuelas de SDUHSD solo se permiten bicicletas eléctricas Clase 1 y 2.",
   campus_no_emoto: () => "Las motos eléctricas y otros vehículos que no son bicicletas eléctricas no se permiten en las escuelas de SDUHSD.",
-  sd_course_in_lieu: () => "Quien reciba una multa puede tomar un curso de seguridad en línea dentro de 120 días en lugar de pagar los $25.",
+  sd_course_in_lieu: () =>
+    "No se cobra la multa si el padre, la madre o el tutor legal le da a la Ciudad, dentro de 120 días de la citación, prueba de que la persona terminó el programa de seguridad de bicicletas eléctricas publicado por la CHP.",
   sd_warning_period: (p, c) => `Solo advertencias hasta el ${formatDate(n(p.from), c.lang)}. Después empiezan las multas.`,
-  sd_age_12: () => "Un comunicado de la Ciudad dice \"12 años o menos\". La ley estatal solo permite prohibirlo a menores de 12, así que a los 12 años se considera permitido.",
-  sd_emoto: () => "Funcionarios de la Ciudad dicen que las motos eléctricas potentes no son legales en la calle.",
-  sd_passengers: () => "Pasajeros solo en una bicicleta eléctrica hecha con un segundo asiento permanente.",
-  carlsbad_emoto: () => "La policía de Carlsbad puede confiscar motos eléctricas.",
-  carlsbad_parks: () => "No se permiten bicicletas eléctricas en los parques comunitarios Poinsettia y Pine Avenue.",
-  carlsbad_impound: () => "La bicicleta eléctrica de un menor puede ser confiscada por manejar con riesgo. Para recuperarla hay que tomar un curso presencial.",
+  sd_age_12: () => "La sección 84.19 del código municipal (SDMC) prohíbe solo a menores de 12 años. Alguien de 12 años puede usar una Clase 1 o 2.",
+  sd_emoto: () => `La Ciudad no tiene una ordenanza propia sobre motos eléctricas. Según la ley estatal, ${EMOTO_REMOVAL_ES}`,
+  sd_passengers: () =>
+    "Pasajeros solo si la bicicleta eléctrica fue diseñada y fabricada para llevar a más de una persona y tiene un asiento o sillín aparte para cada pasajero.",
+  sd_sidewalks: () =>
+    "No se puede andar por aceras frente a negocios, salvo que un letrero lo permita (SDMC 84.09). Andar en bicicleta eléctrica por otras aceras también podría estar prohibido (SDMC 84.04). Anda por la calle o la ciclovía.",
+  sd_parks: () =>
+    "En parques y playas de la Ciudad, anda solo donde un letrero permita bicicletas, en ciclovías marcadas, en calles abiertas a autos o en caminos de bomberos y de servicio (SDMC 63.0102). No está claro si ahí una bicicleta eléctrica cuenta como vehículo motorizado prohibido. Ocean Front Walk y algunos caminos de Mission Bay tienen un límite de 8 mph.",
+  sd_boardwalks: () =>
+    "No se permiten bicicletas eléctricas, propias o rentadas, en Ocean Front Walk, Bayside Walk, el paseo del lado este de Mission Bay ni el paseo de La Jolla Shores (SDMC 84.18).",
+  carlsbad_emoto: () => `Según la ley estatal, ${EMOTO_REMOVAL_ES} El código de Carlsbad agrega el cobro de costos (CMC 10.56.045).`,
+  carlsbad_parks: () =>
+    "No se puede andar en bicicleta eléctrica en los parques comunitarios Poinsettia y Pine Avenue donde haya letreros. Se puede cruzar caminando con ella, salvo que los letreros digan otra cosa.",
+  carlsbad_impound: () =>
+    "La bicicleta eléctrica de un menor puede ser confiscada por manejar con riesgo. Se retiene al menos 48 horas, y para recuperarla hay que tomar un curso presencial en la estación de policía con el padre, la madre o el tutor presente.",
   carlsbad_passengers: () => "Solo las bicicletas eléctricas hechas para pasajeros pueden llevar uno.",
+  carlsbad_under_12_passengers: () =>
+    "En Carlsbad, los menores de 12 años tampoco pueden ir como pasajeros en una bicicleta eléctrica Clase 1 o 2 (CMC 10.56.030(A)). La ley estatal solo menciona manejarla.",
+  carlsbad_disability: () =>
+    "Las reglas de Carlsbad no se aplican a vehículos usados con cuidado por personas con una discapacidad física según la ADA (CMC 10.56.060(B)). Esta app no puede verificarlo.",
+  carlsbad_sidewalks: () =>
+    "En Carlsbad no se puede andar en bicicleta ni en bicicleta eléctrica por ninguna acera (CMC 10.56.020(B)). El paseo del malecón entre Tamarack Ave y Pine St es solo para peatones.",
+  carlsbad_trail_dismount: () =>
+    "En un sendero de la ciudad de menos de 5 pies de ancho, bájate y camina cuando haya una persona o un caballo a menos de 50 pies.",
   carlsbad_class3_paths: () =>
-    "La página de Carlsbad sugiere que la Clase 3 no puede usar algunos senderos. La ley estatal no lo prohíbe desde 2023 y no encontramos un código de Carlsbad que lo haga, así que tómalo como no claro.",
+    "Ningún código de Carlsbad se refiere a la Clase 3 en carriles o ciclovías. Los senderos no están claros. El código prohíbe vehículos en parques y senderos públicos salvo que el administrador de la ciudad los permita (CMC 11.32.030), y la ciudad dice que la Clase 3 no se permite en senderos.",
   city_page_750: () => "La página de esta ciudad todavía dice \"menos de 750 vatios\", la redacción de antes de 2025. La ley estatal ahora permite hasta 750 W.",
-  encinitas_no_age_limit: () => "Encinitas no tiene límite de edad local. Se aplican las reglas estatales.",
+  encinitas_no_age_limit: (p, c) =>
+    `Encinitas no tenía límite de edad local cuando se revisó el ${formatDate(n(p.date), c.lang)}. Se aplican las reglas estatales. El concejo ha hablado de agregar uno, así que vuelve a revisar antes de salir.`,
+  encinitas_emoto: () =>
+    "Las motos eléctricas están prohibidas en senderos, playas y parques de Encinitas, salvo en caminos autorizados (EMC 14.32.093, 8.04.010, 8.04.130).",
+  encinitas_sidewalks: () =>
+    "No se puede andar por aceras en ninguna zona comercial, incluida South Coast Highway 101 entre D Street y J Street (EMC 14.56.020). No está confirmado que se permita en otras aceras. Quien ande por una acera debe ceder el paso a los peatones y seguir los letreros.",
+  encinitas_parks_unclear: () =>
+    "No está claro si se puede andar en parques, playas y senderos recreativos de Encinitas. El código prohíbe ahí los vehículos autopropulsados sin permiso de la ciudad (EMC 8.04.010, 8.04.130), y no está resuelto si eso incluye las bicicletas eléctricas.",
+  encinitas_passengers: () => "No se permiten pasajeros en ninguna bicicleta que no esté hecha para llevarlos (EMC 14.56.030(B)).",
   encinitas_class3_paths: () =>
-    "La página de Encinitas dice que la Clase 3 no puede usar ciclovías separadas. La ley estatal no lo prohíbe desde 2023, así que tómalo como no claro.",
-  solana_emoto: () => "En Solana Beach, usar una moto eléctrica en la calle requiere licencia de motocicleta, registro y seguro.",
-  solana_sidewalks: () => "No se puede andar por aceras ni cruces peatonales en la zona comercial, ni en calles con ciclovía.",
+    "La página de Encinitas dice que la Clase 3 no puede usar ciclovías separadas. Ninguna ordenanza de Encinitas lo dice, y la ley estatal no lo prohíbe desde 2023. Sigue los letreros.",
+  solana_emoto: () => `Esto es ley estatal, no una regla de Solana Beach. ${EMOTO_REMOVAL_ES.charAt(0).toUpperCase()}${EMOTO_REMOVAL_ES.slice(1)}`,
+  solana_sidewalks: () =>
+    "No se puede andar por la acera en una zona comercial, ni por la acera de una calle con ciclovía designada (SBMC 10.44.010(B)).",
+  solana_parks_motor: () =>
+    "Solana Beach prohíbe vehículos motorizados en parques y playas, incluidos los acantilados, senderos y accesos junto a ellas, salvo permiso del administrador de la ciudad (SBMC 11.12.020(R)). No está resuelto si eso incluye las bicicletas eléctricas.",
+  solana_passengers: () => "No se permiten pasajeros en ninguna bicicleta que no esté hecha para llevarlos (SBMC 10.44.010(C)).",
+  solana_course: () =>
+    "A quien cometa una primera infracción se le puede permitir tomar un curso de seguridad aprobado por la policía en lugar de la sanción (SBMC 10.44.010(E)).",
   solana_helmet_18: () => "La página web de Solana Beach dice casco para \"18 años o menos\", pero la ley estatal y el folleto de la ciudad dicen menores de 18.",
-  del_mar_bans: () => "No se permiten bicicletas ni bicicletas eléctricas en parques, reservas, aceras comerciales ni en la mayoría de los senderos de la laguna San Dieguito en Del Mar.",
+  del_mar_bans: () =>
+    "En Del Mar no se puede andar en bicicleta ni en bicicleta eléctrica por aceras del Village Center o de zonas comerciales, por aceras con letreros que lo prohíben, por la acera de una calle con ciclovía (anda por la ciclovía, con las excepciones del CVC 21208), en parques y reservas, ni en senderos de la laguna salvo que un letrero lo permita.",
+  del_mar_beaches: () =>
+    "Los salvavidas de Del Mar tratan como ilegal andar en bicicleta eléctrica en las playas de la ciudad (DMMC 8.04.020 prohíbe vehículos autopropulsados en las playas).",
   del_mar_coast_to_crest: () => "Las Clases 1 y 2 se permiten en el tramo de Del Mar del sendero Coast to Crest. La Clase 3 no está clara.",
-  county_no_ordinance: () => "Todavía no encontramos una ordenanza del condado, pero el condado tiene el poder de adoptar una.",
+  county_no_ordinance: (p, c) =>
+    `Al ${formatDate(n(p.date), c.lang)} el condado no había adoptado una prohibición para menores de 12 años, pero la ley estatal le permite hacerlo (VC 21214.7(b)). Vuelve a revisar antes de salir.`,
+  county_sidewalks: () =>
+    "El código del condado prohíbe andar en bicicleta por aceras de zonas comerciales (SDCC 72.230). Por seguridad, haz lo mismo con la bicicleta eléctrica.",
+  county_parks: () => "En parques, senderos y reservas del condado, anda en bicicleta eléctrica solo en las zonas marcadas para ello (SDCC 41.130(b)).",
+  county_dpr_sites: () =>
+    "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
+  county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",
+  bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
+  bl_unsure_fast_mode: () =>
+    "Respondiste \"no sé\" sobre los modos rápidos. Un modo de más de 20 mph solo con el motor haría que no fuera una bicicleta eléctrica legal.",
+  bl_unverified_state: (_p, c) => `Las reglas de ${c.state} no se confirmaron contra el texto de la ley.`,
+  bl_unverified_primary_partial: (p) =>
+    p.place === "sduhsd_campuses"
+      ? "Las reglas de clase, etiqueta y curso vienen solo de la página web del distrito. Ninguna política ni reglamento de la junta las incluye, y la junta no ha votado sobre ellas."
+      : "Solo una parte de estas reglas se encontró en un texto vigente. El resto viene de una página web oficial.",
+  bl_unverified_primary_not_found: () => "No se encontró el texto vigente de estas reglas. Vienen de una página o un comunicado oficial.",
 };
 
 const CHANGES: Record<Lang, Record<string, string>> = {

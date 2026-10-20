@@ -87,7 +87,8 @@ export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props
   const state = stateName(stateCode, lang);
   const title =
     verdict.scope === "state" ? t(lang, "stateCardTitle", { state }) : placeName(verdict.id, lang);
-  const verifiedKey = `verified_${verdict.verified}`;
+  // Local cards say how completely the place's record was read in enacted text.
+  const verifiedKey = verdict.scope === "local" && verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";
 
   return (
