@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { answerShown, sameWheelSize, withOneWheelSize, withWheelCount, withWheelSize } from "@/lib/checkerState";
+import { answerShown, sameWheelSize, WHEEL_MAX_IN, WHEEL_MIN_IN, withOneWheelSize, withWheelCount, withWheelSize } from "@/lib/checkerState";
 import type { BikeFacts, QuestionId } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
@@ -30,6 +30,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
   const [sameSize, setSameSize] = useState(sameWheelSize(facts));
   if (questions.length === 0) return null;
 
+  const wheelError = t(lang, "rangeError", { min: WHEEL_MIN_IN, max: WHEEL_MAX_IN });
   const tri = [
     { value: "yes" as const, label: t(lang, "yes") },
     { value: "no" as const, label: t(lang, "no") },
@@ -58,16 +59,18 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
             <NumberField
               label={sameSize ? t(lang, "qWheels") : t(lang, "front")}
               value={facts.wheelFrontIn}
-              min={6}
-              max={30}
+              min={WHEEL_MIN_IN}
+              max={WHEEL_MAX_IN}
+              rangeError={wheelError}
               onChange={(v) => onChange(withWheelSize(facts, v, sameSize))}
             />
             {!sameSize ? (
               <NumberField
                 label={t(lang, "rear")}
                 value={facts.wheelRearIn}
-                min={6}
-                max={30}
+                min={WHEEL_MIN_IN}
+                max={WHEEL_MAX_IN}
+                rangeError={wheelError}
                 onChange={(v) => onChange({ ...facts, wheelRearIn: v, unsure: withUnsure(facts, "wheels", false) })}
               />
             ) : null}

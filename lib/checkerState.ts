@@ -119,3 +119,22 @@ export function sameWheelSize(facts: BikeFacts): boolean {
 export function withOneWheelSize(facts: BikeFacts): BikeFacts {
   return { ...facts, wheelRearIn: facts.wheelFrontIn };
 }
+
+/** Wheel sizes a family can type, in inches. Kids' bikes start near 12, and 700c is about 28. */
+export const WHEEL_MIN_IN = 6;
+export const WHEEL_MAX_IN = 30;
+
+/**
+ * The number a form field holds, or null when it is blank, not a number, or outside min to max.
+ * Null means unknown, so the question stays open. A wheel size of 57, read off a tire's
+ * millimeter size like 57-203, must never count as 57 inches.
+ */
+export function numberInRange(raw: string, min?: number, max?: number): number | null {
+  const text = raw.trim();
+  if (text === "") return null;
+  const n = Number(text);
+  if (!Number.isFinite(n)) return null;
+  if (min !== undefined && n < min) return null;
+  if (max !== undefined && n > max) return null;
+  return n;
+}

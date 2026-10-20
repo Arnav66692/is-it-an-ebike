@@ -4,12 +4,15 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { NumberField } from "@/components/controls";
 import { FactsCard } from "@/components/FactsCard";
+import { numberInRange, WHEEL_MAX_IN, WHEEL_MIN_IN, withWheelCount, withWheelSize } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
+import { classBike } from "./helpers";
 
 const DATE = "2026-10-20";
 
@@ -115,5 +118,40 @@ describe("wheel sizes and trike words", () => {
     expect(result.state.questions).toContain("wheels");
     expect(kind).not.toBe("yes");
     expect(flow(text, "AZ", 7, { wheelCount: 2 }).result.state.status).toBe("not_ebike");
+  });
+});
+
+describe("number fields take only numbers in range", () => {
+  it("a wheel size of 57, read off a millimeter tire size, counts as not known", () => {
+    expect(numberInRange("57", WHEEL_MIN_IN, WHEEL_MAX_IN)).toBeNull();
+    expect(numberInRange("12", WHEEL_MIN_IN, WHEEL_MAX_IN)).toBe(12);
+    expect(numberInRange("27.5", WHEEL_MIN_IN, WHEEL_MAX_IN)).toBe(27.5);
+    expect(numberInRange("", WHEEL_MIN_IN, WHEEL_MAX_IN)).toBeNull();
+    expect(numberInRange("abc", 0, 99)).toBeNull();
+    expect(numberInRange("-5", 0, 99)).toBeNull();
+  });
+
+  it("Texas, age 8: typing 57 for the wheels leaves the question open instead of a YES", () => {
+    const asked = classBike(1, { wheelFrontIn: null, wheelRearIn: null, wheelCount: null });
+    const typed = withWheelCount(withWheelSize(asked, numberInRange("57", WHEEL_MIN_IN, WHEEL_MAX_IN), true), 2);
+    const result = evaluate({ state: "TX", riderAge: 8, rideDate: DATE, facts: typed, places: [] });
+    expect(result.state.status).toBe("need_info");
+    expect(result.state.questions).toContain("wheels");
+    expect(bottomLine(result, DATE).kind).not.toBe("yes");
+    const real = withWheelCount(withWheelSize(asked, numberInRange("12", WHEEL_MIN_IN, WHEEL_MAX_IN), true), 2);
+    expect(bottomLine(evaluate({ state: "TX", riderAge: 8, rideDate: DATE, facts: real, places: [] }), DATE).kind).toBe("no_illegal");
+  });
+
+  it("shows the error next to a number out of range, and keeps what was typed", () => {
+    const html = renderToStaticMarkup(
+      createElement(NumberField, { label: "Wheel size", value: 57, min: 6, max: 30, onChange: () => undefined, rangeError: "Enter a number from 6 to 30." }),
+    );
+    expect(html).toContain('value="57"');
+    expect(html).toContain('aria-invalid="true"');
+    expect(html).toContain("Enter a number from 6 to 30.");
+    const ok = renderToStaticMarkup(
+      createElement(NumberField, { label: "Wheel size", value: 12, min: 6, max: 30, onChange: () => undefined, rangeError: "Enter a number from 6 to 30." }),
+    );
+    expect(ok).not.toContain("Enter a number");
   });
 });

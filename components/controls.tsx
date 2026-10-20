@@ -3,7 +3,8 @@
 // Small form controls with large tap targets and real labels, so the page works with
 // screen readers and on a phone held in one hand.
 
-import { useId, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
+import { numberInRange } from "@/lib/checkerState";
 
 interface ChoiceOption<T extends string> {
   value: T;
@@ -54,10 +55,29 @@ interface NumberFieldProps {
   step?: number;
   help?: string;
   evidence?: ReactNode;
+  /** Shown when the typed number is outside min to max. The fact then stays unknown. */
+  rangeError?: string;
 }
 
-export function NumberField({ label, value, onChange, min, max, step = 1, help, evidence }: NumberFieldProps) {
+/**
+ * A number box that passes on only a number from min to max. Anything else counts as unknown
+ * and shows an error, so a typo or a millimeter size can't settle a rule. The typed text is kept,
+ * so the family can see and fix it.
+ */
+export function NumberField({ label, value, onChange, min, max, step = 1, help, evidence, rangeError }: NumberFieldProps) {
   const id = useId();
+  const [text, setText] = useState(value === null ? "" : String(value));
+  const [shown, setShown] = useState(value);
+  const [left, setLeft] = useState(false);
+  // The value can change from outside, for example a "not sure" button. Show it then.
+  if (value !== shown) {
+    setShown(value);
+    if (numberInRange(text, min, max) !== value) setText(value === null ? "" : String(value));
+  }
+  const invalid = text.trim() !== "" && numberInRange(text, min, max) === null;
+  const overMax = max !== undefined && Number(text) > max;
+  const showError = invalid && (left || overMax);
+  const errorId = `${id}-range`;
   return (
     <div className="space-y-1">
       <label htmlFor={id} className="block text-sm font-semibold">
@@ -71,15 +91,24 @@ export function NumberField({ label, value, onChange, min, max, step = 1, help, 
         min={min}
         max={max}
         step={step}
-        value={value ?? ""}
+        value={text}
         onChange={(e) => {
           const raw = e.target.value;
-          if (raw === "") return onChange(null);
-          const n = Number(raw);
-          onChange(Number.isFinite(n) ? n : null);
+          setText(raw);
+          const n = numberInRange(raw, min, max);
+          setShown(n);
+          if (n !== value) onChange(n);
         }}
+        onBlur={() => setLeft(true)}
+        aria-invalid={showError}
+        aria-describedby={showError && rangeError ? errorId : undefined}
         className="field w-36"
       />
+      {showError && rangeError ? (
+        <p id={errorId} role="alert" className="text-sm font-semibold">
+          {rangeError}
+        </p>
+      ) : null}
       {evidence}
     </div>
   );

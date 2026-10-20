@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { Evidence as Ev, FactKey } from "@/lib/extract/parse";
+import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/parse";
 import type { BikeFacts, ClassNum } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
@@ -10,6 +10,9 @@ import { Card, Choice, Evidence, fromTri, NumberField, triValue } from "./contro
 import { PedalPhotoCheck } from "./PedalPhotoCheck";
 
 type Tri3 = "yes" | "no" | "unsure";
+
+/** The largest motor figure the form takes, the same as the parser's. */
+const MAX_WATTS = 20000;
 
 interface Props {
   lang: Lang;
@@ -24,6 +27,7 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
   const [pedalsUi, setPedalsUi] = useState<Tri3 | null>(triValue(facts.hasPedals));
   const [throttleUi, setThrottleUi] = useState<Tri3 | null>(triValue(facts.hasThrottle));
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
+  const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
   const ev = (key: FactKey) => <Evidence label={t(lang, "readFrom")} texts={evidence[key]?.map((e) => e.text)} />;
   const triOptions = [
     { value: "yes" as const, label: t(lang, "yes") },
@@ -89,10 +93,10 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
       </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <NumberField label={t(lang, "ratedWatts")} value={facts.ratedWatts} min={0} max={20000} onChange={(v) => set({ ratedWatts: v })} evidence={ev("ratedWatts")} />
-        <NumberField label={t(lang, "peakWatts")} value={facts.peakWatts} min={0} max={20000} onChange={(v) => set({ peakWatts: v })} evidence={ev("peakWatts")} />
+        <NumberField label={t(lang, "ratedWatts")} value={facts.ratedWatts} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ ratedWatts: v })} evidence={ev("ratedWatts")} />
+        <NumberField label={t(lang, "peakWatts")} value={facts.peakWatts} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ peakWatts: v })} evidence={ev("peakWatts")} />
         {facts.wattsUpTo !== null || evidence.wattsUpTo ? (
-          <NumberField label={t(lang, "upToWatts")} value={facts.wattsUpTo} min={0} max={20000} onChange={(v) => set({ wattsUpTo: v })} evidence={ev("wattsUpTo")} />
+          <NumberField label={t(lang, "upToWatts")} value={facts.wattsUpTo} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ wattsUpTo: v })} evidence={ev("wattsUpTo")} />
         ) : null}
       </div>
 
@@ -112,11 +116,11 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
       <div className="grid gap-4 sm:grid-cols-2">
         {/* A throttle speed read from the text stays visible even with "no throttle", so a stray one can be cleared. */}
         {facts.hasThrottle !== false || facts.throttleMph !== null ? (
-          <NumberField label={t(lang, "throttleMph")} value={facts.throttleMph} min={0} max={99} onChange={(v) => set({ throttleMph: v })} evidence={ev("throttleMph")} />
+          <NumberField label={t(lang, "throttleMph")} value={facts.throttleMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ throttleMph: v })} evidence={ev("throttleMph")} />
         ) : null}
-        <NumberField label={t(lang, "assistMph")} value={facts.assistMph} min={0} max={99} onChange={(v) => set({ assistMph: v })} evidence={ev("assistMph")} />
+        <NumberField label={t(lang, "assistMph")} value={facts.assistMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ assistMph: v })} evidence={ev("assistMph")} />
         {facts.topSpeedMph !== null || evidence.topSpeedMph ? (
-          <NumberField label={t(lang, "topMph")} value={facts.topSpeedMph} min={0} max={99} onChange={(v) => set({ topSpeedMph: v })} evidence={ev("topSpeedMph")} />
+          <NumberField label={t(lang, "topMph")} value={facts.topSpeedMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ topSpeedMph: v })} evidence={ev("topSpeedMph")} />
         ) : null}
       </div>
 
