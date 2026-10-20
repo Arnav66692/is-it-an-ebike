@@ -6,7 +6,7 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { DATES, runBottomLineMatrix, runMatrix, SHAPES, VARIANTS } from "../tests/matrix";
+import { DATES, runBottomLineMatrix, runMatrix, SHAPES, VARIANTS, type ReadVariant } from "../tests/matrix";
 
 const root = join(__dirname, "..");
 const read = <T>(path: string): T | null => {
@@ -38,6 +38,14 @@ function commit(): string {
     return "unknown";
   }
 }
+
+/** The four ways each ride runs, in the order RESULTS.md lists them. */
+const READ_ROWS: [ReadVariant, string][] = [
+  ["typed", "Typed in"],
+  ["read_none_checked", "Read, no fact checked"],
+  ["read_one_unchecked", "Read, one fact left unchecked"],
+  ["read_all_checked", "Read, every fact checked"],
+];
 
 const matrix = runMatrix();
 const bottom = runBottomLineMatrix();
@@ -87,7 +95,11 @@ const accuracy = {
   },
   bottom_line: {
     cases: bottom.cases,
+    bottom_lines: bottom.bottomLines,
     by_kind: bottom.byKind,
+    by_read: bottom.byRead,
+    unchecked_yes: bottom.uncheckedYes.length,
+    facts_not_named: bottom.factsNotNamed.length,
     false_yes: bottom.falseYes.length,
     missed_yes: bottom.missedYes.length,
     false_illegal: bottom.falseIllegal.length,
@@ -144,7 +156,7 @@ Mutation check, done once by hand on Oct 17. Turning off the never-legal rule, o
 
 ## Bottom line
 
-Under every answer the app shows one strict YES or NO for the whole ride (\`lib/rules/bottomLine.ts\`). YES needs every card allowed, every question answered, no "not sure" fast-mode answer, every record read in enacted text, and a ride date no more than 30 days after the state rules were last checked. It was checked on **${bottom.cases.toLocaleString("en-US")} generated cases**: the same states, classes, bikes, ages and dates as above, and in California every place alone, all places together and none, each with and without "Somewhere else". A separate checker in \`tests/oracle.ts\` lists every reason a case must not get a YES, and every rule that says a ride is definitely not allowed. The caveat line is read from the real rendered card, ${bottom.renderedCards} distinct cards in English and Spanish.
+Under every answer the app shows one strict YES or NO for the whole ride (\`lib/rules/bottomLine.ts\`). YES needs every card allowed, every question answered, no "not sure" fast-mode answer, every record read in enacted text, a ride date no more than 30 days after the state rules were last checked, and every fact read from a link or photo checked by the family against the bike (\`lib/provenance.ts\`). It was checked on **${bottom.cases.toLocaleString("en-US")} generated rides**: the same states, classes, bikes, ages and dates as above, and in California every place alone, all places together and none, each with and without "Somewhere else". Each ride ran four ways, typed in, and read from a link or photo with no fact checked, with one fact left unchecked (each fact in turn), and with every fact checked, so **${bottom.bottomLines.toLocaleString("en-US")} bottom lines** in all. Every gate below counts all of them. A separate checker in \`tests/oracle.ts\` lists every reason a case must not get a YES, and every rule that says a ride is definitely not allowed. The matrix works out which facts were read on its own, and counts every unchecked one as a reason against YES, whether or not a card used it. The caveat line is read from the real rendered card, ${bottom.renderedCards} distinct cards in English and Spanish.
 
 | Gate | Result |
 |---|---|
@@ -154,14 +166,22 @@ Under every answer the app shows one strict YES or NO for the whole ride (\`lib/
 | A rule says no, but the answer is not NO, not allowed | ${bottom.missedIllegal.length} |
 | YES or NO of the wrong kind for the cards shown | ${bottom.wrongKind.length} |
 | Rendered card missing, or wrongly adding, the line that names unchecked places | ${bottom.missingCaveat.length} |
+| **YES while a fact read from a link or photo is unchecked** | **${bottom.uncheckedYes.length}** |
+| NO, not confirmed that doesn't name exactly the unchecked facts | ${bottom.factsNotNamed.length} |
 
-| Bottom line | Cases | Share |
+| Bottom line, facts typed in | Rides | Share |
 |---|---|---|
 | YES | ${bottom.byKind.yes.toLocaleString("en-US")} | ${pct(bottom.byKind.yes, bottom.cases)} |
 | NO, not allowed | ${bottom.byKind.no_illegal.toLocaleString("en-US")} | ${pct(bottom.byKind.no_illegal, bottom.cases)} |
 | NO, not confirmed | ${bottom.byKind.no_unconfirmed.toLocaleString("en-US")} | ${pct(bottom.byKind.no_unconfirmed, bottom.cases)} |
 
-Mutation checks, done by hand on Oct 19. Ignoring unverified records, ignoring a "not sure" fast-mode answer, or dropping the unchecked-places line each made a bottom-line gate fail. After the review fixes, five more each made a gate fail: running the campus Class 3 rule when pedals are unknown (960 false NO, not allowed), deleting the caveat paragraph from the card (116 rendered cards wrong), letting Carlsbad's ban lapse with the state power (148 false YES), turning off the engine's unchecked-places flag (13 rendered cards wrong), and not counting "not an e-bike" as not allowed (60,600 false YES). After the second review, three more each made a gate fail: ignoring a stated throttle speed when the throttle answer is "not sure" (6,058 false legal cards, 6,674 false YES), dropping a stated top speed when an assist speed is also given (10,030 false legal cards, 11,038 false YES), and letting a San Diego place vouch for an under-12 rider past 30 days after its check (2,204 false legal cards, 4,408 false YES). After the third review, two more each made a gate fail: trusting a Class 1 or 3 label when the throttle answer is blank or "not sure" with no throttle speed (7,572 false legal cards, 1,682 false YES), and letting state law vouch for a ride more than 30 days after its check (198,114 false YES).
+| How the facts came in | YES | NO, not allowed | NO, not confirmed |
+|---|---|---|---|
+${READ_ROWS.map(([key, label]) => `| ${label} | ${bottom.byRead[key].yes.toLocaleString("en-US")} | ${bottom.byRead[key].no_illegal.toLocaleString("en-US")} | ${bottom.byRead[key].no_unconfirmed.toLocaleString("en-US")} |`).join("\n")}
+
+Reading the facts never changes a NO, not allowed, since a rule that says no still says no. With every read fact checked, the answers match typed-in facts exactly.
+
+Mutation checks, done by hand on Oct 19. Ignoring unverified records, ignoring a "not sure" fast-mode answer, or dropping the unchecked-places line each made a bottom-line gate fail. After the review fixes, five more each made a gate fail: running the campus Class 3 rule when pedals are unknown (960 false NO, not allowed), deleting the caveat paragraph from the card (116 rendered cards wrong), letting Carlsbad's ban lapse with the state power (148 false YES), turning off the engine's unchecked-places flag (13 rendered cards wrong), and not counting "not an e-bike" as not allowed (60,600 false YES). After the second review, three more each made a gate fail: ignoring a stated throttle speed when the throttle answer is "not sure" (6,058 false legal cards, 6,674 false YES), dropping a stated top speed when an assist speed is also given (10,030 false legal cards, 11,038 false YES), and letting a San Diego place vouch for an under-12 rider past 30 days after its check (2,204 false legal cards, 4,408 false YES). After the third review, two more each made a gate fail: trusting a Class 1 or 3 label when the throttle answer is blank or "not sure" with no throttle speed (7,572 false legal cards, 1,682 false YES), and letting state law vouch for a ride more than 30 days after its check (198,114 false YES). After facts read from a link or photo had to be checked, five more each made a gate fail: a bottom line that ignores unchecked facts (100,836 YES with a fact unchecked), never marking a read weight as read (2,758 YES with a fact unchecked), counting only facts a card uses, tried by leaving out the weight (2,758 YES with a fact unchecked), naming only the first unchecked fact (425,786 answers naming the wrong facts), and a tick that never checks a fact (50,418 missed YES). A pedal photo call that keeps an old check made 3 unit tests fail.
 
 ## Pilot (bars committed in PILOT.md before each run)
 
@@ -210,5 +230,5 @@ The five accuracy numbers on the frozen labeled set (zero false-legal calls, eve
 
 writeFileSync(join(root, "RESULTS.md"), md);
 process.stdout.write(
-  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. ${bottom.cases} bottom lines, ${bottom.falseYes.length} false YES.\n`,
+  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact.\n`,
 );

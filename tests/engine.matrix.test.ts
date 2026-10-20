@@ -34,6 +34,30 @@ describe("generated bottom-line matrix", () => {
     expect(summary.byKind.no_unconfirmed).toBeGreaterThan(0);
   });
 
+  it("runs every ride typed in, and read from a link or photo with none, one or every fact left unchecked", () => {
+    expect(summary.bottomLines).toBe(4 * summary.cases);
+    for (const variant of ["typed", "read_none_checked", "read_one_unchecked", "read_all_checked"] as const) {
+      const counted = summary.byRead[variant];
+      expect(counted.yes + counted.no_illegal + counted.no_unconfirmed, variant).toBe(summary.cases);
+    }
+    expect(summary.byRead.read_all_checked).toEqual(summary.byRead.typed);
+  });
+
+  it("never says YES while a fact read from a link or photo is unchecked", () => {
+    expect(summary.byRead.read_none_checked.yes).toBe(0);
+    expect(summary.byRead.read_one_unchecked.yes).toBe(0);
+    expect(summary.uncheckedYes.slice(0, 5), show(summary.uncheckedYes)).toEqual([]);
+  });
+
+  it("names exactly the unchecked facts whenever the answer is NO, not confirmed, and none once all are checked", () => {
+    expect(summary.factsNotNamed.slice(0, 5), show(summary.factsNotNamed)).toEqual([]);
+  });
+
+  it("keeps NO, not allowed the same whether the facts were read or typed, and checked or not", () => {
+    expect(summary.byRead.read_none_checked.no_illegal).toBe(summary.byRead.typed.no_illegal);
+    expect(summary.byRead.read_one_unchecked.no_illegal).toBe(summary.byRead.typed.no_illegal);
+  });
+
   it("never says YES when the independent checker lists any reason against it", () => {
     expect(summary.falseYes.slice(0, 5), show(summary.falseYes)).toEqual([]);
   });
@@ -50,7 +74,7 @@ describe("generated bottom-line matrix", () => {
     expect(summary.missedIllegal.slice(0, 5), show(summary.missedIllegal)).toEqual([]);
   });
 
-  it("is never YES when a card is not allowed, can't confirm, unanswered, not sure or unverified", () => {
+  it("is never YES when a card is not allowed, can't confirm, unanswered, not sure or unverified, or a read fact is unchecked", () => {
     expect(summary.wrongKind.slice(0, 5), show(summary.wrongKind)).toEqual([]);
   });
 

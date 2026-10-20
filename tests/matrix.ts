@@ -1,14 +1,26 @@
 // Builds the test matrix from the data: every state, class, age band, caution condition
-// and switch date. Used by tests/engine.matrix.test.ts and scripts/build-results.ts.
+// and switch date. The bottom line also runs each case four ways: typed in, and read from a link
+// or photo with no fact checked, every fact checked, or one fact left unchecked. Used by
+// tests/engine.matrix.test.ts and scripts/build-results.ts.
 
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BottomLineCard } from "@/components/BottomLineCard";
+import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
 import { bottomLine, type BottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
-import { CAUTION_FAST_MODE_UNVERIFIED, emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type Status } from "@/lib/rules/types";
+import {
+  CAUTION_FAST_MODE_UNVERIFIED,
+  emptyFacts,
+  READ_FIELDS,
+  type BikeFacts,
+  type PlaceId,
+  type QuestionId,
+  type ReadField,
+  type Status,
+} from "@/lib/rules/types";
 import { t, type UiKey } from "@/lib/i18n/ui";
 import {
   bottomLineBlockers,
@@ -219,12 +231,70 @@ export function runMatrix(): MatrixSummary {
 /** California place sets for the bottom line: none, each place alone, and all of them. */
 export const PLACE_SETS: PlaceId[][] = [[], ...PLACE_IDS.map((p) => [p]), [...PLACE_IDS]];
 
+/** How the family gave the facts, and which read facts they checked against the bike. */
+export const READ_VARIANTS = ["typed", "read_none_checked", "read_one_unchecked", "read_all_checked"] as const;
+export type ReadVariant = (typeof READ_VARIANTS)[number];
+
+/**
+ * Every fact a link or photo could have given this bike, worked out here on its own, so the
+ * matrix never trusts lib/provenance.ts to find them. Any fact with a value counts, even one the
+ * parser never fills today, so the gate is tested on more than the parser reads.
+ */
+export function readableFields(f: BikeFacts): ReadField[] {
+  const given: Record<ReadField, boolean> = {
+    hasPedals: f.hasPedals !== null,
+    classes: f.classes.length > 0,
+    ratedWatts: f.ratedWatts !== null,
+    peakWatts: f.peakWatts !== null,
+    wattsUpTo: f.wattsUpTo !== null,
+    hasThrottle: f.hasThrottle !== null,
+    throttleMph: f.throttleMph !== null,
+    assistMph: f.assistMph !== null,
+    topSpeedMph: f.topSpeedMph !== null,
+    wheelSize: f.wheelFrontIn !== null || f.wheelRearIn !== null,
+    weightLb: f.weightLb !== null,
+    wheelCount: f.wheelCount !== null,
+    hasFootPegs: f.hasFootPegs !== null,
+    switchable: f.switchable !== null,
+  };
+  return READ_FIELDS.filter((k) => given[k]);
+}
+
+interface ReadRun {
+  variant: ReadVariant;
+  /** What the checker would pass to the bottom line, from lib/provenance.ts. */
+  unconfirmed: ReadField[];
+  /** What must still be unchecked, from readableFields alone. */
+  expected: ReadField[];
+}
+
+/**
+ * The four ways one bike's facts can reach the bottom line, built with the same functions the
+ * checker calls. Checking runs over readableFields, not over what lib/provenance.ts marked, so a
+ * fact it failed to mark, or marked by mistake, shows up as a wrong answer.
+ */
+function readRuns(facts: BikeFacts): { fixed: ReadRun[]; oneLeft: ReadRun[] } {
+  const fields = readableFields(facts);
+  const read = fromRead(facts, "text");
+  const checkAllBut = (left: ReadField | null) => fields.filter((f) => f !== left).reduce((b, f) => withConfirmed(b, f, true), read);
+  return {
+    fixed: [
+      { variant: "typed", unconfirmed: unconfirmedFields(withEdit(emptyChecked(), facts).checks), expected: [] },
+      { variant: "read_none_checked", unconfirmed: unconfirmedFields(read.checks), expected: fields },
+      { variant: "read_all_checked", unconfirmed: unconfirmedFields(checkAllBut(null).checks), expected: [] },
+    ],
+    oneLeft: fields.map((f) => ({ variant: "read_one_unchecked", unconfirmed: unconfirmedFields(checkAllBut(f).checks), expected: [f] })),
+  };
+}
+
 export interface BottomLineCase {
   state: string;
   cls: number;
   age: number;
   date: string;
   variant: string;
+  read: ReadVariant;
+  unchecked: string;
   places: string;
   otherPlaces: boolean;
   kind: BottomLineKind;
@@ -233,8 +303,17 @@ export interface BottomLineCase {
 }
 
 export interface BottomLineSummary {
+  /** Rides checked: state, bike, age, date, place set and Somewhere else. Each runs four ways. */
   cases: number;
+  /** Bottom lines checked in all, every ride run every way. Every gate below counts these. */
+  bottomLines: number;
+  /** Typed-in facts only, so the shares compare with earlier runs. */
   byKind: Record<BottomLineKind, number>;
+  byRead: Record<ReadVariant, Record<BottomLineKind, number>>;
+  /** YES while a fact read from a link or photo is not checked. */
+  uncheckedYes: BottomLineCase[];
+  /** NO, not confirmed that doesn't name exactly the unchecked read facts, or names some when none are left. */
+  factsNotNamed: BottomLineCase[];
   /** YES while the independent checker lists a reason against it. */
   falseYes: BottomLineCase[];
   /** Not YES while the independent checker lists no reason against it. */
@@ -279,68 +358,106 @@ function caveatProblems(bl: BottomLine, state: string, expected: UiKey | null): 
 
 /**
  * Every state, bike, age and date, and in California every place set with and without
- * "Somewhere else". Each bottom line is checked against the independent checker for YES and for
- * "NO, not allowed", against the cards on the page, and for the caveat on the rendered card.
+ * "Somewhere else". Each ride runs four ways: typed in, and read from a link or photo with no
+ * fact checked, one fact left unchecked (each fact in turn), or every fact checked. Each bottom
+ * line is checked against the independent checker for YES and for "NO, not allowed", against the
+ * cards on the page, for the unchecked facts it names, and for the caveat on the rendered card.
  */
 export function runBottomLineMatrix(): BottomLineSummary {
-  const byKind: Record<BottomLineKind, number> = { yes: 0, no_illegal: 0, no_unconfirmed: 0 };
+  const kinds = (): Record<BottomLineKind, number> => ({ yes: 0, no_illegal: 0, no_unconfirmed: 0 });
+  const byRead = Object.fromEntries(READ_VARIANTS.map((v) => [v, kinds()])) as Record<ReadVariant, Record<BottomLineKind, number>>;
   const falseYes: BottomLineCase[] = [];
   const missedYes: BottomLineCase[] = [];
   const falseIllegal: BottomLineCase[] = [];
   const missedIllegal: BottomLineCase[] = [];
   const wrongKind: BottomLineCase[] = [];
   const missingCaveat: BottomLineCase[] = [];
+  const uncheckedYes: BottomLineCase[] = [];
+  const factsNotNamed: BottomLineCase[] = [];
   const rendered = new Set<string>();
   let cases = 0;
+  let bottomLines = 0;
 
   for (const state of STATE_CODES) {
     const placeSets = state === "CA" ? PLACE_SETS : [[]];
     const otherOptions = state === "CA" ? [false, true] : [false];
     for (const bike of bikes()) {
       const facts = engineFacts(bike.facts);
+      const runs = readRuns(facts);
       for (const age of AGES) {
         for (const date of DATES) {
           for (const places of placeSets) {
             for (const otherPlaces of otherOptions) {
               const result = evaluate({ state, riderAge: age, rideDate: date, facts, places, otherPlaces });
-              const bl = bottomLine(result, date);
               const cards = [result.state, ...result.local];
               const statuses = cards.map((v) => v.status);
-              const base = { state, cls: bike.cls, age, date, variant: bike.name, places: places.join("+") || "none", otherPlaces, kind: bl.kind, statuses };
-              cases += 1;
-              byKind[bl.kind] += 1;
-
               const blockers = bottomLineBlockers(state, bike.facts, age, date, places);
-              if (bl.kind === "yes" && blockers.length > 0) falseYes.push({ ...base, why: blockers });
-              if (bl.kind !== "yes" && blockers.length === 0) missedYes.push({ ...base, why: [] });
-
               const illegal = illegalReasons(state, bike.facts, age, date, places);
-              if (bl.kind === "no_illegal" && illegal.length === 0) {
-                falseIllegal.push({ ...base, why: bl.blocked.map((b) => b.line.code) });
-              }
-              if (bl.kind !== "no_illegal" && illegal.length > 0) missedIllegal.push({ ...base, why: illegal });
-
               const anyNo = statuses.some((st) => st === "no" || st === "not_ebike");
               const open = statuses.some((st) => st === "cant_confirm" || st === "need_info");
               const unverified = cards.filter((v) => !topVerifiedInData(v.scope, v.id)).map((v) => v.id);
               const unsure = cards.some((v) => v.cautions.some((c) => c.code === CAUTION_FAST_MODE_UNVERIFIED));
               const stale = stateStaleInData(state, date);
-              if (anyNo && bl.kind !== "no_illegal") wrongKind.push({ ...base, why: ["a card is not allowed"] });
-              if (!anyNo && bl.kind === "no_illegal") wrongKind.push({ ...base, why: ["no card is illegal"] });
-              if (bl.kind === "yes" && (open || unverified.length > 0 || unsure || stale)) {
-                wrongKind.push({ ...base, why: [open ? "open card" : "", unsure ? "not sure" : "", stale ? "state check too old" : "", ...unverified].filter(Boolean) });
-              }
-              if (!anyNo && !open && !unsure && !stale && unverified.length === 0 && bl.kind !== "yes") {
-                wrongKind.push({ ...base, why: ["every card is a verified yes"] });
-              }
+              // One "one fact left unchecked" run per ride, taking each read fact in turn.
+              const oneLeft = runs.oneLeft.length > 0 ? [runs.oneLeft[cases % runs.oneLeft.length]] : [];
+              cases += 1;
 
-              // The caveat depends only on the state, the places, Somewhere else and the kind,
-              // so one rendered card per combination covers every case.
-              const key = `${state}|${base.places}|${otherPlaces}|${bl.kind}`;
-              if (!rendered.has(key)) {
-                rendered.add(key);
-                const problems = caveatProblems(bl, state, expectedCaveat(state, places, otherPlaces, bl.kind));
-                if (problems.length > 0) missingCaveat.push({ ...base, why: problems });
+              for (const run of [...runs.fixed, ...oneLeft]) {
+                const bl = bottomLine(result, date, run.unconfirmed);
+                bottomLines += 1;
+                byRead[run.variant][bl.kind] += 1;
+                const base = {
+                  state,
+                  cls: bike.cls,
+                  age,
+                  date,
+                  variant: bike.name,
+                  read: run.variant,
+                  unchecked: run.expected.join(","),
+                  places: places.join("+") || "none",
+                  otherPlaces,
+                  kind: bl.kind,
+                  statuses,
+                };
+
+                // Every read fact left unchecked is a reason against YES, whether or not a card used it.
+                const why = [...blockers, ...run.expected.map((f) => `unchecked:${f}`)];
+                if (bl.kind === "yes" && why.length > 0) falseYes.push({ ...base, why });
+                if (bl.kind !== "yes" && why.length === 0) missedYes.push({ ...base, why: [] });
+                if (bl.kind === "yes" && run.expected.length > 0) uncheckedYes.push({ ...base, why: run.expected });
+
+                if (bl.kind === "no_illegal" && illegal.length === 0) {
+                  falseIllegal.push({ ...base, why: bl.blocked.map((b) => b.line.code) });
+                }
+                if (bl.kind !== "no_illegal" && illegal.length > 0) missedIllegal.push({ ...base, why: illegal });
+
+                const named = bl.missing.filter((m) => m.kind === "facts").flatMap((m) => String(m.line.params?.fields ?? "").split(","));
+                const expectedNamed = bl.kind === "no_unconfirmed" ? run.expected : [];
+                if ([...named].sort().join(",") !== [...expectedNamed].sort().join(",")) {
+                  factsNotNamed.push({ ...base, why: [`named ${named.join(",") || "none"}`, `expected ${expectedNamed.join(",") || "none"}`] });
+                }
+
+                const unchecked = run.expected.length > 0;
+                if (anyNo && bl.kind !== "no_illegal") wrongKind.push({ ...base, why: ["a card is not allowed"] });
+                if (!anyNo && bl.kind === "no_illegal") wrongKind.push({ ...base, why: ["no card is illegal"] });
+                if (bl.kind === "yes" && (open || unverified.length > 0 || unsure || stale || unchecked)) {
+                  wrongKind.push({
+                    ...base,
+                    why: [open ? "open card" : "", unsure ? "not sure" : "", stale ? "state check too old" : "", unchecked ? "read fact not checked" : "", ...unverified].filter(Boolean),
+                  });
+                }
+                if (!anyNo && !open && !unsure && !stale && !unchecked && unverified.length === 0 && bl.kind !== "yes") {
+                  wrongKind.push({ ...base, why: ["every card is a verified yes and every fact is checked"] });
+                }
+
+                // The caveat depends only on the state, the places, Somewhere else and the kind,
+                // so one rendered card per combination covers every case.
+                const key = `${state}|${base.places}|${otherPlaces}|${bl.kind}`;
+                if (!rendered.has(key)) {
+                  rendered.add(key);
+                  const problems = caveatProblems(bl, state, expectedCaveat(state, places, otherPlaces, bl.kind));
+                  if (problems.length > 0) missingCaveat.push({ ...base, why: problems });
+                }
               }
             }
           }
@@ -348,5 +465,19 @@ export function runBottomLineMatrix(): BottomLineSummary {
       }
     }
   }
-  return { cases, byKind, falseYes, missedYes, falseIllegal, missedIllegal, wrongKind, missingCaveat, renderedCards: rendered.size };
+  return {
+    cases,
+    bottomLines,
+    byKind: byRead.typed,
+    byRead,
+    falseYes,
+    missedYes,
+    falseIllegal,
+    missedIllegal,
+    wrongKind,
+    missingCaveat,
+    renderedCards: rendered.size,
+    uncheckedYes,
+    factsNotNamed,
+  };
 }
