@@ -354,6 +354,22 @@ const EN = {
     "The City can impound an e-bike ridden against its e-bike rules for up to 30 days (PMC 10.57.100(G)).",
   poway_trails_page: () =>
     "Poway's trails page says motorized vehicles aren't allowed on trails, with bike limits of 10 mph at Lake Poway and 15 mph elsewhere, and no bikes at Blue Sky Ecological Reserve. City code allows e-bikes on trails unless signs say no, so follow the trail signs.",
+  ec_parks: () =>
+    "No riding an e-bike, any class and any age, in any El Cajon park, playground or public facility, or on the Civic Center and Prescott Promenade grounds. Even sitting on a stopped e-bike counts. Walking it there is allowed (ECMC 9.42.030).",
+  ec_sidewalks: () =>
+    "El Cajon code bars riding any vehicle on any sidewalk except across a driveway (ECMC 10.08.070). It isn't settled whether that covers e-bikes, so ride in the street or bike lane.",
+  santee_under_12_passengers: () =>
+    "Santee's text also bars children under 12 from riding as passengers on a Class 1 or 2 e-bike (SMC 10.22.015(A)). State law only mentions operating.",
+  santee_sidewalks: () =>
+    "No riding an e-bike on any Santee sidewalk where the City has posted a sign against it (SMC 10.22.016).",
+  santee_parks: () =>
+    "In Santee parks, ride only on roads, and on walkways and trails the City has marked for bikes (SMC 8.08.280).",
+  cor_under_12_passengers: () =>
+    "Coronado's text also bars children under 12 from riding as passengers on a Class 1 or 2 e-bike (CMC 56.18.060(B)). State law only mentions operating.",
+  cor_sidewalks: () =>
+    "No riding an e-bike on any Coronado sidewalk, the Hotel del Coronado Paseo, the Coronado Shores Boardwalk or the Glorietta Bay Marina Promenade. Get off and walk it there, or ride on the road (CMC 56.18.050).",
+  cor_beaches_parks: () =>
+    "Coronado bars vehicles, motorized or not, on public beaches, parks and the golf course unless the City allows them (CMC 56.18.040). The City treats that as covering e-bikes.",
   city_starting: (p, c) => `Starting ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.en[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} had no under-12 e-bike ban when checked on ${formatDate(n(p.date), c.lang)}, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
@@ -617,6 +633,22 @@ const ES = {
     "La Ciudad puede retener hasta 30 días una bicicleta eléctrica usada en contra de sus reglas (PMC 10.57.100(G)).",
   poway_trails_page: () =>
     "La página de senderos de Poway dice que no se permiten vehículos motorizados en los senderos, con límites para bicicletas de 10 mph en Lake Poway y 15 mph en los demás, y sin bicicletas en Blue Sky Ecological Reserve. El código de la ciudad permite bicicletas eléctricas en senderos salvo que un letrero lo prohíba, así que sigue los letreros.",
+  ec_parks: () =>
+    "No se puede andar en bicicleta eléctrica, de ninguna clase y a ninguna edad, en ningún parque, área de juegos o instalación pública de El Cajon, ni en los terrenos del Civic Center y Prescott Promenade. Incluso estar sentado en una bicicleta eléctrica detenida cuenta. Se puede llevar caminando (ECMC 9.42.030).",
+  ec_sidewalks: () =>
+    "El código de El Cajon prohíbe andar en cualquier vehículo por cualquier acera, salvo para cruzar una entrada de autos (ECMC 10.08.070). No está resuelto si eso incluye bicicletas eléctricas, así que anda por la calle o la ciclovía.",
+  santee_under_12_passengers: () =>
+    "El texto de Santee también prohíbe que los menores de 12 años vayan como pasajeros en una bicicleta eléctrica Clase 1 o 2 (SMC 10.22.015(A)). La ley estatal solo menciona manejarla.",
+  santee_sidewalks: () =>
+    "No se puede andar en bicicleta eléctrica por ninguna acera de Santee donde la Ciudad haya puesto un letrero que lo prohíba (SMC 10.22.016).",
+  santee_parks: () =>
+    "En los parques de Santee, anda solo por las calles y por los caminos y senderos que la Ciudad haya marcado para bicicletas (SMC 8.08.280).",
+  cor_under_12_passengers: () =>
+    "El texto de Coronado también prohíbe que los menores de 12 años vayan como pasajeros en una bicicleta eléctrica Clase 1 o 2 (CMC 56.18.060(B)). La ley estatal solo menciona manejarla.",
+  cor_sidewalks: () =>
+    "No se puede andar en bicicleta eléctrica por ninguna acera de Coronado, el Paseo del Hotel del Coronado, el paseo de Coronado Shores ni el paseo de la marina de Glorietta Bay. Ahí bájate y llévala caminando, o anda por la calle (CMC 56.18.050).",
+  cor_beaches_parks: () =>
+    "Coronado prohíbe vehículos, con o sin motor, en playas públicas, parques y el campo de golf salvo que la Ciudad lo permita (CMC 56.18.040). La Ciudad lo aplica a las bicicletas eléctricas.",
   city_starting: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.es[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} no tenía una prohibición para menores de 12 años cuando se revisó el ${formatDate(n(p.date), c.lang)}, pero la ley estatal le permite adoptar una (VC 21214.7(b)). Vuelve a revisar antes de salir.`,

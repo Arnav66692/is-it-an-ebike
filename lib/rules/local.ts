@@ -16,10 +16,13 @@ export const PLACE_IDS: PlaceId[] = [
   "solana_beach",
   "del_mar",
   "chula_vista",
+  "coronado",
+  "el_cajon",
   "escondido",
   "la_mesa",
   "poway",
   "san_marcos",
+  "santee",
   "unincorporated_san_diego_county",
   "sduhsd_campuses",
 ];
@@ -369,6 +372,20 @@ interface CityNote {
  * never shows without its source. The age, warning and e-moto lines all cities share come first.
  */
 const CITY_NOTES: Partial<Record<PlaceId, CityNote[]>> = {
+  coronado: [
+    { code: "cor_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
+    { code: "cor_sidewalks", rule: "sidewalk_and_boardwalk_ban", when: "ride" },
+    { code: "cor_beaches_parks", rule: "beach_park_vehicle_ban", when: "ride" },
+  ],
+  santee: [
+    { code: "santee_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
+    { code: "santee_sidewalks", rule: "posted_sidewalk_ban", when: "ride" },
+    { code: "santee_parks", rule: "park_vehicle_rule", when: "ride" },
+  ],
+  el_cajon: [
+    { code: "ec_parks", rule: "park_and_facility_ebike_ban", when: "ride" },
+    { code: "ec_sidewalks", rule: "sidewalk_vehicle_ban", when: "ride" },
+  ],
   poway: [
     { code: "poway_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
     { code: "poway_no_passengers_under_18", rule: "passengers_under_18_operator", when: "under18" },
