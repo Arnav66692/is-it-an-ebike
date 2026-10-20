@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { withWheelCount, withWheelSize } from "@/lib/checkerState";
+import { answerShown, sameWheelSize, withOneWheelSize, withWheelCount, withWheelSize } from "@/lib/checkerState";
 import type { BikeFacts, QuestionId } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
-import { Card, Choice, NumberField, triValue } from "./controls";
+import { Card, Choice, NumberField } from "./controls";
 
 type Tri3 = "yes" | "no" | "unsure";
 
@@ -22,11 +22,12 @@ function withUnsure(f: BikeFacts, q: QuestionId, unsure: boolean): QuestionId[] 
 }
 
 export function FollowUps({ lang, questions, facts, onChange }: Props) {
-  const [motorUi, setMotorUi] = useState<Tri3 | null>(triValue(facts.motorOver20));
-  const [assistUi, setAssistUi] = useState<Tri3 | null>(triValue(facts.assistOver28));
-  const [weightUi, setWeightUi] = useState<Tri3 | null>(triValue(facts.weightOver100));
-  const [pegsUi, setPegsUi] = useState<Tri3 | null>(triValue(facts.hasFootPegs));
-  const [sameSize, setSameSize] = useState(true);
+  // Each answer starts from the facts, so "not sure" is still picked when this card is shown again.
+  const [motorUi, setMotorUi] = useState<Tri3 | null>(answerShown(facts.motorOver20, facts.unsure.includes("fast_mode")));
+  const [assistUi, setAssistUi] = useState<Tri3 | null>(answerShown(facts.assistOver28, facts.unsure.includes("fast_mode")));
+  const [weightUi, setWeightUi] = useState<Tri3 | null>(answerShown(facts.weightOver100, facts.unsure.includes("weight")));
+  const [pegsUi, setPegsUi] = useState<Tri3 | null>(answerShown(facts.hasFootPegs, facts.unsure.includes("pegs_kit")));
+  const [sameSize, setSameSize] = useState(sameWheelSize(facts));
   if (questions.length === 0) return null;
 
   const tri = [
@@ -72,7 +73,17 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
             ) : null}
           </div>
           <label className="check">
-            <input type="checkbox" aria-label={`${t(lang, "front")} / ${t(lang, "rear")}`} checked={!sameSize} onChange={(e) => setSameSize(!e.target.checked)} />
+            <input
+              type="checkbox"
+              aria-label={`${t(lang, "front")} / ${t(lang, "rear")}`}
+              checked={!sameSize}
+              onChange={(e) => {
+                const one = !e.target.checked;
+                setSameSize(one);
+                // Back to one size: the rear takes the front size, so no hidden rear size stays in the facts.
+                if (one && facts.wheelRearIn !== facts.wheelFrontIn) onChange(withOneWheelSize(facts));
+              }}
+            />
             <span>
               {t(lang, "front")} / {t(lang, "rear")}
             </span>

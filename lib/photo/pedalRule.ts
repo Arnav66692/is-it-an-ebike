@@ -62,3 +62,19 @@ export function applyPedalCall(facts: BikeFacts, call: PedalCall): BikeFacts {
   if (call === "ask") return facts;
   return { ...facts, hasPedals: call === "pedals" };
 }
+
+/**
+ * Runs a photo check and passes its call on only if the card that asked for it is still on
+ * screen. The check can take many seconds, and in that time the family can read a new label or
+ * start over. A call for the old bike must never fill in the new bike's pedals.
+ */
+export async function callIfCurrent(
+  run: () => Promise<{ call: PedalCall }>,
+  isCurrent: () => boolean,
+  onCall: (call: PedalCall) => void,
+): Promise<PedalCall | null> {
+  const result = await run();
+  if (!isCurrent()) return null;
+  onCall(result.call);
+  return result.call;
+}

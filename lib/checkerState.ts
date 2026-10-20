@@ -3,7 +3,7 @@
 import { PLACE_IDS } from "@/lib/rules/local";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { isIsoDate } from "@/lib/rules/dates";
-import type { BikeFacts, PlaceId, QuestionId } from "@/lib/rules/types";
+import type { BikeFacts, PlaceId, QuestionId, Tri } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 
 /** The last ride date the picker offers. */
@@ -97,4 +97,25 @@ export function withWheelSize(facts: BikeFacts, inches: number | null, sameSize:
 /** The facts after the number of wheels is picked. */
 export function withWheelCount(facts: BikeFacts, count: 2 | 3): BikeFacts {
   return { ...facts, wheelCount: count, unsure: facts.unsure.filter((q) => q !== "wheels") };
+}
+
+/**
+ * The answer a follow-up shows, read from the facts. "Not sure" is stored as an unknown fact plus
+ * the question in facts.unsure, so it must come back as "unsure", or a card that is shown again
+ * would show nothing picked while the answer still says "not sure".
+ */
+export function answerShown(value: Tri, unsure: boolean): "yes" | "no" | "unsure" | null {
+  if (value === true) return "yes";
+  if (value === false) return "no";
+  return unsure ? "unsure" : null;
+}
+
+/** True when the facts hold one wheel size, so the single size field shows every size in use. */
+export function sameWheelSize(facts: BikeFacts): boolean {
+  return facts.wheelRearIn === null || facts.wheelRearIn === facts.wheelFrontIn;
+}
+
+/** The facts after switching back to one wheel size. The rear takes the front size, so no hidden size is left behind. */
+export function withOneWheelSize(facts: BikeFacts): BikeFacts {
+  return { ...facts, wheelRearIn: facts.wheelFrontIn };
 }

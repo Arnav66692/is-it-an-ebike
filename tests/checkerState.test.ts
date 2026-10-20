@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { FollowUps } from "@/components/FollowUps";
 import { PlacePicker } from "@/components/PlacePicker";
 import {
+  answerShown,
   keepAsked,
   LAST_RIDE_DATE,
   msUntilNextDay,
@@ -15,6 +16,8 @@ import {
   parseShareLink,
   rideDateFor,
   rideDateIn,
+  sameWheelSize,
+  withOneWheelSize,
   withWheelCount,
   withWheelSize,
   type AskedQuestions,
@@ -23,6 +26,7 @@ import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type QuestionId } from "@/lib/rules/types";
 import { placeHint } from "@/lib/i18n/names";
+import { callIfCurrent, type PedalCall } from "@/lib/photo/pedalRule";
 import { classBike } from "./helpers";
 
 describe("share link and defaults", () => {
@@ -217,5 +221,61 @@ describe("third review fixes (Oct 19, 2026): the ride date follows the real toda
     const ms = msUntilNextDay(new Date(2026, 10, 18, 23, 59, 0));
     expect(ms).toBe(61_000);
     expect(msUntilNextDay(new Date(2026, 10, 19, 0, 0, 0, 500))).toBeGreaterThan(23 * 3600 * 1000);
+  });
+});
+
+describe("third review fixes (Oct 19, 2026): what the follow-up card shows", () => {
+  const render = (questions: QuestionId[], facts: BikeFacts) =>
+    renderToStaticMarkup(createElement(FollowUps, { lang: "en", questions, facts, onChange: () => undefined }));
+  const checkedRadios = (html: string) => (html.match(/type="radio"[^>]*checked=""/g) ?? []).length;
+
+  it("still shows 'not sure' picked when the card is shown again, matching the bottom line", () => {
+    const facts = classBike(2, { motorOver20: null, assistOver28: null, switchable: null, weightOver100: null, weightLb: null, unsure: ["fast_mode", "weight"] });
+    const html = render(["fast_mode", "weight"], facts);
+    expect(checkedRadios(html)).toBe(3);
+    expect(answerShown(null, true)).toBe("unsure");
+    expect(answerShown(null, false)).toBeNull();
+    expect(answerShown(false, true)).toBe("no");
+    // An unanswered question still shows nothing picked.
+    expect(checkedRadios(render(["fast_mode"], classBike(2, { motorOver20: null, assistOver28: null, switchable: null })))).toBe(0);
+  });
+
+  it("shows the rear field when the facts hold two wheel sizes, so no size is hidden", () => {
+    const mixed = classBike(1, { wheelFrontIn: 12, wheelRearIn: 20 });
+    expect(sameWheelSize(mixed)).toBe(false);
+    expect(render(["wheels"], mixed)).toContain(">Rear (inches)</label>");
+    expect(sameWheelSize(classBike(1))).toBe(true);
+    expect(render(["wheels"], classBike(1))).not.toContain(">Rear (inches)</label>");
+  });
+
+  it("switching back to one wheel size copies the front size to the rear, so a 12 inch bike is judged as 12 inch", () => {
+    const mixed = classBike(1, { wheelFrontIn: 12, wheelRearIn: 20 });
+    const card = (f: BikeFacts) => evaluate({ state: "AL", riderAge: 30, rideDate: "2026-10-19", facts: f, places: [] }).state;
+    expect(card(mixed).status).toBe("yes");
+    const one = withOneWheelSize(mixed);
+    expect(one.wheelRearIn).toBe(12);
+    expect(card(one).status).toBe("not_ebike");
+    expect(card(one).reason.code).toBe("caution_wheel_size");
+    const source = readFileSync(join(__dirname, "..", "components", "FollowUps.tsx"), "utf8");
+    expect(source).toContain("onChange(withOneWheelSize(facts))");
+    expect(source).toContain("useState(sameWheelSize(facts))");
+  });
+});
+
+describe("third review fixes (Oct 19, 2026): a slow photo check never fills in another bike", () => {
+  it("drops the call when the card that asked for it has left the page", async () => {
+    const calls: PedalCall[] = [];
+    const run = async () => ({ call: "pedals" as const });
+    expect(await callIfCurrent(run, () => false, (c) => calls.push(c))).toBeNull();
+    expect(calls).toEqual([]);
+    expect(await callIfCurrent(run, () => true, (c) => calls.push(c))).toBe("pedals");
+    expect(calls).toEqual(["pedals"]);
+  });
+
+  it("is the guard the photo check runs", () => {
+    const source = readFileSync(join(__dirname, "..", "components", "PedalPhotoCheck.tsx"), "utf8");
+    expect(source).toContain("callIfCurrent(");
+    expect(source).toContain("() => onPage.current");
+    expect(source).toContain("onPage.current = false");
   });
 });

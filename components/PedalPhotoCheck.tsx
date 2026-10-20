@@ -1,9 +1,9 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
-import { PEDAL_MODEL_MB, type PedalCall } from "@/lib/photo/pedalRule";
+import { callIfCurrent, PEDAL_MODEL_MB, type PedalCall } from "@/lib/photo/pedalRule";
 
 type Step = "closed" | "confirm" | "choose" | "working";
 
@@ -24,6 +24,14 @@ export function PedalPhotoCheck({ lang, onCall }: Props) {
   const [step, setStep] = useState<Step>("closed");
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState<UiKey | null>(null);
+  // False once this card leaves the page, for example when a new label is read.
+  const onPage = useRef(true);
+  useEffect(() => {
+    onPage.current = true;
+    return () => {
+      onPage.current = false;
+    };
+  }, []);
 
   async function accept() {
     setMessage(null);
@@ -42,13 +50,16 @@ export function PedalPhotoCheck({ lang, onCall }: Props) {
     setProgress(0);
     try {
       const { runPedalCheck } = await import("@/lib/photo/runPedalCheck");
-      const result = await runPedalCheck(file, setProgress);
-      onCall(result.call);
-      setMessage(RESULT_KEY[result.call]);
+      const call = await callIfCurrent(
+        () => runPedalCheck(file, (p) => onPage.current && setProgress(p)),
+        () => onPage.current,
+        onCall,
+      );
+      if (call !== null) setMessage(RESULT_KEY[call]);
     } catch {
-      setMessage("photoCheckFailed");
+      if (onPage.current) setMessage("photoCheckFailed");
     } finally {
-      setStep("choose");
+      if (onPage.current) setStep("choose");
     }
   }
 
