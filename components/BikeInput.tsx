@@ -1,13 +1,13 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import type { RequestGate } from "@/lib/checkerState";
+import { tabTap, type InputTab, type RequestGate } from "@/lib/checkerState";
 import { parseSpecText, type Extraction, type TextSource } from "@/lib/extract/parse";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
 import { Card } from "./controls";
 
-type Tab = "label" | "link" | "type";
+type Tab = InputTab;
 
 interface Props {
   lang: Lang;
@@ -207,10 +207,12 @@ export function BikeInput({ lang, onRead, onManual, gate }: Props) {
             role="tab"
             aria-selected={tab === x.id}
             onClick={() => {
+              const tap = tabTap(tab, x.id);
+              if (!tap.change) return;
               // A label or link still being read is for the tab the family just left.
-              if (x.id !== tab) gate.cancel();
+              gate.cancel();
               setTab(x.id);
-              if (x.id === "type") onManual();
+              if (tap.manual) onManual();
             }}
           >
             {t(lang, x.key)}

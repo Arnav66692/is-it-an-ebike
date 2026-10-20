@@ -239,3 +239,16 @@ export function requestGate(): RequestGate {
     },
   };
 }
+
+/** The three ways to give the bike: a label photo, a product link or pasted text, or typing it in. */
+export type InputTab = "label" | "link" | "type";
+
+/**
+ * What a tap on an input tab does. A tap on the tab already open does nothing, so a stray tap on
+ * "Type it in" never wipes the typed facts, the answers and the result. Moving to another tab
+ * drops any read still loading, and moving to "Type it in" starts an empty facts card.
+ */
+export function tabTap(current: InputTab, next: InputTab): { change: boolean; manual: boolean } {
+  if (next === current) return { change: false, manual: false };
+  return { change: true, manual: next === "type" };
+}

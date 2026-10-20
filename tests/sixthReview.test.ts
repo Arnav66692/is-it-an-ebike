@@ -1,6 +1,9 @@
 // Regression tests for the sixth review (Oct 19, 2026). Each block names the problem it closes.
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { tabTap } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText, type TextSource } from "@/lib/extract/parse";
 import { t } from "@/lib/i18n/ui";
@@ -205,5 +208,21 @@ describe("a negated foot-peg mention is never read as foot pegs", () => {
     const { facts, result } = utah("Fold-down foot pegs.");
     expect(facts.hasFootPegs).toBe(true);
     expect(result.state.reason.code).toBe("caution_foot_pegs");
+  });
+});
+
+describe("tapping the input tab that is already open changes nothing", () => {
+  it("a second tap on 'Type it in' never wipes the typed facts, answers and result", () => {
+    expect(tabTap("type", "type")).toEqual({ change: false, manual: false });
+    expect(tabTap("label", "label")).toEqual({ change: false, manual: false });
+    expect(tabTap("label", "type")).toEqual({ change: true, manual: true });
+    expect(tabTap("type", "link")).toEqual({ change: true, manual: false });
+  });
+
+  it("is what the tabs use", () => {
+    const source = readFileSync(join(__dirname, "..", "components", "BikeInput.tsx"), "utf8");
+    expect(source).toContain("const tap = tabTap(tab, x.id);");
+    expect(source).toContain("if (!tap.change) return;");
+    expect(source).not.toMatch(/if \(x\.id === "type"\) onManual\(\)/);
   });
 });

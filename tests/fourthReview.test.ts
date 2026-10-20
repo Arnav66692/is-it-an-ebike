@@ -243,7 +243,8 @@ describe("a slow label or link read never replaces the bike the family moved on 
     const input = source("BikeInput.tsx");
     expect(input.match(/const isCurrent = gate\.start\(\);/g)?.length).toBe(2);
     expect(input.match(/if \(!isCurrent\(\)\) return;\n\s+[^\n]*\n(?:[^\n]*\n)*?\s+onRead\(/g)?.length).toBe(2);
-    expect(input).toContain("if (x.id !== tab) gate.cancel();");
+    // Only a tap that moves to another tab cancels a read (sixth review: a tap on the open tab does nothing).
+    expect(input).toMatch(/if \(!tap\.change\) return;\n(?:\s*\/\/[^\n]*\n)?\s+gate\.cancel\(\);/);
     expect(input).toMatch(/gate\.start\(\);\n\s+const extraction = parseSpecText\(paste, "listing"\);/);
     const checker = source("Checker.tsx");
     expect(checker).toContain("useState(requestGate)");
