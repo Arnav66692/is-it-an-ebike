@@ -232,15 +232,21 @@ export function evaluateCondition(node: ConditionNode, env: Env): Tri {
   }
 }
 
-/** Fields in the condition whose values are not fully known. */
+/**
+ * Fields whose answer could still change the condition. A comparison the known range already
+ * settles is not one of them, so a Utah bike with no throttle and both fast-mode answers No is
+ * never asked about fast modes again just because its motor speed is a range, not one number.
+ */
 export function unknownFields(node: ConditionNode, env: Env): string[] {
-  return fieldsOf(node).filter((field) => {
-    const value = env[field];
-    if (!value) return true;
-    if (value.kind === "bool") return value.v === null;
-    const { lo, hi, loOpen, hiOpen } = value.iv;
-    return !(lo === hi && !loOpen && !hiOpen);
-  });
+  if (evaluateCondition(node, env) !== null) return [];
+  switch (node.t) {
+    case "or":
+    case "and":
+      return [...new Set([...unknownFields(node.a, env), ...unknownFields(node.b, env)])];
+    case "cmp":
+    case "flag":
+      return [node.field];
+  }
 }
 
 export const ANY: Interval = { lo: 0, loOpen: false, hi: Number.POSITIVE_INFINITY, hiOpen: true };

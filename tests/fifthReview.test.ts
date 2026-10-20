@@ -371,3 +371,48 @@ describe("the campus card names every class a multi-class bike can run as", () =
     expect(local.requirements.map((l) => l.code).sort()).toEqual(stateCodes);
   });
 });
+
+describe("a question is asked only while its answer can still change the result", () => {
+  const utah = (over: Partial<BikeFacts>) =>
+    evaluate({
+      state: "UT",
+      riderAge: 30,
+      rideDate: DATE,
+      places: [],
+      facts: {
+        ...emptyFacts(),
+        hasPedals: true,
+        classes: [1],
+        ratedWatts: 500,
+        hasThrottle: false,
+        assistMph: 20,
+        motorOver20: false,
+        assistOver28: false,
+        wheelCount: 2,
+        wheelFrontIn: 20,
+        wheelRearIn: 20,
+        ...over,
+      },
+    });
+
+  it("Utah with both fast-mode answers No asks only about pegs and the kit", () => {
+    const open = utah({ hasFootPegs: null, needsPedalKit: null });
+    expect(open.state.status).toBe("need_info");
+    expect(open.state.questions).toEqual(["pegs_kit"]);
+    const line = bottomLine(open, DATE);
+    expect(line.missing.map((g) => renderLine(g.line, "en", "Utah"))).toContain("Answer the questions above about foot pegs or a pedal kit.");
+  });
+
+  it("a 'not sure' on pegs reaches the not-sure line instead of asking about fast modes forever", () => {
+    const unsure = utah({ hasFootPegs: null, needsPedalKit: null, unsure: ["pegs_kit"] });
+    expect(unsure.state.status).toBe("cant_confirm");
+    expect(unsure.state.questions).toEqual([]);
+    expect(unsure.state.reason.code).toMatch(/^unsure_(foot_pegs|pedal_kit)$/);
+  });
+
+  it("still asks about fast modes while they are open, and a Class 3 in Utah behaves the same", () => {
+    expect(utah({ motorOver20: null, assistOver28: null, hasFootPegs: false, needsPedalKit: false }).state.questions).toEqual(["fast_mode"]);
+    const c3 = utah({ classes: [3], assistMph: 28, hasFootPegs: null, needsPedalKit: null });
+    expect(c3.state.questions).toEqual(["pegs_kit"]);
+  });
+});
