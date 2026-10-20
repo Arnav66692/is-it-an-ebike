@@ -18,12 +18,29 @@
       "state": "CA",
       "applies_to": "all_ebikes",
       "rider_under_age": null,
-      "condition": "switchable_out_of_class or motor_only_max_mph > 20",
+      "condition": "motor_only_max_mph > 20",
       "verdict": "not_an_ebike",
-      "valid_until": null,
+      "valid_until": "2027-01-01",
       "reason": "Cal. Veh. Code 312.5(d) says a bike built to be modified past 20 mph on motor power alone, or one modified that way, is not an electric bicycle.",
+      "citation": "Cal. Veh. Code 312.5(d)",
       "source_field": "definition.notes",
-      "source_quote": "312.5(d): not an e-bike if built to be modifiable past 20 mph on motor alone or 750 W, modified that way, or pedals removed."
+      "source_quote": "312.5(d): not an e-bike if built to be modifiable past 20 mph on motor alone or 750 W, modified that way, or pedals removed.",
+      "note": "Fourth review, Oct 19, 2026: 312.5(d) in force today names motor power alone past 20 mph, 750 W and removed pedals. It says nothing about pedal assist past 28 mph, so that case is left to the general fast-mode rule (can't confirm). Ends Dec 31, 2026, when SB 1167 rewrites 312.5."
+    },
+    {
+      "state": "CA",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "motor_only_max_mph > 20",
+      "verdict": "not_an_ebike",
+      "valid_from": "2027-01-01",
+      "valid_until": null,
+      "reason": "From Jan 1, 2027, SB 1167 rewrites Cal. Veh. Code 312.5, and its list of vehicles that are not e-bikes includes one that goes over 20 mph on the motor alone.",
+      "citation": "Cal. Veh. Code 312.5 as rewritten by SB 1167 (Stats. 2026, ch. 846)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260SB1167",
+      "source_field": "definition.notes",
+      "source_quote": "From Jan 1, 2027 SB 1167 rewrites 312.5 (adds 'e-bike' as a term and lists non-e-bikes: over 750 W, over 20 mph on motor alone",
+      "note": "Fourth review, Oct 19, 2026: the same notes list assist past 28 mph from 2027, but the enacted SB 1167 text could not be opened to check its wording (leginfo returned 403), so that case stays with the general fast-mode rule (can't confirm)."
     },
     {
       "state": "MN",

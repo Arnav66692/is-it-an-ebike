@@ -150,8 +150,14 @@ export interface RawSanDiego {
 
 export interface OverlayCaution extends RawCaution {
   state: string;
+  /** First day the caution applies, when it starts later than today. */
+  valid_from?: string | null;
+  /** The exact provision, when it differs from the definition's citation. */
+  citation?: string;
+  source_url?: string;
   source_field: string;
   source_quote: string;
+  note?: string;
 }
 
 export interface OverlayAgeException {

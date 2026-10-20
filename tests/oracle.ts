@@ -20,6 +20,8 @@ interface CautionRaw {
   /** "not_an_ebike" when the rule puts the bike outside the definition. */
   verdict: string;
   valid_until: string | null;
+  /** Overlay cautions only: the first day it applies. */
+  valid_from?: string | null;
 }
 interface StateRaw {
   confidence: string;
@@ -200,6 +202,7 @@ function cautionsOf(code: string): CautionRaw[] {
 
 function cautionApplies(c: CautionRaw, cls: Cls, age: number, date: string): boolean {
   if (c.valid_until !== null && date >= c.valid_until) return false;
+  if (c.valid_from && date < c.valid_from) return false;
   if (!classOk(c.applies_to, cls)) return false;
   return !(c.rider_under_age !== null && age >= c.rider_under_age);
 }

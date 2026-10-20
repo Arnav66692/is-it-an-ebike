@@ -111,6 +111,7 @@ function compileCaution(
   c: RawCaution,
   source: Source,
   supplemental: boolean,
+  from: string | null = null,
 ): CompiledCaution {
   const node = c.condition ? parseCondition(c.condition) : null;
   const fields = node ? fieldsOf(node) : [];
@@ -120,7 +121,7 @@ function compileCaution(
     node,
     condition: c.condition,
     verdict: c.verdict,
-    window: { from: null, until: c.valid_until },
+    window: { from, until: c.valid_until },
     reason: c.reason,
     supplemental,
     touchesFastMode: fields.some((field) => FAST_MODE_FIELDS.has(field)),
@@ -152,8 +153,10 @@ function compileState(raw: RawState): CompiledState {
       .map((c) =>
         compileCaution(
           c,
-          { citation: def.citation, url: def.source_url, quote: c.source_quote, kind: "rules_table" },
+          // The card names the provision the caution rests on, not only the definition's subsection.
+          { citation: c.citation ?? def.citation, url: c.source_url ?? def.source_url, quote: c.source_quote, kind: "rules_table" },
           true,
+          c.valid_from ?? null,
         ),
       ),
   ];

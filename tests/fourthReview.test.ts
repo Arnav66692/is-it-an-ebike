@@ -248,3 +248,39 @@ describe("a slow label or link read never replaces the bike the family moved on 
     expect(checker).toContain("gate={readGate}");
   });
 });
+
+describe("California fast modes match what 312.5(d) says", () => {
+  const fast = (over: Partial<BikeFacts>, date = DATE) => {
+    const facts = classBike(3, { assistMph: 28, motorOver20: false, assistOver28: false, wheelFrontIn: 26, wheelRearIn: 26, ...over });
+    const result = evaluate({ state: "CA", riderAge: 30, rideDate: date, facts, places: [] });
+    return { result, kind: bottomLine(result, date).kind };
+  };
+
+  it("pedal assist past 28 mph is can't confirm, not 'not an e-bike' under a statute that doesn't say so", () => {
+    const { result, kind } = fast({ assistOver28: true });
+    expect(result.state.status).toBe("cant_confirm");
+    expect(result.state.reason.code).toBe("fits_no_class_mode");
+    expect(kind).toBe("no_unconfirmed");
+    // The same answer after Jan 1, 2027, since the SB 1167 wording on assist was not read.
+    expect(fast({ assistOver28: true }, "2027-01-02").result.state.reason.code).toBe("fits_no_class_mode");
+  });
+
+  it("the motor alone past 20 mph is not an e-bike, citing 312.5(d) now and SB 1167 from 2027", () => {
+    const now = fast({ motorOver20: true });
+    expect(now.result.state.status).toBe("not_ebike");
+    expect(now.result.state.reason.code).toBe("caution_fast_mode");
+    expect(now.result.state.reason.source?.citation).toBe("Cal. Veh. Code 312.5(d)");
+    expect(now.result.state.reason.detail).toContain("312.5(d)");
+    expect(now.kind).toBe("no_illegal");
+    const later = fast({ motorOver20: true }, "2027-01-02");
+    expect(later.result.state.status).toBe("not_ebike");
+    expect(later.result.state.reason.source?.citation).toBe("Cal. Veh. Code 312.5 as rewritten by SB 1167 (Stats. 2026, ch. 846)");
+    expect(later.result.state.reason.source?.url).toContain("SB1167");
+  });
+
+  it("a 'not sure' answer still blocks a yes in California", () => {
+    const { result, kind } = fast({ assistOver28: null, unsure: ["fast_mode"] });
+    expect(result.state.status).toBe("cant_confirm");
+    expect(kind).toBe("no_unconfirmed");
+  });
+});
