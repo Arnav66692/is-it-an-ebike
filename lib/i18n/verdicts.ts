@@ -370,6 +370,22 @@ const EN = {
     "No riding an e-bike on any Coronado sidewalk, the Hotel del Coronado Paseo, the Coronado Shores Boardwalk or the Glorietta Bay Marina Promenade. Get off and walk it there, or ride on the road (CMC 56.18.050).",
   cor_beaches_parks: () =>
     "Coronado bars vehicles, motorized or not, on public beaches, parks and the golf course unless the City allows them (CMC 56.18.040). The City treats that as covering e-bikes.",
+  oc_pier: () =>
+    "No riding a bike or e-bike on the Oceanside Pier or its ramps, the Pier Amphitheater, Pier Plaza, the Junior Seau Beach Community Center area, or where signs bar it (OCC 5.14). From May 15 to Sep 15 no bikes at all on the pier (OCC 18.1).",
+  oc_sidewalks: () =>
+    "No riding on sidewalks in front of businesses unless signs allow it. On other sidewalks, 10 mph at most, go with traffic and yield to people walking (OCC 5.14(g)).",
+  oc_beach: () =>
+    "Oceanside bars riding any motorized machine on the beach (OCC 19.7). That very likely covers e-bikes.",
+  oc_seizure: () =>
+    "Police can seize a Class 1, 2 or 3 e-bike when the rider is cited for reckless riding, for not riding with due care, or for two or more criminal e-bike code violations in 12 months (OCC 5.18).",
+  vista_sidewalks: () =>
+    "No riding a bike or e-bike on any sidewalk in Vista, at any age, except at signed and striped Bicycle Master Plan spots (VMC 10.68.030).",
+  vista_dismount: () =>
+    "In Vista, get off and walk the bike to use a crosswalk or a sidewalk (VMC 10.68.060).",
+  vista_passengers: () =>
+    "A passenger needs a seat installed by the bike's maker. No riding on handlebars or pegs (VMC 10.68.040(B)).",
+  vista_parks: () =>
+    "In Vista parks, ride a bike or e-bike only on paths and trails marked for it (VMC 12.08.010(O)).",
   city_starting: (p, c) => `Starting ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.en[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} had no under-12 e-bike ban when checked on ${formatDate(n(p.date), c.lang)}, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
@@ -649,6 +665,22 @@ const ES = {
     "No se puede andar en bicicleta eléctrica por ninguna acera de Coronado, el Paseo del Hotel del Coronado, el paseo de Coronado Shores ni el paseo de la marina de Glorietta Bay. Ahí bájate y llévala caminando, o anda por la calle (CMC 56.18.050).",
   cor_beaches_parks: () =>
     "Coronado prohíbe vehículos, con o sin motor, en playas públicas, parques y el campo de golf salvo que la Ciudad lo permita (CMC 56.18.040). La Ciudad lo aplica a las bicicletas eléctricas.",
+  oc_pier: () =>
+    "No se puede andar en bicicleta ni en bicicleta eléctrica en el muelle de Oceanside o sus rampas, el anfiteatro del muelle, Pier Plaza, la zona del Junior Seau Beach Community Center, ni donde un letrero lo prohíba (OCC 5.14). Del 15 de mayo al 15 de septiembre no se permiten bicicletas en el muelle (OCC 18.1).",
+  oc_sidewalks: () =>
+    "No se puede andar por aceras frente a negocios, salvo que un letrero lo permita. En otras aceras, 10 mph como máximo, en el sentido del tráfico y cediendo el paso a quienes caminan (OCC 5.14(g)).",
+  oc_beach: () =>
+    "Oceanside prohíbe andar en cualquier máquina motorizada en la playa (OCC 19.7). Eso muy probablemente incluye las bicicletas eléctricas.",
+  oc_seizure: () =>
+    "La policía puede quitar una bicicleta eléctrica Clase 1, 2 o 3 cuando a quien la maneja le dan una citación por manejar de forma imprudente, sin el debido cuidado, o por dos o más infracciones penales del código en 12 meses (OCC 5.18).",
+  vista_sidewalks: () =>
+    "No se puede andar en bicicleta ni en bicicleta eléctrica por ninguna acera de Vista, a ninguna edad, salvo en los puntos del Plan Maestro de Bicicletas con letreros y marcas (VMC 10.68.030).",
+  vista_dismount: () =>
+    "En Vista, bájate y lleva la bicicleta caminando para usar un cruce peatonal o una acera (VMC 10.68.060).",
+  vista_passengers: () =>
+    "Un pasajero necesita un asiento instalado por el fabricante de la bicicleta. No se puede ir en el manubrio ni en los reposapiés (VMC 10.68.040(B)).",
+  vista_parks: () =>
+    "En los parques de Vista, anda en bicicleta o bicicleta eléctrica solo por caminos y senderos marcados para ello (VMC 12.08.010(O)).",
   city_starting: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.es[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} no tenía una prohibición para menores de 12 años cuando se revisó el ${formatDate(n(p.date), c.lang)}, pero la ley estatal le permite adoptar una (VC 21214.7(b)). Vuelve a revisar antes de salir.`,

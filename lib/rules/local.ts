@@ -20,9 +20,11 @@ export const PLACE_IDS: PlaceId[] = [
   "el_cajon",
   "escondido",
   "la_mesa",
+  "oceanside",
   "poway",
   "san_marcos",
   "santee",
+  "vista",
   "unincorporated_san_diego_county",
   "sduhsd_campuses",
 ];
@@ -372,6 +374,18 @@ interface CityNote {
  * never shows without its source. The age, warning and e-moto lines all cities share come first.
  */
 const CITY_NOTES: Partial<Record<PlaceId, CityNote[]>> = {
+  vista: [
+    { code: "vista_sidewalks", rule: "sidewalk_ban", when: "ride" },
+    { code: "vista_dismount", rule: "dismount_at_crosswalks", when: "ride" },
+    { code: "vista_passengers", rule: "passengers_manufacturer_seat", when: "ride" },
+    { code: "vista_parks", rule: "park_path_limits", when: "ride" },
+  ],
+  oceanside: [
+    { code: "oc_pier", rule: "pier_and_plaza_ban", when: "ride" },
+    { code: "oc_sidewalks", rule: "sidewalk_rules", when: "ride" },
+    { code: "oc_beach", rule: "beach_motorized_ban", when: "ride" },
+    { code: "oc_seizure", rule: "seizure", when: "ride" },
+  ],
   coronado: [
     { code: "cor_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
     { code: "cor_sidewalks", rule: "sidewalk_and_boardwalk_ban", when: "ride" },

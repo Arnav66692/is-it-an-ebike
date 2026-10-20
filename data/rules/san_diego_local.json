@@ -2099,6 +2099,151 @@
       ]
     },
     {
+      "id": "oceanside",
+      "jurisdiction": "City of Oceanside",
+      "type": "city",
+      "covers": "City streets, sidewalks, trails and other public areas under city jurisdiction, the Municipal Pier and the beach.",
+      "verified": "statute_verified",
+      "verification_level": "primary_verified",
+      "checked_through": "2026-10-20",
+      "verified_note": "Read on Oct 20, 2026 in two independent passes. OCC Ch. 5 and the Traffic Code, Ch. 18, 19, 20, 21 and 29A on Municode (codified through Ord. No. 26-OR0123-1, Apr 8, 2026), the packet copy of Ord. No. 26-OR0019-1 (signed by the Mayor and City Attorney before adoption, number and dates blank, read by OCR and checked against the page images), the Legistar action record (adopted Jan 28, 2026, 5-0, effective the thirtieth day after final passage) and the Charter, which sets no effective-date rule. Oceanside chose not to adopt an under-12 ban. Legistar items for 2026, council agendas and minutes through Oct 21, 2026 and city news from Jan 20 to Oct 16, 2026 show no under-12 ordinance or campaign.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "Oceanside City Code Ch. 5 (Ord. No. 26-OR0019-1)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": null,
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "No age provision in OCC Ch. 5 on Municode or in the Ord. No. 26-OR0019-1 text, read on Oct 20, 2026 in two passes. No quote is recorded, because the finding is that the code text has no age rule. The Jan 14, 2026 staff report proposed only seizure and passenger rules, and news reports say the city chose not to adopt a VC 21214.7 ban. VC 21214.7(b) allows an under-12 ban by ordinance or resolution, after a public information campaign of at least 30 calendar days (VC 21214.7(e)). Legistar items for 2026, council agendas and action minutes through Oct 21, 2026 and city news from Jan 20 to Oct 16, 2026 show no ordinance, resolution or campaign."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a), Oceanside City Code 5.14(i)(1)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=21212",
+          "quote": "A person under 18 years of age shall not operate a bicycle ... unless they are wearing a properly fitted and fastened bicycle helmet",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "Ord. No. 26-OR0019-1 rewrote OCC 5.14(i)(1) to require a helmet '(under 18 years of age, including passengers)'. Municode still shows the 2024 wording, so the app cites state law, which has the same age."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_removal",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+          "quote": "Being operated by an operator who is not licensed to operate the vehicle.",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Oceanside e-moto removal section. OCC 19.7 bars any motor vehicle or motorized machine on the beach."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "seizure",
+          "applies_to": ["all_ebikes"],
+          "citation": "Oceanside City Code 5.18(a) (Ord. No. 26-OR0019-1)",
+          "source_url": "https://oceanside.legistar.com/View.ashx?M=F&ID=15132081&GUID=640E71BD-4D5A-409C-B5A9-CFC8291AE692",
+          "quote": "In addition to any fines or penalties authorized by this Chapter, the Chief of Police or designee may seize any Class 1, 2, or 3 electric bicycle when the operator has been cited for:",
+          "effective_date": "2026-02-27",
+          "source_type": "packet_draft",
+          "notes": "The triggers are a citation for reckless operation, for failure to exercise due regard for the safety of persons or property, or for two or more criminal Ch. 5 violations within twelve months. 5.18(c) says no seizure in connection with an administrative citation. Effective Feb 27, 2026, computed from Section 3 (thirtieth day after final passage on Jan 28, 2026). The city release says enforceable Feb 28, 2026. Read only in the pre-adoption packet copy, because Municode has not codified this ordinance. The 'no storage fee' promise is in the staff report and release only."
+        },
+        {
+          "rule": "passengers_only_where_designed",
+          "applies_to": ["all_ebikes"],
+          "citation": "Oceanside City Code 5.19 (Ord. No. 26-OR0019-1)",
+          "source_url": "https://oceanside.legistar.com/View.ashx?M=F&ID=15132081&GUID=640E71BD-4D5A-409C-B5A9-CFC8291AE692",
+          "quote": "No person operating a bicycle or electric bicycle shall carry another person unless the bicycle or electric bicycle is designed and equipped for passengers, including a separate seat securely attached to the bicycle or electric bicycle, as required by California Vehicle Code § 21204.",
+          "effective_date": "2026-02-27",
+          "source_type": "packet_draft",
+          "notes": "5.19(b) also bars riding as a passenger on such a bike. Same as VC 21204, so not shown in the app."
+        },
+        {
+          "rule": "pier_and_plaza_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Oceanside City Code 5.14(a)-(f), 18.1",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": "No person shall operate a bicycle or mobility device upon the Municipal Pier or Municipal Pier ramps, the Oceanside Pier Amphitheater, and the Junior Seau Beach Community Center.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. No. 24-OR0080-1 (Mar 27, 2024). OCC 5.1(b) counts an electric bicycle as a mobility device. 5.14(b) to (f) also bar mobility devices in the defined Pier Plaza, on the Junior Seau Beach Community Center plaza area and in areas posted by signs. OCC 18.1 separately bars any bicycle or other propelled vehicle on the pier from May 15 through Sep 15. No code section bans e-bikes on all of The Strand."
+        },
+        {
+          "rule": "sidewalk_rules",
+          "applies_to": ["all_ebikes"],
+          "citation": "Oceanside City Code 5.14(g)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": "No person shall operate a bicycle or mobility device upon any sidewalk fronting any business establishment unless signs are posted authorizing such use.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "On other sidewalks: no more than ten miles per hour, ride in the direction of traffic, yield to pedestrians, and dismount within 50 feet of pedestrians on sidewalks under five feet wide. 5.14(i)(2) also requires dismounting on city trails under five feet wide when pedestrians or horses are within 50 feet."
+        },
+        {
+          "rule": "beach_motorized_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Oceanside City Code 19.7",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH19OCBE",
+          "quote": "No person shall drive any motor vehicle or ride any motorized machine on the beach.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. No. 90-11. 'Motorized machine' is not defined. An e-bike has a motor, so it very likely applies, but the text does not say electric bicycle. OCC 19.1 defines the beach as publicly owned shoreline, including shoreline immediately west of Harbor Beach, the San Luis Rey River mouth and The Strand. The Strand itself is not part of the defined beach."
+        }
+      ],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Whether OCC 19.7 ('motorized machine') reaches e-bikes on the beach.",
+        "A certified adopted copy of Ord. No. 26-OR0019-1, which Municode has not codified."
+      ],
+      "resolved_questions": [
+        {
+          "question": "Whether Oceanside adopted an under-12 ban in 2026.",
+          "answer": "No. It adopted e-bike seizure and passenger rules instead (Ord. No. 26-OR0019-1, Jan 28, 2026), and no under-12 item appears through Oct 21, 2026.",
+          "source_url": "https://oceanside.legistar.com/HistoryDetail.aspx?ID=35773482&GUID=12DCDF4D-FDCF-4D95-A92B-6CB922F45BAB"
+        }
+      ],
+      "primary_sources": [
+        {
+          "number": "Legistar action detail, file 26-1214 (Enactment No 26-OR0019-1)",
+          "url": "https://oceanside.legistar.com/HistoryDetail.aspx?ID=35773482&GUID=12DCDF4D-FDCF-4D95-A92B-6CB922F45BAB",
+          "effective": "2026-02-27 (computed)",
+          "quote": "Votes (5:0)"
+        },
+        {
+          "number": "Ord. No. 26-OR0019-1, packet copy signed by the Mayor and City Attorney",
+          "url": "https://oceanside.legistar.com/View.ashx?M=F&ID=15132081&GUID=640E71BD-4D5A-409C-B5A9-CFC8291AE692",
+          "effective": "thirtieth day after final passage",
+          "quote": "This ordinance shall take effect and be in force on the thirtieth (30th) day from and after its final passage."
+        },
+        {
+          "number": "OCC Ch. 5 (Ord. No. 24-OR0080-1)",
+          "url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "effective": null,
+          "quote": "No person shall operate a bicycle or mobility device upon any sidewalk fronting any business establishment unless signs are posted authorizing such use."
+        },
+        {
+          "number": "OCC 18.1 (Ord. No. 90-10)",
+          "url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH18MUPI",
+          "effective": null,
+          "quote": "To have a bicycle or other propelled vehicle on the pier from May 15 through and including September 15 of each year."
+        },
+        {
+          "number": "OCC 19.7 (Ord. No. 90-11)",
+          "url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH19OCBE",
+          "effective": null,
+          "quote": "No person shall drive any motor vehicle or ride any motorized machine on the beach."
+        }
+      ]
+    },
+    {
       "id": "poway",
       "jurisdiction": "City of Poway",
       "type": "city",
@@ -2586,6 +2731,153 @@
           "url": "https://ecode360.com/43752314",
           "effective": null,
           "quote": "\"Electric bicycle\" has the same meaning as in California Vehicle Code § 312.5(a)"
+        }
+      ]
+    },
+    {
+      "id": "vista",
+      "jurisdiction": "City of Vista",
+      "type": "city",
+      "covers": "All city streets, sidewalks, parks and recreation facilities.",
+      "verified": "statute_verified",
+      "verification_level": "primary_verified",
+      "checked_through": "2026-10-20",
+      "verified_note": "Read on Oct 20, 2026 in two independent passes. VMC Ch. 10.68 (restated in full by Ord. No. 2024-14, adopted Dec 10, 2024, 5-0, effective the thirty-first day after adoption), all of Titles 9, 10 and 12, and the 2007 Charter on the City Clerk's Laserfiche code portal, which has no 'current through' line. The signed Ord. No. 2024-14 was read from its scan. No 2025 or 2026 ordinance touches bicycles. Council agendas and minutes through Oct 13, 2026, the Oct 19 and Oct 21, 2026 special agendas and city news from Jun 3 to Oct 16, 2026 show no under-12 ordinance or campaign. The Oct 27, 2026 agenda was not yet posted.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "Vista Mun. Code Ch. 10.68 (Ord. No. 2024-14)",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "quote": null,
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "No age provision in VMC Ch. 10.68 or anywhere in Titles 9, 10 or 12, read on Oct 20, 2026 in two passes. No quote is recorded, because the finding is that the code text has no age rule. The city's e-bike program page lists no age requirement for Class 1 and 2. Its line that children under 12 must come with a parent is about the training class, not riding. VC 21214.7(b) allows an under-12 ban by ordinance or resolution, after a public information campaign of at least 30 calendar days (VC 21214.7(e)). No 2025 or 2026 ordinance, agenda item or city news item through Oct 16, 2026 shows one. A Deputy Mayor hosted an e-bike town hall on Apr 19, 2026, and no later council direction was found."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=21212",
+          "quote": "A person under 18 years of age shall not operate a bicycle ... unless they are wearing a properly fitted and fastened bicycle helmet",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Vista helmet rule for bicycles beyond state law."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_removal",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+          "quote": "Being operated by an operator who is not licensed to operate the vehicle.",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Vista e-moto removal section. VMC 10.68.090 requires a driver's license for mopeds and motorized scooters, as state law does."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "sidewalk_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Vista Mun. Code 10.68.030, 10.68.010",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "quote": "It is unlawful for any person to ride or operate a bicycle upon any sidewalk in the city, with the exception of locations included in the City's Bicycle Master Plan with proper signage and striping as approved by the City's Traffic Engineer.",
+          "effective_date": "2025-01-10",
+          "source_type": "ordinance_text",
+          "notes": "Any age. VMC 10.68.010 defines bicycle to include a device with fully operable pedals and an electric motor, or as defined in VC 231 and 312.5, so every e-bike class is covered. In force since Ord. No. 98-12 (1998), and restated by Ord. No. 2024-14, effective Jan 10, 2025 (computed, thirty-first day after adoption on Dec 10, 2024). Law enforcement on duty is exempt."
+        },
+        {
+          "rule": "dismount_at_crosswalks",
+          "applies_to": ["all_ebikes"],
+          "citation": "Vista Mun. Code 10.68.060 (Ord. No. 2024-14)",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "quote": "Every bicycle operator, when using a crosswalk to cross an intersection or using a sidewalk, shall dismount from their bicycle to use the crosswalk or sidewalk.",
+          "effective_date": "2025-01-10",
+          "source_type": "ordinance_text",
+          "notes": "Stricter than state law and most nearby cities."
+        },
+        {
+          "rule": "passengers_manufacturer_seat",
+          "applies_to": ["all_ebikes"],
+          "citation": "Vista Mun. Code 10.68.040(B) (Ord. No. 2024-14)",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "quote": "There shall be a manufacturer installed seat for the rider and every passenger on a bicycle. It shall be unlawful for the operator of any bicycle to carry any other person upon the handlebars or pegs of any bicycle.",
+          "effective_date": "2025-01-10",
+          "source_type": "ordinance_text",
+          "notes": "Stricter than VC 21204, which asks only for a separate seat attached to the bicycle. An aftermarket seat may not satisfy 'manufacturer installed'. Not confirmed with the city."
+        },
+        {
+          "rule": "park_path_limits",
+          "applies_to": ["all_ebikes"],
+          "citation": "Vista Mun. Code 12.08.010(O)",
+          "source_url": "https://portal.laserfiche.com/Portal/DocView.aspx?id=1044614&repo=r-3f0b2553",
+          "quote": "Ride a bicycle, tricycle, motorcycle, motorcycle chopper, skateboards, scooters, or any other vehicle on any path, trail, walk, or any recreation facility, other than those designated for the same.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Applies within the limits of park or recreation facilities in the city. In force at least since Ord. No. 2020-10 (Aug 25, 2020), the last entry in the history line. Title 12 does not define bicycle, so its reach to e-bikes rests on the words 'bicycle' and 'any other vehicle'. 12.08.010(P) sets 10 mph for vehicles in parks except on posted roads."
+        },
+        {
+          "rule": "course_in_lieu_of_penalty",
+          "applies_to": ["all_ebikes"],
+          "citation": "Vista Mun. Code 10.68.100",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "quote": "In lieu of the imposition of the penalties authorized by this title and/or the filing of charges in a court of competent jurisdiction, the Sheriff Captain or designee may allow a first-time violator of this chapter to complete a law enforcement department-approved bicycle safety course.",
+          "effective_date": "2025-01-10",
+          "source_type": "ordinance_text",
+          "notes": "Discretionary, first-time violators only. Not shown in the app."
+        }
+      ],
+      "conflicts_with_statute": [
+        {
+          "source_says": "VMC 10.68.010 describes an e-bike as having 'an electric motor of less than 750 watts'.",
+          "statute_says": "Since Jan 1, 2025, VC 312.5(a) says the motor 'does not exceed 750 watts of power'. The same definition also adopts VC 312.5 as amended.",
+          "citation": "Cal. Veh. Code 312.5(a)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=312.5",
+          "engine_rule": "Use the statute. A 750 W bike is an e-bike, and the Vista bicycle rules reach it either way."
+        }
+      ],
+      "open_questions": [
+        "Whether 'manufacturer installed' in VMC 10.68.040(B) rules out an aftermarket passenger seat.",
+        "Which sidewalk locations in the Bicycle Master Plan are signed and striped for bikes."
+      ],
+      "resolved_questions": [],
+      "primary_sources": [
+        {
+          "number": "Ord. No. 2024-14 (signed)",
+          "url": "https://portal.laserfiche.com/Portal/DocView.aspx?id=2165527&repo=r-3f0b2553",
+          "effective": "2025-01-10 (computed, thirty-first day after adoption on 2024-12-10)",
+          "quote": "This Ordinance shall be in full force and effect on the thirty-first day following the date of its adoption."
+        },
+        {
+          "number": "VMC Ch. 10.68 (code portal, footer Vista 01/10/25)",
+          "url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "effective": "2025-01-10",
+          "quote": "Every bicycle operator, when using a crosswalk to cross an intersection or using a sidewalk, shall dismount from their bicycle to use the crosswalk or sidewalk."
+        },
+        {
+          "number": "VMC 10.68.010",
+          "url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "effective": "2025-01-10",
+          "quote": "\"Bicycle\" is any device on which any person may ride, propelled exclusively by human power or has fully operable pedals and an electric motor of less than 750 watts, or as otherwise defined in California Vehicle Code Section 231 & 312.5 as may be amended from time to time."
+        },
+        {
+          "number": "VMC 12.08.010 (code portal, footer Vista 11/21/2024)",
+          "url": "https://portal.laserfiche.com/Portal/DocView.aspx?id=1044614&repo=r-3f0b2553",
+          "effective": null,
+          "quote": "No person shall, within the limits of park or recreation facilities within the city, do any of the following acts:"
+        },
+        {
+          "number": "City e-bike program page",
+          "url": "https://www.vista.gov/city-hall/city-manager/e-bike-training-program",
+          "effective": null,
+          "quote": "Age Requirement None"
         }
       ]
     },

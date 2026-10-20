@@ -36,8 +36,9 @@ describe("share link and defaults", () => {
   });
 
   it("ticks exactly the places a QR or shared link names, and drops unknown or repeated ones", () => {
-    const link = parseShareLink("?state=CA&place=city_of_san_diego,sduhsd_campuses,oceanside,city_of_san_diego");
-    expect(link.places).toEqual(["city_of_san_diego", "sduhsd_campuses"]);
+    // Oceanside has had a record since Oct 20, 2026. Los Angeles has none.
+    const link = parseShareLink("?state=CA&place=city_of_san_diego,sduhsd_campuses,los_angeles,oceanside,city_of_san_diego");
+    expect(link.places).toEqual(["city_of_san_diego", "sduhsd_campuses", "oceanside"]);
   });
 
   it("reads the language and state, and falls back to California for an unknown state", () => {
