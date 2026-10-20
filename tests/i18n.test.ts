@@ -45,7 +45,10 @@ function collect(): Set<string> {
     for (const cls of [1, 2, 3] as const) {
       for (const variant of VARIANTS) {
         for (const age of [6, 11, 12, 14, 15, 16, 18, 30]) {
-          for (const date of ["2026-10-17", "2026-08-12", "2027-01-01", "2027-05-05"]) {
+          // California also runs past the San Diego check horizon and past the Jan 1, 2029 end of
+          // the under-12 power, so the local sentences for those dates are produced for real.
+          const dates = ["2026-10-17", "2026-08-12", "2027-01-01", "2027-05-05", ...(state === "CA" ? ["2026-12-01", "2029-01-02"] : [])];
+          for (const date of dates) {
             const r = evaluate({
               state,
               riderAge: age,
@@ -113,7 +116,7 @@ describe("translations", () => {
     const samples = [...codes]
       .filter((c) => hasTemplate(c))
       .flatMap((code) => {
-        const line: Line = { code, params: { cls: 2, age: 14, minAge: 16, watts: 750, cap: 750, strict: 1, peak: 900, mph: 28, hp: 2, underAge: 18, place: "carlsbad", since: "2026-03-26", from: "2026-10-12", date: "2027-01-01", change: "ca_2027_01_01", verdict: "unclear", questions: "fast_mode,wheels" } };
+        const line: Line = { code, params: { cls: 2, age: 14, minAge: 16, watts: 750, cap: 750, strict: 1, peak: 900, mph: 28, hp: 2, underAge: 18, place: "carlsbad", since: "2026-03-26", from: "2026-10-12", date: "2027-01-01", checked: "2026-10-19", through: "2026-11-18", powerEnds: "2029-01-01", change: "ca_2027_01_01", verdict: "unclear", questions: "fast_mode,wheels" } };
         return [renderLine(line, "en", "California"), renderLine(line, "es", "California")];
       });
     for (const s of samples) {
@@ -123,10 +126,17 @@ describe("translations", () => {
   });
 
   it("covers the bottom-line sentences, and the YES headline reads SÍ in Spanish", () => {
-    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_state", "bl_unverified_primary_partial", "bl_unverified_primary_not_found", "local_under_12_no_end", "carlsbad_class3_trails"]) {
+    // Each of these must come out of a real engine run on today's data, not only have a template.
+    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_state", "bl_unverified_primary_partial", "local_under_12_no_end", "local_under_12_after_check", "carlsbad_class3_trails"]) {
       expect(hasTemplate(code), code).toBe(true);
-      expect(codes.has(code) || ["bl_unverified_state", "bl_unverified_primary_not_found", "local_under_12_no_end"].includes(code), code).toBe(true);
+      expect(codes.has(code), code).toBe(true);
     }
+    // No record is primary_not_found today, so this one is checked on a real result with its level changed.
+    const real = evaluate({ state: "CA", riderAge: 30, rideDate: "2026-10-19", facts: classBike(1), places: ["encinitas"] });
+    const notFound = { ...real, local: real.local.map((v) => ({ ...v, level: "primary_not_found" as const })) };
+    const gap = bottomLine(notFound, "2026-10-19").missing.map((m) => m.line.code);
+    expect(gap).toEqual(["bl_unverified_primary_not_found"]);
+    expect(hasTemplate("bl_unverified_primary_not_found")).toBe(true);
     expect(t("en", "blYes")).toBe("YES");
     expect(t("es", "blYes")).toBe("SÍ");
     expect(t("en", "blNo")).toBe("NO");

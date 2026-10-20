@@ -171,6 +171,24 @@ function device(status: DeviceStatus, reason: Line | null, questions: QuestionId
   return { status, reason, questions, cautions };
 }
 
+/**
+ * The fastest speed the text states, for pedal assist or for a mode it doesn't name. A top
+ * speed of unknown mode still counts when an assist speed is also given, so adding a slower
+ * assist figure can never hide a faster one.
+ */
+function fastestStated(f: BikeFacts): number | null {
+  const speeds = [f.assistMph, f.topSpeedMph].filter((v): v is number => v !== null);
+  return speeds.length > 0 ? Math.max(...speeds) : null;
+}
+
+/**
+ * True when the bike has a throttle, or when the throttle answer is "not sure" but a throttle
+ * speed is still stated. A less certain answer must never make the verdict stronger.
+ */
+function throttleLikely(f: BikeFacts): boolean {
+  return f.hasThrottle === true || (f.hasThrottle === null && f.throttleMph !== null);
+}
+
 function evaluateDevice(
   cs: CompiledState,
   f: BikeFacts,
@@ -187,9 +205,9 @@ function evaluateDevice(
   const questions = new Set<QuestionId>();
   const cautions: Line[] = [];
 
-  const assist = f.assistMph ?? f.topSpeedMph;
-  if (assist !== null && assist > MAX_ASSIST_ANY_CLASS) {
-    unclear = unclear ?? line("fits_no_class_speed", { mph: assist });
+  const fastest = fastestStated(f);
+  if (fastest !== null && fastest > MAX_ASSIST_ANY_CLASS) {
+    unclear = unclear ?? line("fits_no_class_speed", { mph: fastest });
   }
 
   for (const caution of cs.cautions) {
@@ -330,28 +348,29 @@ function combineClass(cs: CompiledState, cls: ClassNum, dev: DeviceResult, rider
 }
 
 function determineClasses(f: BikeFacts): { classes: ClassNum[]; problem: Line | null } {
-  const assist = f.assistMph ?? f.topSpeedMph;
+  const fastest = fastestStated(f);
   if (f.classes.length > 0) {
     const classes = [...new Set(f.classes)].sort() as ClassNum[];
-    if (f.hasThrottle === true && !classes.includes(2)) {
+    if (throttleLikely(f) && !classes.includes(2)) {
       return { classes, problem: line("class_conflict_throttle", { cls: classes[classes.length - 1] }) };
     }
     const cap = Math.max(...classes.map((c) => LABEL_CLASS_MAX[c]));
-    if (assist !== null && assist > cap && assist <= MAX_ASSIST_ANY_CLASS) {
-      return { classes, problem: line("class_conflict_speed", { cls: classes[classes.length - 1], mph: assist }) };
+    if (fastest !== null && fastest > cap && fastest <= MAX_ASSIST_ANY_CLASS) {
+      return { classes, problem: line("class_conflict_speed", { cls: classes[classes.length - 1], mph: fastest }) };
     }
     return { classes, problem: null };
   }
-  if (f.hasThrottle === false && assist !== null) {
-    if (assist <= 20) return { classes: [1], problem: null };
-    if (assist <= MAX_ASSIST_ANY_CLASS) return { classes: [3], problem: null };
+  if (f.hasThrottle === false && fastest !== null) {
+    if (fastest <= 20) return { classes: [1], problem: null };
+    if (fastest <= MAX_ASSIST_ANY_CLASS) return { classes: [3], problem: null };
   }
   if (
     f.hasThrottle === true &&
     f.throttleMph !== null &&
     f.throttleMph <= 20 &&
     f.assistMph !== null &&
-    f.assistMph <= 20
+    f.assistMph <= 20 &&
+    (f.topSpeedMph === null || f.topSpeedMph <= 20)
   ) {
     return { classes: [2], problem: null };
   }

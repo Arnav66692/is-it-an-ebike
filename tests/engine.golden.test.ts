@@ -1,7 +1,12 @@
 // Hand-picked cases. Each one comes from a line in data/rules/ or the verification report.
 
 import { describe, expect, it } from "vitest";
-import { classBike, codes, run } from "./helpers";
+import { factsFromExtraction } from "@/lib/extract/merge";
+import { parseSpecText } from "@/lib/extract/parse";
+import { evaluate } from "@/lib/rules";
+import { bottomLine } from "@/lib/rules/bottomLine";
+import { emptyFacts, type BikeFacts, type ClassNum } from "@/lib/rules/types";
+import { classBike, codes, run, TODAY } from "./helpers";
 
 describe("never return legal (AK, KY, SC)", () => {
   for (const state of ["AK", "KY", "SC"]) {
@@ -265,5 +270,77 @@ describe("Arnav's stop-pedaling policy (decided Oct 16, 2026)", () => {
   it("leaves Class 1 alone and leaves other states alone", () => {
     expect(codes(run("FL", 30, classBike(1)).state.cautions)).not.toContain("caution_stop_pedaling_class2");
     expect(codes(run("CA", 30, classBike(2)).state.cautions)).not.toContain("caution_stop_pedaling_class2");
+  });
+});
+
+describe("second review fixes (Oct 19, 2026)", () => {
+  /** Reads label or listing text the way the app does, then fills in the follow-up answers. */
+  const fromText = (text: string, over: Partial<BikeFacts> = {}): BikeFacts => ({
+    ...factsFromExtraction(parseSpecText(text, "listing"), emptyFacts()),
+    hasPedals: true,
+    motorOver20: false,
+    assistOver28: false,
+    ...over,
+  });
+
+  it("a throttle answered 'not sure' with a throttle speed still filled in is the same class conflict as a yes", () => {
+    const facts = fromText("Class 3 e-bike, 28 mph pedal assist, throttle to 20 mph, 500W");
+    expect(facts.hasThrottle).toBe(true);
+    expect(facts.throttleMph).toBe(20);
+    for (const state of ["CA", "NJ", "UT"]) {
+      for (const classes of [[1], [3]] as ClassNum[][]) {
+        for (const hasThrottle of [true, null]) {
+          const r = run(state, 30, { ...facts, classes, hasThrottle });
+          expect(r.state.status, `${state} ${classes} ${hasThrottle}`).not.toBe("yes");
+        }
+      }
+    }
+    const unsure = evaluate({ state: "CA", riderAge: 30, rideDate: "2026-10-19", facts: { ...facts, hasThrottle: null }, places: ["encinitas"] });
+    expect(unsure.state.reason.code).toBe("class_conflict_throttle");
+    expect(bottomLine(unsure, "2026-10-19").kind).toBe("no_unconfirmed");
+  });
+
+  it("a 'not sure' throttle with no throttle speed leaves a Class 2 label alone", () => {
+    expect(run("CA", 30, classBike(2, { hasThrottle: null })).state.status).toBe("yes");
+  });
+
+  it("a stated 32 mph top speed counts even when the listing also gives a lower assist speed", () => {
+    const both = fromText("Class 1 electric bike. 500W motor. Pedal assist up to 20 mph. No throttle. Top speed 32 mph.");
+    expect(both.assistMph).toBe(20);
+    expect(both.topSpeedMph).toBe(32);
+    const alone = fromText("Class 1 electric bike. 500W motor. Pedal assist. No throttle. Top speed 32 mph.");
+    for (const facts of [both, alone]) {
+      const result = evaluate({ state: "CA", riderAge: 30, rideDate: "2026-10-19", facts, places: ["encinitas"] });
+      expect(result.state.status).toBe("cant_confirm");
+      expect(result.state.reason).toMatchObject({ code: "fits_no_class_speed", params: { mph: 32 } });
+      expect(bottomLine(result, "2026-10-19").kind).toBe("no_unconfirmed");
+    }
+  });
+
+  it("a top speed of unknown mode above the label's class is a class conflict even with an assist speed", () => {
+    const r = run("CA", 30, classBike(1, { topSpeedMph: 25 }));
+    expect(r.state.status).toBe("cant_confirm");
+    expect(r.state.reason.code).toBe("class_conflict_speed");
+  });
+
+  it("Montana, New Jersey and Rhode Island can't confirm an e-trike, since their definitions say two wheels", () => {
+    const trike = fromText("Class 1 electric trike. 500W rated motor. Pedal assist up to 20 mph. No throttle. 20 x 3.0 tires.");
+    expect(trike.wheelCount).toBe(3);
+    expect(trike.wheelFrontIn).toBe(20);
+    for (const state of ["MT", "NJ", "RI", "AL"]) {
+      const r = run(state, 30, trike);
+      expect(r.state.status, state).toBe("cant_confirm");
+      expect(r.state.reason.code, state).toBe("caution_trike");
+      expect(bottomLine(r, TODAY).kind, state).toBe("no_unconfirmed");
+    }
+  });
+
+  it("asks for the number of wheels in those states when it isn't known, and a two-wheeler is still fine", () => {
+    for (const state of ["MT", "NJ", "RI"]) {
+      const ask = run(state, 30, classBike(1, { wheelCount: null }));
+      expect(ask.state.status, state).toBe("need_info");
+      expect(ask.state.questions, state).toContain("wheels");
+      expect(run(state, 30, classBike(1)).state.status, state).toBe("yes");
+    }
   });
 });

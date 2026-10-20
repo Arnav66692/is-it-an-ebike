@@ -1,6 +1,10 @@
 // San Diego local layer. Cases come from data/rules/san_diego_local.json.
 
 import { describe, expect, it } from "vitest";
+import { evaluate } from "@/lib/rules";
+import { bottomLine } from "@/lib/rules/bottomLine";
+import { jurisdiction, under12CheckedThrough } from "@/lib/rules/local";
+import { renderLine } from "@/lib/i18n/verdicts";
 import { classBike, codes, run } from "./helpers";
 
 const ALL_PLACES = [
@@ -55,9 +59,13 @@ describe("local rules by age, class and date", () => {
     expect(local(r, "city_of_san_diego").status).toBe("yes");
     expect(codes(local(r, "city_of_san_diego").notes)).toContain("sd_age_12");
   });
-  it("the City rule starts Aug 13, 2026 and the pilot power ends Jan 1, 2029", () => {
+  it("the City rule starts Aug 13, 2026, and after its Jan 1, 2029 end an under-12 answer can't be confirmed", () => {
     expect(local(run("CA", 11, classBike(1), "2026-08-12", ["city_of_san_diego"]), "city_of_san_diego").status).toBe("yes");
-    expect(local(run("CA", 11, classBike(1), "2029-01-01", ["city_of_san_diego"]), "city_of_san_diego").status).toBe("yes");
+    // The ordinance ends with VC 21214.7, unless the state extends that sunset. That is past what
+    // the Oct 19, 2026 check can vouch for, so it is can't confirm, never yes.
+    const after = local(run("CA", 11, classBike(1), "2029-01-01", ["city_of_san_diego"]), "city_of_san_diego");
+    expect(after.status).toBe("cant_confirm");
+    expect(after.reason.code).toBe("local_under_12_after_check");
   });
   it("Class 3 is never allowed on SDUHSD campuses, even at 17", () => {
     const r = run("CA", 17, classBike(3), "2026-10-17", ["sduhsd_campuses"]);
@@ -199,5 +207,74 @@ describe("review fixes to local notes and sources (Oct 19, 2026)", () => {
     expect(park?.source?.effective).toBeNull();
     const passengers = carlsbad.notes.find((n) => n.code === "carlsbad_passengers");
     expect(passengers?.source?.effective).toBeNull();
+  });
+});
+
+describe("second review fixes: how far ahead a local under-12 answer holds (Oct 19, 2026)", () => {
+  const NO_BAN = ["encinitas", "solana_beach", "del_mar", "unincorporated_san_diego_county"] as const;
+
+  it("a place that had no under-12 ban when checked can't vouch for a ride two years out", () => {
+    for (const place of NO_BAN) {
+      const result = evaluate({ state: "CA", riderAge: 10, rideDate: "2028-06-01", facts: classBike(1), places: [place] });
+      const card = local(result, place);
+      expect(card.status, place).toBe("cant_confirm");
+      expect(card.reason.code, place).toBe("local_under_12_after_check");
+      expect(card.reason.params, place).toMatchObject({ checked: "2026-10-19", through: "2026-11-18" });
+      expect(bottomLine(result, "2028-06-01").kind, place).toBe("no_unconfirmed");
+    }
+  });
+
+  it("holds through 30 days after the check, the time a new ordinance needs to take effect, and not a day more", () => {
+    expect(under12CheckedThrough(jurisdiction("encinitas"))).toBe("2026-11-18");
+    for (const place of NO_BAN) {
+      expect(local(run("CA", 10, classBike(2), "2026-11-18", [place]), place).status, place).toBe("yes");
+      expect(local(run("CA", 10, classBike(2), "2026-11-19", [place]), place).status, place).toBe("cant_confirm");
+    }
+  });
+
+  it("the City of San Diego after its ban's Jan 1, 2029 end is NO, not confirmed, not YES", () => {
+    const result = evaluate({ state: "CA", riderAge: 10, rideDate: "2029-06-01", facts: classBike(1), places: ["city_of_san_diego"] });
+    expect(local(result, "city_of_san_diego").reason.code).toBe("local_under_12_after_check");
+    expect(local(result, "city_of_san_diego").reason.source?.citation).toContain("84.19");
+    expect(bottomLine(result, "2029-06-01").kind).toBe("no_unconfirmed");
+  });
+
+  it("a ban in force still says no past the horizon, and Carlsbad keeps its no-end-date reason", () => {
+    expect(local(run("CA", 10, classBike(1), "2027-06-01", ["city_of_san_diego"]), "city_of_san_diego").reason.code).toBe("local_under_12");
+    expect(local(run("CA", 10, classBike(1), "2029-06-01", ["carlsbad"]), "carlsbad").reason.code).toBe("local_under_12_no_end");
+  });
+
+  it("only touches riders under 12 on Class 1 or 2", () => {
+    expect(local(run("CA", 12, classBike(1), "2028-06-01", ["encinitas"]), "encinitas").status).toBe("yes");
+    expect(local(run("CA", 16, classBike(3), "2028-06-01", ["encinitas"]), "encinitas").status).toBe("yes");
+    expect(local(run("CA", 11, classBike(3), "2028-06-01", ["encinitas"]), "encinitas").reason.code).toBe("under_min_age");
+  });
+
+  it("the County note says state law lets it adopt a ban only while that power exists", () => {
+    const before = run("CA", 11, classBike(2), "2026-10-19", ["unincorporated_san_diego_county", "carlsbad"]);
+    expect(codes(local(before, "unincorporated_san_diego_county").notes)).toContain("county_no_ordinance");
+    const after = run("CA", 11, classBike(2), "2029-03-01", ["unincorporated_san_diego_county", "carlsbad"]);
+    expect(codes(local(after, "unincorporated_san_diego_county").notes)).not.toContain("county_no_ordinance");
+    expect(local(after, "carlsbad").reason.code).toBe("local_under_12_no_end");
+  });
+
+  it("names the check date and the last vouched date in both languages", () => {
+    const line = local(run("CA", 10, classBike(1), "2028-06-01", ["del_mar"]), "del_mar").reason;
+    expect(renderLine(line, "en", "California")).toContain("Oct 19, 2026");
+    expect(renderLine(line, "en", "California")).toContain("Nov 18, 2026");
+    expect(renderLine(line, "es", "California")).toContain("18 de noviembre de 2026");
+  });
+});
+
+describe("second review fixes: the Del Mar beach note (Oct 19, 2026)", () => {
+  it("presents DMMC 8.04.020 as unsettled for e-bikes, as the record and its sources do", () => {
+    const note = local(run("CA", 30, classBike(1), "2026-10-19", ["del_mar"]), "del_mar").notes.find((n) => n.code === "del_mar_beaches");
+    expect(note?.source?.citation).toBe("DMMC 8.04.020");
+    const en = renderLine({ code: "del_mar_beaches" }, "en", "California");
+    const es = renderLine({ code: "del_mar_beaches" }, "es", "California");
+    expect(en).not.toMatch(/treat e-bike riding on city beaches as illegal/);
+    expect(en).toContain("isn't settled whether that covers e-bikes");
+    expect(es).not.toMatch(/tratan como ilegal/);
+    expect(es).toContain("no está resuelto si eso incluye las bicicletas eléctricas");
   });
 });

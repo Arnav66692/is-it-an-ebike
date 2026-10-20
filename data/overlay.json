@@ -68,6 +68,39 @@
       "reason": "An Oregon 'bicycle' needs wheels over 14 inches, so a small-wheel e-bike may not qualify.",
       "source_field": "definition.notes",
       "source_quote": "'Bicycle' (ORS 801.150) needs a seat, no more than 3 wheels, pedals, and every wheel over 14 inches (or two tandem wheels, either over 14 inches). Small-wheel bikes (14 inches or less) therefore may not qualify."
+    },
+    {
+      "state": "MT",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "wheel_count == 3",
+      "verdict": "unclear",
+      "valid_until": null,
+      "reason": "Montana's electrically assisted bicycle has 'two tandem wheels' (MCA 61-8-102), so an electric trike may not be one. Its status was not traced.",
+      "source_field": "definition.notes",
+      "source_quote": "Three-wheeled e-trikes do not meet the 'two tandem wheels' test and were not traced."
+    },
+    {
+      "state": "NJ",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "wheel_count == 3",
+      "verdict": "unclear",
+      "valid_until": null,
+      "reason": "New Jersey's low-speed electric bicycle is 'a two-wheeled vehicle' (N.J.S.A. 39:1-1), and the MVC advisory of June 23, 2026 puts e-trikes outside the law.",
+      "source_field": "definition.notes",
+      "source_quote": "E-trikes are outside the law per the MVC advisory of June 23, 2026."
+    },
+    {
+      "state": "RI",
+      "applies_to": "all_ebikes",
+      "rider_under_age": null,
+      "condition": "wheel_count == 3",
+      "verdict": "unclear",
+      "valid_until": null,
+      "reason": "Rhode Island's e-bike law covers two wheels only (R.I. Gen. Laws 31-1-3(g)), so an electric trike may not qualify.",
+      "source_field": "definition.notes",
+      "source_quote": "Two wheels only, and pedals are not expressly required."
     }
   ],
 

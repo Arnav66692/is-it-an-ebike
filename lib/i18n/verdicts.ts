@@ -29,8 +29,8 @@ const EMOTO_REMOVAL_ES =
 
 /** Keyed by QuestionId, so a new follow-up question can't ship without a name in both languages. */
 const QUESTION_NAMES: Record<Lang, Record<QuestionId, string>> = {
-  en: { wheels: "wheel size", fast_mode: "fast modes", weight: "weight", pegs_kit: "foot pegs or a pedal kit" },
-  es: { wheels: "el tamaño de las ruedas", fast_mode: "los modos rápidos", weight: "el peso", pegs_kit: "los reposapiés o el kit de pedales" },
+  en: { wheels: "wheel size and number of wheels", fast_mode: "fast modes", weight: "weight", pegs_kit: "foot pegs or a pedal kit" },
+  es: { wheels: "el tamaño y el número de ruedas", fast_mode: "los modos rápidos", weight: "el peso", pegs_kit: "los reposapiés o el kit de pedales" },
 };
 
 /** "fast_mode,wheels" becomes "fast modes and wheel size". */
@@ -130,6 +130,8 @@ const EN = {
     "This place may ban riders under 12 from Class 1 and 2, and we couldn't confirm whether it has. Check before riding.",
   local_under_12_no_end: (p, c) =>
     `The local code bars riders under 12 from Class 1 and 2 e-bikes and gives no end date. The state law that allows that ban ends ${formatDate(n(p.powerEnds), c.lang)}, and it isn't settled whether the ban still applies after that. Check before riding.`,
+  local_under_12_after_check: (p, c) =>
+    `This place's rules for riders under 12 were last checked on ${formatDate(n(p.checked), c.lang)}, and they can change before your ride date. We can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`,
   local_allowed: (p, c) => `Allowed in ${placeName(n(p.place), c.lang)} for ${aAge(p.age)}.`,
   campus_allowed: (p) => `Class ${cls(p)} e-bikes are allowed on SDUHSD campuses, after these steps.`,
   campus_class3: () => "Only Class 1 and 2 e-bikes are allowed on SDUHSD campuses.",
@@ -188,7 +190,7 @@ const EN = {
   del_mar_bans: () =>
     "In Del Mar, no riding bikes or e-bikes on Village Center or commercial-zone sidewalks, on any sidewalk signed no riding, on the sidewalk of a street with a bike lane (ride in the lane, CVC 21208 exceptions apply), in parks and preserves, or on lagoon trails unless signed for bikes.",
   del_mar_beaches: () =>
-    "Del Mar lifeguards treat e-bike riding on city beaches as illegal (DMMC 8.04.020 bans self-propelled vehicles on beaches).",
+    "Riding an e-bike on Del Mar beaches is unclear. City code bars self-propelled vehicles on public beaches without city approval (DMMC 8.04.020), and it isn't settled whether that covers e-bikes. Lifeguards have reported enforcing against illegal e-bike riding on Del Mar beaches.",
   del_mar_coast_to_crest: () => "Class 1 and 2 e-bikes are allowed on Del Mar's part of the Coast to Crest Trail. Class 3 is unclear.",
   county_no_ordinance: (p, c) =>
     `As of ${formatDate(n(p.date), c.lang)} the County had adopted no under-12 ban, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
@@ -293,6 +295,8 @@ const ES = {
     "Este lugar puede prohibir las Clases 1 y 2 a menores de 12 años, y no pudimos confirmar si lo ha hecho. Verifica antes de salir.",
   local_under_12_no_end: (p, c) =>
     `El código local prohíbe a los menores de 12 años usar bicicletas eléctricas Clase 1 y 2, sin fecha de fin. La ley estatal que permite esa prohibición termina el ${formatDate(n(p.powerEnds), c.lang)}, y no está resuelto si la prohibición sigue vigente después. Verifica antes de salir.`,
+  local_under_12_after_check: (p, c) =>
+    `Las reglas de este lugar para menores de 12 años se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}, y pueden cambiar antes de la fecha de tu viaje. Solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`,
   local_allowed: (p, c) => `Permitida en ${placeName(n(p.place), c.lang)} para alguien de ${p.age} años.`,
   campus_allowed: (p) => `Las bicicletas eléctricas Clase ${cls(p)} se permiten en las escuelas de SDUHSD, después de estos pasos.`,
   campus_class3: () => "En las escuelas de SDUHSD solo se permiten bicicletas eléctricas Clase 1 y 2.",
@@ -351,7 +355,7 @@ const ES = {
   del_mar_bans: () =>
     "En Del Mar no se puede andar en bicicleta ni en bicicleta eléctrica por aceras del Village Center o de zonas comerciales, por aceras con letreros que lo prohíben, por la acera de una calle con ciclovía (anda por la ciclovía, con las excepciones del CVC 21208), en parques y reservas, ni en senderos de la laguna salvo que un letrero lo permita.",
   del_mar_beaches: () =>
-    "Los salvavidas de Del Mar tratan como ilegal andar en bicicleta eléctrica en las playas de la ciudad (DMMC 8.04.020 prohíbe vehículos autopropulsados en las playas).",
+    "No está claro si se puede andar en bicicleta eléctrica en las playas de Del Mar. El código prohíbe ahí los vehículos autopropulsados sin permiso de la ciudad (DMMC 8.04.020), y no está resuelto si eso incluye las bicicletas eléctricas. Los salvavidas han informado que actúan contra el uso ilegal de bicicletas eléctricas en las playas de Del Mar.",
   del_mar_coast_to_crest: () => "Las Clases 1 y 2 se permiten en el tramo de Del Mar del sendero Coast to Crest. La Clase 3 no está clara.",
   county_no_ordinance: (p, c) =>
     `Al ${formatDate(n(p.date), c.lang)} el condado no había adoptado una prohibición para menores de 12 años, pero la ley estatal le permite hacerlo (VC 21214.7(b)). Vuelve a revisar antes de salir.`,

@@ -26,6 +26,12 @@ export function inWindow(date: string, window: DateWindow): boolean {
   return true;
 }
 
+/** The YYYY-MM-DD date a whole number of days after another one. Counted in UTC, so no time zone shifts it. */
+export function addDays(date: string, days: number): string {
+  const [y, m, d] = date.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
 /** Today's date where the code runs, as YYYY-MM-DD. */
 export function localToday(now: Date = new Date()): string {
   const y = now.getFullYear();

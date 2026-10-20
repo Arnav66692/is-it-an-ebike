@@ -28,17 +28,22 @@ describe("bottom line golden cases (California unless named, Oct 19, 2026)", () 
     expect(bl.blocked[0].line.code).toBe("local_under_12");
   });
 
-  it("the same rider in Encinitas only is YES only if Encinitas is primary_verified, otherwise NO, not confirmed", () => {
+  it("the same rider in Encinitas only is YES with a helmet, with the town checked and nothing left unchecked", () => {
     const bl = check("CA", 11, classBike(2), ["encinitas"]);
-    const verified = levelOf("encinitas") === "primary_verified";
-    expect(bl.kind).toBe(verified ? "yes" : "no_unconfirmed");
-    if (verified) {
-      expect(bl.requirements.map((l) => l.code)).toContain("req_helmet_under");
-      expect(bl.citiesChecked).toBe(true);
-      expect(bl.uncheckedPlaces).toBe(false);
-    } else {
-      expect(bl.missing.some((m) => m.kind === "unverified")).toBe(true);
-    }
+    expect(bl.kind).toBe("yes");
+    expect(bl.requirements.map((l) => l.code)).toContain("req_helmet_under");
+    expect(bl.citiesChecked).toBe(true);
+    expect(bl.uncheckedPlaces).toBe(false);
+  });
+
+  it("the same rider in Encinitas is NO, not confirmed if the Encinitas record were not primary_verified", () => {
+    const result = evaluate({ state: "CA", riderAge: 11, rideDate: TODAY_PT, facts: classBike(2), places: ["encinitas"] });
+    const partial = { ...result, local: result.local.map((v) => ({ ...v, level: "primary_partial" as const })) };
+    const bl = bottomLine(partial, TODAY_PT);
+    expect(bl.kind).toBe("no_unconfirmed");
+    expect(bl.missing).toEqual([
+      { kind: "unverified", where: [{ scope: "local", id: "encinitas" }], line: { code: "bl_unverified_primary_partial", params: { place: "encinitas" } } },
+    ]);
   });
 
   it("today's data has Encinitas primary_verified, so that rider gets YES with a helmet", () => {
@@ -168,10 +173,11 @@ describe("bottom line, review fixes (Oct 19, 2026)", () => {
     }
   });
 
-  it("the City of San Diego ban ends Jan 1, 2029 by its own terms, so the City alone is YES then", () => {
+  it("the City of San Diego ban ends Jan 1, 2029 by its own terms, but that is past what the check vouches for, so the City alone is NO, not confirmed", () => {
     const result = evaluate({ state: "CA", riderAge: 11, rideDate: "2029-01-02", facts: classBike(2), places: ["city_of_san_diego"] });
-    expect(result.local[0].status).toBe("yes");
-    expect(bottomLine(result, "2029-01-02").kind).toBe("yes");
+    expect(result.local[0].status).toBe("cant_confirm");
+    expect(result.local[0].reason.code).toBe("local_under_12_after_check");
+    expect(bottomLine(result, "2029-01-02").kind).toBe("no_unconfirmed");
   });
 
   it("Carlsbad is still NO, not allowed for an 11-year-old on the last day of 2028", () => {

@@ -2,6 +2,7 @@
 // verdict starts from the state outcome for the same class and can only get stricter.
 
 import sdJson from "@/data/rules/san_diego_local.json";
+import { addDays } from "./dates";
 import type { RawJurisdiction, RawLocalRule, RawSanDiego } from "./raw";
 import type { ClassOutcome, StateEvaluation } from "./state";
 import type { EngineInput, Line, PlaceId, Source, SourceKind, Status, Verdict } from "./types";
@@ -21,6 +22,22 @@ export const PLACE_IDS: PlaceId[] = [
 /** VC 21214.7, the state power behind every local under-12 ban, is repealed on this date. */
 const UNDER_12_RULE_ENDS =
   SD.statewide_baseline.find((r) => r.rule === "local_under_12_authority")?.ends ?? "2029-01-01";
+
+/** The age VC 21214.7(b) lets a city or the county set for Class 1 and 2. */
+const UNDER_12_AGE = 12;
+
+/**
+ * A new city or county ordinance normally takes effect 30 days after it is adopted, as the
+ * Encinitas and County records note. So a record checked on its checked_through date covers
+ * ride dates up to 30 days later. After that a new under-12 ban could be in force, or the state
+ * could extend VC 21214.7 and keep a ban that was due to end, and we would not know.
+ */
+const ORDINANCE_DELAY_DAYS = 30;
+
+/** The last ride date this place's under-12 check can vouch for. */
+export function under12CheckedThrough(j: RawJurisdiction): string {
+  return addDays(j.checked_through, ORDINANCE_DELAY_DAYS);
+}
 
 const SEVERITY: Record<Status, number> = { not_ebike: 4, no: 3, cant_confirm: 2, need_info: 1, yes: 0 };
 
@@ -108,7 +125,7 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
   // The data says whether a place adopted the ban, or has the power with adoption unconfirmed.
   const classOneOrTwo = cls === 1 || cls === 2;
   const ban = ruleNamed(j, "under_12_ban");
-  if (ban && classOneOrTwo && age < (ban.min_age ?? 12) && ban.effective_date !== null && date >= ban.effective_date) {
+  if (ban && classOneOrTwo && age < (ban.min_age ?? UNDER_12_AGE) && ban.effective_date !== null && date >= ban.effective_date) {
     // A ban with its own end date (the City of San Diego) is repealed on that date. A ban
     // whose text gives no end date (Carlsbad) stays on the books after the state power lapses,
     // and whether it still applies then is unsettled, so it can't turn into a yes.
@@ -128,8 +145,18 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
       };
     }
   }
+  // No ban in force on the ride date. That is only known up to the place's check, plus the time
+  // a new ordinance needs to take effect. Past that, an under-12 answer can't be a yes.
+  const checkedThrough = under12CheckedThrough(j);
+  if (classOneOrTwo && age < UNDER_12_AGE && date > checkedThrough) {
+    return {
+      status: "cant_confirm",
+      reason: line("local_under_12_after_check", { place, cls, checked: j.checked_through, through: checkedThrough }, ban ?? ruleNamed(j, "no_local_age_limit_found")),
+      requirements: [],
+    };
+  }
   const power = ruleNamed(j, "authority_exists_no_adoption_found");
-  if (power && classOneOrTwo && date < UNDER_12_RULE_ENDS && age < 12) {
+  if (power && classOneOrTwo && date < UNDER_12_RULE_ENDS && age < UNDER_12_AGE) {
     return { status: "cant_confirm", reason: line("local_under_12_unclear", { place, cls }, power), requirements: [] };
   }
   return pass;
@@ -267,7 +294,8 @@ function placeNotes(
       }
       break;
     case "unincorporated_san_diego_county":
-      if (age < 12) add("county_no_ordinance", "no_local_age_limit_found", { date: checked });
+      // The note says state law lets the County adopt a ban, which is only true before VC 21214.7 is repealed.
+      if (age < UNDER_12_AGE && input.rideDate < UNDER_12_RULE_ENDS) add("county_no_ordinance", "no_local_age_limit_found", { date: checked });
       if (mayRide) {
         add("county_sidewalks", "sidewalk_ban_in_business_district");
         add("county_parks", "county_parks_designated_areas_only");

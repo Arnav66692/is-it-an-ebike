@@ -58,12 +58,20 @@ const SD = sdJson as unknown as {
   jurisdictions: {
     id: string;
     verification_level: string;
+    /** The day the place's records were last read. */
+    checked_through: string;
     local_age_limits: SdRuleRaw[];
     campus_class_limits: SdRuleRaw[];
   }[];
 };
 /** VC 21214.7, the under-12 power, is repealed on this date. */
 const UNDER_12_POWER_ENDS = "2029-01-01";
+/** A new city or county ordinance normally takes effect this many days after adoption. */
+const NEW_ORDINANCE_DAYS = 30;
+
+function plusDays(date: string, days: number): string {
+  return new Date(Date.parse(`${date}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+}
 
 type Cls = 1 | 2 | 3;
 const ALL_CLASSES: Cls[] = [1, 2, 3];
@@ -76,6 +84,10 @@ export interface OracleFacts {
   pedals?: boolean | null;
   /** The stated facts contradict each other. */
   conflict?: boolean;
+  /** The throttle answer is "not sure", but the text still states this throttle speed. */
+  throttleUnsureMph?: number;
+  /** A top speed whose mode the text doesn't say, given on top of the class's assist speed. */
+  topSpeed?: number;
   watts: number;
   front: number | null;
   rear: number | null;
@@ -114,10 +126,28 @@ export function pedalsOf(f: OracleFacts): boolean | null {
   return f.pedals === undefined ? true : f.pedals;
 }
 
+/** Each class a label promises: Class 1 and 2 top out at 20 mph, Class 3 at 28. */
+const LABEL_MAX_MPH: Record<Cls, number> = { 1: 20, 2: 20, 3: 28 };
+
+/**
+ * Why the stated class can't be trusted, if it can't. A stated throttle speed on a label with no
+ * Class 2 means a throttle the class doesn't allow, even when the throttle answer is "not sure".
+ * A top speed of unknown mode above every class the label names, but within 28 mph, doesn't
+ * match the label either.
+ */
+function classConflict(f: OracleFacts): string | null {
+  const classes = classesOf(f);
+  if (classes.length === 0) return null;
+  if (f.throttleUnsureMph !== undefined && !classes.includes(2)) return "class_conflict_throttle";
+  const cap = Math.max(...classes.map((c) => LABEL_MAX_MPH[c]));
+  if (f.topSpeed !== undefined && f.topSpeed > cap && f.topSpeed <= 28) return "class_conflict_speed";
+  return null;
+}
+
 function fieldValues(f: OracleFacts): Record<string, number | boolean | undefined> {
   const wheelsKnown = f.front !== null && f.rear !== null && f.wheelCount !== null;
   const fastKnown = f.motorOver20 !== null && f.assistOver28 !== null;
-  const motor = f.motorOver20 ? 25 : hasThrottle(f) ? 20 : 0;
+  const motor = f.motorOver20 ? 25 : f.throttleUnsureMph ?? (hasThrottle(f) ? 20 : 0);
   return {
     max_wheel_diameter_in: wheelsKnown ? Math.max(f.front as number, f.rear as number) : undefined,
     min_wheel_diameter_in: wheelsKnown ? Math.min(f.front as number, f.rear as number) : undefined,
@@ -179,6 +209,9 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
   if (f.conflict) reasons.push("facts_conflict");
   const classes = classesOf(f);
   if (classes.length === 0) reasons.push("class_unknown");
+  const conflict = classConflict(f);
+  if (conflict) reasons.push(conflict);
+  if (f.topSpeed !== undefined && f.topSpeed > 28) reasons.push("fits_no_class_speed");
   for (const cls of classes.length > 0 ? classes : ALL_CLASSES) reasons.push(...classBlockers(code, f, cls, age, date));
   return [...new Set(reasons)];
 }
@@ -254,7 +287,8 @@ function ageBlocks(code: string, cls: Cls, age: number, date: string): string[] 
 /**
  * Extra San Diego reasons for one class on top of the state reasons. Read from the raw San Diego
  * records. An under-12 ban with its own end date is gone after it. A ban whose text gives no end
- * date can't be confirmed after the state power behind it lapses.
+ * date can't be confirmed after the state power behind it lapses. A place with no ban in force
+ * can't be confirmed for an under-12 rider more than 30 days after its records were checked.
  */
 export function localBlockers(place: string, cls: Cls, age: number, date: string): string[] {
   const reasons: string[] = [];
@@ -269,6 +303,13 @@ export function localBlockers(place: string, cls: Cls, age: number, date: string
   if (ban && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? 12) && date >= ban.effective_date) {
     const repealed = typeof ban.ends === "string" && date >= ban.ends;
     if (!repealed) reasons.push(date < UNDER_12_POWER_ENDS ? "local_under_12" : "local_under_12_no_end");
+  }
+  // With no ban in force, the record only vouches for ride dates up to the time a new ban
+  // would need to take effect after the check. School rules don't come from this power.
+  const banned = reasons.includes("local_under_12") || reasons.includes("local_under_12_no_end");
+  const vouchedThrough = plusDays(j.checked_through, NEW_ORDINANCE_DAYS);
+  if (place !== "sduhsd_campuses" && !banned && classOneOrTwo && age < 12 && date > vouchedThrough) {
+    reasons.push("local_under_12_after_check");
   }
   const unclear = j.local_age_limits.some((r) => r.rule === "authority_exists_no_adoption_found");
   if (unclear && classOneOrTwo && age < 12 && date < UNDER_12_POWER_ENDS) reasons.push("local_under_12_unclear");
@@ -322,7 +363,8 @@ export function illegalReasons(code: string, f: OracleFacts, age: number, date: 
   if (s.never_return_legal || pedals === null || f.conflict) return [];
   const barred = (cls: Cls, place: string | null) =>
     place === null ? classIllegal(code, f, cls, age, date) : [...classIllegal(code, f, cls, age, date), ...localIllegal(place, cls, age, date)];
-  const classes = classesOf(f);
+  // A label the other facts contradict says nothing about the class, so every class counts.
+  const classes = classConflict(f) ? [] : classesOf(f);
   if (classes.length > 0) {
     return classes.flatMap((cls) => [...barred(cls, null), ...places.flatMap((p) => localIllegal(p, cls, age, date).map((r) => `${p}:${r}`))]);
   }
