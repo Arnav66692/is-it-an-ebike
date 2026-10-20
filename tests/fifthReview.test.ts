@@ -304,3 +304,20 @@ describe("Rhode Island's 2 horsepower cap", () => {
     expect(peak.state.reason.code).toBe("watts_peak_only");
   });
 });
+
+describe("a state that never confirms an e-bike names its gap once", () => {
+  it("Alaska and Kentucky list one line under What's missing, not the same point twice", () => {
+    for (const state of ["AK", "KY"]) {
+      const line = bottomLine(evaluate({ state, riderAge: 30, rideDate: DATE, facts: classBike(1), places: [] }), DATE);
+      expect(line.kind, state).toBe("no_unconfirmed");
+      expect(line.missing, state).toHaveLength(1);
+      expect(line.missing[0].line.code, state).toBe("never_legal");
+    }
+  });
+
+  it("still lists the unverified gap for a state card that says something else", () => {
+    const real = evaluate({ state: "TX", riderAge: 30, rideDate: DATE, facts: classBike(1), places: [] });
+    const unverified = { ...real, state: { ...real.state, verified: "unclear" } };
+    expect(bottomLine(unverified, DATE).missing.map((g) => g.line.code)).toEqual(["bl_unverified_state"]);
+  });
+});

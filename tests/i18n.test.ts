@@ -156,7 +156,7 @@ describe("translations", () => {
 
   it("covers the bottom-line sentences, and the YES headline reads SÍ in Spanish", () => {
     // Each of these must come out of a real engine run on today's data, not only have a template.
-    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_state", "bl_unverified_primary_partial", "local_under_12_no_end", "local_under_12_after_check", "carlsbad_class3_trails"]) {
+    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_primary_partial", "local_under_12_no_end", "local_under_12_after_check", "carlsbad_class3_trails"]) {
       expect(hasTemplate(code), code).toBe(true);
       expect(codes.has(code), code).toBe(true);
     }
@@ -166,6 +166,11 @@ describe("translations", () => {
     const gap = bottomLine(notFound, "2026-10-19").missing.map((m) => m.line.code);
     expect(gap).toEqual(["bl_unverified_primary_not_found"]);
     expect(hasTemplate("bl_unverified_primary_not_found")).toBe(true);
+    // The only unverified state records today (Alaska, Kentucky) never confirm an e-bike, and their card
+    // line already says so. So this one is checked on a real state result with its level changed too.
+    const secondary = { ...real, local: [], state: { ...real.state, verified: "secondary_only" } };
+    expect(bottomLine(secondary, "2026-10-19").missing.map((m) => m.line.code)).toEqual(["bl_unverified_state"]);
+    expect(hasTemplate("bl_unverified_state")).toBe(true);
     expect(t("en", "blYes")).toBe("YES");
     expect(t("es", "blYes")).toBe("SÍ");
     expect(t("en", "blNo")).toBe("NO");

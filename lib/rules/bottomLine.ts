@@ -135,7 +135,10 @@ function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
     const code = UNSURE_CAUTIONS.get(caution.code);
     if (code) gaps.push({ kind: "unsure", where, line: caution.params ? { code, params: caution.params } : { code } });
   }
-  if (!isTopVerified(v)) gaps.push({ kind: "unverified", where, line: unverifiedLine(v) });
+  // A state that never confirms an e-bike (Alaska, Kentucky) already says why on its card line,
+  // and the unverified sentence would only say the same thing again.
+  const saysUnverified = v.scope === "state" && v.status === "cant_confirm" && v.reason.code === "never_legal";
+  if (!isTopVerified(v) && !saysUnverified) gaps.push({ kind: "unverified", where, line: unverifiedLine(v) });
   if (v.scope === "state") {
     const through = stateCheckedThrough(v.lastChecked);
     if (rideDate > through) {
