@@ -9,8 +9,15 @@ export interface DateWindow {
 
 const ISO_DATE = /\d{4}-\d{2}-\d{2}/;
 
+/**
+ * True for a real calendar day written as YYYY-MM-DD. Date.parse rolls "2026-11-31" over to
+ * Dec 1, so the day is built and read back, and a date that doesn't exist is refused.
+ */
 export function isIsoDate(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [y, m, d] = value.split("-").map(Number);
+  const day = new Date(Date.UTC(y, m - 1, d));
+  return day.getUTCFullYear() === y && day.getUTCMonth() === m - 1 && day.getUTCDate() === d;
 }
 
 /** Pulls the first YYYY-MM-DD out of free text like "2026-04-01 (Section 1)". */
