@@ -1,16 +1,19 @@
 // The bottom line under the answer. One strict YES or NO for the whole ride: state law,
 // every San Diego place the user picked and the SDUHSD campus if picked, on the ride date.
 //
-// YES needs every card allowed, no question left open and every rule behind the cards read
-// in enacted text. Anything illegal is NO. Anything uncertain is NO, not confirmed, with the
-// exact gap named. Uncertainty never turns into a YES.
+// YES needs every card allowed, no question left open, every rule behind the cards read in
+// enacted text, and every fact read from a link or photo checked by the family against the bike.
+// Anything illegal is NO. Anything uncertain is NO, not confirmed, with the exact gap named.
+// Uncertainty never turns into a YES.
 
 import { addDays } from "./dates";
 import {
   CAUTION_FAST_MODE_UNVERIFIED,
+  READ_FIELDS,
   ROAD_LIMIT_CODES,
   type EngineResult,
   type Line,
+  type ReadField,
   type Verdict,
   type VerificationLevel,
 } from "./types";
@@ -23,13 +26,14 @@ export interface CardRef {
   id: string;
 }
 
-/** One sentence and every card it applies to. */
+/** One sentence and every card it applies to. Empty for the bike's facts, which every card rests on. */
 export interface BottomLineItem {
   where: CardRef[];
   line: Line;
 }
 
-export type GapKind = "cant_confirm" | "unanswered" | "unsure" | "unverified" | "stale";
+/** "facts": facts read from a link or photo that the family has not checked against the bike. */
+export type GapKind = "facts" | "cant_confirm" | "unanswered" | "unsure" | "unverified" | "stale";
 
 export interface BottomLineGap extends BottomLineItem {
   kind: GapKind;
@@ -66,7 +70,12 @@ export type UnsureCode = "bl_unsure_fast_mode";
  * Every line code the bottom line itself writes. lib/i18n/verdicts.ts must have a sentence for
  * each one in both languages, and the compiler checks that.
  */
-export type BottomLineCode = "bl_unanswered" | UnsureCode | `bl_unverified_${"state" | UnverifiedLevel}` | "bl_state_after_check";
+export type BottomLineCode =
+  | "bl_unconfirmed_facts"
+  | "bl_unanswered"
+  | UnsureCode
+  | `bl_unverified_${"state" | UnverifiedLevel}`
+  | "bl_state_after_check";
 
 /** The levels that keep a local card from a YES. */
 type UnverifiedLevel = Exclude<VerificationLevel, "primary_verified">;
@@ -74,7 +83,7 @@ type UnverifiedLevel = Exclude<VerificationLevel, "primary_verified">;
 /** Cautions the engine adds only because the user answered "not sure". They block a YES. */
 const UNSURE_CAUTIONS: ReadonlyMap<string, UnsureCode> = new Map([[CAUTION_FAST_MODE_UNVERIFIED, "bl_unsure_fast_mode"]]);
 
-const GAP_ORDER: GapKind[] = ["cant_confirm", "unanswered", "unsure", "unverified", "stale"];
+const GAP_ORDER: GapKind[] = ["facts", "cant_confirm", "unanswered", "unsure", "unverified", "stale"];
 
 /**
  * A state record vouches for ride dates up to this many days after it was last checked, the same
@@ -154,7 +163,23 @@ function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
   return gaps;
 }
 
-export function bottomLine(result: EngineResult, rideDate: string): BottomLine {
+/**
+ * The gap for read facts not yet checked. It names every one, in the order the facts card shows
+ * them, not only the facts a card happened to use, since a wrong fact can change which rules apply.
+ */
+function factsGap(unconfirmed: readonly ReadField[]): BottomLineGap[] {
+  const fields = READ_FIELDS.filter((f) => unconfirmed.includes(f));
+  if (fields.length === 0) return [];
+  const code: BottomLineCode = "bl_unconfirmed_facts";
+  return [{ kind: "facts", where: [], line: { code, params: { fields: fields.join(",") } } }];
+}
+
+/**
+ * The bottom line for one ride. `unconfirmed` lists the facts read from a product link, a label
+ * photo or the pedal photo check that the family has not checked against the bike. While any is
+ * left, the answer can't be YES. A rule that says no still says no.
+ */
+export function bottomLine(result: EngineResult, rideDate: string, unconfirmed: readonly ReadField[] = []): BottomLine {
   const cards = [result.state, ...result.local];
   const base = {
     rideDate,
@@ -176,7 +201,7 @@ export function bottomLine(result: EngineResult, rideDate: string): BottomLine {
     };
   }
 
-  const gaps = cards.flatMap((v) => gapsOf(v, rideDate));
+  const gaps = [...factsGap(unconfirmed), ...cards.flatMap((v) => gapsOf(v, rideDate))];
   if (gaps.length > 0) {
     const ordered = [...gaps].sort((a, b) => GAP_ORDER.indexOf(a.kind) - GAP_ORDER.indexOf(b.kind));
     return {

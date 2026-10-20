@@ -2,7 +2,7 @@
 // code and the numbers. These templates are the only legal text in the app.
 
 import type { BottomLineCode } from "@/lib/rules/bottomLine";
-import { isQuestionId, QUESTION_IDS, type Line, type QuestionId, type Status } from "@/lib/rules/types";
+import { isQuestionId, QUESTION_IDS, READ_FIELDS, type Line, type QuestionId, type ReadField, type Status } from "@/lib/rules/types";
 import { formatDate, joinList, placeNameInline, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
@@ -64,6 +64,53 @@ function questionList(ids: string, lang: Lang): string {
   const names = QUESTION_IDS.filter((id) => asked.includes(id)).map((id) => QUESTION_NAMES[lang][id]);
   if (names.length === 0) return lang === "es" ? "la bicicleta" : "the bike";
   return joinList(names, lang);
+}
+
+/** Keyed by ReadField, so a fact the readers can fill in can't ship without a plain name in both languages. */
+export const READ_FIELD_NAMES: Record<Lang, Record<ReadField, string>> = {
+  en: {
+    hasPedals: "the pedals",
+    classes: "the class",
+    ratedWatts: "the rated motor watts",
+    peakWatts: "the peak watts",
+    wattsUpTo: "the watts listed",
+    hasThrottle: "the throttle",
+    throttleMph: "the throttle top speed",
+    assistMph: "the top assisted speed",
+    topSpeedMph: "the top speed",
+    wheelSize: "the wheel size",
+    weightLb: "the weight",
+    wheelCount: "the number of wheels",
+    hasFootPegs: "the foot pegs",
+    switchable: "the unlock or off-road mode",
+  },
+  es: {
+    hasPedals: "los pedales",
+    classes: "la clase",
+    ratedWatts: "los vatios nominales del motor",
+    peakWatts: "los vatios máximos",
+    wattsUpTo: "los vatios del anuncio",
+    hasThrottle: "el acelerador",
+    throttleMph: "la velocidad máxima con acelerador",
+    assistMph: "la velocidad máxima con asistencia",
+    topSpeedMph: "la velocidad máxima",
+    wheelSize: "el tamaño de las ruedas",
+    weightLb: "el peso",
+    wheelCount: "el número de ruedas",
+    hasFootPegs: "los reposapiés",
+    switchable: "el modo desbloqueado o todoterreno",
+  },
+};
+
+/** "classes,wheelSize" becomes "the class and the wheel size", in the order the facts card shows them. */
+export function readFieldList(ids: string, lang: Lang): string {
+  const named = ids.split(",");
+  const fields = READ_FIELDS.filter((f) => named.includes(f));
+  if (fields.length === 0) return lang === "es" ? "los datos leídos" : "the facts that were read";
+  return joinList(
+    fields.map((f) => READ_FIELD_NAMES[lang][f]),
+    lang,
+  );
 }
 
 /** Every bottom-line code must have a sentence. Other codes are checked by tests/i18n.test.ts. */
@@ -246,6 +293,8 @@ const EN = {
   county_dpr_sites: () =>
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
+  bl_unconfirmed_facts: (p, c) =>
+    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under each one in "Here's what I read" above, or fix it.`,
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({
@@ -445,6 +494,8 @@ const ES = {
   county_dpr_sites: () =>
     "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
   county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",
+  bl_unconfirmed_facts: (p, c) =>
+    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Esto es lo que leí", arriba, o corrige el dato.`,
   bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({

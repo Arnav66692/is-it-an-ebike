@@ -2,25 +2,12 @@
 // Fixed rules, no model. It only reports a value it finds written in the text, and every
 // value carries the exact words it came from, so the "what I read" card can show them.
 
-import type { BikeFacts, ClassNum } from "@/lib/rules/types";
+import type { BikeFacts, ClassNum, ReadField } from "@/lib/rules/types";
 
 export type TextSource = "label" | "listing";
 
-export type FactKey =
-  | "hasPedals"
-  | "classes"
-  | "ratedWatts"
-  | "peakWatts"
-  | "wattsUpTo"
-  | "hasThrottle"
-  | "throttleMph"
-  | "assistMph"
-  | "topSpeedMph"
-  | "switchable"
-  | "hasFootPegs"
-  | "wheelSize"
-  | "wheelCount"
-  | "weightLb";
+/** The facts the parser can fill in, the same list the facts card asks the family to check. */
+export type FactKey = ReadField;
 
 export interface Evidence {
   /** Exact text from the input. Always a substring of what was parsed. */

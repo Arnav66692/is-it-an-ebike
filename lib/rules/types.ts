@@ -34,6 +34,29 @@ export const CAUTION_STATE_AFTER_CHECK = "caution_state_after_check";
  */
 export const ROAD_LIMIT_CODES: readonly string[] = ["req_roads_max_speed"];
 
+/**
+ * The bike facts a product link, a label photo or the whole-bike pedal photo check can fill in,
+ * in the order the facts card shows them. "wheelSize" is the front and rear sizes together. A
+ * value read this way can be wrong, so the bottom line can't say YES until the family checks it.
+ */
+export const READ_FIELDS = [
+  "hasPedals",
+  "classes",
+  "ratedWatts",
+  "peakWatts",
+  "wattsUpTo",
+  "hasThrottle",
+  "throttleMph",
+  "assistMph",
+  "topSpeedMph",
+  "wheelSize",
+  "weightLb",
+  "wheelCount",
+  "hasFootPegs",
+  "switchable",
+] as const;
+export type ReadField = (typeof READ_FIELDS)[number];
+
 /** Everything the engine knows about one bike. Null means unknown. */
 export interface BikeFacts {
   hasPedals: Tri;
