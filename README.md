@@ -6,7 +6,7 @@ Built for Neighborhood Hacks 2026 (Oct 16 to 23, 2026).
 
 ## Why
 
-The City of San Diego started citing riders under its new e-bike rules on Oct 13, 2026. Riders under 12 can no longer ride Class 1 or 2 e-bikes there, SDUHSD now admits only tagged Class 1 and 2 e-bikes, and stores sell pedal-less e-motos under "kids e-bikes." Families have to sort out state law, city law and school rules for one specific bike. Guides explain the rules. This gives a verdict for one bike and one rider.
+The City of San Diego could start citing riders under its new e-bike rules on Oct 12, 2026, after 60 days of warnings. Riders under 12 can no longer ride Class 1 or 2 e-bikes there, SDUHSD now admits only tagged Class 1 and 2 e-bikes, and stores sell pedal-less e-motos under "kids e-bikes." Families have to sort out state law, city law and school rules for one specific bike. Guides explain the rules. This gives a verdict for one bike and one rider.
 
 ## How it decides
 
@@ -16,6 +16,13 @@ The AI only reads. A fixed rules table decides.
 2. **Checking the facts.** The "what I read" card shows every fact so the user can fix it before anything is decided.
 3. **Deciding.** A deterministic TypeScript engine (`lib/rules/`) applies the rules table in `data/rules/`. Every sentence on a verdict card comes from a template in `lib/i18n/verdicts.ts`, in both languages. No model writes legal text.
 4. **Saying "can't confirm."** If a fact the law depends on is missing, the engine asks a quick follow-up question (wheel size, fast modes, weight) or says it can't confirm. It never guesses toward "legal."
+5. **The bottom line.** Under every card, one strict YES or NO covers the whole ride: state law, every San Diego place picked, and the SDUHSD campus if picked, on the ride date. The rule lives in `lib/rules/bottomLine.ts`, apart from the page, so it is tested on its own.
+   - **YES** only if every card says allowed, every follow-up question is answered (a "not sure" fast-mode answer counts as open), and every rule behind the cards was read in enacted text. That means statute-verified state rules and `primary_verified` San Diego records. It lists what the rider must still do, merged with duplicates removed, and says it covers streets and bike lanes, since sidewalks, parks, beaches and trails have their own rules.
+   - **NO, not allowed** if any card says not allowed or not an e-bike. It names each place and the reason.
+   - **NO, not confirmed** if nothing is illegal but something is open, can't be confirmed, or rests on rules that weren't read in enacted text. It says exactly what is missing. Uncertainty never becomes a YES.
+   - If the rider also rides somewhere we don't cover, or the state has no local layer, the answer says city rules were not checked. There is never a bare YES for an unchecked place.
+
+The San Diego records are held to a reference standard. On Oct 19, 2026 an independent skeptic pass reread each one against enacted ordinance, code, resolution, board and statute text, and only changes it confirmed from that text went in. Each record in `data/rules/san_diego_local.json` carries a `verification_level` and its `primary_sources` (number, link, effective date and quote). Six places are `primary_verified`. SDUHSD is `primary_partial`. Its helmet rule is in Administrative Regulation 5142, but its class, tag and course rules are only on the district's web page and the Board has not voted on them, so a campus answer can be NO, not allowed, but never YES.
 
 The costly mistake is calling a bike legal when it isn't, so the engine is built around that:
 
@@ -29,7 +36,9 @@ The costly mistake is calling a bike legal when it isn't, so the engine is built
 
 See `RESULTS.md` and the in-app accuracy page. The headline: on 334,080 generated cases (every state, class, age band, caution condition and switch date), checked against an independent reading of the raw table in `tests/oracle.ts`, the engine gave **zero false-legal results** and never refused a case the table allows.
 
-Those tests prove the engine matches the table, not that the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (`data/rules/verification_report.md`, `data/rules/corrections.json`). The San Diego rows come from official city and district pages and press releases, because ordinance text wasn't available for most of them.
+The bottom line has its own gate. On 391,680 generated cases, including every San Diego place alone, all of them and none, with and without "Somewhere else", it never said YES when the independent checker listed a reason against it, and never refused when it listed none.
+
+Those tests prove the engine matches the table, not that the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (`data/rules/verification_report.md`, `data/rules/corrections.json`). The San Diego records were checked against enacted text on Oct 19, 2026, as described above.
 
 The pilot in `PILOT.md` set pass bars before each run. A free CLIP model caught every pedal-less e-moto but called 4 of 8 real e-bikes pedal-less, so whole-bike photos were cut from the app. A second, part-focused try was built on 47 photos and run once on 24 fresh ones. It caught only 9 of 12 no-pedal machines and got 18 of 24 overall against a bar of 22. A third try used OWLv2, a free open-vocabulary detector, with one rule picked on 71 photos. Before its single run on 24 fresh photos, the expected result was written down as 88.7%. It passed every bar, with 12 of 12 no-pedal machines and 23 of 24 overall, so whole-bike photos are back as an optional pedal check, never a verdict.
 
@@ -56,9 +65,9 @@ npm run results
 
 | Path | What it is |
 |---|---|
-| `data/rules/` | The verified rules table: 50 states plus DC, and 7 San Diego rows |
+| `data/rules/` | The verified rules table: 50 states plus DC, and 7 San Diego records with their primary sources |
 | `data/overlay.json` | Dated rule changes, supervision exceptions and a few definition rules from the verified notes, each pointing back to its source line |
-| `lib/rules/` | The engine: conditions, facts, state rules, San Diego layer |
+| `lib/rules/` | The engine: conditions, facts, state rules, San Diego layer, and the bottom line |
 | `lib/extract/` | Text parser for labels and listings, and the listing fetcher |
 | `lib/photo/` | The tested whole-bike pedal rule and the on-device photo check |
 | `lib/i18n/` | Every sentence the app shows, in English and Spanish |
@@ -77,7 +86,7 @@ This project was built during Neighborhood Hacks 2026 with AI help, as the rules
 - **Claude (Anthropic), through Claude Code**, wrote the code, tests and Spanish text, and ran the research that gathered and double-checked the state rules table. I didn't hand-write the code.
 - **My part.** I picked the problem from what I've seen around my school, chose the scope (every state, with a San Diego layer), and made the policy calls recorded in `data/overlay.json` and `PILOT.md`, including the Class 2 caution and using no paid AI. The pilot pass bars come from the research report and were committed before any run.
 - **Inside the product**, the only AI is open-source and free. Tesseract OCR reads label photos on the phone. For whole-bike photos, CLIP models failed two preregistered tests, then OWLv2 passed a third. OWLv2 runs on the phone only when the user taps it, and it only answers whether the bike has pedals. No paid AI API is used.
-- **Data.** State e-bike statutes (linked on every card), San Diego County city pages and the SDUHSD Bike Safety page.
+- **Data.** State e-bike statutes (linked on every card), San Diego County city and county codes, ordinances and council records, SDUHSD board regulations and its Bike Safety page.
 - **Libraries.** Next.js, React, Tailwind CSS, tesseract.js, transformers.js (loaded from jsDelivr only for the photo check), qrcode, Vitest.
 
 The Spanish text still needs a check by a fluent speaker.

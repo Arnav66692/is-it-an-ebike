@@ -22,6 +22,16 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 
 export default function AccuracyPage() {
   const e = accuracy.engine;
+  const bl =
+    (accuracy as {
+      bottom_line?: {
+        cases: number;
+        by_kind: { yes: number; no_illegal: number; no_unconfirmed: number };
+        false_yes: number;
+        missed_yes: number;
+        missing_caveat: number;
+      };
+    }).bottom_line ?? null;
   const fmt = (n: number) => n.toLocaleString("en-US");
   const share = (n: number) => `${((100 * n) / e.cases).toFixed(1)}%`;
   const clip = accuracy.pilot.photos_clip as Record<string, Bar> | null;
@@ -64,9 +74,30 @@ export default function AccuracyPage() {
         ) : null}
         <p className="text-sm text-muted">
           These tests prove the engine matches the rules table, not that the table matches the law. The table was checked against
-          statute text on Oct 16, 2026. San Diego rules come from city and district pages.
+          statute text on Oct 16, 2026. San Diego city and county rules were checked against enacted code and ordinance text on Oct 19,
+          2026. SDUHSD&apos;s class, tag and course rules come only from the district&apos;s web page.
         </p>
       </section>
+
+      {bl ? (
+        <section className="card space-y-3">
+          <h2 className="text-lg font-bold">Bottom line YES or NO</h2>
+          <p className="text-sm text-muted">
+            {fmt(bl.cases)} generated cases, including every San Diego place alone, all together and none, with and without
+            &ldquo;Somewhere else&rdquo;. YES needs every card allowed, every question answered and every rule read in enacted text.
+          </p>
+          <table className="w-full text-sm">
+            <tbody>
+              <Row label="False YES" value={fmt(bl.false_yes)} strong />
+              <Row label="Refused when every card allows it" value={fmt(bl.missed_yes)} />
+              <Row label="YES with an unchecked place left unsaid" value={fmt(bl.missing_caveat)} />
+              <Row label="YES" value={fmt(bl.by_kind.yes)} />
+              <Row label="NO, not allowed" value={fmt(bl.by_kind.no_illegal)} />
+              <Row label="NO, not confirmed" value={fmt(bl.by_kind.no_unconfirmed)} />
+            </tbody>
+          </table>
+        </section>
+      ) : null}
 
       <section className="card space-y-3">
         <h2 className="text-lg font-bold">Pilot, with bars set before the run</h2>
