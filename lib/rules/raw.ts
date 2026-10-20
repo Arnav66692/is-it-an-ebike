@@ -1,7 +1,7 @@
 // Shapes of the verified rules files in data/rules/ and the hand-built data/overlay.json.
 // Only the fields the engine reads are typed here.
 
-import type { AppliesTo, ClassKey } from "./types";
+import type { AppliesTo, ClassKey, VerificationLevel } from "./types";
 
 export interface RawRef {
   citation: string | null;
@@ -98,12 +98,26 @@ export interface RawLocalRule {
   min_age?: number | null;
   citation: string;
   source_url: string;
-  quote: string;
+  /** Verbatim text from source_url, or null when no verbatim quote was recorded. */
+  quote: string | null;
   effective_date: string | null;
+  adopted_date?: string;
+  /** First day a citation can be issued, after a warnings-only period. */
   citations_from?: string;
+  citations_from_citation?: string;
+  citations_from_source_url?: string;
+  citations_from_source_type?: string;
   ends?: string;
   source_type: string;
   notes?: string;
+}
+
+/** One enacted or official text a skeptic read for the record. */
+export interface RawPrimarySource {
+  number: string | null;
+  url: string;
+  effective: string | null;
+  quote: string;
 }
 
 export interface RawJurisdiction {
@@ -112,6 +126,9 @@ export interface RawJurisdiction {
   type: string;
   covers: string;
   verified: string;
+  verification_level: VerificationLevel;
+  /** The day the record was last checked against primary text. */
+  checked_through: string;
   verified_note: string;
   local_age_limits: RawLocalRule[];
   campus_class_limits: RawLocalRule[];
@@ -120,6 +137,8 @@ export interface RawJurisdiction {
   emoto_enforcement: RawLocalRule[];
   other_local_rules: RawLocalRule[];
   open_questions: string[];
+  resolved_questions?: { question: string; answer: string; source_url: string }[];
+  primary_sources: RawPrimarySource[];
 }
 
 export interface RawSanDiego {

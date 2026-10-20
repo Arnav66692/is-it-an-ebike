@@ -54,6 +54,8 @@ function kindOf(sourceType: string): SourceKind {
       return "news";
     case "ordinance_text":
       return "ordinance_text";
+    case "administrative_regulation":
+      return "administrative_regulation";
     default:
       return "official_page";
   }
@@ -81,34 +83,9 @@ interface LocalRuleResult {
 
 function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number, date: string): LocalRuleResult {
   const pass: LocalRuleResult = { status: "pass", reason: null, requirements: [] };
-  if (place === "city_of_san_diego" || place === "carlsbad") {
-    const ban = ruleNamed(j, "under_12_ban");
-    if (
-      ban &&
-      (cls === 1 || cls === 2) &&
-      age < (ban.min_age ?? 12) &&
-      ban.effective_date !== null &&
-      date >= ban.effective_date &&
-      date < UNDER_12_RULE_ENDS
-    ) {
-      return {
-        status: "no",
-        reason: line("local_under_12", { place, since: ban.effective_date, cls }, ban),
-        requirements: [],
-      };
-    }
-    return pass;
-  }
-  if (place === "unincorporated_san_diego_county") {
-    const power = ruleNamed(j, "authority_exists_no_adoption_found");
-    if (power && (cls === 1 || cls === 2) && age < 12 && date < UNDER_12_RULE_ENDS) {
-      return { status: "cant_confirm", reason: line("local_under_12_unclear", { place, cls }, power), requirements: [] };
-    }
-    return pass;
-  }
   if (place === "sduhsd_campuses") {
     const limit = ruleNamed(j, "class_1_and_2_only_on_campus");
-    if (limit && date >= (limit.effective_date ?? "") && cls === 3) {
+    if (limit && (limit.effective_date === null || date >= limit.effective_date) && cls === 3) {
       return { status: "no", reason: line("campus_class3", { cls }, limit), requirements: [] };
     }
     const requirements: Line[] = [];
@@ -121,6 +98,21 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
     if (helmet) requirements.push(line("req_campus_helmet", undefined, helmet));
     if (walk) requirements.push(line("req_campus_walk", undefined, walk));
     return { status: "pass", reason: null, requirements };
+  }
+  // VC 21214.7(b) lets a city or the county ban riders under 12 from Class 1 and 2.
+  // The data says whether a place adopted the ban, or has the power with adoption unconfirmed.
+  const under12 = (cls === 1 || cls === 2) && date < UNDER_12_RULE_ENDS;
+  const ban = ruleNamed(j, "under_12_ban");
+  if (ban && under12 && age < (ban.min_age ?? 12) && ban.effective_date !== null && date >= ban.effective_date) {
+    return {
+      status: "no",
+      reason: line("local_under_12", { place, since: ban.effective_date, cls }, ban),
+      requirements: [],
+    };
+  }
+  const power = ruleNamed(j, "authority_exists_no_adoption_found");
+  if (power && under12 && age < 12) {
+    return { status: "cant_confirm", reason: line("local_under_12_unclear", { place, cls }, power), requirements: [] };
   }
   return pass;
 }
@@ -148,11 +140,27 @@ function localOutcome(place: PlaceId, j: RawJurisdiction, o: ClassOutcome, age: 
   };
 }
 
+/** The source for a warnings-only period, which can differ from the rule's own source. */
+function warningSource(rule: RawLocalRule): Source {
+  return {
+    citation: rule.citations_from_citation ?? rule.citation,
+    url: rule.citations_from_source_url ?? rule.source_url,
+    quote: null,
+    effective: null,
+    kind: kindOf(rule.citations_from_source_type ?? rule.source_type),
+  };
+}
+
 function placeNotes(place: PlaceId, j: RawJurisdiction, input: EngineInput, status: Status, classes: number[]): Line[] {
   const notes: Line[] = [];
   const age = input.riderAge;
   const watts = input.facts.ratedWatts;
   const hasClass3 = classes.includes(3);
+  /** Class 1 or 2, or a class we don't know yet. */
+  const mayBeClass1or2 = classes.length === 0 || classes.some((c) => c === 1 || c === 2);
+  /** Where-to-ride notes only matter when the rider may ride at all. */
+  const mayRide = status !== "no" && status !== "not_ebike";
+  const checked = j.checked_through;
   const add = (code: string, ruleName?: string, params?: Line["params"]) => {
     const rule = ruleName ? ruleNamed(j, ruleName) : undefined;
     if (ruleName && !rule) return;
@@ -164,37 +172,68 @@ function placeNotes(place: PlaceId, j: RawJurisdiction, input: EngineInput, stat
       const ban = ruleNamed(j, "under_12_ban");
       if (status === "no" && age < 12) add("sd_course_in_lieu", "course_in_lieu_of_fine");
       if (ban?.citations_from && input.rideDate < ban.citations_from && age < 12) {
-        add("sd_warning_period", "under_12_ban", { from: ban.citations_from });
+        notes.push({ code: "sd_warning_period", params: { from: ban.citations_from }, source: warningSource(ban), detail: null });
       }
-      if (age === 12) notes.push(line("sd_age_12"));
+      if (age === 12) add("sd_age_12", "under_12_ban");
       if (status === "not_ebike") add("sd_emoto", "emoto_not_street_legal");
-      add("sd_passengers", "passengers_need_permanent_second_seat");
+      if (mayRide) {
+        add("sd_sidewalks", "no_sidewalk_riding_by_businesses");
+        add("sd_parks", "park_bicycle_limits");
+        add("sd_boardwalks", "boardwalk_motorized_device_ban");
+        add("sd_passengers", "passengers_only_on_multi_rider_ebikes");
+      }
       break;
     }
     case "carlsbad":
+      if (status === "no" && age < 12) add("carlsbad_disability", "disability_exemption");
       if (status === "not_ebike") add("carlsbad_emoto", "emoto_impound");
-      add("carlsbad_parks", "park_ban");
-      add("carlsbad_impound", "in_person_course_to_recover_impounded_bike");
-      add("carlsbad_passengers", "passengers_only_on_passenger_bikes");
-      if (hasClass3) notes.push(line("carlsbad_class3_paths"));
+      if (mayBeClass1or2 && status !== "not_ebike") add("carlsbad_under_12_passengers", "under_12_passenger_ban");
+      if (mayRide) {
+        add("carlsbad_sidewalks", "sidewalk_ban");
+        add("carlsbad_parks", "park_ban");
+        add("carlsbad_trail_dismount", "trail_dismount");
+        add("carlsbad_passengers", "passengers_only_on_passenger_bikes");
+        if (age < 18) add("carlsbad_impound", "in_person_course_to_recover_impounded_bike");
+        if (hasClass3) add("carlsbad_class3_paths", "park_and_trail_vehicle_limit");
+      }
       if (watts === 750) notes.push(line("city_page_750"));
       break;
     case "encinitas":
-      if (status === "yes") add("encinitas_no_age_limit", "no_local_age_limit_found");
-      if (hasClass3) notes.push(line("encinitas_class3_paths"));
+      if (status === "yes") add("encinitas_no_age_limit", "no_local_age_limit_found", { date: checked });
+      if (status === "not_ebike") add("encinitas_emoto", "emoto_trail_and_park_ban");
+      if (mayRide) {
+        add("encinitas_sidewalks", "sidewalk_ban_in_business_district");
+        add("encinitas_parks_unclear", "park_beach_trail_vehicle_ban_unclear");
+        add("encinitas_passengers", "passengers_only_if_designed_for_passengers");
+        if (hasClass3) notes.push(line("encinitas_class3_paths"));
+      }
       if (watts === 750) notes.push(line("city_page_750"));
       break;
     case "solana_beach":
-      if (status === "not_ebike") add("solana_emoto", "emoto_needs_motorcycle_license");
-      add("solana_sidewalks", "sidewalk_ban_in_business_district");
+      if (status === "not_ebike") add("solana_emoto", "state_emoto_removal");
+      add("solana_parks_motor", "motor_vehicles_banned_in_parks_and_beaches");
+      if (mayRide) {
+        add("solana_sidewalks", "sidewalk_ban_in_business_district");
+        add("solana_passengers", "passengers_only_where_designed");
+        add("solana_course", "course_in_lieu_of_penalty");
+      }
       if (age === 18) notes.push(line("solana_helmet_18"));
       break;
     case "del_mar":
-      add("del_mar_bans", "park_sidewalk_and_lagoon_trail_bans");
-      add("del_mar_coast_to_crest", "coast_to_crest_class1_and_2_allowed");
+      if (mayRide) {
+        add("del_mar_bans", "park_sidewalk_and_lagoon_trail_bans");
+        add("del_mar_beaches", "self_propelled_vehicles_beach_park_ban");
+        add("del_mar_coast_to_crest", "coast_to_crest_class1_and_2_allowed");
+      }
       break;
     case "unincorporated_san_diego_county":
-      if (age < 12) notes.push(line("county_no_ordinance"));
+      if (age < 12) add("county_no_ordinance", "no_local_age_limit_found", { date: checked });
+      if (mayRide) {
+        add("county_sidewalks", "sidewalk_ban_in_business_district");
+        add("county_parks", "county_parks_designated_areas_only");
+        add("county_dpr_sites", "dpr_designations");
+        if (hasClass3) add("county_dpr_class3", "dpr_designations");
+      }
       break;
     case "sduhsd_campuses":
       break;
@@ -266,7 +305,8 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
     questions: outcome.status === "need_info" ? state.questions : [],
     classes: state.classes,
     sources: sourcesOf(lines, state.sources),
-    lastChecked: SD._meta.last_checked,
+    lastChecked: j.checked_through ?? SD._meta.last_checked,
     verified: j.verified,
+    level: j.verification_level,
   };
 }

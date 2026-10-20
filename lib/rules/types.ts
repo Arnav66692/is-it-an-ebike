@@ -54,7 +54,16 @@ export type SourceKind =
   | "press_release"
   | "news"
   | "ordinance_text"
+  | "administrative_regulation"
   | "rules_table";
+
+/**
+ * How completely a San Diego record was read in enacted text.
+ * primary_verified: every rule that can change a verdict was read in ordinance, code, resolution, board or statute text.
+ * primary_partial: some rules were, others rest only on an official web page.
+ * primary_not_found: the enacted text was not found.
+ */
+export type VerificationLevel = "primary_verified" | "primary_partial" | "primary_not_found";
 
 export interface Source {
   citation: string | null;
@@ -98,6 +107,8 @@ export interface Verdict {
   lastChecked: string;
   /** How the rule was checked: statute_verified, secondary_only or unclear. */
   verified: string;
+  /** Local cards only. How completely the place's record was read in enacted text. */
+  level?: VerificationLevel;
 }
 
 export interface EngineInput {
