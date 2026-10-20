@@ -577,7 +577,14 @@ const PART_BEFORE_WEIGHT =
  * "(battery excluded)").
  */
 const WITHOUT_BATTERY =
-  /\b(?:without|w\/o|excl(?:uding|udes|\.)?|ex\.?|minus|less|no)\s+(?:the\s+)?batt(?:ery|eries|\.)?(?![a-z])|\bbatt(?:ery|eries|\.)?(?![a-z])\s*(?:is\s+|are\s+)?(?:not\s+incl(?:uded|\.)?|excluded|sold separately|not installed|extra|separate)/;
+  /\b(?:without|w\/o|excl(?:uding|udes|\.)?|ex\.?|minus|less|no|plus|sans|not\s+incl(?:uding|udes|uded|\.)?|(?:before|prior to)(?:\s+(?:adding|installing|fitting))?)\s+(?:the\s+|a\s+)?batt(?:ery|eries|\.)?(?![a-z])|\bbatt(?:ery|eries|\.)?(?![a-z])\s*(?:is\s+|are\s+)?(?:not\s+incl(?:uded|\.)?|excluded|sold separately|not installed|extra|separate)/;
+/**
+ * A figure named as the weight with the battery, as in "Weight: 92 lbs; with battery 106 lbs". It
+ * counts as a bike weight even without the word "weight" in its own clause, so it is compared with
+ * the other figures.
+ */
+const WITH_BATTERY_BEFORE = /\b(?:with|incl(?:uding|udes|\.)?)\s+(?:the\s+|a\s+)?batt(?:ery|eries|\.)?(?![a-z])[\s:(\-]*$/;
+const WITH_BATTERY_AFTER = /^[\s)]*(?:with|incl(?:uding|udes|\.)?)\s+(?:the\s+|a\s+)?batt(?:ery|eries|\.)?(?![a-z])/;
 /** The whole page says the battery doesn't come with the bike, so a listed weight may leave it out. */
 const BATTERY_NOT_INCLUDED =
   /\bbatt(?:ery|eries)\s*(?:is\s+|are\s+)?(?:not\s+included|excluded|sold separately)|\b(?:no|without)\s+battery\s+included\b/;
@@ -612,10 +619,11 @@ function parseWeight(text: string, out: Extraction): void {
     const after = slice(text, end, to(16));
     const adjacent = slice(text, from(12), m.index) + " " + slice(text, end, to(12));
     if (/(payload|load|capacity|rider|carry|max|maximum|up to|supports?|rack|limit)/.test(adjacent)) continue;
-    if (!/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike)/.test(after)) continue;
+    const withBattery = WITH_BATTERY_BEFORE.test(before) || WITH_BATTERY_AFTER.test(after);
+    if (!withBattery && !/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike)/.test(after)) continue;
     if (weightIsForPart(text, m.index, start)) continue;
     // Not cut at the sentence: "batt. not incl." has periods of its own, and skipping is the safe side.
-    if (WITHOUT_BATTERY.test(slice(text, m.index - 30, end + 30))) continue;
+    if (!withBattery && WITHOUT_BATTERY.test(slice(text, m.index - 30, end + 30))) continue;
     if (splitNumberBefore(text, m.index)) {
       flagSplit(out);
       continue;

@@ -147,3 +147,33 @@ describe("pedals that are gone, broken, add-on or not shipped are left to the fa
     expect(flow(`${base}Install the pedals and handlebar, then ride. Alloy pedals.`, "CA", 30).facts.hasPedals).toBe(true);
   });
 });
+
+describe("a weight without the battery never stands in for the bike's weight", () => {
+  const base = "Cargo e-bike. Class 1 pedal assist, no throttle, 500W rated, 20 mph. Tires: 20 x 3.0. ";
+
+  it("skips 'not including battery' and 'before battery' figures, so Pennsylvania asks the weight", () => {
+    for (const tail of ["Weight: 92 lbs not including battery.", "Weight: 92 lbs before battery.", "Weight: 92 lbs plus battery."]) {
+      const { facts, result, kind } = flow(base + tail, "PA", 30);
+      expect(facts.weightLb, tail).toBeNull();
+      expect(result.state.questions, tail).toContain("weight");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("reads a with-battery figure in the next clause, so the two weights are asked about", () => {
+    for (const tail of ["Weight: 92 lbs; with battery 106 lbs.", "Weight: 92 lbs; 106 lbs with battery."]) {
+      const { extraction, facts, kind } = flow(base + tail, "PA", 30);
+      expect(facts.weightLb, tail).toBeNull();
+      expect(extraction.flags, tail).toContain("several_weights");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+    const both = flow(`${base}Weight: 92 lbs not including battery. With battery: 106 lbs.`, "PA", 30);
+    expect(both.facts.weightLb).toBe(106);
+    expect(both.kind).toBe("no_illegal");
+  });
+
+  it("still reads a plain bike weight", () => {
+    expect(flow(`${base}Weight: 62 lbs; max load 300 lbs.`, "PA", 30).facts.weightLb).toBe(62);
+    expect(flow(`${base}Weight: 62 lbs (with battery).`, "PA", 30).kind).toBe("yes");
+  });
+});
