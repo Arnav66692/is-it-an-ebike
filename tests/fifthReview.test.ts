@@ -140,3 +140,36 @@ describe("a 'Pedals: No' about what ships is left to the family, not read as a m
     }
   });
 });
+
+describe("an OCR letter in place of a first digit never shrinks a number", () => {
+  it("'MOTOR l500W' and 'l200W' are not read as 500 W and 200 W", () => {
+    for (const watts of ["l500W", "I500W", "|500W", "l,500W", "Il00W"]) {
+      const e = parseSpecText(`CLASS 2\nMOTOR ${watts}\nTOP SPEED 20 MPH`, "label");
+      expect(e.facts.ratedWatts, watts).toBeUndefined();
+    }
+    expect(parseSpecText("CLASS 2\nMOTOR l200W", "label").facts.ratedWatts).toBeUndefined();
+  });
+
+  it("'Z8 MPH' is not read as 8 mph, so a 28 mph Class 3 can't pass as Class 1", () => {
+    const e = parseSpecText("CLA5S\nTOP ASSISTED SPEED Z8 MPH\nMOTOR 500W", "label");
+    expect(e.facts.assistMph).toBeUndefined();
+    const facts: BikeFacts = { ...factsFromExtraction(e, emptyFacts()), hasPedals: true, hasThrottle: false, motorOver20: false, assistOver28: false };
+    const result = evaluate({ state: "CA", riderAge: 14, rideDate: DATE, facts, places: ["encinitas"] });
+    expect(bottomLine(result, DATE).kind).not.toBe("yes");
+  });
+
+  it("an OCR letter in front of a weight leaves the weight blank", () => {
+    expect(parseSpecText("Weight: l08 lbs", "listing").facts.weightLb).toBeUndefined();
+  });
+
+  it("still reads clean figures, figures after a colon or slash, and a list of figures", () => {
+    const e = parseSpecText("CLASS 3\nMOTOR:1500W\nTOP ASSISTED SPEED 28 MPH", "label");
+    expect(e.facts.ratedWatts).toBe(1500);
+    expect(e.facts.assistMph).toBe(28);
+    expect(parseSpecText("36V/250W rated motor", "listing").facts.ratedWatts).toBe(250);
+    expect(parseSpecText("Motor: 1,500W rated", "listing").facts.ratedWatts).toBe(1500);
+    expect(parseSpecText("Motor options: 500W,750W", "listing").facts.wattsUpTo).toBe(750);
+    expect(parseSpecText("Pedal assist up to 20mph", "listing").facts.assistMph).toBe(20);
+    expect(parseSpecText("Weight:60lbs", "listing").facts.weightLb).toBe(60);
+  });
+});

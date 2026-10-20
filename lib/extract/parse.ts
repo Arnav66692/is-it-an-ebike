@@ -120,6 +120,9 @@ function parseClasses(text: string, out: Extraction): void {
   }
 }
 
+/** Letters and marks OCR often prints in place of a digit: l, I, i or | for 1, O or o for 0, S for 5, Z for 2, B for 8. */
+const OCR_DIGIT = String.raw`[\dlIi|OoSZB]`;
+
 const RATED_WORDS = /\b(nominal|rated|continuous|sustained)\b/g;
 const PEAK_WORDS = /\b(peak|burst|max(?:imum)?|up to)\b/g;
 
@@ -148,7 +151,9 @@ function parseWatts(text: string, out: Extraction, source: TextSource): void {
   const rated: number[] = [];
   const unqualified: number[] = [];
   const peak: number[] = [];
-  const re = /(\d{1,2}(?:,\d{3})+|\d+(?:\.\d+)?)\s?(kw|w|watts?)(?![a-z])/gi;
+  // OCR reads "1500W" as "l500W". A number glued to a letter or a bar is never read from its
+  // later digits, so a 1500 W motor can't pass as 500 W. The comma rule keeps "l,500W" out too.
+  const re = new RegExp(String.raw`(?<![\w.|]|${OCR_DIGIT},)(\d{1,2}(?:,\d{3})+|\d+(?:\.\d+)?)\s?(kw|w|watts?)(?![a-z])`, "gi");
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
     let value = Number(m[1].replace(/,/g, ""));
@@ -238,8 +243,9 @@ function parseSpeeds(text: string, out: Extraction): void {
   const throttle: number[] = [];
   const assist: number[] = [];
   const top: number[] = [];
-  // The number must start at a word edge, so "120 km/h" is never read from its last two digits.
-  const re = /(?<![\d.])(\d{1,3}(?:\.\d)?)\s?(mph|miles per hour|km\/h|kmh|kph)\b/gi;
+  // The number must start at a word edge, so "120 km/h" is never read from its last two digits,
+  // and an OCR "Z8 MPH" (28) is never read as 8 mph.
+  const re = /(?<![\w.|])(\d{1,3}(?:\.\d)?)\s?(mph|miles per hour|km\/h|kmh|kph)\b/gi;
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
     let mph = Number(m[1]);
@@ -515,7 +521,7 @@ function weightIsForPart(text: string, index: number, clauseStart: number): bool
  */
 function parseWeight(text: string, out: Extraction): void {
   const found: { lb: number; ev: Evidence }[] = [];
-  for (const m of text.matchAll(/(?<![\d.])(\d{2,3}(?:\.\d)?)\s?(lbs?|pounds|kg)\b\.?/gi)) {
+  for (const m of text.matchAll(/(?<![\w.|])(\d{2,3}(?:\.\d)?)\s?(lbs?|pounds|kg)\b\.?/gi)) {
     if (m.index === undefined) continue;
     const end = m.index + m[0].length;
     // Only words in the same sentence or list item describe this figure. A period after "lbs"
