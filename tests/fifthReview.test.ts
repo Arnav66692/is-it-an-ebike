@@ -173,3 +173,33 @@ describe("an OCR letter in place of a first digit never shrinks a number", () =>
     expect(parseSpecText("Weight:60lbs", "listing").facts.weightLb).toBe(60);
   });
 });
+
+describe("a weight that leaves out the battery is never the bike's weight", () => {
+  it("'Weight: 96 lbs (battery not included)' asks Pennsylvania's weight question instead of a YES", () => {
+    const text =
+      "Cargo e-bike. Class 1 pedal assist, no throttle, 500W rated, 20 mph. Tires: 20 x 3.0. Weight: 96 lbs (battery not included). Battery: 52V 20Ah.";
+    const { facts, result, kind } = flow(text, "PA", 30);
+    expect(facts.weightLb).toBeNull();
+    expect(result.state.questions).toContain("weight");
+    expect(kind).toBe("no_unconfirmed");
+  });
+
+  it("skips the exclusion before or after the word battery, and a page that sells the battery apart", () => {
+    for (const text of [
+      "Weight: 96 lbs (battery excluded)",
+      "Weight: 96 lbs (batt. not incl.)",
+      "Weight: 96 lbs excl. battery",
+      "Weight: 96 lbs w/o batt",
+      "Weight: 96 lbs. Battery sold separately.",
+      "Battery is not included. Bike weight: 96 lbs.",
+    ]) {
+      expect(parseSpecText(text, "listing").facts.weightLb, text).toBeUndefined();
+    }
+  });
+
+  it("still reads a plain weight and a weight with the battery", () => {
+    expect(parseSpecText("Weight: 62 lbs", "listing").facts.weightLb).toBe(62);
+    expect(parseSpecText("Weight: 62 lbs with battery", "listing").facts.weightLb).toBe(62);
+    expect(parseSpecText("Weight: 62 lbs (battery included)", "listing").facts.weightLb).toBe(62);
+  });
+});

@@ -502,8 +502,16 @@ function parseWheels(text: string, out: Extraction, source: TextSource): void {
  */
 const PART_BEFORE_WEIGHT =
   /\b(?:battery|batteries|pack|motor|frame|fork|package|packaging|packed|shipping|shipped|box|carton|gross|basket|rack|seat|wheels?|tires?|kit|charger|riders?|user|passengers?|load|payload|cargo|capacity|max|maximum)\s*$/;
-/** A bike weight without its battery understates what it weighs on the road. */
-const WITHOUT_BATTERY = /\b(?:without|w\/o|excl(?:uding|\.)?|minus|less|no)\s+(?:the\s+)?battery\b/;
+/**
+ * A bike weight without its battery understates what it weighs on the road. The exclusion can come
+ * before the battery ("without battery", "excl. batt") or after it ("battery not included",
+ * "(battery excluded)").
+ */
+const WITHOUT_BATTERY =
+  /\b(?:without|w\/o|excl(?:uding|udes|\.)?|ex\.?|minus|less|no)\s+(?:the\s+)?batt(?:ery|eries|\.)?(?![a-z])|\bbatt(?:ery|eries|\.)?(?![a-z])\s*(?:is\s+|are\s+)?(?:not\s+incl(?:uded|\.)?|excluded|sold separately|not installed|extra|separate)/;
+/** The whole page says the battery doesn't come with the bike, so a listed weight may leave it out. */
+const BATTERY_NOT_INCLUDED =
+  /\bbatt(?:ery|eries)\s*(?:is\s+|are\s+)?(?:not\s+included|excluded|sold separately)|\b(?:no|without)\s+battery\s+included\b/;
 /** Two figures this close are one weight in two units, like "27 kg (60 lbs)". */
 const SAME_WEIGHT_LB = 1.5;
 
@@ -521,6 +529,7 @@ function weightIsForPart(text: string, index: number, clauseStart: number): bool
  */
 function parseWeight(text: string, out: Extraction): void {
   const found: { lb: number; ev: Evidence }[] = [];
+  if (BATTERY_NOT_INCLUDED.test(text.toLowerCase())) return;
   for (const m of text.matchAll(/(?<![\w.|])(\d{2,3}(?:\.\d)?)\s?(lbs?|pounds|kg)\b\.?/gi)) {
     if (m.index === undefined) continue;
     const end = m.index + m[0].length;
@@ -536,7 +545,8 @@ function parseWeight(text: string, out: Extraction): void {
     if (/(payload|load|capacity|rider|carry|max|maximum|up to|supports?|rack|limit)/.test(adjacent)) continue;
     if (!/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike)/.test(after)) continue;
     if (weightIsForPart(text, m.index, start)) continue;
-    if (WITHOUT_BATTERY.test(slice(text, from(30), to(30)))) continue;
+    // Not cut at the sentence: "batt. not incl." has periods of its own, and skipping is the safe side.
+    if (WITHOUT_BATTERY.test(slice(text, m.index - 30, end + 30))) continue;
     let lb = Number(m[1]);
     if (/kg/i.test(m[2])) lb = roundUpTenth(lb * KG_TO_LB);
     found.push({ lb, ev: snippet(text, m.index, m[0].length) });
