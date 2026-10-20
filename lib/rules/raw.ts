@@ -220,8 +220,10 @@ export interface OverlayClass3Equipment {
   source_field: string;
   source_quote: string;
   citation: string;
-  source_url: string;
-  statute_quote: string;
+  /** Null when no page for this section was confirmed. */
+  source_url: string | null;
+  /** The statute's own words when they were read. Null when only the rules table names the rule. */
+  statute_quote: string | null;
 }
 
 /** A state where e-bikes may ride only on roads posted at or under a speed, like New York's 30 mph. */

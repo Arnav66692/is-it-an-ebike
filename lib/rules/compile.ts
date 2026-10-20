@@ -294,7 +294,10 @@ function compileState(raw: RawState): CompiledState {
       .map((e) => ({
         code: e.code,
         definition: e.definition,
-        source: { citation: e.citation, url: e.source_url, quote: e.statute_quote, kind: "statute" as const },
+        // Statute text when it was read, otherwise the rules table's own words, labeled as the table.
+        source: e.statute_quote
+          ? { citation: e.citation, url: e.source_url, quote: e.statute_quote, kind: "statute" as const }
+          : { citation: e.citation, url: e.source_url, quote: e.source_quote, kind: "rules_table" as const },
       })),
     roadLimits: OVERLAY.road_limits
       .filter((r) => r.state === raw.code)

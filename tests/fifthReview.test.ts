@@ -416,3 +416,46 @@ describe("a question is asked only while its answer can still change the result"
     expect(c3.state.questions).toEqual(["pegs_kit"]);
   });
 });
+
+describe("a Class 3 YES lists the speedometer wherever the rules table says Class 3 needs one", () => {
+  const class3 = (state: string) =>
+    evaluate({ state, riderAge: 30, rideDate: DATE, facts: classBike(3, { hasThrottle: false, assistMph: 28 }), places: [] });
+
+  it("Wisconsin and Tennessee list it on a YES, citing the section", () => {
+    for (const [state, citation] of [
+      ["WI", "Wis. Stat. § 347.489(3m)(d)"],
+      ["TN", "Tenn. Code Ann. § 55-8-305(b)"],
+    ]) {
+      const result = class3(state);
+      const line = bottomLine(result, DATE);
+      expect(line.kind, state).toBe("yes");
+      const req = line.requirements.find((l) => l.code === "req_speedometer_class3");
+      expect(req?.source?.citation, state).toBe(citation);
+      expect(renderLine(req ?? { code: "" }, "en", state === "WI" ? "Wisconsin" : "Tennessee")).toMatch(/speedometer/);
+    }
+    expect(class3("WI").state.requirements.map((l) => l.code)).toContain("req_speedometer_class3");
+    expect(class3("TN").state.requirements.map((l) => l.code)).toContain("req_speedometer_class3");
+  });
+
+  it("covers every state whose record says a Class 3 rider needs one, and only Class 3", () => {
+    const overlay = overlayJson as unknown as { class3_equipment: { state: string; source_field: string; source_quote: string; statute_quote: string | null }[] };
+    const states = overlay.class3_equipment.map((e) => e.state);
+    for (const s of ["AL", "AR", "CA", "CT", "DE", "GA", "HI", "IA", "IL", "LA", "MD", "ME", "MN", "MO", "MS", "ND", "NH", "NM", "NV", "OH", "OK", "OR", "SD", "TN", "UT", "VA", "VT", "WA", "WI", "WV"]) {
+      expect(states, s).toContain(s);
+    }
+    // Texas puts the duty on the seller, not the rider, and Idaho, Indiana, Kansas and Wyoming have no such rule.
+    for (const s of ["TX", "ID", "IN", "KS", "WY", "AZ", "FL", "NE"]) expect(states, s).not.toContain(s);
+    for (const e of overlay.class3_equipment) expect(field(e.state, e.source_field), e.state).toContain(e.source_quote);
+    expect(class3("AL").state.requirements.map((l) => l.code)).toContain("req_speedometer_class3");
+    const one = evaluate({ state: "AL", riderAge: 30, rideDate: DATE, facts: classBike(1, { hasThrottle: false }), places: [] });
+    expect(one.state.requirements.map((l) => l.code)).not.toContain("req_speedometer_class3");
+  });
+
+  it("quotes the statute where it was read, and labels the rest as the rules table", () => {
+    const wi = class3("WI").state.requirements.find((l) => l.code === "req_speedometer_class3");
+    expect(wi?.source?.kind).toBe("statute");
+    expect(wi?.source?.quote).toContain("No person may operate a class 3 electric bicycle unless");
+    const al = class3("AL").state.requirements.find((l) => l.code === "req_speedometer_class3");
+    expect(al?.source?.kind).toBe("rules_table");
+  });
+});

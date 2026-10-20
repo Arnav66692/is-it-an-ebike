@@ -160,6 +160,8 @@
     }
   ],
 
+  "class3_equipment_note": "Texas is left out on purpose: its record says the seller or manufacturer must equip a speedometer (Tex. Transp. Code 664.004), which is not a rule for the rider.",
+
   "class3_equipment": [
     {
       "state": "CA",
@@ -170,7 +172,326 @@
       "citation": "Cal. Veh. Code 312.5(a)(3)",
       "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=312.5",
       "statute_quote": "ceases to provide assistance when the bicycle reaches the speed of 28 miles per hour, and equipped with a speedometer.",
-      "note": "Read on leginfo on Oct 19, 2026 (as amended by SB 1271, effective Jan 1, 2025) and on FindLaw (current as of Jan 1, 2026). A speedometer is part of the Class 3 definition, so a Class 3 YES lists it as something the bike must have. Other states' records also say a Class 3 needs a speedometer. They can be added here after each section is checked."
+      "note": "Read on leginfo on Oct 19, 2026 (as amended by SB 1271, effective Jan 1, 2025) and on FindLaw (current as of Jan 1, 2026). A speedometer is part of the Class 3 definition, so a Class 3 YES lists it as something the bike must have."
+    },
+    {
+      "state": "AL",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required.",
+      "citation": "Ala. Code § 32-5A-267(k)",
+      "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-5A-267",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "AR",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "definition.notes",
+      "source_quote": "Class 3 needs a speedometer (27-51-1706(c)).",
+      "citation": "Ark. Code Ann. § 27-51-1706(c)",
+      "source_url": "https://arkleg.state.ar.us/Acts/FTPDocument?path=%2FACTS%2F2017R%2FPublic%2F&file=956.pdf&ddBienniumSession=2017%2F2017R",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "CT",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "definition.notes",
+      "source_quote": "14-289l(a)(3) requires a speedometer on Class 3.",
+      "citation": "Conn. Gen. Stat. § 14-289l(a)(3)",
+      "source_url": "https://www.cga.ct.gov/2026/sup/chap_248.htm",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "DE",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required.",
+      "citation": "21 Del. C. § 4198P(j)",
+      "source_url": "https://delcode.delaware.gov/title21/c041/sc12/index.html",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "GA",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "speedometer required",
+      "citation": "O.C.G.A. § 40-6-302(d)",
+      "source_url": "https://codes.findlaw.com/ga/title-40-motor-vehicles-and-traffic/ga-code-sect-40-6-302/",
+      "statute_quote": "Any class III electric assisted bicycle shall be equipped with a speedometer that is capable of displaying the speed the device is traveling measured in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "HI",
+      "code": "req_speedometer_class3",
+      "definition": true,
+      "source_field": "definition.notes",
+      "source_quote": "must have a speedometer (it is part of the Class 3 definition)",
+      "citation": "HRS § 291C-1",
+      "source_url": "https://www.capitol.hawaii.gov/sessions/session2026/bills/HB2021_CD1_.HTM",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "IA",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "mph speedometer required",
+      "citation": "Iowa Code § 321.235B",
+      "source_url": "https://www.legis.iowa.gov/docs/code/321.235B.pdf",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "IL",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "speedometer required",
+      "citation": "625 ILCS 5/11-1517(b)",
+      "source_url": "https://www.ilga.gov/Documents/legislation/ilcs/documents/062500050K11-1517.htm",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "LA",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "speedometer required",
+      "citation": "La. R.S. 32:204(I)",
+      "source_url": "https://www.legis.la.gov/legis/Law.aspx?d=1187363",
+      "statute_quote": "All Class three electric-assisted bicycles shall be equipped with a speedometer that displays the speed in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "MD",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Class 3 must have a speedometer (§ 22-420(e)).",
+      "citation": "Md. Code, Transp. § 22-420(e)",
+      "source_url": "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gtr&section=22-420&enactments=false",
+      "statute_quote": "A Class 3 electric bicycle shall be equipped with a speedometer that displays the speed of the electric bicycle in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "ME",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "definition.notes",
+      "source_quote": "§ 2063(14)(G): Class 3 needs an mph speedometer.",
+      "citation": "29-A M.R.S. § 2063(14)(G)",
+      "source_url": "https://legislature.maine.gov/statutes/29-A/title29-Asec2063.html",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "MN",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Class 3 must have a speedometer.",
+      "citation": "Minn. Stat. § 169.222, subd. 6b(d)",
+      "source_url": "https://www.revisor.mn.gov/statutes/cite/169.222",
+      "statute_quote": "A class 3 electric-assisted bicycle or multiple mode electric-assisted bicycle must be equipped with a speedometer that displays the speed at which the bicycle is traveling in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "MO",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Class 3 needs a speedometer.",
+      "citation": "RSMo § 307.194.8(2)",
+      "source_url": "https://revisor.mo.gov/main/OneSection.aspx?section=307.194",
+      "statute_quote": "All class 3 electric bicycles shall be equipped with a speedometer that is capable of displaying the speed an electric bicycle is traveling in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "MS",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Class 3 must have a speedometer.",
+      "citation": "Miss. Code Ann. § 63-3-1315(9)",
+      "source_url": "https://billstatus.ls.state.ms.us/documents/2021/html/HB/1100-1199/HB1195SG.htm",
+      "statute_quote": "All class 3 electric bicycles must be equipped with a speedometer that displays the speed the bicycle is traveling in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "ND",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "A working speedometer is required (39-10.1-09(6)).",
+      "citation": "N.D.C.C. § 39-10.1-09(6)",
+      "source_url": "https://www.ndlegis.gov/cencode/t39c10-1.pdf",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "NH",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required.",
+      "citation": "RSA 265:144-a, XI",
+      "source_url": "https://gc.nh.gov/rsa/html/XXI/265/265-144-a.htm",
+      "statute_quote": "All class 3 electric bicycles shall be equipped with a speedometer that displays the speed the bicycle is traveling in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "NM",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "definition.notes",
+      "source_quote": "Class 3 needs a speedometer (66-3-708(D),(E)).",
+      "citation": "NMSA 1978 § 66-3-708",
+      "source_url": "https://nmlegis.gov/Sessions/23%20Regular/final/SB0069.pdf",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "NV",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "None beyond a required speedometer (NRS 484B.784(5)).",
+      "citation": "NRS 484B.784(5)",
+      "source_url": "https://www.leg.state.nv.us/NRS/NRS-484B.html",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "OH",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required.",
+      "citation": "Ohio Rev. Code § 4511.522(B)",
+      "source_url": "https://codes.ohio.gov/ohio-revised-code/section-4511.522",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "OK",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "A speedometer is required.",
+      "citation": "47 Okla. Stat. § 11-1209",
+      "source_url": "https://www.oklegislature.gov/OK_Statutes/CompleteTitles/os47.rtf",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "OR",
+      "code": "req_speedometer_class3",
+      "definition": true,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "A speedometer is required.",
+      "citation": "ORS 801.258(3)(c)",
+      "source_url": "https://www.oregonlegislature.gov/bills_laws/ors/ors801.html",
+      "statute_quote": "Is equipped with a speedometer.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "SD",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "the bike needs a working speedometer (§ 32-20B-15)",
+      "citation": "SDCL § 32-20B-15",
+      "source_url": "https://sdlegislature.gov/Statutes/32-20B-15",
+      "statute_quote": "Any person operating a Class III electric bicycle shall ensure that the bicycle is equipped with a functioning speedometer.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "TN",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.roads",
+      "source_quote": "Class 3 needs a speedometer to be on a street or highway (§ 55-8-305(b)).",
+      "citation": "Tenn. Code Ann. § 55-8-305(b)",
+      "source_url": null,
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "UT",
+      "code": "req_speedometer_class3",
+      "definition": true,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required by definition.",
+      "citation": "Utah Code § 41-6a-102",
+      "source_url": "https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-S102_2026050620261001.html",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "VA",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required (§ 46.2-904.1(C)(3)).",
+      "citation": "Va. Code § 46.2-904.1(C)(3)",
+      "source_url": "https://law.lis.virginia.gov/vacode/title46.2/chapter8/section46.2-904.1/",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "VT",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Must have a speedometer (§ 1136a(d)).",
+      "citation": "23 V.S.A. § 1136a(d)",
+      "source_url": "https://legislature.vermont.gov/statutes/section/23/013/01136a",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "WA",
+      "code": "req_speedometer_class3",
+      "definition": true,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required by definition.",
+      "citation": "RCW 46.04.169",
+      "source_url": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.04.169",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
+    },
+    {
+      "state": "WI",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Must have a working speedometer to be operated (§ 347.489(3m)(d)).",
+      "citation": "Wis. Stat. § 347.489(3m)(d)",
+      "source_url": "https://docs.legis.wisconsin.gov/statutes/statutes/347/iii/489",
+      "statute_quote": "No person may operate a class 3 electric bicycle unless the electric bicycle is equipped with a speedometer that with reasonable accuracy registers the speed of the electric bicycle in miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: statute text read on the linked page."
+    },
+    {
+      "state": "WV",
+      "code": "req_speedometer_class3",
+      "definition": false,
+      "source_field": "definition.notes",
+      "source_quote": "speedometer required (§ 17C-11-8(f))",
+      "citation": "W. Va. Code § 17C-11-8(f)",
+      "source_url": "https://code.wvlegislature.gov/17C-11-8/",
+      "statute_quote": null,
+      "note": "Fifth review, Oct 19, 2026: from the verified rules table, which names this section. The statute text was not re-read here, so the card quotes the table."
     }
   ],
 
