@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { withWheelCount, withWheelSize } from "@/lib/checkerState";
 import type { BikeFacts, QuestionId } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
@@ -58,15 +59,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
               value={facts.wheelFrontIn}
               min={6}
               max={30}
-              onChange={(v) =>
-                onChange({
-                  ...facts,
-                  wheelFrontIn: v,
-                  wheelRearIn: sameSize ? v : facts.wheelRearIn,
-                  wheelCount: facts.wheelCount ?? 2,
-                  unsure: withUnsure(facts, "wheels", false),
-                })
-              }
+              onChange={(v) => onChange(withWheelSize(facts, v, sameSize))}
             />
             {!sameSize ? (
               <NumberField
@@ -91,7 +84,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
               { value: "3", label: "3" },
             ]}
             value={facts.wheelCount === null ? null : (String(facts.wheelCount) as "2" | "3")}
-            onChange={(v) => onChange({ ...facts, wheelCount: v === "3" ? 3 : 2 })}
+            onChange={(v) => onChange(withWheelCount(facts, v === "3" ? 3 : 2))}
           />
           <button
             type="button"

@@ -2,23 +2,23 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { keepAsked, parseShareLink } from "@/lib/checkerState";
+import { LAST_RIDE_DATE, nextAsked, parseShareLink, rideDateIn, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, PLACE_IDS, STATE_CODES } from "@/lib/rules";
+import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId } from "@/lib/rules/types";
-import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
+import { formatDate, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
 import { Card } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
+import { PlacePicker } from "./PlacePicker";
 import { VerdictCard } from "./VerdictCard";
 
 type Stage = "input" | "facts" | "result";
-const LAST_DATE = "2029-12-31";
 
 function readStoredLang(): Lang | null {
   try {
@@ -62,6 +62,7 @@ export function Checker() {
   const factsRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
 
   const [initial] = useState(readInitial);
   const [lang, setLang] = useState<Lang>(initial.lang);
@@ -69,7 +70,7 @@ export function Checker() {
   const [ageText, setAgeText] = useState("");
   const [ageError, setAgeError] = useState(false);
   const today = initial.today;
-  const [date, setDate] = useState(initial.today);
+  const [dateText, setDateText] = useState(initial.today);
   const [pickDate, setPickDate] = useState(false);
   const [places, setPlaces] = useState<PlaceId[]>(initial.places);
   const [otherPlaces, setOtherPlaces] = useState(false);
@@ -78,7 +79,7 @@ export function Checker() {
   const [flags, setFlags] = useState<string[]>([]);
   const [stage, setStage] = useState<Stage>("input");
   const [round, setRound] = useState(0);
-  const [asked, setAsked] = useState<{ key: string; ids: QuestionId[] }>({ key: "", ids: [] });
+  const [asked, setAsked] = useState<AskedQuestions>({ round: -1, ids: [] });
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -86,9 +87,12 @@ export function Checker() {
 
   const age = /^\d{1,3}$/.test(ageText.trim()) ? Number(ageText.trim()) : null;
   const ageValid = age !== null && age >= MIN_AGE_INPUT && age <= MAX_AGE_INPUT;
+  // A typed date can fall outside the picker's range, so only a date from today to the last
+  // date is ever checked. Anything else shows an error and no answer.
+  const date = rideDateIn(dateText, today);
 
   const result = useMemo(() => {
-    if (stage !== "result" || !ageValid || age === null) return null;
+    if (stage !== "result" || !ageValid || age === null || date === null) return null;
     return evaluate({
       state: stateCode,
       riderAge: age,
@@ -99,19 +103,18 @@ export function Checker() {
     });
   }, [stage, ageValid, age, stateCode, date, facts, places, otherPlaces]);
 
-  const summary = useMemo(() => (result ? bottomLine(result, date) : null), [result, date]);
+  const summary = useMemo(() => (result && date ? bottomLine(result, date) : null), [result, date]);
 
   const pending: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]
     : [];
-  // A follow-up stays on screen once asked, so "not sure" or a wrong answer can be changed.
-  // The list starts over with new bike facts or a different state.
-  const askKey = `${round}|${stateCode}`;
-  const askedBefore = asked.key === askKey ? asked.ids : [];
-  const questions = keepAsked(askedBefore, pending);
-  if (asked.key !== askKey || questions.length !== askedBefore.length) {
-    setAsked({ key: askKey, ids: questions });
+  // A follow-up stays on screen once asked, so "not sure" or a wrong answer can be changed,
+  // even after the state changes. The list starts over only with new bike facts.
+  const shown = nextAsked(asked, round, pending);
+  if (shown.round !== asked.round || shown.ids.length !== asked.ids.length) {
+    setAsked(shown);
   }
+  const questions = shown.ids;
 
   const sortedStates = [...STATE_CODES].sort((a, b) => stateName(a, lang).localeCompare(stateName(b, lang), lang));
 
@@ -140,6 +143,10 @@ export function Checker() {
     if (!ageValid) {
       setAgeError(true);
       ageRef.current?.focus();
+      return;
+    }
+    if (date === null) {
+      dateRef.current?.focus();
       return;
     }
     setAgeError(false);
@@ -214,7 +221,23 @@ export function Checker() {
               <label htmlFor={dateId} className="sr-only">
                 {t(lang, "date")}
               </label>
-              <input id={dateId} type="date" min={today} max={LAST_DATE} value={date} onChange={(e) => setDate(e.target.value || today)} className="field" />
+              <input
+                id={dateId}
+                ref={dateRef}
+                type="date"
+                min={today}
+                max={LAST_RIDE_DATE}
+                value={dateText}
+                onChange={(e) => setDateText(e.target.value || today)}
+                aria-invalid={date === null}
+                aria-describedby={date === null ? `${dateId}-err` : undefined}
+                className="field"
+              />
+              {date === null ? (
+                <p id={`${dateId}-err`} role="alert" className="text-sm font-semibold">
+                  {t(lang, "dateError", { last: formatDate(LAST_RIDE_DATE, lang) })}
+                </p>
+              ) : null}
               <p className="text-sm text-muted">{t(lang, "dateHelp")}</p>
             </div>
           ) : (
@@ -230,23 +253,7 @@ export function Checker() {
         </div>
 
         {stateCode === "CA" ? (
-          <fieldset className="space-y-1">
-            <legend className="text-sm font-semibold">{t(lang, "whereSD")}</legend>
-            <p className="text-sm text-muted">{t(lang, "whereSDHelp")}</p>
-            {PLACE_IDS.map((p) => (
-              <label key={p} className="check">
-                <input type="checkbox" aria-label={placeName(p, lang)} checked={places.includes(p)} onChange={() => togglePlace(p)} />
-                <span>
-                  {placeName(p, lang)}
-                  {placeHint(p, lang) ? <span className="block text-sm text-muted">{placeHint(p, lang)}</span> : null}
-                </span>
-              </label>
-            ))}
-            <label className="check">
-              <input type="checkbox" aria-label={t(lang, "otherPlaces")} checked={otherPlaces} onChange={(e) => setOtherPlaces(e.target.checked)} />
-              <span>{t(lang, "otherPlaces")}</span>
-            </label>
-          </fieldset>
+          <PlacePicker lang={lang} places={places} otherPlaces={otherPlaces} onTogglePlace={togglePlace} onOtherPlaces={setOtherPlaces} />
         ) : null}
       </Card>
 

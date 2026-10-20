@@ -83,9 +83,34 @@ describe("bottom-line card", () => {
     expect(html).not.toMatch(/aria-live|role="status"|aria-atomic/);
   });
 
+  it("never says a place you picked says no when only state law says no", () => {
+    const bl = bottomLine(evaluate({ state: "TX", riderAge: 30, rideDate: DAY, facts: classBike(1, { hasPedals: false }), places: [] }), DAY);
+    expect(bl.kind).toBe("no_illegal");
+    expect(bl.blocked.flatMap((b) => b.where)).toEqual([{ scope: "state", id: "TX" }]);
+    expect(announcement(bl, "en")).toBe("Bottom line: NO. Not allowed. At least one rule we checked says no.");
+    for (const lang of ["en", "es"] as const) {
+      const text = render(bl, lang, "TX");
+      expect(text).not.toMatch(/place you picked|lugar que marcaste/);
+    }
+  });
+
+  it("never says nothing we checked is illegal next to a local code that bars the rider", () => {
+    const result = evaluate({ state: "CA", riderAge: 7, rideDate: "2029-01-01", facts: classBike(1), places: ["carlsbad"] });
+    const bl = bottomLine(result, "2029-01-01");
+    expect(bl.kind).toBe("no_unconfirmed");
+    expect(bl.missing.map((m) => m.line.code)).toContain("local_under_12_no_end");
+    const en = render(bl, "en");
+    expect(en).toContain("The local code bars riders under 12");
+    expect(en).not.toMatch(/Nothing we checked says/);
+    expect(en).toContain("Not confirmed. We can't confirm it's allowed in every place we checked.");
+    const es = render(bl, "es");
+    expect(es).not.toMatch(/Nada de lo que revisamos/);
+    expect(es).toContain("No confirmada. No podemos confirmar que esté permitida en todos los lugares que revisamos.");
+  });
+
   it("announces one short sentence instead, the headline and its subtitle", () => {
     const no = announcement(line("CA", 11, classBike(2), ["city_of_san_diego"]), "en");
-    expect(no).toBe("Bottom line: NO. Not allowed. At least one place you picked says no.");
+    expect(no).toBe("Bottom line: NO. Not allowed. At least one rule we checked says no.");
     const yes = announcement(line("CA", 13, classBike(1), []), "es");
     expect(yes.startsWith("En resumen: SÍ.")).toBe(true);
     for (const lang of ["en", "es"] as const) {

@@ -1,11 +1,26 @@
 // The checker's start state and its follow-up list, without a browser.
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { FollowUps } from "@/components/FollowUps";
-import { keepAsked, parseShareLink } from "@/lib/checkerState";
+import { PlacePicker } from "@/components/PlacePicker";
+import {
+  keepAsked,
+  LAST_RIDE_DATE,
+  nextAsked,
+  parseShareLink,
+  rideDateIn,
+  withWheelCount,
+  withWheelSize,
+  type AskedQuestions,
+} from "@/lib/checkerState";
 import { evaluate } from "@/lib/rules";
+import { bottomLine } from "@/lib/rules/bottomLine";
+import { emptyFacts, type BikeFacts, type QuestionId } from "@/lib/rules/types";
+import { placeHint } from "@/lib/i18n/names";
 import { classBike } from "./helpers";
 
 describe("share link and defaults", () => {
@@ -48,5 +63,129 @@ describe("follow-up questions stay on screen once asked", () => {
     const html = renderToStaticMarkup(createElement(FollowUps, { lang: "en", questions: ["fast_mode"], facts, onChange: () => {} }));
     expect(html).toContain("In any mode, can the motor alone push it past 20 mph?");
     expect(html).toContain("In any mode, can pedal assist go past 28 mph?");
+  });
+});
+
+describe("second review fixes: the ride date field", () => {
+  const TODAY = "2026-10-19";
+
+  it("checks today and any date up to the last one the picker offers", () => {
+    expect(rideDateIn(TODAY, TODAY)).toBe(TODAY);
+    expect(rideDateIn("2027-05-05", TODAY)).toBe("2027-05-05");
+    expect(rideDateIn(LAST_RIDE_DATE, TODAY)).toBe(LAST_RIDE_DATE);
+  });
+
+  it("refuses a typed past date, since the table keeps only the rules in force from now on", () => {
+    expect(rideDateIn("2026-06-15", TODAY)).toBeNull();
+    expect(rideDateIn("2015-06-01", TODAY)).toBeNull();
+    expect(rideDateIn("2026-10-18", TODAY)).toBeNull();
+  });
+
+  it("refuses a typed date after the last one, and anything that isn't a date", () => {
+    expect(rideDateIn("2031-01-01", TODAY)).toBeNull();
+    expect(rideDateIn("2030-01-01", TODAY)).toBeNull();
+    expect(rideDateIn("", TODAY)).toBeNull();
+    expect(rideDateIn("06/15/2026", TODAY)).toBeNull();
+  });
+});
+
+describe("second review fixes: a follow-up stays on screen when the state changes", () => {
+  const facts: BikeFacts = classBike(1, { motorOver20: null, assistOver28: null, switchable: null });
+  const ask = (state: string, f: BikeFacts): QuestionId[] => {
+    const r = evaluate({ state, riderAge: 30, rideDate: "2026-10-19", facts: f, places: [] });
+    return [...new Set([...r.state.questions, ...r.local.flatMap((v) => v.questions)])];
+  };
+
+  it("keeps an answered 'not sure' question through TX, CA and back to TX, so it can still be changed", () => {
+    const round = 1;
+    let shown: AskedQuestions = { round: -1, ids: [] };
+    shown = nextAsked(shown, round, ask("TX", facts));
+    expect(shown.ids).toEqual(["fast_mode"]);
+
+    const unsure = { ...facts, unsure: ["fast_mode" as const] };
+    shown = nextAsked(shown, round, ask("TX", unsure));
+    expect(shown.ids).toEqual(["fast_mode"]);
+
+    shown = nextAsked(shown, round, ask("CA", unsure));
+    expect(ask("CA", unsure)).toEqual([]);
+    expect(shown.ids).toEqual(["fast_mode"]);
+
+    shown = nextAsked(shown, round, ask("TX", unsure));
+    expect(shown.ids).toEqual(["fast_mode"]);
+    const html = renderToStaticMarkup(createElement(FollowUps, { lang: "en", questions: shown.ids, facts: unsure, onChange: () => {} }));
+    expect(html).toContain("In any mode, can the motor alone push it past 20 mph?");
+  });
+
+  it("starts the list over only when new bike facts come in", () => {
+    const first = nextAsked({ round: -1, ids: [] }, 1, ["fast_mode"]);
+    expect(nextAsked(first, 1, []).ids).toEqual(["fast_mode"]);
+    expect(nextAsked(first, 2, []).ids).toEqual([]);
+  });
+
+  it("is the logic the checker runs, not a copy of it, along with the date check and the place picker", () => {
+    const source = readFileSync(join(__dirname, "..", "components", "Checker.tsx"), "utf8");
+    expect(source).toContain("nextAsked(asked, round, pending)");
+    expect(source).not.toMatch(/askKey|stateCode}`/);
+    expect(source).toContain("rideDateIn(dateText, today)");
+    expect(source).toContain("<PlacePicker");
+  });
+});
+
+describe("second review fixes: typing a wheel size never picks the number of wheels", () => {
+  const base = { ...classBike(1), wheelCount: null, wheelFrontIn: null, wheelRearIn: null };
+  const card = (state: string, f: BikeFacts) => evaluate({ state, riderAge: 30, rideDate: "2026-10-19", facts: f, places: [] });
+
+  it("leaves the count unknown, so the question stays open and the answer can't be YES", () => {
+    const typed = withWheelSize(base, 18, true);
+    expect(typed.wheelCount).toBeNull();
+    expect(typed.wheelFrontIn).toBe(18);
+    expect(typed.wheelRearIn).toBe(18);
+    for (const [state, inches] of [["WA", 18], ["AL", 20], ["LA", 18]] as const) {
+      const result = card(state, withWheelSize(base, inches, true));
+      expect(result.state.status, state).toBe("need_info");
+      expect(result.state.questions, state).toContain("wheels");
+      expect(bottomLine(result, "2026-10-19").kind, state).toBe("no_unconfirmed");
+    }
+  });
+
+  it("gives the two-wheeler and three-wheeler answers once the count is picked", () => {
+    expect(card("WA", withWheelCount(withWheelSize(base, 18, true), 2)).state.status).toBe("yes");
+    expect(card("WA", withWheelCount(withWheelSize(base, 18, true), 3)).state.status).toBe("not_ebike");
+    expect(card("AL", withWheelCount(withWheelSize(base, 20, true), 3)).state.status).toBe("cant_confirm");
+  });
+
+  it("clears an earlier 'not sure' when a size or count is given", () => {
+    const unsure = { ...base, unsure: ["wheels" as const] };
+    expect(withWheelSize(unsure, 20, true).unsure).toEqual([]);
+    expect(withWheelCount(unsure, 2).unsure).toEqual([]);
+    expect(withWheelSize(emptyFacts(), 20, false).wheelRearIn).toBeNull();
+  });
+});
+
+describe("second review fixes: the place picker", () => {
+  it("ties each place hint to its checkbox, so screen readers hear the CCA cues", () => {
+    for (const lang of ["en", "es"] as const) {
+      const html = renderToStaticMarkup(
+        createElement(PlacePicker, { lang, places: [], otherPlaces: false, onTogglePlace: () => {}, onOtherPlaces: () => {} }),
+      );
+      for (const place of ["city_of_san_diego", "sduhsd_campuses", "unincorporated_san_diego_county"] as const) {
+        const hint = placeHint(place, lang);
+        expect(hint, place).toBeTruthy();
+        const span = new RegExp(`<span id="([^"]+)"[^>]*>${(hint ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`).exec(html);
+        expect(span, `${lang} ${place}`).not.toBeNull();
+        expect(html).toContain(`aria-describedby="${span?.[1]}"`);
+      }
+    }
+  });
+
+  it("names Canyon Crest Academy under the SDUHSD campus and the CCA area under the City", () => {
+    expect(placeHint("sduhsd_campuses", "en")).toContain("Canyon Crest Academy");
+    expect(placeHint("city_of_san_diego", "en")).toContain("CCA");
+  });
+
+  it("never lets a checkbox shrink when its label wraps", () => {
+    const css = readFileSync(join(__dirname, "..", "app", "globals.css"), "utf8");
+    const rule = /\.check input \{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(rule).toMatch(/flex:\s*none|flex-shrink:\s*0/);
   });
 });

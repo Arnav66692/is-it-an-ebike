@@ -36,7 +36,7 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
 
 /**
  * The one short sentence screen readers announce when the bottom line appears or changes,
- * for example "Bottom line: NO. Not allowed. At least one place you picked says no."
+ * for example "Bottom line: NO. Not allowed. At least one rule we checked says no."
  * The full card stays out of the live region, so it is never read again on every edit.
  */
 export function announcement(line: BottomLine, lang: Lang): string {

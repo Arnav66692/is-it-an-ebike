@@ -158,6 +158,8 @@ body {
 }
 
 .check input {
+  /* Never shrink when a long label or hint wraps onto a second line. */
+  flex: none;
   width: 1.35rem;
   height: 1.35rem;
   margin-top: 0.15rem;
