@@ -99,14 +99,18 @@ describe("where each fact came from", () => {
     expect(withEdit(bike, withFootPegs(bike.facts, "yes")).checks.hasFootPegs?.confirmed).toBe(true);
   });
 
-  it("drops the check when the family clears a read value, since nothing read is left", () => {
+  it("counts a read value the family clears as checked, so the box stays while they type a new number", () => {
     const bike = read(CLASS_2_LISTING);
-    const cleared = withEdit(bike, { ...bike.facts, weightLb: null });
-    expect(cleared.checks.weightLb).toBeUndefined();
+    // Typing 64 over 62 passes through "6", which is out of range and so empty, then 64.
+    const midway = withEdit(bike, withWeight(bike.facts, null));
+    expect(midway.checks.weightLb).toEqual({ source: "text", confirmed: true });
+    const typed = withEdit(midway, withWeight(midway.facts, 64));
+    expect(typed.checks.weightLb).toEqual({ source: "text", confirmed: true });
+    expect(typed.facts.weightLb).toBe(64);
     // A weight follow-up answer replaces a read weight the same way.
     const answered = withEdit(bike, { ...bike.facts, weightLb: null, weightOver100: false });
-    expect(answered.checks.weightLb).toBeUndefined();
     expect(unconfirmedFields(answered.checks)).not.toContain("weightLb");
+    expect(checkCounts(answered.checks)).toEqual({ read: 8, confirmed: 1 });
   });
 
   it("adds nothing when the family edits a fact that wasn't read", () => {
@@ -224,7 +228,7 @@ describe("golden: a link-read Class 2 for an 11-year-old in Encinitas", () => {
     // Not sure about the pedals, so the family picks "Not sure" and runs the photo check.
     bike = withEdit(bike, { ...bike.facts, hasPedals: null, motorOver20: false, assistOver28: false });
     bike = confirmAll(bike);
-    expect(bike.checks.hasPedals).toBeUndefined();
+    expect(bike.checks.hasPedals).toEqual({ source: "text", confirmed: true });
     expect(unconfirmedFields(bike.checks)).toEqual([]);
     expect(answer("CA", 11, bike, ["encinitas"]).kind).not.toBe("yes");
     bike = withPedalCall(bike, "pedals");

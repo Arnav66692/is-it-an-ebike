@@ -69,16 +69,17 @@ export function fromRead(facts: BikeFacts, source: FactSource = "text"): Checked
 
 /**
  * The family changed the facts by hand, on the facts card or in a follow-up question. Each read
- * fact whose value changed is now theirs, so it counts as checked. A read fact they cleared is no
- * longer a read value, so it has nothing left to check. Facts they didn't touch keep their state.
+ * fact whose value changed is now theirs, so it counts as checked. That includes a fact they
+ * cleared, which is also what a number box passes on midway through typing a new number, like the
+ * "6" of "64", so the box stays ticked instead of vanishing. Facts they didn't touch keep their state.
  */
 export function withEdit(cur: CheckedFacts, next: BikeFacts): CheckedFacts {
   const checks: FactChecks = Object.fromEntries(
     READ_FIELDS.flatMap((field) => {
       const check = cur.checks[field];
       if (!check) return [];
-      if (fieldValue(cur.facts, field) === fieldValue(next, field)) return [[field, check]];
-      return hasValue(next, field) ? [[field, { ...check, confirmed: true }]] : [];
+      const changed = fieldValue(cur.facts, field) !== fieldValue(next, field);
+      return [[field, changed ? { ...check, confirmed: true } : check]];
     }),
   );
   return { facts: next, checks };
