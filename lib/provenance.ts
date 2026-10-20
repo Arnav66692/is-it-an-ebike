@@ -57,16 +57,15 @@ export function isConfirmed(check: FactCheck | undefined): boolean {
   return check !== undefined && check.status !== "unchecked";
 }
 
-/** One fact's value as a string, so two values can be compared. */
-export function fieldValue(facts: BikeFacts, field: ReadField): string {
-  switch (field) {
-    case "wheelSize":
-      return JSON.stringify([facts.wheelFrontIn, facts.wheelRearIn]);
-    case "classes":
-      return JSON.stringify([...facts.classes].sort());
-    default:
-      return JSON.stringify(facts[field]);
-  }
+/** A read fact held in one field of the facts. The wheel size is held in two, one per wheel. */
+export type OneValueField = Exclude<ReadField, "wheelSize">;
+
+/**
+ * One fact's value as a string, so two values can be compared. The wheel size is compared wheel
+ * by wheel instead (wheelsLeftAsRead), since each wheel's read size is checked on its own.
+ */
+export function fieldValue(facts: BikeFacts, field: OneValueField): string {
+  return JSON.stringify(field === "classes" ? [...facts.classes].sort() : facts[field]);
 }
 
 /** True when the fact holds a value. An empty class list means no class was given. */
@@ -132,11 +131,11 @@ function stillAsRead(check: FactCheck, field: ReadField, facts: BikeFacts): bool
 }
 
 /**
- * True when the edit put a value back to the one read. For the wheel size, when a wheel the family
- * had changed is back at its read size, since a tick given before then didn't cover that wheel.
+ * True when the edit from `before` to `after` put a wheel the family had changed back at its read
+ * size. The wheel size check can be ticked while one wheel holds a size the family typed, and that
+ * tick didn't cover the wheel they changed, so the wheel back at its read size needs a tick again.
  */
-function putBack(check: FactCheck, field: ReadField, before: BikeFacts, after: BikeFacts): boolean {
-  if (field !== "wheelSize") return !stillAsRead(check, field, before);
+export function wheelPutBack(check: FactCheck, before: BikeFacts, after: BikeFacts): boolean {
   const was = wheelsLeftAsRead(check, before);
   return wheelsLeftAsRead(check, after).some((w) => !was.includes(w));
 }
@@ -150,7 +149,11 @@ function editedCheck(check: FactCheck, field: ReadField, before: BikeFacts, afte
   if (answered) return check.status === "theirs" && check.answered ? check : { ...check, status: "theirs", answered: true };
   if (check.answered) return check;
   if (!stillAsRead(check, field, after)) return check.status === "theirs" ? check : { ...check, status: "theirs" };
-  if (check.status !== "unchecked" && (check.status === "theirs" || putBack(check, field, before, after))) return { ...check, status: "unchecked" };
+  // Back at the value read. A value the family set is theirs, so putting it back makes it as read again.
+  if (check.status === "theirs") return { ...check, status: "unchecked" };
+  // Any other fact is ticked only while it holds its read value, since an edit away makes it
+  // theirs. Only the wheel size, with a size per wheel, can be ticked with one wheel changed.
+  if (check.status === "ticked" && field === "wheelSize" && wheelPutBack(check, before, after)) return { ...check, status: "unchecked" };
   return check;
 }
 
@@ -221,6 +224,17 @@ export function editOn(seen: BikeFacts, next: BikeFacts, answered: readonly Read
 /** A tick or untick as an update for the page's state. Dropped the same way when the facts changed since the card was drawn. */
 export function confirmOn(seen: BikeFacts, field: ReadField, confirmed: boolean): CheckedUpdate {
   return (cur) => (cur.facts === seen ? withConfirmed(cur, field, confirmed) : cur);
+}
+
+/**
+ * A photo check's call as an update for the page's state. `seen` is the facts on the card as the
+ * call lands, not as the check started, so edits the family made while it ran keep the call. A
+ * product link or label read that lands first is a new bike, and the old card stays on the page
+ * for a moment after it. A call that lands then was made for the old bike, so it is dropped
+ * rather than filling in the new bike's pedals.
+ */
+export function pedalCallOn(seen: BikeFacts, call: PedalCall): CheckedUpdate {
+  return (cur) => (cur.facts === seen ? withPedalCall(cur, call) : cur);
 }
 
 /** The read facts not yet checked, in the order the facts card shows them. */

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
 import { callIfCurrent, PEDAL_MODEL_MB, type AnswerChange, type AnswerWatch, type PedalCall } from "@/lib/photo/pedalRule";
 
-type Step = "closed" | "confirm" | "choose" | "working";
+export type Step = "closed" | "confirm" | "choose" | "working";
 
 const RESULT_KEY: Record<PedalCall, UiKey> = {
   pedals: "photoCheckPedals",
@@ -26,6 +26,20 @@ const TICK_KEY: Partial<Record<UiKey, UiKey>> = {
  */
 export function photoMessage(message: UiKey, tick: boolean): UiKey {
   return tick ? (TICK_KEY[message] ?? message) : message;
+}
+
+/** A message about something that went wrong. It is an alert, not a status. */
+function isProblem(message: UiKey | null): boolean {
+  return message === "photoCheckFailed" || message === "photoCheckNoWebGpu";
+}
+
+/**
+ * The words on the check's one status line: what it is doing while it works, then the result.
+ * Null leaves the line empty. A problem is shown as an alert instead.
+ */
+export function photoStatus(step: Step, progress: number, message: UiKey | null): UiKey | null {
+  if (step === "working") return progress < 1 ? "photoCheckLoading" : "photoCheckRunning";
+  return message !== null && !isProblem(message) ? message : null;
 }
 
 /** The message for a call dropped because the family changed the pedals answer while the check ran. */
@@ -85,6 +99,12 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
       onPage.current = false;
     };
   }, []);
+  // The newest onCall, so a call that lands seconds after the check started is checked against
+  // the facts on screen as it lands (pedalCallOn in lib/provenance.ts).
+  const latestCall = useRef(onCall);
+  useLayoutEffect(() => {
+    latestCall.current = onCall;
+  });
 
   async function accept() {
     setMessage(null);
@@ -109,7 +129,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
         () => runPedalCheck(file, (p) => onPage.current && setProgress(p)),
         watch,
         () => onPage.current,
-        onCall,
+        (call) => latestCall.current(call),
         tickAfter,
       );
       if (next !== null) setMessage(next);
@@ -120,70 +140,73 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
     }
   }
 
-  const isProblem = message === "photoCheckFailed" || message === "photoCheckNoWebGpu";
+  const status = photoStatus(step, progress, message);
 
   return (
-    <div className="space-y-2 rounded-lg bg-sunk p-3">
-      {step === "closed" ? (
-        <>
-          <button type="button" className="btn btn-quiet" onClick={() => setStep("confirm")}>
-            {t(lang, "photoCheckOpen")}
-          </button>
-          <p className="text-sm text-muted">{t(lang, "photoCheckHelp")}</p>
-        </>
-      ) : null}
-
-      {step === "confirm" ? (
-        <>
-          <p className="text-sm">{t(lang, "photoCheckSize", { mb: PEDAL_MODEL_MB })}</p>
-          <p className="text-sm text-muted">{t(lang, "photoCheckTested")}</p>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" className="btn" onClick={() => void accept()}>
-              {t(lang, "photoCheckStart")}
+    <div className="rounded-lg bg-sunk p-3">
+      <div className="space-y-2">
+        {step === "closed" ? (
+          <>
+            <button type="button" className="btn btn-quiet" onClick={() => setStep("confirm")}>
+              {t(lang, "photoCheckOpen")}
             </button>
-            <button type="button" className="btn btn-quiet" onClick={() => setStep("closed")}>
-              {t(lang, "photoCheckCancel")}
-            </button>
-          </div>
-        </>
-      ) : null}
+            <p className="text-sm text-muted">{t(lang, "photoCheckHelp")}</p>
+          </>
+        ) : null}
 
-      {step === "choose" ? (
-        <>
-          <label htmlFor={id} className="btn w-full cursor-pointer">
-            {t(lang, "photoCheckChoose")}
-          </label>
-          <input
-            id={id}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            aria-label={t(lang, "photoCheckChoose")}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void handleFile(file);
-              e.target.value = "";
-            }}
-          />
-        </>
-      ) : null}
-
-      {step === "working" ? (
-        <div role="status" aria-live="polite" className="space-y-1">
-          <p className="text-sm">{progress < 1 ? t(lang, "photoCheckLoading") : t(lang, "photoCheckRunning")}</p>
-          {progress < 1 ? (
-            <div className="bar">
-              <div style={{ width: `${Math.round(progress * 100)}%` }} />
+        {step === "confirm" ? (
+          <>
+            <p className="text-sm">{t(lang, "photoCheckSize", { mb: PEDAL_MODEL_MB })}</p>
+            <p className="text-sm text-muted">{t(lang, "photoCheckTested")}</p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn" onClick={() => void accept()}>
+                {t(lang, "photoCheckStart")}
+              </button>
+              <button type="button" className="btn btn-quiet" onClick={() => setStep("closed")}>
+                {t(lang, "photoCheckCancel")}
+              </button>
             </div>
-          ) : null}
-        </div>
-      ) : null}
+          </>
+        ) : null}
 
-      {message ? (
-        <p role={isProblem ? "alert" : "status"} className="text-sm font-semibold">
-          {t(lang, message)}
-        </p>
+        {step === "choose" ? (
+          <>
+            <label htmlFor={id} className="btn w-full cursor-pointer">
+              {t(lang, "photoCheckChoose")}
+            </label>
+            <input
+              id={id}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="sr-only"
+              aria-label={t(lang, "photoCheckChoose")}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void handleFile(file);
+                e.target.value = "";
+              }}
+            />
+          </>
+        ) : null}
+
+        {message && isProblem(message) ? (
+          <p role="alert" className="text-sm font-semibold">
+            {t(lang, message)}
+          </p>
+        ) : null}
+      </div>
+
+      {/* Always on the page, empty until there is something to say, so a screen reader reads out
+          each change: the working words, then the result. A line put on the page already holding
+          its words is often not read out. */}
+      <p role="status" className={step === "working" ? "text-sm" : "text-sm font-semibold"}>
+        {status ? t(lang, status) : ""}
+      </p>
+      {step === "working" && progress < 1 ? (
+        <div className="bar mt-1">
+          <div style={{ width: `${Math.round(progress * 100)}%` }} />
+        </div>
       ) : null}
     </div>
   );

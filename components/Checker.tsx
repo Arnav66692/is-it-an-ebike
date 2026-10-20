@@ -5,7 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, unconfirmedFields, withPedalCall, type CheckedFacts } from "@/lib/provenance";
+import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, unconfirmedFields, type CheckedFacts } from "@/lib/provenance";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
@@ -89,6 +89,8 @@ export function Checker() {
   // Only the newest label or link read may fill in the facts.
   const [readGate] = useState(requestGate);
   // How many facts the last read gave, for the status line a screen reader hears. Null clears it.
+  // It is cleared once the family edits or ticks a fact, or switches the language, so it is never
+  // drawn again in the other language and read out long after it was true.
   const [readNote, setReadNote] = useState<number | null>(null);
   // Set by a read that gave facts, so focus moves to the new facts card once it is on the page.
   const focusFacts = useRef(false);
@@ -177,11 +179,13 @@ export function Checker() {
    * replaced them first (editOn in lib/provenance.ts).
    */
   function editFacts(next: BikeFacts, answered?: readonly ReadField[]) {
+    setReadNote(null);
     setBike(editOn(facts, next, answered));
   }
 
   /** A tick on a read fact, dropped the same way if the facts on screen were replaced first. */
   function confirmFact(field: ReadField, confirmed: boolean) {
+    setReadNote(null);
     setBike(confirmOn(facts, field, confirmed));
   }
 
@@ -253,6 +257,7 @@ export function Checker() {
     const next: Lang = lang === "en" ? "es" : "en";
     setLang(next);
     storeLang(next);
+    setReadNote(null);
   }
 
   return (
@@ -371,7 +376,7 @@ export function Checker() {
             flags={flags}
             onChange={editFacts}
             onConfirm={confirmFact}
-            onPedalCall={(call) => setBike((cur) => withPedalCall(cur, call))}
+            onPedalCall={(call) => setBike(pedalCallOn(facts, call))}
             onCheck={handleCheck}
           />
         ) : null}

@@ -119,7 +119,9 @@ export function confirmThroughGate(gate: AnswerGate, onConfirm: (field: ReadFiel
 /**
  * Runs a photo check and passes its call on only if the card that asked for it is still on
  * screen. The check can take many seconds, and in that time the family can read a new label or
- * start over. A call for the old bike must never fill in the new bike's pedals.
+ * start over. A call for the old bike must never fill in the new bike's pedals. The old card
+ * stays on the page for a moment after a new read lands, so the page also applies the call only
+ * to the facts that card shows (pedalCallOn in lib/provenance.ts).
  */
 export async function callIfCurrent(
   run: () => Promise<{ call: PedalCall }>,

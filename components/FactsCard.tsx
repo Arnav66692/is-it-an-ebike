@@ -28,7 +28,10 @@ interface Props {
   onChange: (next: BikeFacts) => void;
   /** The family ticked or cleared "It matches the bike" on a read fact. */
   onConfirm: OnConfirm;
-  /** The whole-bike photo check made a call. It only fills the pedals answer. */
+  /**
+   * The whole-bike photo check made a call. It only fills the pedals answer. It is called from
+   * the newest card drawn, so it can check the call against the facts on screen as it lands.
+   */
   onPedalCall: (call: PedalCall) => void;
   onCheck: () => void;
 }
@@ -164,14 +167,16 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
         </div>
       ) : null}
 
-      {counts.read > 0 ? (
-        <p role="status" className="text-sm font-semibold">
-          {t(lang, "readCount", { done: counts.confirmed, total: counts.read })}
+      {/* The count's status line is always on the page, empty until a fact is read, so a screen
+          reader hears it change when the photo check fills in the pedals on a bike typed in. */}
+      <div>
+        <p role="status" className={counts.read > 0 ? "mb-4 text-sm font-semibold" : "text-sm font-semibold"}>
+          {counts.read > 0 ? t(lang, "readCount", { done: counts.confirmed, total: counts.read }) : ""}
         </p>
-      ) : null}
-      <button type="button" className="btn w-full sm:w-auto" onClick={onCheck}>
-        {t(lang, "check")}
-      </button>
+        <button type="button" className="btn w-full sm:w-auto" onClick={onCheck}>
+          {t(lang, "check")}
+        </button>
+      </div>
     </Card>
   );
 }
