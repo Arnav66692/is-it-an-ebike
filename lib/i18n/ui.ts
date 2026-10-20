@@ -162,7 +162,7 @@ const en = {
   privacyTitle: "Privacy",
   privacyBody: "No accounts. Label photos never leave your phone. Product links are fetched once and nothing is stored.",
   dataNote:
-    "State rules checked against statute text on Oct 16, 2026. San Diego city and county rules checked against enacted code and ordinance text on Oct 19, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come from the district's web page. Its helmet rule is in AR 5142.",
+    "State rules checked against statute text on Oct 16, 2026. San Diego city and county rules checked against enacted code and ordinance text on Oct 19 and Oct 20, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come from the district's web page. Its helmet rule is in AR 5142.",
   source_statute: "Statute",
   source_bill: "Bill",
   source_official_page: "Official page",
@@ -353,7 +353,7 @@ const es: Record<UiKey, string> = {
   privacyTitle: "Privacidad",
   privacyBody: "Sin cuentas. Las fotos de la etiqueta nunca salen de tu teléfono. Los enlaces se abren una vez y no se guarda nada.",
   dataNote:
-    "Reglas estatales revisadas contra el texto de la ley el 16 de octubre de 2026. Reglas de las ciudades y del condado de San Diego revisadas contra el texto vigente de sus códigos y ordenanzas el 19 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen de la página web del distrito. Su regla del casco está en el AR 5142.",
+    "Reglas estatales revisadas contra el texto de la ley el 16 de octubre de 2026. Reglas de las ciudades y del condado de San Diego revisadas contra el texto vigente de sus códigos y ordenanzas el 19 y el 20 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen de la página web del distrito. Su regla del casco está en el AR 5142.",
   source_statute: "Ley",
   source_bill: "Proyecto de ley",
   source_official_page: "Página oficial",
