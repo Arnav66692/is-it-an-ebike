@@ -459,3 +459,19 @@ describe("a Class 3 YES lists the speedometer wherever the rules table says Clas
     expect(al?.source?.kind).toBe("rules_table");
   });
 });
+
+describe("the County park note names SDCC 41.127 as unsettled for e-bikes", () => {
+  it("shows the license, registration and roads-only rule next to the designated-areas note", () => {
+    const result = evaluate({ state: "CA", riderAge: 10, rideDate: DATE, facts: classBike(1, { hasThrottle: false }), places: ["unincorporated_san_diego_county"] });
+    const county = result.local[0];
+    const notes = county.notes.map((l) => l.code);
+    expect(notes).toEqual(expect.arrayContaining(["county_parks", "county_parks_vehicle_rule"]));
+    const note = county.notes.find((l) => l.code === "county_parks_vehicle_rule");
+    expect(note?.source?.citation).toContain("SDCC 41.127");
+    expect(note?.source?.quote).toContain("No person shall operate a vehicle in a County park without a valid driver's license.");
+    const en = renderLine(note ?? { code: "" }, "en", "California");
+    expect(en).toContain("SDCC 41.127");
+    expect(en).toContain("isn't settled");
+    expect(renderLine(note ?? { code: "" }, "es", "California")).toContain("No está resuelto");
+  });
+});

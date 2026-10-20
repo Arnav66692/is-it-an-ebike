@@ -311,6 +311,7 @@ function placeNotes(
       if (mayRide) {
         add("county_sidewalks", "sidewalk_ban_in_business_district");
         add("county_parks", "county_parks_designated_areas_only");
+        add("county_parks_vehicle_rule", "county_parks_vehicle_license_and_registration");
         add("county_dpr_sites", "dpr_designations");
         if (hasClass3) add("county_dpr_class3", "dpr_designations");
       }

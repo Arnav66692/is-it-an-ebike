@@ -233,6 +233,8 @@ const EN = {
     `As of ${formatDate(n(p.date), c.lang)} the County had adopted no under-12 ban, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
   county_sidewalks: () => "County code bans riding bicycles on business-district sidewalks (SDCC 72.230). Treat e-bikes the same to be safe.",
   county_parks: () => "In County parks, trails and preserves, ride e-bikes only in areas marked for them (SDCC 41.130(b)).",
+  county_parks_vehicle_rule: () =>
+    "County park code also bars operating a vehicle without a driver's license and current registration, or off park roads and parking areas without written permission (SDCC 41.127). It uses the Vehicle Code meaning of vehicle, which can include e-bikes, while SDCC 41.130 allows e-bikes under state law. Whether 41.127 covers e-bikes isn't settled.",
   county_dpr_sites: () =>
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
@@ -428,6 +430,8 @@ const ES = {
   county_sidewalks: () =>
     "El código del condado prohíbe andar en bicicleta por aceras de zonas comerciales (SDCC 72.230). Por seguridad, haz lo mismo con la bicicleta eléctrica.",
   county_parks: () => "En parques, senderos y reservas del condado, anda en bicicleta eléctrica solo en las zonas marcadas para ello (SDCC 41.130(b)).",
+  county_parks_vehicle_rule: () =>
+    "El código de parques del condado también prohíbe manejar un vehículo sin licencia de conducir y registro vigente, o fuera de los caminos y estacionamientos del parque sin permiso escrito (SDCC 41.127). Usa la definición de vehículo del Código de Vehículos, que puede incluir las bicicletas eléctricas, mientras que la SDCC 41.130 las permite según la ley estatal. No está resuelto si la 41.127 se aplica a las bicicletas eléctricas.",
   county_dpr_sites: () =>
     "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
   county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",

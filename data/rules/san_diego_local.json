@@ -1331,6 +1331,16 @@
           "notes": "SDCC 41.102(b) defines County park to include trails, open space preserves and ecological reserves."
         },
         {
+          "rule": "county_parks_vehicle_license_and_registration",
+          "applies_to": ["all_ebikes"],
+          "citation": "SDCC 41.127(a), (b), (f), 41.102(p) (Ord. No. 10823 (N.S.))",
+          "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+          "quote": "(a) No person shall operate a vehicle in a County park without a valid driver's license. (b) No person shall operate a vehicle in a County park unless the vehicle has a current vehicle registration.",
+          "effective_date": "2023-01-13",
+          "source_type": "ordinance_text",
+          "notes": "Read on American Legal on Oct 19, 2026 (fifth review), last amended by Ord. No. 10823 (N.S.), effective 1-13-23. 41.127(f) also bars operating a vehicle in a County park 'other than on a park roadway designated for vehicle traffic or in a parking area designated for vehicle use without written authorization issued by the Department.' 41.102(p) says 'Vehicle' has the same meaning as in Cal. Veh. Code 670, which leaves out only devices moved exclusively by human power, so an e-bike can be read as a vehicle here, the same reading behind the City, Carlsbad, Encinitas and Del Mar park notes. 41.130(b)(i), 'E-bikes allowed pursuant to State law', points the other way, and the County e-bike fact sheet says Class 3 on park roads follows motor-vehicle rules. Whether 41.127 reaches e-bikes is unclear. A note only, since the bottom line does not check parks."
+        },
+        {
           "rule": "dpr_designations",
           "applies_to": ["all_ebikes"],
           "citation": "County Parks and Recreation, Electric Bike Fact Sheet 2025",
@@ -1343,7 +1353,8 @@
       ],
       "conflicts_with_statute": [],
       "open_questions": [
-        "Standing re-check before each release. Search County Legistar matter titles for bike, bicycle, e-bike and 21214, and read the newest Comprehensive Ordinance List and Statements of Proceedings. Any County ban needs a 30-day public campaign first (VC 21214.7(e)) and gives only warnings for 60 days (VC 21214.7(c)(1)(A))."
+        "Standing re-check before each release. Search County Legistar matter titles for bike, bicycle, e-bike and 21214, and read the newest Comprehensive Ordinance List and Statements of Proceedings. Any County ban needs a 30-day public campaign first (VC 21214.7(e)) and gives only warnings for 60 days (VC 21214.7(c)(1)(A)).",
+        "Does SDCC 41.127 (driver's license, current registration, park roads and parking areas only) apply to e-bikes in County parks, given 41.102(p) and 41.130(b)(i)? Ask County Parks and Recreation or County Counsel."
       ],
       "resolved_questions": [
         {
