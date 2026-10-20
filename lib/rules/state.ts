@@ -91,7 +91,25 @@ function deciding(node: ConditionNode, env: Env): ConditionNode {
   return node;
 }
 
-function topicOf(node: ConditionNode | null, caution: CompiledCaution): string {
+/**
+ * Every topic a caution can have. The card shows "caution_<topic>" when the rule applies and
+ * "unsure_<topic>" when it can't be settled, so each needs a sentence in both languages.
+ */
+export const CAUTION_TOPICS = [
+  "class_age_unclear",
+  "class_not_recognized",
+  "class_unclear",
+  "wheel_size",
+  "trike",
+  "foot_pegs",
+  "pedal_kit",
+  "weight",
+  "watts_hp",
+  "fast_mode",
+] as const;
+type CautionTopic = (typeof CAUTION_TOPICS)[number];
+
+function topicOf(node: ConditionNode | null, caution: CompiledCaution): CautionTopic {
   if (caution.riderUnderAge !== null) return "class_age_unclear";
   if (!node) return caution.verdict === "not_an_ebike" ? "class_not_recognized" : "class_unclear";
   const text = JSON.stringify(node);

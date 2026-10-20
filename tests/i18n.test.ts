@@ -10,6 +10,7 @@ import { t, UI_KEYS } from "@/lib/i18n/ui";
 import { ACCURACY_TEXT, localizeResult, type AccuracyText } from "@/lib/i18n/accuracy";
 import { placeNameInList, stateLaw } from "@/lib/i18n/names";
 import { OVERLAY } from "@/lib/rules/compile";
+import { CAUTION_TOPICS } from "@/lib/rules/state";
 import { QUESTION_IDS, type Line } from "@/lib/rules/types";
 import { classBike } from "./helpers";
 
@@ -19,6 +20,9 @@ const VARIANTS = [
   { ratedWatts: 1600 },
   { ratedWatts: null, peakWatts: 900 },
   { ratedWatts: null, wattsUpTo: 900 },
+  // A 750 W listing figure sits over Nebraska's 1 hp line (fourth review).
+  { ratedWatts: null, wattsUpTo: 750 },
+  { ratedWatts: null, peakWatts: 748 },
   { ratedWatts: null },
   { hasPedals: false },
   { hasPedals: null },
@@ -79,6 +83,31 @@ describe("translations", () => {
     const missing = [...codes].filter((c) => c !== "treated_as" && !hasTemplate(c));
     expect(missing).toEqual([]);
     expect(codes.size).toBeGreaterThan(60);
+  });
+
+  it("has a sentence for every caution topic, whether the rule applies or can't be settled", () => {
+    // These two come only from a caution with no condition, which always applies, so they never
+    // need an "unsure" sentence.
+    const alwaysApplies = ["class_not_recognized", "class_unclear"];
+    for (const topic of CAUTION_TOPICS) {
+      expect(hasTemplate(`caution_${topic}`), topic).toBe(true);
+      if (!alwaysApplies.includes(topic)) expect(hasTemplate(`unsure_${topic}`), topic).toBe(true);
+    }
+  });
+
+  it("Nebraska's 1 hp line shows a sentence, never the raw code, in both languages", () => {
+    for (const over of [{ wattsUpTo: 750 }, { peakWatts: 750 }]) {
+      const r = evaluate({ state: "NE", riderAge: 30, rideDate: "2026-10-20", facts: classBike(1, { ratedWatts: null, ...over }), places: [] });
+      expect(r.state.status).toBe("cant_confirm");
+      expect(r.state.reason.code).toBe("unsure_watts_hp");
+      for (const lang of ["en", "es"] as const) {
+        const text = renderLine(r.state.reason, lang, "Nebraska");
+        expect(text).not.toContain("_");
+        expect(text).toContain("745 W");
+      }
+      const missing = bottomLine(r, "2026-10-20").missing.map((m) => renderLine(m.line, "es", "Nebraska"));
+      expect(missing.join(" ")).not.toMatch(/unsure_|caution_/);
+    }
   });
 
   it("has a summary for every scheduled change in the overlay", () => {

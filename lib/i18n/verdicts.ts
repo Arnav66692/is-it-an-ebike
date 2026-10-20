@@ -119,6 +119,9 @@ const EN = {
   unsure_weight: (_p, c) => `We need to know whether it weighs over 100 pounds to confirm this in ${c.state}.`,
   unsure_foot_pegs: (_p, c) => `We need to know about foot pegs to confirm this in ${c.state}.`,
   unsure_pedal_kit: (_p, c) => `We need to know whether it needs a pedal kit to confirm this in ${c.state}.`,
+  unsure_watts_hp: (_p, c) =>
+    `${c.state} also caps the motor at 1 horsepower (about 745 W). The text doesn't give the rated watts, so we need the rated figure from the label to confirm this.`,
+  unsure_class_age_unclear: (p, c) => `${c.state}'s law is unclear for Class ${cls(p)} riders this young.`,
   need_info: () => "A few quick questions first. A label can't show these.",
   req_helmet_under: (p) => `Helmet required for riders under ${p.underAge}.`,
   req_helmet_all_ages: (p) => `Helmet required at every age on a Class ${cls(p)}.`,
@@ -305,6 +308,9 @@ const ES = {
   unsure_weight: (_p, c) => `Necesitamos saber si pesa más de 100 libras para confirmarlo en ${esName(c)}.`,
   unsure_foot_pegs: (_p, c) => `Necesitamos saber si tiene reposapiés para confirmarlo en ${esName(c)}.`,
   unsure_pedal_kit: (_p, c) => `Necesitamos saber si necesita un kit de pedales para confirmarlo en ${esName(c)}.`,
+  unsure_watts_hp: (_p, c) =>
+    `${esSubj(c)} también limita el motor a 1 caballo de fuerza (unos 745 W). El texto no da los vatios nominales, así que necesitamos la cifra nominal de la etiqueta para confirmarlo.`,
+  unsure_class_age_unclear: (p, c) => `La ley ${esOf(c)} no es clara para conductores tan jóvenes en una Clase ${cls(p)}.`,
   need_info: () => "Primero, unas preguntas rápidas. Una etiqueta no muestra esto.",
   req_helmet_under: (p) => `Casco obligatorio para menores de ${p.underAge} años.`,
   req_helmet_all_ages: (p) => `Casco obligatorio a cualquier edad en una Clase ${cls(p)}.`,
