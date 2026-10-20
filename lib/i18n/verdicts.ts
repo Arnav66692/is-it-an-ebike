@@ -126,6 +126,7 @@ const EN = {
   req_helmet_under: (p) => `Helmet required for riders under ${p.underAge}.`,
   req_helmet_all_ages: (p) => `Helmet required at every age on a Class ${cls(p)}.`,
   req_supervision: (p) => `Under ${p.minAge}, only with a parent or another adult right there.`,
+  req_parent_supervision: (p) => `Under ${p.minAge}, only under the direct supervision of a parent or guardian.`,
   req_supervision_or_certificate: (p) => `Under ${p.minAge}, only with adult supervision or a state e-bike safety certificate.`,
   req_speedometer_class3: (p, c) =>
     Number(p.definition)
@@ -315,6 +316,7 @@ const ES = {
   req_helmet_under: (p) => `Casco obligatorio para menores de ${p.underAge} años.`,
   req_helmet_all_ages: (p) => `Casco obligatorio a cualquier edad en una Clase ${cls(p)}.`,
   req_supervision: (p) => `Menores de ${p.minAge}, solo con su padre, madre u otro adulto presente.`,
+  req_parent_supervision: (p) => `Menores de ${p.minAge}, solo bajo la supervisión directa de su padre, madre o tutor legal.`,
   req_supervision_or_certificate: (p) => `Menores de ${p.minAge}, solo con supervisión de un adulto o un certificado estatal de seguridad.`,
   req_speedometer_class3: (p, c) =>
     Number(p.definition)

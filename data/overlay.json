@@ -144,7 +144,7 @@
       "state": "UT",
       "applies_to": "all_ebikes",
       "min_age": 14,
-      "type": "supervision",
+      "type": "parent_supervision",
       "from_age": 8,
       "source_field": "min_age[all_ebikes, 14].exceptions",
       "source_quote": "Ages 8 to 13 may ride with the motor engaged only under the direct supervision of a parent or guardian."

@@ -33,7 +33,7 @@ export interface CompiledCaution {
 }
 
 export interface AgeException {
-  type: "supervision" | "supervision_or_certificate";
+  type: "supervision" | "parent_supervision" | "supervision_or_certificate";
   fromAge: number;
   quote: string;
 }

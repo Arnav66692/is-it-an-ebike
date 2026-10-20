@@ -8,6 +8,7 @@ import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { formatDate } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
+import { renderLine } from "@/lib/i18n/verdicts";
 import { isIsoDate } from "@/lib/rules/dates";
 import { evaluate, validateInput } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
@@ -201,5 +202,31 @@ describe("a weight that leaves out the battery is never the bike's weight", () =
     expect(parseSpecText("Weight: 62 lbs", "listing").facts.weightLb).toBe(62);
     expect(parseSpecText("Weight: 62 lbs with battery", "listing").facts.weightLb).toBe(62);
     expect(parseSpecText("Weight: 62 lbs (battery included)", "listing").facts.weightLb).toBe(62);
+  });
+});
+
+describe("Utah's supervision rule names a parent or guardian, not any adult", () => {
+  const utah = () => {
+    const facts = classBike(1, { hasThrottle: false, assistMph: 20, weightLb: null, weightOver100: null });
+    const result = evaluate({ state: "UT", riderAge: 10, rideDate: DATE, facts, places: [] });
+    return { result, line: bottomLine(result, DATE) };
+  };
+
+  it("lists 'a parent or guardian' on a Utah YES for a 10-year-old, in both languages", () => {
+    const { line } = utah();
+    expect(line.kind).toBe("yes");
+    const text = line.requirements.map((l) => renderLine(l, "en", "Utah")).join(" ");
+    expect(text).toContain("Under 14, only under the direct supervision of a parent or guardian.");
+    expect(text).not.toContain("another adult");
+    const es = line.requirements.map((l) => renderLine(l, "es", "Utah")).join(" ");
+    expect(es).toContain("su padre, madre o tutor legal");
+    expect(es).not.toContain("otro adulto");
+  });
+
+  it("keeps 'a parent or another adult' where the law allows any adult, as in Hawaii and Virginia", () => {
+    const hi = evaluate({ state: "HI", riderAge: 12, rideDate: DATE, facts: classBike(2), places: [] });
+    expect(hi.state.requirements.map((l) => l.code)).toContain("req_supervision");
+    const va = evaluate({ state: "VA", riderAge: 12, rideDate: DATE, facts: classBike(3, { hasThrottle: false }), places: [] });
+    expect(va.state.requirements.map((l) => l.code)).toContain("req_supervision");
   });
 });

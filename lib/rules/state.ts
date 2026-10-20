@@ -11,7 +11,7 @@ import {
   type ConditionNode,
   type Env,
 } from "./condition";
-import { getState, type CompiledCaution, type CompiledState } from "./compile";
+import { getState, type AgeException, type CompiledCaution, type CompiledState } from "./compile";
 import { inWindow } from "./dates";
 import { factsEnv, ratedWattsInterval } from "./facts";
 import {
@@ -283,6 +283,13 @@ function evaluateDevice(
   return device("ok", null, [], cautions);
 }
 
+/** The sentence for each kind of age exception. Utah lets only a parent or guardian supervise. */
+const SUPERVISION_CODE: Record<AgeException["type"], string> = {
+  supervision: "req_supervision",
+  parent_supervision: "req_parent_supervision",
+  supervision_or_certificate: "req_supervision_or_certificate",
+};
+
 function evaluateRider(cs: CompiledState, cls: ClassNum, age: number, date: string): RiderResult {
   const requirements: Line[] = [];
   let block: { line: Line; absolute: boolean; minAge: number } | null = null;
@@ -292,14 +299,7 @@ function evaluateRider(cs: CompiledState, cls: ClassNum, age: number, date: stri
     if (!classMatches(rule.appliesTo, cls)) continue;
     if (age >= rule.minAge) continue;
     if (rule.exception && age >= rule.exception.fromAge) {
-      requirements.push(
-        line(
-          rule.exception.type === "supervision" ? "req_supervision" : "req_supervision_or_certificate",
-          { minAge: rule.minAge },
-          rule.source,
-          rule.exception.quote,
-        ),
-      );
+      requirements.push(line(SUPERVISION_CODE[rule.exception.type], { minAge: rule.minAge }, rule.source, rule.exception.quote));
       continue;
     }
     const candidate = {

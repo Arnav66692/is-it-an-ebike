@@ -164,7 +164,8 @@ export interface OverlayAgeException {
   state: string;
   applies_to: AppliesTo;
   min_age: number;
-  type: "supervision";
+  /** "parent_supervision" when only a parent or guardian may supervise, as in Utah. */
+  type: "supervision" | "parent_supervision";
   from_age: number;
   source_field: string;
   source_quote: string;

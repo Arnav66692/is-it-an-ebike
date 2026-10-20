@@ -221,7 +221,7 @@ describe("ages, supervision and licenses", () => {
     expect(codes(r.state.requirements)).toEqual(expect.arrayContaining(["nj_license_by_age", "req_registration"]));
   });
   it("Utah today: 8 to 13 with supervision, under 8 no", () => {
-    expect(codes(run("UT", 10, classBike(1)).state.requirements)).toContain("req_supervision");
+    expect(codes(run("UT", 10, classBike(1)).state.requirements)).toContain("req_parent_supervision");
     const young = run("UT", 6, classBike(1));
     expect(young.state.status).toBe("no");
     expect(young.state.reason.params?.minAge).toBe(8);
