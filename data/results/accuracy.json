@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-20T05:45:21.322Z",
-  "commit": "d6bf3c1",
+  "generated_at": "2026-10-20T06:20:46.242Z",
+  "commit": "3a94503",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
@@ -19,11 +19,36 @@
   },
   "bottom_line": {
     "cases": 605200,
+    "bottom_lines": 2420800,
     "by_kind": {
       "yes": 50418,
       "no_illegal": 179414,
       "no_unconfirmed": 375368
     },
+    "by_read": {
+      "typed": {
+        "yes": 50418,
+        "no_illegal": 179414,
+        "no_unconfirmed": 375368
+      },
+      "read_none_checked": {
+        "yes": 0,
+        "no_illegal": 179414,
+        "no_unconfirmed": 425786
+      },
+      "read_one_unchecked": {
+        "yes": 0,
+        "no_illegal": 179414,
+        "no_unconfirmed": 425786
+      },
+      "read_all_checked": {
+        "yes": 50418,
+        "no_illegal": 179414,
+        "no_unconfirmed": 375368
+      }
+    },
+    "unchecked_yes": 0,
+    "facts_not_named": 0,
     "false_yes": 0,
     "missed_yes": 0,
     "false_illegal": 0,
@@ -33,8 +58,8 @@
     "rendered_cards": 195
   },
   "tests": {
-    "total": 412,
-    "passed": 412,
+    "total": 446,
+    "passed": 446,
     "failed": 0
   },
   "pilot": {

@@ -221,7 +221,7 @@ describe("accuracy page text", () => {
   });
 
   it("translates the bottom-line rows, not only the English page", () => {
-    const keys = ["blTitle", "blFalseYes", "blMissedYes", "blFalseIllegal", "blMissedIllegal", "blMissingCaveat", "blNoIllegal", "blNoUnconfirmed"] as const;
+    const keys = ["blTitle", "blFalseYes", "blMissedYes", "blFalseIllegal", "blMissedIllegal", "blMissingCaveat", "blUncheckedYes", "blNoIllegal", "blNoUnconfirmed"] as const;
     for (const key of keys) expect(ACCURACY_TEXT.es[key], key).not.toBe(ACCURACY_TEXT.en[key]);
   });
 

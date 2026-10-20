@@ -22,12 +22,13 @@ export interface AccuracyText {
   testSuite: (passed: number, total: number) => string;
   engineCaveat: string;
   blTitle: string;
-  blCases: (cases: string) => string;
+  blCases: (cases: string, bottomLines: string) => string;
   blFalseYes: string;
   blMissedYes: string;
   blFalseIllegal: string;
   blMissedIllegal: string;
   blMissingCaveat: string;
+  blUncheckedYes: string;
   blYes: string;
   blNoIllegal: string;
   blNoUnconfirmed: string;
@@ -79,13 +80,14 @@ const en: AccuracyText = {
   engineCaveat:
     "These tests prove the engine matches the rules table, not that the table matches the law. The table was checked against statute text on Oct 16, 2026. San Diego city and county rules were checked against enacted code and ordinance text on Oct 19, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come only from the district's web page.",
   blTitle: "Bottom line YES or NO",
-  blCases: (cases) =>
-    `${cases} generated cases, including every San Diego place alone, all together and none, with and without "Somewhere else", and bikes with unknown pedals, an unknown class or more than one class. YES needs every card allowed, every question answered, every rule read in enacted text and a ride date no more than 30 days after the rules were checked.`,
+  blCases: (cases, bottomLines) =>
+    `${cases} generated rides, including every San Diego place alone, all together and none, with and without "Somewhere else", and bikes with unknown pedals, an unknown class or more than one class. Each ride runs four ways, typed in, and read from a link or photo with no fact checked, one fact left unchecked or every fact checked, ${bottomLines} answers in all. YES needs every card allowed, every question answered, every rule read in enacted text, a ride date no more than 30 days after the rules were checked, and every fact read from a link or photo checked against the bike. The YES and NO counts below are for facts typed in.`,
   blFalseYes: "False YES",
   blMissedYes: "Refused when every card allows it",
   blFalseIllegal: "Called not allowed when the checker finds no rule against it",
   blMissedIllegal: "A rule says no, but the answer isn't NO, not allowed",
   blMissingCaveat: "Unchecked places not named on the card",
+  blUncheckedYes: "YES while a fact read from a link or photo is unchecked",
   blYes: "YES",
   blNoIllegal: "NO, not allowed",
   blNoUnconfirmed: "NO, not confirmed",
@@ -142,13 +144,14 @@ const es: AccuracyText = {
   engineCaveat:
     "Estas pruebas demuestran que el motor coincide con la tabla de reglas, no que la tabla coincida con la ley. La tabla se revisó contra el texto de la ley el 16 de octubre de 2026. Las reglas de las ciudades y del condado de San Diego se revisaron contra el texto vigente de sus códigos y ordenanzas el 19 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen solo de la página web del distrito.",
   blTitle: "En resumen, SÍ o NO",
-  blCases: (cases) =>
-    `${cases} casos generados, con cada lugar de San Diego solo, todos juntos y ninguno, con y sin "Otro lugar", y con bicicletas de pedales desconocidos, de clase desconocida o de más de una clase. El SÍ exige que todas las tarjetas lo permitan, que todas las preguntas tengan respuesta, que cada regla se haya leído en un texto vigente y que el viaje sea a más tardar 30 días después de la revisión de las reglas.`,
+  blCases: (cases, bottomLines) =>
+    `${cases} viajes generados, con cada lugar de San Diego solo, todos juntos y ninguno, con y sin "Otro lugar", y con bicicletas de pedales desconocidos, de clase desconocida o de más de una clase. Cada viaje se prueba de cuatro maneras, con los datos escritos a mano, y leídos de un enlace o una foto sin ningún dato revisado, con un dato sin revisar o con todos revisados, ${bottomLines} respuestas en total. El SÍ exige que todas las tarjetas lo permitan, que todas las preguntas tengan respuesta, que cada regla se haya leído en un texto vigente, que el viaje sea a más tardar 30 días después de la revisión de las reglas, y que cada dato leído de un enlace o una foto se haya comparado con la bicicleta. Los conteos de SÍ y NO de abajo son con los datos escritos a mano.`,
   blFalseYes: "SÍ falsos",
   blMissedYes: "Rechazados cuando todas las tarjetas lo permiten",
   blFalseIllegal: "Dice no permitida cuando el verificador no encuentra ninguna regla en contra",
   blMissedIllegal: "Una regla dice que no, pero la respuesta no es NO, no permitida",
   blMissingCaveat: "Lugares sin revisar que la tarjeta no menciona",
+  blUncheckedYes: "SÍ con un dato leído de un enlace o una foto sin revisar",
   blYes: "SÍ",
   blNoIllegal: "NO, no permitida",
   blNoUnconfirmed: "NO, no confirmada",

@@ -7,6 +7,8 @@ type Bar = { bar: string; result: string; pass: boolean };
 
 interface BottomLineResults {
   cases: number;
+  bottom_lines?: number;
+  unchecked_yes?: number;
   by_kind: { yes: number; no_illegal: number; no_unconfirmed: number };
   false_yes: number;
   missed_yes: number;
@@ -73,10 +75,11 @@ export function AccuracyView({ lang }: { lang: Lang }) {
       {bl ? (
         <section className="card space-y-3">
           <h2 className="text-lg font-bold">{text.blTitle}</h2>
-          <p className="text-sm text-muted">{text.blCases(fmt(bl.cases))}</p>
+          <p className="text-sm text-muted">{text.blCases(fmt(bl.cases), fmt(bl.bottom_lines ?? bl.cases))}</p>
           <table className="w-full text-sm">
             <tbody>
               <Row label={text.blFalseYes} value={fmt(bl.false_yes)} strong />
+              {bl.unchecked_yes !== undefined ? <Row label={text.blUncheckedYes} value={fmt(bl.unchecked_yes)} strong /> : null}
               <Row label={text.blMissedYes} value={fmt(bl.missed_yes)} />
               {bl.false_illegal !== undefined ? <Row label={text.blFalseIllegal} value={fmt(bl.false_illegal)} /> : null}
               {bl.missed_illegal !== undefined ? <Row label={text.blMissedIllegal} value={fmt(bl.missed_illegal)} /> : null}
