@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
+import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
@@ -43,7 +43,7 @@ function readInitial(): Initial {
     lang: link.lang ?? readStoredLang() ?? (navigator.language.startsWith("es") ? "es" : "en"),
     state: link.state,
     places: link.places,
-    today: localToday(),
+    today: checkerToday(localToday()),
   };
 }
 
@@ -96,7 +96,7 @@ export function Checker() {
       timer = window.setTimeout(refresh, msUntilNextDay(new Date()));
     };
     function refresh() {
-      setToday(localToday());
+      setToday(checkerToday(localToday()));
       arm();
     }
     const onVisible = () => {
@@ -170,7 +170,7 @@ export function Checker() {
   }
 
   function handleCheck() {
-    const now = localToday();
+    const now = checkerToday(localToday());
     if (now !== today) setToday(now);
     if (!ageValid) {
       setAgeError(true);

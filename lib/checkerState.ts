@@ -1,7 +1,7 @@
 // Pure pieces of the checker's state, kept out of the component so tests can run them.
 
-import { PLACE_IDS } from "@/lib/rules/local";
-import { STATE_CODES } from "@/lib/rules/compile";
+import { jurisdiction, PLACE_IDS } from "@/lib/rules/local";
+import { STATE_CODES, STATES } from "@/lib/rules/compile";
 import { isIsoDate } from "@/lib/rules/dates";
 import type { BikeFacts, PlaceId, QuestionId, Tri } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
@@ -32,22 +32,52 @@ export function parseShareLink(search: string): ShareLink {
 }
 
 /**
- * The ride date to check, or null when the date field holds something we can't check. The
- * rules table keeps only the rules in force from now on, so a past date could miss a rule that
- * applied then. A date input's min and max don't stop a typed date, so this check does.
+ * The latest day any record in the rules table was checked. The table keeps only the rules in
+ * force from its check on. A rule that ended before then, like Tennessee's old Class 3 age of 14,
+ * is gone, so a ride date before this day could get a YES that was never true.
  */
-export function rideDateIn(value: string, today: string, last: string = LAST_RIDE_DATE): string | null {
+export const DATA_CHECKED_ON: string = [
+  ...STATE_CODES.map((code) => STATES[code].last_checked),
+  ...PLACE_IDS.map((place) => jurisdiction(place).checked_through),
+].reduce((a, b) => (b > a ? b : a));
+
+/**
+ * Today for the checker. A device clock that runs behind can't be earlier than the day the rules
+ * were checked, so the earlier of the two never wins.
+ */
+export function checkerToday(deviceToday: string, checkedOn: string = DATA_CHECKED_ON): string {
+  return deviceToday > checkedOn ? deviceToday : checkedOn;
+}
+
+/**
+ * The ride date to check, or null when the date field holds something we can't check. The
+ * rules table keeps only the rules in force from its check on, so a past date could miss a rule
+ * that applied then. The first date is today or the table's check date, whichever is later. A date
+ * input's min and max don't stop a typed date, so this check does.
+ */
+export function rideDateIn(
+  value: string,
+  today: string,
+  last: string = LAST_RIDE_DATE,
+  checkedOn: string = DATA_CHECKED_ON,
+): string | null {
   if (!isIsoDate(value)) return null;
-  return value >= today && value <= last ? value : null;
+  return value >= checkerToday(today, checkedOn) && value <= last ? value : null;
 }
 
 /**
  * The ride date the answer is for. With no date picked it is always today, read fresh, so a tab
  * left open past midnight never answers for yesterday. A picked date is checked against the same
- * fresh today, so it can't fall behind it either.
+ * fresh today, so it can't fall behind it either. Today is never earlier than the table's check.
  */
-export function rideDateFor(pickDate: boolean, dateText: string, today: string, last: string = LAST_RIDE_DATE): string | null {
-  return rideDateIn(pickDate ? dateText : today, today, last);
+export function rideDateFor(
+  pickDate: boolean,
+  dateText: string,
+  today: string,
+  last: string = LAST_RIDE_DATE,
+  checkedOn: string = DATA_CHECKED_ON,
+): string | null {
+  return rideDateIn(pickDate ? dateText : checkerToday(today, checkedOn), today, last, checkedOn);
 }
 
 /** Milliseconds from now until the next local midnight, plus a second so the new day has begun. */
