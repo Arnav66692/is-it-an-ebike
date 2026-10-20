@@ -299,7 +299,7 @@ function parseThrottle(text: string, out: Extraction): void {
  * like "pedals not included", so it is left to the user instead.
  */
 const PEDALS_NONE =
-  /\b(no pedals|without (?:any )?pedals|pedal-?less|pedalless|pedal[- ]free|(?<!\binclud(?:es|ed|ing)?\s)pedals\s*[:\-?]\s*(?:none|no)|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none))\b/i;
+  /\b(no pedals|without (?:any )?pedals|pedal-?less|pedalless|pedal[- ]free|(?<!\binclud(?:e|es|ed|ing)\s)pedals\s*[:\-?]\s*(?:none|no)|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none))\b/i;
 
 /** Words after "pedals" that answer no, as in "Pedals: N/A", "Pedals? No" or "Pedals included: no". */
 const PEDALS_ANSWER_NO = /^\s*(?:included|installed|provided|attached)?\s*[:\-?(]\s*(?:no|none|n\/a)\b/;

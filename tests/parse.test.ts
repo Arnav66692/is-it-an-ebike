@@ -259,6 +259,7 @@ describe("fourth review fixes: pedals that may not be on the bike", () => {
       "Pedals - optional",
       "Pedals Included: No",
       "Includes pedals: No",
+      "Does it include pedals: no",
       "Pedals included? No",
     ]) {
       expect(parseSpecText(text, "listing").facts.hasPedals, text).toBeUndefined();
