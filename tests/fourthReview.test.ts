@@ -14,6 +14,10 @@ import { parseSpecText } from "@/lib/extract/parse";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
+import sanDiego from "@/data/rules/san_diego_local.json";
+import { renderLine } from "@/lib/i18n/verdicts";
+import { t } from "@/lib/i18n/ui";
+import { ACCURACY_TEXT } from "@/lib/i18n/accuracy";
 import { classBike } from "./helpers";
 
 const DATE = "2026-10-20";
@@ -282,5 +286,49 @@ describe("California fast modes match what 312.5(d) says", () => {
     const { result, kind } = fast({ assistOver28: null, unsure: ["fast_mode"] });
     expect(result.state.status).toBe("cant_confirm");
     expect(kind).toBe("no_unconfirmed");
+  });
+});
+
+describe("the SDUHSD 'What's missing' line names every rule that rests only on the web page", () => {
+  // Words each rule goes by in the English and Spanish text. A new web-page-only rule with no
+  // entry here fails this test, so the line can't fall behind the data again.
+  const WORDS: Record<string, { en: string[]; es: string[] }> = {
+    class_1_and_2_only_on_campus: { en: ["class"], es: ["clase"] },
+    district_tag_required: { en: ["tag"], es: ["etiqueta"] },
+    safety_course_required: { en: ["course"], es: ["curso"] },
+    emotos_not_permitted_on_campus: { en: ["e-moto"], es: ["motos eléctricas"] },
+    walk_bikes_on_campus_and_factory_passenger_seat: { en: ["walk", "passenger"], es: ["caminar", "pasajero"] },
+  };
+  const record = (sanDiego as unknown as { jurisdictions: Record<string, unknown>[] }).jurisdictions.find((j) => j.id === "sduhsd_campuses");
+  const rules = Object.values(record ?? {})
+    .filter(Array.isArray)
+    .flat()
+    .filter((r): r is { rule: string; source_type: string } => typeof r === "object" && r !== null && "rule" in r && "source_type" in r);
+
+  it("reads the record", () => {
+    expect(rules.length).toBeGreaterThanOrEqual(6);
+    expect(rules.find((r) => r.rule === "helmet_all_ages_for_campus_riders")?.source_type).toBe("administrative_regulation");
+  });
+
+  it("names each web-page-only rule in the missing line, the page footer and the accuracy page, in both languages", () => {
+    const webOnly = rules.filter((r) => r.source_type === "official_page").map((r) => r.rule);
+    expect(webOnly).toContain("walk_bikes_on_campus_and_factory_passenger_seat");
+    expect(webOnly).toContain("emotos_not_permitted_on_campus");
+    for (const lang of ["en", "es"] as const) {
+      const texts = [
+        renderLine({ code: "bl_unverified_primary_partial", params: { place: "sduhsd_campuses" } }, lang, "California"),
+        t(lang, "dataNote"),
+        String(Object.values(ACCURACY_TEXT[lang]).find((v) => typeof v === "string" && v.includes("SDUHSD"))),
+      ];
+      for (const rule of webOnly) {
+        expect(WORDS[rule], rule).toBeDefined();
+        for (const text of texts) for (const word of WORDS[rule][lang]) expect(text.toLowerCase(), `${lang} ${rule}`).toContain(word);
+      }
+    }
+  });
+
+  it("keeps SDUHSD strict: a campus check is still NO, not confirmed", () => {
+    const result = evaluate({ state: "CA", riderAge: 15, rideDate: DATE, facts: classBike(1), places: ["sduhsd_campuses"] });
+    expect(bottomLine(result, DATE).kind).toBe("no_unconfirmed");
   });
 });

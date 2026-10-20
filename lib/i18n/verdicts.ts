@@ -244,7 +244,7 @@ const EN = {
       : `${c.state}'s rules here were not confirmed against statute text.`,
   bl_unverified_primary_partial: (p) =>
     p.place === "sduhsd_campuses"
-      ? "The class, tag and course rules come only from the district's web page. No board policy or regulation has them, and the Board has not voted on them."
+      ? "The class, tag, course, walk-on-campus, passenger-seat and e-moto rules come only from the district's web page. Only the helmet rule was found in a district regulation (AR 5142). No board policy or regulation was found for the others, and the Board has not voted on the class, tag and course rules."
       : "Only part of these rules was found in enacted text. The rest comes from an official web page.",
   bl_unverified_primary_not_found: () => "The enacted text behind these rules was not found. They come from an official page or a release.",
   bl_state_after_check: (p, c) =>
@@ -434,7 +434,7 @@ const ES = {
       : `Las reglas ${esOf(c)} no se confirmaron contra el texto de la ley.`,
   bl_unverified_primary_partial: (p) =>
     p.place === "sduhsd_campuses"
-      ? "Las reglas de clase, etiqueta y curso vienen solo de la página web del distrito. Ninguna política ni reglamento de la junta las incluye, y la junta no ha votado sobre ellas."
+      ? "Las reglas de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen solo de la página web del distrito. Solo la regla del casco se encontró en un reglamento del distrito (AR 5142). No se encontró ninguna política ni reglamento de la junta para las demás, y la junta no ha votado sobre las reglas de clase, etiqueta y curso."
       : "Solo una parte de estas reglas se encontró en un texto vigente. El resto viene de una página web oficial.",
   bl_unverified_primary_not_found: () => "No se encontró el texto vigente de estas reglas. Vienen de una página o un comunicado oficial.",
   bl_state_after_check: (p, c) =>

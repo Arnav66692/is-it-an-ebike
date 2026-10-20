@@ -77,7 +77,7 @@ const en: AccuracyText = {
   statusNeedInfo: "Asks a follow-up question",
   testSuite: (passed, total) => `Test suite: ${passed} of ${total} tests passed.`,
   engineCaveat:
-    "These tests prove the engine matches the rules table, not that the table matches the law. The table was checked against statute text on Oct 16, 2026. San Diego city and county rules were checked against enacted code and ordinance text on Oct 19, 2026. SDUHSD's class, tag and course rules come only from the district's web page.",
+    "These tests prove the engine matches the rules table, not that the table matches the law. The table was checked against statute text on Oct 16, 2026. San Diego city and county rules were checked against enacted code and ordinance text on Oct 19, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come only from the district's web page.",
   blTitle: "Bottom line YES or NO",
   blCases: (cases) =>
     `${cases} generated cases, including every San Diego place alone, all together and none, with and without "Somewhere else", and bikes with unknown pedals, an unknown class or more than one class. YES needs every card allowed, every question answered, every rule read in enacted text and a ride date no more than 30 days after the rules were checked.`,
@@ -140,7 +140,7 @@ const es: AccuracyText = {
   statusNeedInfo: "Hace una pregunta más",
   testSuite: (passed, total) => `Pruebas: pasaron ${passed} de ${total}.`,
   engineCaveat:
-    "Estas pruebas demuestran que el motor coincide con la tabla de reglas, no que la tabla coincida con la ley. La tabla se revisó contra el texto de la ley el 16 de octubre de 2026. Las reglas de las ciudades y del condado de San Diego se revisaron contra el texto vigente de sus códigos y ordenanzas el 19 de octubre de 2026. Las reglas de clase, etiqueta y curso de SDUHSD vienen solo de la página web del distrito.",
+    "Estas pruebas demuestran que el motor coincide con la tabla de reglas, no que la tabla coincida con la ley. La tabla se revisó contra el texto de la ley el 16 de octubre de 2026. Las reglas de las ciudades y del condado de San Diego se revisaron contra el texto vigente de sus códigos y ordenanzas el 19 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen solo de la página web del distrito.",
   blTitle: "En resumen, SÍ o NO",
   blCases: (cases) =>
     `${cases} casos generados, con cada lugar de San Diego solo, todos juntos y ninguno, con y sin "Otro lugar", y con bicicletas de pedales desconocidos, de clase desconocida o de más de una clase. El SÍ exige que todas las tarjetas lo permitan, que todas las preguntas tengan respuesta, que cada regla se haya leído en un texto vigente y que el viaje sea a más tardar 30 días después de la revisión de las reglas.`,
