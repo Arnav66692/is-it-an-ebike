@@ -91,6 +91,8 @@ export interface CompiledState {
   stopPedalingClass2: boolean;
   /** Equipment a Class 3 must have here, like California's speedometer. */
   class3Equipment: { code: string; definition: boolean; source: Source }[];
+  /** E-bikes may ride only on roads posted at or under this speed, like New York's 30 mph. */
+  roadLimits: { code: string; mph: number; source: Source }[];
   wattFallbacks: OverlayWattFallback[];
   scheduled: OverlayScheduledChange[];
 }
@@ -293,6 +295,13 @@ function compileState(raw: RawState): CompiledState {
         code: e.code,
         definition: e.definition,
         source: { citation: e.citation, url: e.source_url, quote: e.statute_quote, kind: "statute" as const },
+      })),
+    roadLimits: OVERLAY.road_limits
+      .filter((r) => r.state === raw.code)
+      .map((r) => ({
+        code: r.code,
+        mph: r.max_posted_mph,
+        source: { citation: r.citation, url: r.source_url, quote: r.statute_quote, kind: "statute" as const },
       })),
     wattFallbacks: OVERLAY.watt_fallbacks.filter((w) => w.state === raw.code),
     scheduled,

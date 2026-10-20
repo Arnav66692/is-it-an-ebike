@@ -1,6 +1,11 @@
 // Regression tests for the fifth review (Oct 19, 2026). Each block names the problem it closes.
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { BottomLineCard } from "@/components/BottomLineCard";
+import overlayJson from "@/data/overlay.json";
+import statesJson from "@/data/rules/all_states.normalized.json";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkerToday, DATA_CHECKED_ON, rideDateFor, rideDateIn } from "@/lib/checkerState";
@@ -228,5 +233,51 @@ describe("Utah's supervision rule names a parent or guardian, not any adult", ()
     expect(hi.state.requirements.map((l) => l.code)).toContain("req_supervision");
     const va = evaluate({ state: "VA", riderAge: 12, rideDate: DATE, facts: classBike(3, { hasThrottle: false }), places: [] });
     expect(va.state.requirements.map((l) => l.code)).toContain("req_supervision");
+  });
+});
+
+/** The bottom-line card's visible text. */
+function cardText(result: ReturnType<typeof evaluate>, state: string, lang: "en" | "es" = "en"): string {
+  const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bottomLine(result, DATE), lang, stateCode: state }));
+  return html.replace(/<[^>]+>/g, " ").replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ");
+}
+
+/** A field of a state record, by a dotted path like "where_allowed.quote". */
+function field(state: string, path: string): string {
+  const record = (statesJson as unknown as Record<string, unknown>)[state];
+  return String(path.split(".").reduce<unknown>((v, k) => (v as Record<string, unknown>)[k], record));
+}
+
+describe("a New York YES names the 30 mph road limit and doesn't claim every public street", () => {
+  const ny = () =>
+    evaluate({ state: "NY", riderAge: 30, rideDate: DATE, facts: classBike(1, { hasThrottle: false, assistMph: 20 }), places: [] });
+
+  it("lists the road rule on the card and the bottom line, with VTL 1242(8)", () => {
+    const result = ny();
+    expect(result.state.status).toBe("yes");
+    const req = result.state.requirements.find((l) => l.code === "req_roads_max_speed");
+    expect(req?.source?.citation).toBe("N.Y. Veh. & Traf. Law § 1242(8)");
+    const line = bottomLine(result, DATE);
+    expect(line.kind).toBe("yes");
+    expect(line.roadLimit).toBe(true);
+    const text = cardText(result, "NY");
+    expect(text).toContain("Ride only on roads with a posted speed limit of 30 mph or less, unless a local law allows faster roads.");
+    expect(text).toContain("Yes covers riding only on the streets the road rule above allows.");
+    expect(text).not.toContain("Yes covers riding on public streets");
+    const es = cardText(result, "NY", "es");
+    expect(es).toContain("30 mph o menos");
+    expect(es).not.toContain("El sí cubre andar por calles públicas");
+  });
+
+  it("keeps the plain streets sentence in a state with no e-bike road limit", () => {
+    const tx = evaluate({ state: "TX", riderAge: 30, rideDate: DATE, facts: classBike(1, { hasThrottle: false, assistMph: 20 }), places: [] });
+    expect(bottomLine(tx, DATE).roadLimit).toBe(false);
+    expect(cardText(tx, "TX")).toContain("Yes covers riding on public streets and in bike lanes.");
+  });
+
+  it("quotes the road rule word for word from the record field it names", () => {
+    const limits = (overlayJson as unknown as { road_limits: { state: string; source_field: string; source_quote: string }[] }).road_limits;
+    expect(limits.map((r) => r.state)).toEqual(["NY"]);
+    for (const r of limits) expect(field(r.state, r.source_field)).toContain(r.source_quote);
   });
 });

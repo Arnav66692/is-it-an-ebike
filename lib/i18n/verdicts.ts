@@ -132,6 +132,7 @@ const EN = {
     Number(p.definition)
       ? `It must have a speedometer. Without one it isn't a Class 3 e-bike in ${c.state}.`
       : `A Class 3 e-bike must have a speedometer in ${c.state}.`,
+  req_roads_max_speed: (p) => `Ride only on roads with a posted speed limit of ${p.mph} mph or less, unless a local law allows faster roads.`,
   req_license: () => "A driver's license or permit is required.",
   nj_license_by_age: (p) =>
     Number(p.age) <= 16
@@ -322,6 +323,7 @@ const ES = {
     Number(p.definition)
       ? `Debe tener velocímetro. Sin uno no es una bicicleta eléctrica Clase 3 en ${esName(c)}.`
       : `Una bicicleta eléctrica Clase 3 debe tener velocímetro en ${esName(c)}.`,
+  req_roads_max_speed: (p) => `Anda solo por calles con un límite de velocidad señalado de ${p.mph} mph o menos, salvo que una ley local permita calles más rápidas.`,
   req_license: () => "Se necesita licencia o permiso de conducir.",
   nj_license_by_age: (p) =>
     Number(p.age) <= 16

@@ -174,6 +174,20 @@
     }
   ],
 
+  "road_limits": [
+    {
+      "state": "NY",
+      "code": "req_roads_max_speed",
+      "max_posted_mph": 30,
+      "source_field": "where_allowed.quote",
+      "source_quote": "may only be operated on highways with a posted speed limit of thirty miles per hour or less",
+      "citation": "N.Y. Veh. & Traf. Law § 1242(8)",
+      "source_url": "https://www.nysenate.gov/legislation/laws/VAT/1242",
+      "statute_quote": "a bicycle with electric assist may only be operated on highways with a posted speed limit of thirty miles per hour or less",
+      "note": "Fifth review, Oct 19, 2026: read on nysenate.gov. The limit is for e-bikes, not all bicycles, so a New York YES lists it, and the bottom line no longer says the YES covers every public street. 1242(8) also lets a local law or rule allow e-bikes on faster roads."
+    }
+  ],
+
   "license_detail": [
     {
       "state": "NJ",

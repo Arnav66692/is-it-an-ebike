@@ -114,7 +114,7 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
         </div>
       ) : null}
 
-      {yes ? <p className="text-sm">{t(lang, "blStreets")}</p> : null}
+      {yes ? <p className="text-sm">{t(lang, line.roadLimit ? "blStreetsLimited" : "blStreets")}</p> : null}
       {unchecked && line.kind !== "no_illegal" ? (
         <p className="text-sm font-semibold" data-unchecked="">
           {unchecked}

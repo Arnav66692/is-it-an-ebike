@@ -224,9 +224,22 @@ export interface OverlayClass3Equipment {
   statute_quote: string;
 }
 
+/** A state where e-bikes may ride only on roads posted at or under a speed, like New York's 30 mph. */
+export interface OverlayRoadLimit {
+  state: string;
+  code: string;
+  max_posted_mph: number;
+  source_field: string;
+  source_quote: string;
+  citation: string;
+  source_url: string;
+  statute_quote: string;
+}
+
 export interface Overlay {
   stop_pedaling_class2: { states: string[]; decided_on: string; decided_by: string };
   class3_equipment: OverlayClass3Equipment[];
+  road_limits: OverlayRoadLimit[];
   supplemental_cautions: OverlayCaution[];
   age_exceptions: OverlayAgeException[];
   license_detail: { state: string; code: string; source_quote: string }[];

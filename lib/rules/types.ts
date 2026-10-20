@@ -22,6 +22,12 @@ export function isQuestionId(value: string): value is QuestionId {
  */
 export const CAUTION_FAST_MODE_UNVERIFIED = "caution_fast_mode_unverified";
 
+/**
+ * Requirement codes that limit which streets an e-bike may use, like New York's 30 mph roads. A
+ * YES with one of these can't say it covers every public street.
+ */
+export const ROAD_LIMIT_CODES: readonly string[] = ["req_roads_max_speed"];
+
 /** Everything the engine knows about one bike. Null means unknown. */
 export interface BikeFacts {
   hasPedals: Tri;
