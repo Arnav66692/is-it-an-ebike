@@ -5,7 +5,6 @@
 
 import { describe, expect, it } from "vitest";
 import sdJson from "@/data/rules/san_diego_local.json";
-import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { PLACE_IDS } from "@/lib/rules/local";
 import { renderLine } from "@/lib/i18n/verdicts";
