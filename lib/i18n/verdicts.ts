@@ -209,6 +209,8 @@ const EN = {
       ? "The class, tag and course rules come only from the district's web page. No board policy or regulation has them, and the Board has not voted on them."
       : "Only part of these rules was found in enacted text. The rest comes from an official web page.",
   bl_unverified_primary_not_found: () => "The enacted text behind these rules was not found. They come from an official page or a release.",
+  bl_state_after_check: (p, c) =>
+    `These rules were last checked on ${formatDate(n(p.checked), c.lang)}. A new law could take effect before your ride date, so we can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`,
 } satisfies Templates;
 
 /** Spanish must have a sentence for every English code, and no code English lacks. */
@@ -376,6 +378,8 @@ const ES = {
       ? "Las reglas de clase, etiqueta y curso vienen solo de la página web del distrito. Ninguna política ni reglamento de la junta las incluye, y la junta no ha votado sobre ellas."
       : "Solo una parte de estas reglas se encontró en un texto vigente. El resto viene de una página web oficial.",
   bl_unverified_primary_not_found: () => "No se encontró el texto vigente de estas reglas. Vienen de una página o un comunicado oficial.",
+  bl_state_after_check: (p, c) =>
+    `Estas reglas se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}. Una ley nueva podría entrar en vigor antes de la fecha de tu viaje, así que solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`,
 } satisfies Record<keyof typeof EN, Template>;
 
 const CHANGES: Record<Lang, Record<string, string>> = {

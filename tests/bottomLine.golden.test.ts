@@ -219,3 +219,31 @@ describe("bottom line, review fixes (Oct 19, 2026)", () => {
     expect(bl.requirements.map((l) => l.code)).toContain("req_helmet_under");
   });
 });
+
+describe("bottom line, third review fixes (Oct 19, 2026)", () => {
+  it("state law vouches for a ride only up to 30 days after its check, like a local record", () => {
+    const at = (state: string, age: number, cls: 1 | 2 | 3, date: string, places: PlaceId[] = []) =>
+      bottomLine(evaluate({ state, riderAge: age, rideDate: date, facts: classBike(cls), places }), date);
+    expect(at("CA", 16, 3, "2026-11-15").kind).toBe("yes");
+    const late = at("CA", 16, 3, "2026-11-16");
+    expect(late.kind).toBe("no_unconfirmed");
+    expect(late.missing).toEqual([
+      { kind: "stale", where: [{ scope: "state", id: "CA" }], line: { code: "bl_state_after_check", params: { checked: "2026-10-16", through: "2026-11-15" } } },
+    ]);
+    for (const [state, age, cls, places] of [
+      ["CA", 16, 3, []],
+      ["TX", 15, 2, []],
+      ["CA", 13, 1, ["encinitas"]],
+    ] as [string, number, 1 | 2 | 3, PlaceId[]][]) {
+      expect(at(state, age, cls, "2029-12-31", places).kind, state).toBe("no_unconfirmed");
+    }
+  });
+
+  it("a rule that says no still says no after the horizon", () => {
+    expect(at14Class3("2029-12-31")).toBe("no_illegal");
+  });
+});
+
+function at14Class3(date: string): string {
+  return bottomLine(evaluate({ state: "CA", riderAge: 14, rideDate: date, facts: classBike(3), places: [] }), date).kind;
+}

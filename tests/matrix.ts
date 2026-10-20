@@ -18,6 +18,7 @@ import {
   localBlockers,
   pedalsOf,
   stateBlockers,
+  stateStaleInData,
   topVerifiedInData,
   type OracleFacts,
 } from "./oracle";
@@ -25,6 +26,8 @@ import {
 export const AGES = [7, 11, 12, 13, 14, 15, 16, 17, 18, 30];
 export const DATES = [
   "2026-10-17",
+  "2026-11-15",
+  "2026-11-16",
   "2026-11-30",
   "2026-12-01",
   "2026-12-31",
@@ -321,12 +324,13 @@ export function runBottomLineMatrix(): BottomLineSummary {
               const open = statuses.some((st) => st === "cant_confirm" || st === "need_info");
               const unverified = cards.filter((v) => !topVerifiedInData(v.scope, v.id)).map((v) => v.id);
               const unsure = cards.some((v) => v.cautions.some((c) => c.code === CAUTION_FAST_MODE_UNVERIFIED));
+              const stale = stateStaleInData(state, date);
               if (anyNo && bl.kind !== "no_illegal") wrongKind.push({ ...base, why: ["a card is not allowed"] });
               if (!anyNo && bl.kind === "no_illegal") wrongKind.push({ ...base, why: ["no card is illegal"] });
-              if (bl.kind === "yes" && (open || unverified.length > 0 || unsure)) {
-                wrongKind.push({ ...base, why: [open ? "open card" : "", unsure ? "not sure" : "", ...unverified].filter(Boolean) });
+              if (bl.kind === "yes" && (open || unverified.length > 0 || unsure || stale)) {
+                wrongKind.push({ ...base, why: [open ? "open card" : "", unsure ? "not sure" : "", stale ? "state check too old" : "", ...unverified].filter(Boolean) });
               }
-              if (!anyNo && !open && !unsure && unverified.length === 0 && bl.kind !== "yes") {
+              if (!anyNo && !open && !unsure && !stale && unverified.length === 0 && bl.kind !== "yes") {
                 wrongKind.push({ ...base, why: ["every card is a verified yes"] });
               }
 

@@ -5,6 +5,7 @@
 // in enacted text. Anything illegal is NO. Anything uncertain is NO, not confirmed, with the
 // exact gap named. Uncertainty never turns into a YES.
 
+import { addDays } from "./dates";
 import { CAUTION_FAST_MODE_UNVERIFIED, type EngineResult, type Line, type Verdict, type VerificationLevel } from "./types";
 
 export type BottomLineKind = "yes" | "no_illegal" | "no_unconfirmed";
@@ -21,7 +22,7 @@ export interface BottomLineItem {
   line: Line;
 }
 
-export type GapKind = "cant_confirm" | "unanswered" | "unsure" | "unverified";
+export type GapKind = "cant_confirm" | "unanswered" | "unsure" | "unverified" | "stale";
 
 export interface BottomLineGap extends BottomLineItem {
   kind: GapKind;
@@ -51,7 +52,7 @@ export type UnsureCode = "bl_unsure_fast_mode";
  * Every line code the bottom line itself writes. lib/i18n/verdicts.ts must have a sentence for
  * each one in both languages, and the compiler checks that.
  */
-export type BottomLineCode = "bl_unanswered" | UnsureCode | `bl_unverified_${"state" | UnverifiedLevel}`;
+export type BottomLineCode = "bl_unanswered" | UnsureCode | `bl_unverified_${"state" | UnverifiedLevel}` | "bl_state_after_check";
 
 /** The levels that keep a local card from a YES. */
 type UnverifiedLevel = Exclude<VerificationLevel, "primary_verified">;
@@ -59,7 +60,19 @@ type UnverifiedLevel = Exclude<VerificationLevel, "primary_verified">;
 /** Cautions the engine adds only because the user answered "not sure". They block a YES. */
 const UNSURE_CAUTIONS: ReadonlyMap<string, UnsureCode> = new Map([[CAUTION_FAST_MODE_UNVERIFIED, "bl_unsure_fast_mode"]]);
 
-const GAP_ORDER: GapKind[] = ["cant_confirm", "unanswered", "unsure", "unverified"];
+const GAP_ORDER: GapKind[] = ["cant_confirm", "unanswered", "unsure", "unverified", "stale"];
+
+/**
+ * A state record vouches for ride dates up to this many days after it was last checked, the same
+ * re-check horizon a San Diego record has. A later ride could fall under a law passed after the
+ * check, so it can't be a YES until the table is checked again.
+ */
+export const STATE_RECHECK_DAYS = 30;
+
+/** The last ride date a state record checked on this date can vouch for. */
+export function stateCheckedThrough(lastChecked: string): string {
+  return addDays(lastChecked, STATE_RECHECK_DAYS);
+}
 
 /** State cards need statute-verified rules. Local cards need a primary_verified record. */
 export function isTopVerified(v: Verdict): boolean {
@@ -101,7 +114,7 @@ function unverifiedLine(v: Verdict): Line {
 }
 
 /** Every reason this card keeps the answer from a YES, short of being illegal. */
-function gapsOf(v: Verdict): BottomLineGap[] {
+function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
   const where = [refOf(v)];
   const gaps: BottomLineGap[] = [];
   if (v.status === "cant_confirm") gaps.push({ kind: "cant_confirm", where, line: v.reason });
@@ -114,6 +127,13 @@ function gapsOf(v: Verdict): BottomLineGap[] {
     if (code) gaps.push({ kind: "unsure", where, line: { code } });
   }
   if (!isTopVerified(v)) gaps.push({ kind: "unverified", where, line: unverifiedLine(v) });
+  if (v.scope === "state") {
+    const through = stateCheckedThrough(v.lastChecked);
+    if (rideDate > through) {
+      const code: BottomLineCode = "bl_state_after_check";
+      gaps.push({ kind: "stale", where, line: { code, params: { checked: v.lastChecked, through } } });
+    }
+  }
   return gaps;
 }
 
@@ -137,7 +157,7 @@ export function bottomLine(result: EngineResult, rideDate: string): BottomLine {
     };
   }
 
-  const gaps = cards.flatMap(gapsOf);
+  const gaps = cards.flatMap((v) => gapsOf(v, rideDate));
   if (gaps.length > 0) {
     const ordered = [...gaps].sort((a, b) => GAP_ORDER.indexOf(a.kind) - GAP_ORDER.indexOf(b.kind));
     return {

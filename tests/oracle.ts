@@ -23,6 +23,8 @@ interface CautionRaw {
 }
 interface StateRaw {
   confidence: string;
+  /** The day the state's record was last checked against statute text. */
+  last_checked: string;
   never_return_legal: boolean;
   definition: {
     requires_pedals: boolean | null;
@@ -68,6 +70,8 @@ const SD = sdJson as unknown as {
 const UNDER_12_POWER_ENDS = "2029-01-01";
 /** A new city or county ordinance normally takes effect this many days after adoption. */
 const NEW_ORDINANCE_DAYS = 30;
+/** A state record vouches for ride dates this many days after its check, the same horizon as a local record. */
+const STATE_RECHECK_DAYS = 30;
 
 function plusDays(date: string, days: number): string {
   return new Date(Date.parse(`${date}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
@@ -379,11 +383,13 @@ export function illegalReasons(code: string, f: OracleFacts, age: number, date: 
 
 /**
  * Every reason the bottom line must not say YES. That is every card reason, plus a fast-mode
- * answer left at "not sure", plus any record that was not read in enacted text.
+ * answer left at "not sure", plus any record that was not read in enacted text, plus a ride date
+ * past what the state's last check vouches for.
  */
 export function bottomLineBlockers(code: string, f: OracleFacts, age: number, date: string, places: string[]): string[] {
   const reasons = [...stateBlockers(code, f, age, date)];
   if (STATES[code].confidence !== "statute_verified") reasons.push("state_not_statute_verified");
+  if (stateStaleInData(code, date)) reasons.push("state_after_check");
   if ((f.motorOver20 === null || f.assistOver28 === null) && !reasons.includes("fast_mode_unknown")) {
     reasons.push("fast_mode_not_answered");
   }
@@ -396,6 +402,11 @@ export function bottomLineBlockers(code: string, f: OracleFacts, age: number, da
     if (level !== "primary_verified") reasons.push(`${place}:not_primary_verified`);
   }
   return reasons;
+}
+
+/** True when the ride date is past what the state's last check can vouch for. */
+export function stateStaleInData(code: string, date: string): boolean {
+  return date > plusDays(STATES[code].last_checked, STATE_RECHECK_DAYS);
 }
 
 /** True when the raw data says the record behind this card was read in enacted text. */

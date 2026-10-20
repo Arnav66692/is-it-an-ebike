@@ -202,7 +202,8 @@ describe("third review fixes (Oct 19, 2026): the ride date follows the real toda
     expect(rideDateFor(false, "2026-11-18", "2026-11-19")).toBe("2026-11-19");
     const stale = evaluate({ state: "CA", riderAge: 10, rideDate: "2026-11-18", facts: classBike(1), places: ["encinitas"] });
     const fresh = evaluate({ state: "CA", riderAge: 10, rideDate: rideDateFor(false, "2026-11-18", "2026-11-19") ?? "", facts: classBike(1), places: ["encinitas"] });
-    expect(bottomLine(stale, "2026-11-18").kind).toBe("yes");
+    expect(stale.local[0].status).toBe("yes");
+    expect(fresh.local[0].reason.code).toBe("local_under_12_after_check");
     expect(bottomLine(fresh, "2026-11-19").kind).toBe("no_unconfirmed");
   });
 
