@@ -140,6 +140,45 @@ export function answerShown(value: Tri, unsure: boolean): "yes" | "no" | "unsure
   return unsure ? "unsure" : null;
 }
 
+type Shown = "yes" | "no" | "unsure" | null;
+
+function withoutUnsure(facts: BikeFacts, q: QuestionId): QuestionId[] {
+  return facts.unsure.filter((x) => x !== q);
+}
+
+/**
+ * The weight answer shown in the follow-up, read from the facts every time. A weight typed on the
+ * facts card decides it, so the two places never show different answers.
+ */
+export function weightShown(facts: BikeFacts): Shown {
+  if (facts.weightLb !== null) return facts.weightLb > 100 ? "yes" : "no";
+  return answerShown(facts.weightOver100, facts.unsure.includes("weight"));
+}
+
+/**
+ * The "foot pegs or a pedal kit" answer shown in the follow-up, read from the facts every time.
+ * Yes when either is true, no only when both are false, so a pegs answer changed on the facts card
+ * shows here at once.
+ */
+export function pegsKitShown(facts: BikeFacts): Shown {
+  if (facts.hasFootPegs === true || facts.needsPedalKit === true) return "yes";
+  if (facts.hasFootPegs === false && facts.needsPedalKit === false) return "no";
+  return facts.unsure.includes("pegs_kit") ? "unsure" : null;
+}
+
+/** The facts after the foot pegs answer on the facts card. "Not sure" is the same answer as in the follow-up. */
+export function withFootPegs(facts: BikeFacts, value: "yes" | "no" | "unsure"): BikeFacts {
+  if (value === "unsure") {
+    return { ...facts, hasFootPegs: null, needsPedalKit: null, unsure: [...withoutUnsure(facts, "pegs_kit"), "pegs_kit"] };
+  }
+  return { ...facts, hasFootPegs: value === "yes", unsure: withoutUnsure(facts, "pegs_kit") };
+}
+
+/** The facts after a weight is typed on the facts card. A typed weight replaces a "not sure". */
+export function withWeight(facts: BikeFacts, lb: number | null): BikeFacts {
+  return { ...facts, weightLb: lb, unsure: lb === null ? facts.unsure : withoutUnsure(facts, "weight") };
+}
+
 /** True when the facts hold one wheel size, so the single size field shows every size in use. */
 export function sameWheelSize(facts: BikeFacts): boolean {
   return facts.wheelRearIn === null || facts.wheelRearIn === facts.wheelFrontIn;

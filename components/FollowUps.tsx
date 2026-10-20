@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { answerShown, sameWheelSize, WHEEL_MAX_IN, WHEEL_MIN_IN, withOneWheelSize, withWheelCount, withWheelSize } from "@/lib/checkerState";
+import {
+  pegsKitShown,
+  sameWheelSize,
+  weightShown,
+  WHEEL_MAX_IN,
+  WHEEL_MIN_IN,
+  withOneWheelSize,
+  withWheelCount,
+  withWheelSize,
+} from "@/lib/checkerState";
 import type { BikeFacts, QuestionId } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
-import { Card, Choice, NumberField } from "./controls";
+import { Card, Choice, NumberField, triValue } from "./controls";
 
 type Tri3 = "yes" | "no" | "unsure";
 
@@ -22,13 +31,19 @@ function withUnsure(f: BikeFacts, q: QuestionId, unsure: boolean): QuestionId[] 
 }
 
 export function FollowUps({ lang, questions, facts, onChange }: Props) {
-  // Each answer starts from the facts, so "not sure" is still picked when this card is shown again.
-  const [motorUi, setMotorUi] = useState<Tri3 | null>(answerShown(facts.motorOver20, facts.unsure.includes("fast_mode")));
-  const [assistUi, setAssistUi] = useState<Tri3 | null>(answerShown(facts.assistOver28, facts.unsure.includes("fast_mode")));
-  const [weightUi, setWeightUi] = useState<Tri3 | null>(answerShown(facts.weightOver100, facts.unsure.includes("weight")));
-  const [pegsUi, setPegsUi] = useState<Tri3 | null>(answerShown(facts.hasFootPegs, facts.unsure.includes("pegs_kit")));
+  // Every answer is read from the facts on each render, so an answer changed on the facts card shows
+  // here at once, and a click on any answer always changes the facts. The facts keep one "not sure"
+  // for both fast-mode parts, so only which part was "not sure" is kept here.
+  const [fastUnsure, setFastUnsure] = useState(() => {
+    const unsure = facts.unsure.includes("fast_mode");
+    return { motor: unsure && facts.motorOver20 === null, assist: unsure && facts.assistOver28 === null };
+  });
   const [sameSize, setSameSize] = useState(sameWheelSize(facts));
   if (questions.length === 0) return null;
+
+  const fastFlag = facts.unsure.includes("fast_mode");
+  const motorUi: Tri3 | null = triValue(facts.motorOver20) ?? (fastFlag && fastUnsure.motor ? "unsure" : null);
+  const assistUi: Tri3 | null = triValue(facts.assistOver28) ?? (fastFlag && fastUnsure.assist ? "unsure" : null);
 
   const wheelError = t(lang, "rangeError", { min: WHEEL_MIN_IN, max: WHEEL_MAX_IN });
   const tri = [
@@ -38,6 +53,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
   ];
 
   const setFast = (motor: Tri3 | null, assist: Tri3 | null) => {
+    setFastUnsure({ motor: motor === "unsure", assist: assist === "unsure" });
     const unsure = motor === "unsure" || assist === "unsure";
     onChange({
       ...facts,
@@ -118,19 +134,13 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
             legend={t(lang, "qFastMotor")}
             options={tri}
             value={motorUi}
-            onChange={(v) => {
-              setMotorUi(v);
-              setFast(v, assistUi);
-            }}
+            onChange={(v) => setFast(v, assistUi)}
           />
           <Choice
             legend={t(lang, "qFastAssist")}
             options={tri}
             value={assistUi}
-            onChange={(v) => {
-              setAssistUi(v);
-              setFast(motorUi, v);
-            }}
+            onChange={(v) => setFast(motorUi, v)}
           />
         </fieldset>
       ) : null}
@@ -139,9 +149,8 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
         <Choice
           legend={t(lang, "qWeight")}
           options={tri}
-          value={weightUi}
+          value={weightShown(facts)}
           onChange={(v) => {
-            setWeightUi(v);
             onChange({
               ...facts,
               weightLb: null,
@@ -156,9 +165,8 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
         <Choice
           legend={t(lang, "qPegs")}
           options={tri}
-          value={pegsUi}
+          value={pegsKitShown(facts)}
           onChange={(v) => {
-            setPegsUi(v);
             const value = v === "yes" ? true : v === "no" ? false : null;
             onChange({ ...facts, hasFootPegs: value, needsPedalKit: value === true ? null : value, unsure: withUnsure(facts, "pegs_kit", v === "unsure") });
           }}

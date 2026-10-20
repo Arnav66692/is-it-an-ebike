@@ -4,11 +4,13 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { BottomLineCard } from "@/components/BottomLineCard";
+import { FollowUps } from "@/components/FollowUps";
+import { ShapeFacts } from "@/components/ShapeFacts";
 import overlayJson from "@/data/overlay.json";
 import statesJson from "@/data/rules/all_states.normalized.json";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { checkerToday, DATA_CHECKED_ON, rideDateFor, rideDateIn } from "@/lib/checkerState";
+import { checkerToday, DATA_CHECKED_ON, pegsKitShown, rideDateFor, rideDateIn, weightShown, withFootPegs, withWeight } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { formatDate } from "@/lib/i18n/names";
@@ -507,5 +509,74 @@ describe("California from Jan 1, 2027 follows the enacted SB 1167 text on pedal 
     expect(caution?.statute_quote).toContain("on motor power alone");
     expect(field("CA", caution?.source_field ?? "")).toContain(caution?.source_quote ?? "?");
     expect(caution?.source_quote).toContain("assist past 28 mph");
+  });
+});
+
+/** The radio picked in each group of a rendered card, in page order, as "legend: value". */
+function picked(html: string): string[] {
+  const out: string[] = [];
+  for (const group of html.split("<fieldset").slice(1)) {
+    const legend = /<legend[^>]*>([^<]*)<\/legend>/.exec(group)?.[1] ?? "";
+    const radio = /<input[^>]*type="radio"[^>]*>/g;
+    for (const tag of group.match(radio) ?? []) {
+      if (tag.includes('checked=""')) out.push(`${legend.replace(/&#x27;/g, "'")}: ${/value="([^"]*)"/.exec(tag)?.[1]}`);
+    }
+  }
+  return out;
+}
+
+describe("the follow-ups and the facts card always show the same answer", () => {
+  const base: BikeFacts = { ...classBike(1, { hasThrottle: false }), hasFootPegs: false, needsPedalKit: false, weightLb: null, weightOver100: false };
+  const followUps = (facts: BikeFacts) =>
+    picked(renderToStaticMarkup(createElement(FollowUps, { lang: "en", questions: ["weight", "pegs_kit"], facts, onChange: () => undefined })));
+
+  it("a pegs answer changed on the facts card shows in the follow-up", () => {
+    expect(followUps(base)).toContain("Does it have foot pegs, or need a pedal kit to have pedals?: no");
+    const yes = withFootPegs(base, "yes");
+    expect(pegsKitShown(yes)).toBe("yes");
+    expect(followUps(yes)).toContain("Does it have foot pegs, or need a pedal kit to have pedals?: yes");
+    const unsure = withFootPegs(base, "unsure");
+    expect(unsure.unsure).toContain("pegs_kit");
+    expect(unsure.needsPedalKit).toBeNull();
+    expect(pegsKitShown(unsure)).toBe("unsure");
+    expect(followUps(unsure)).toContain("Does it have foot pegs, or need a pedal kit to have pedals?: unsure");
+    // Back to no on the facts card clears the "not sure", and the follow-up shows no only if the kit is also no.
+    const backToNo = withFootPegs(unsure, "no");
+    expect(backToNo.unsure).not.toContain("pegs_kit");
+    expect(pegsKitShown(backToNo)).toBeNull();
+    expect(pegsKitShown(withFootPegs(base, "no"))).toBe("no");
+  });
+
+  it("a 'not sure' on the facts card pegs reaches the engine's not-sure line in Utah", () => {
+    const facts = withFootPegs({ ...base, wheelCount: 2, wheelFrontIn: 20, wheelRearIn: 20, weightOver100: null }, "unsure");
+    const result = evaluate({ state: "UT", riderAge: 30, rideDate: DATE, facts, places: [] });
+    expect(result.state.status).toBe("cant_confirm");
+    expect(result.state.questions).toEqual([]);
+  });
+
+  it("a weight typed on the facts card decides the follow-up weight answer", () => {
+    expect(weightShown(base)).toBe("no");
+    const heavy = withWeight({ ...base, unsure: ["weight"] }, 120);
+    expect(heavy.unsure).not.toContain("weight");
+    expect(weightShown(heavy)).toBe("yes");
+    expect(followUps(heavy)).toContain("Does it weigh more than 100 pounds?: yes");
+    expect(weightShown(withWeight(base, 100))).toBe("no");
+  });
+
+  it("the facts card shows the follow-up's pegs answer, including not sure", () => {
+    const shape = (facts: BikeFacts) =>
+      picked(renderToStaticMarkup(createElement(ShapeFacts, { lang: "en", facts, evidence: {}, onChange: () => undefined })));
+    expect(shape({ ...base, hasFootPegs: null, needsPedalKit: null, unsure: ["pegs_kit"], wheelFrontIn: 20 })).toContain("Foot pegs for the rider?: unsure");
+    expect(shape({ ...base, hasFootPegs: true })).toContain("Foot pegs for the rider?: yes");
+  });
+
+  it("keeps no copy of the pegs or weight answer in component state, so a click on the shown answer is never a no-op", () => {
+    const followSource = readFileSync(join(__dirname, "..", "components", "FollowUps.tsx"), "utf8");
+    expect(followSource).not.toMatch(/useState[^;]*(weight|pegs)/i);
+    expect(followSource).toContain("value={weightShown(facts)}");
+    expect(followSource).toContain("value={pegsKitShown(facts)}");
+    const shapeSource = readFileSync(join(__dirname, "..", "components", "ShapeFacts.tsx"), "utf8");
+    expect(shapeSource).not.toContain("useState");
+    expect(shapeSource).toContain("withFootPegs(facts, v)");
   });
 });
