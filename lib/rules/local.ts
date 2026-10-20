@@ -15,6 +15,11 @@ export const PLACE_IDS: PlaceId[] = [
   "encinitas",
   "solana_beach",
   "del_mar",
+  "chula_vista",
+  "escondido",
+  "la_mesa",
+  "poway",
+  "san_marcos",
   "unincorporated_san_diego_county",
   "sduhsd_campuses",
 ];
@@ -158,6 +163,16 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
         requirements: [],
       };
     }
+  }
+  // A ban whose start is uncertain may already be in force before the date its text gives, so
+  // between the earliest possible start and that date an under-12 answer can't be a yes.
+  const earliest = ban?.start_unclear_from;
+  if (ban && earliest && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? UNDER_12_AGE) && date >= earliest && date < ban.effective_date) {
+    return {
+      status: "cant_confirm",
+      reason: line("local_under_12_start_unclear", { from: earliest, since: ban.effective_date }, ban),
+      requirements: [],
+    };
   }
   // These sentences don't name the place or the class, so the lines carry neither. Places with the
   // same check date then share one item under What's missing instead of repeating it word for word.
@@ -322,6 +337,121 @@ function placeNotes(
       break;
     case "sduhsd_campuses":
       break;
+    default:
+      notes.push(...cityNotes(place, j, input, status, classes, localBanOnly));
+  }
+  return notes;
+}
+
+/**
+ * When a city note shows. "ride": the rider may ride at all. "class3": a Class 3 rider who may ride.
+ * "class12": the bike may be Class 1 or 2 and is an e-bike. "ride12": the same, and the rider may ride.
+ * "under18": a rider under 18 who may ride.
+ * "ban_only": the answer is no only because of the city's under-12 ban.
+ */
+type CityNoteWhen = "ride" | "ride12" | "always" | "not_ebike" | "class3" | "class12" | "under18" | "ban_only";
+
+/**
+ * One city note: the sentence code and the record rule it rests on. A rule not yet in force on the
+ * ride date shows as "Starting <date>:" and the sentence. A note shows only from its "from" day, if
+ * any, and stops showing on its "until" day.
+ */
+interface CityNote {
+  code: string;
+  rule: string;
+  when: CityNoteWhen;
+  from?: string;
+  until?: string;
+}
+
+/**
+ * Notes for the cities added on Oct 20, 2026. Each note names the record rule behind it, so a note
+ * never shows without its source. The age, warning and e-moto lines all cities share come first.
+ */
+const CITY_NOTES: Partial<Record<PlaceId, CityNote[]>> = {
+  poway: [
+    { code: "poway_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
+    { code: "poway_no_passengers_under_18", rule: "passengers_under_18_operator", when: "under18" },
+    { code: "poway_speed", rule: "speed_limits", when: "ride" },
+    { code: "poway_where", rule: "where_to_ride", when: "ride" },
+    { code: "poway_impound", rule: "impound", when: "ride" },
+    { code: "poway_trails_page", rule: "trails_page", when: "ride" },
+  ],
+  la_mesa: [
+    { code: "lm_emoto", rule: "emoto_removal", when: "not_ebike" },
+    { code: "lm_sidewalks", rule: "sidewalk_vehicle_ban", when: "ride" },
+    { code: "lm_parks", rule: "park_motorized_vehicle_ban", when: "ride" },
+  ],
+  chula_vista: [
+    { code: "cv_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
+    { code: "cv_no_passengers_under_18", rule: "passengers_under_18_operator", when: "under18" },
+    { code: "cv_sidewalks", rule: "sidewalk_rules", when: "ride" },
+    { code: "cv_parks", rule: "park_path_limits", when: "ride" },
+    { code: "cv_impound", rule: "impound", when: "ride" },
+  ],
+  escondido: [
+    { code: "esc_under_12_passengers", rule: "under_12_passenger_ban", when: "class12" },
+    { code: "esc_fines_start", rule: "under_12_warning_period", when: "ban_only", until: "2027-01-15" },
+    { code: "esc_sidewalks_soon", rule: "sidewalk_ban", when: "ride", until: "2026-11-15" },
+    { code: "esc_sidewalks", rule: "sidewalk_ban", when: "ride", from: "2026-11-15" },
+    { code: "esc_parks", rule: "recreational_area_vehicle_limit", when: "ride" },
+    { code: "esc_seizure", rule: "seizure", when: "ride" },
+  ],
+  san_marcos: [
+    { code: "sm_sidewalks", rule: "sidewalk_rules", when: "ride" },
+    { code: "sm_class3_parks", rule: "class3_park_and_trail_ban", when: "class3" },
+    { code: "sm_parks", rule: "park_and_trail_limits", when: "ride12" },
+    { code: "sm_trail_list", rule: "director_trail_list", when: "ride12" },
+  ],
+};
+
+function cityNotes(
+  place: PlaceId,
+  j: RawJurisdiction,
+  input: EngineInput,
+  status: Status,
+  classes: number[],
+  localBanOnly: boolean,
+): Line[] {
+  const notes: Line[] = [];
+  const age = input.riderAge;
+  const mayBeClass1or2 = classes.length === 0 || classes.some((c) => c === 1 || c === 2);
+  const mayRide = status !== "no" && status !== "not_ebike";
+  const ban = ruleNamed(j, "under_12_ban");
+  const noBan = ruleNamed(j, "no_local_age_limit_found");
+  // The note says state law lets the city adopt a ban, which is only true before VC 21214.7 is repealed.
+  if (noBan && age < UNDER_12_AGE && mayBeClass1or2 && status !== "not_ebike" && input.rideDate < UNDER_12_RULE_ENDS) {
+    notes.push(line("city_no_age_limit", { place, date: j.checked_through }, noBan));
+  }
+  if (ban && localBanOnly) {
+    const course = ruleNamed(j, "course_in_lieu_of_fine");
+    if (course) notes.push(line("city_course_in_lieu", undefined, course));
+    if (ban.citations_from && input.rideDate < ban.citations_from) {
+      notes.push({ code: "city_warning_period", params: { from: ban.citations_from }, source: warningSource(ban), detail: null });
+    }
+  }
+  if (ban && age === UNDER_12_AGE && (ban.min_age ?? UNDER_12_AGE) === UNDER_12_AGE && mayBeClass1or2 && status !== "not_ebike") {
+    notes.push(line("city_age_12", undefined, ban));
+  }
+  const stateEmoto = ruleNamed(j, "state_emoto_removal");
+  if (status === "not_ebike" && stateEmoto) notes.push(line("city_emoto_state_law", { place }, stateEmoto));
+  for (const note of CITY_NOTES[place] ?? []) {
+    const rule = ruleNamed(j, note.rule);
+    if (!rule) continue;
+    const shows =
+      note.when === "always" ||
+      (note.when === "ride" && mayRide) ||
+      (note.when === "not_ebike" && status === "not_ebike") ||
+      (note.when === "class3" && mayRide && classes.includes(3)) ||
+      (note.when === "class12" && mayBeClass1or2 && status !== "not_ebike") ||
+      (note.when === "ride12" && mayBeClass1or2 && mayRide) ||
+      (note.when === "under18" && mayRide && age < 18) ||
+      (note.when === "ban_only" && localBanOnly);
+    if (!shows || (note.from && input.rideDate < note.from) || (note.until && input.rideDate >= note.until)) continue;
+    // A rule whose start is uncertain shows as in force from the earliest day it may apply.
+    const starts = rule.start_unclear_from ?? rule.effective_date;
+    if (starts && input.rideDate < starts) notes.push(line("city_starting", { date: starts, note: note.code }, rule));
+    else notes.push(line(note.code, undefined, rule));
   }
   return notes;
 }

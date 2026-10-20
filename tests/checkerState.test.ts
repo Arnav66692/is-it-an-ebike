@@ -73,7 +73,8 @@ describe("follow-up questions stay on screen once asked", () => {
 });
 
 describe("second review fixes: the ride date field", () => {
-  const TODAY = "2026-10-19";
+  // The latest record check: the 13 cities added on Oct 20, 2026.
+  const TODAY = "2026-10-20";
 
   it("checks today and any date up to the last one the picker offers", () => {
     expect(rideDateIn(TODAY, TODAY)).toBe(TODAY);
