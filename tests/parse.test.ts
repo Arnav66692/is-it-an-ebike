@@ -88,8 +88,8 @@ describe("listings", () => {
   it("doesn't treat classic or class-leading as a class", () => {
     expect(parseSpecText("A classic look with class-leading range and world-class comfort.", "listing").facts.classes).toBeUndefined();
   });
-  it("converts km/h", () => {
-    expect(parseSpecText("pedal assist up to 25 km/h", "listing").facts.assistMph).toBe(15.5);
+  it("converts km/h, rounding up to a tenth", () => {
+    expect(parseSpecText("pedal assist up to 25 km/h", "listing").facts.assistMph).toBe(15.6);
   });
   it("reads no-throttle wording", () => {
     const e = parseSpecText("No throttle, pedal assist only up to 28 mph.", "listing");
@@ -100,7 +100,13 @@ describe("listings", () => {
     expect(parseSpecText("20 x 4.0 fat tires", "listing").facts.wheelFrontIn).toBe(20);
     expect(parseSpecText("rolls on 26-inch wheels", "listing").facts.wheelFrontIn).toBe(26);
     expect(parseSpecText("700c road wheels", "listing").facts.wheelFrontIn).toBe(28);
-    expect(parseSpecText('16" tires front, 20" tires rear', "listing").facts.wheelRearIn).toBe(16);
+    expect(parseSpecText('16" tires front, 20" tires rear', "label").facts.wheelRearIn).toBe(16);
+  });
+  it("asks instead of guessing when a listing names different wheel sizes", () => {
+    const e = parseSpecText('16" tires front, 20" tires rear', "listing");
+    expect(e.facts.wheelFrontIn).toBeUndefined();
+    expect(e.facts.wheelRearIn).toBeUndefined();
+    expect(e.flags).toContain("wheel_sizes_differ");
   });
   it("every piece of evidence is a real substring of the input", () => {
     const e = parseSpecText(
@@ -127,5 +133,80 @@ describe("listings", () => {
   });
   it("returns nothing for empty input", () => {
     expect(parseSpecText("   ", "listing").facts).toEqual({});
+  });
+});
+
+describe("third review fixes (Oct 19, 2026)", () => {
+  it("never reads pedals from text that says the bike has none", () => {
+    for (const text of [
+      "Electric dirt bike. Pedals: none. Class 2. 750W motor.",
+      "This model does not have pedals. Class 2, 500W rated, 20 mph throttle.",
+      "It doesn't have pedals.",
+      "Foot pegs instead of pedals.",
+      "Pedals: No",
+    ]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBe(false);
+    }
+    for (const text of [
+      "Throttle only, no pedal assist. Class 2 e-bike, 500W rated motor, 20 mph throttle.",
+      "Pedals: N/A",
+      "Pedals not included.",
+      "Pedals are sold separately.",
+    ]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBeUndefined();
+    }
+    expect(parseSpecText("5 levels of pedal assist and a torque sensor", "listing").facts.hasPedals).toBe(true);
+  });
+
+  it("leaves the throttle blank when the text says both no throttle and thumb throttle", () => {
+    for (const text of [
+      "Pedal assist up to 20 mph. Use the thumb throttle, or ride with no throttle for a workout. 500W rated motor.",
+      "Throttle: No throttle, Thumb throttle",
+    ]) {
+      const e = parseSpecText(text, "listing");
+      expect(e.facts.hasThrottle, text).toBeUndefined();
+      expect(e.flags, text).toContain("throttle_unclear");
+      expect(allEvidenceGrounded(e)).toBe(true);
+    }
+    expect(parseSpecText("Throttle: none. Pedal assist to 20 mph.", "listing").facts.hasThrottle).toBe(false);
+    expect(parseSpecText("Twist throttle to 20 mph.", "listing").facts.hasThrottle).toBe(true);
+  });
+
+  it("skips other products after a 'You may also like' heading", () => {
+    const e = parseSpecText(
+      "Class 2. Thumb throttle to 20 mph, pedal assist to 20 mph. Motor: 1500W peak. You may also like City Glide 500W commuter. Kids Mini 20 x 4.0",
+      "listing",
+    );
+    expect(e.facts.peakWatts).toBe(1500);
+    expect(e.facts.wattsUpTo).toBeUndefined();
+    expect(e.facts.wheelFrontIn).toBeUndefined();
+    expect(e.flags).toContain("other_products_skipped");
+    expect(allEvidenceGrounded(e)).toBe(true);
+    const kids = parseSpecText(
+      "Kids e-bike. Class 1. 250W rated. Pedal assist to 20 mph, no throttle. 12 x 2.4 tires. You may also like: Fat tire e-bike 20 x 4.0",
+      "listing",
+    );
+    expect(kids.facts.wheelFrontIn).toBe(12);
+    expect(kids.facts.wheelRearIn).toBe(12);
+  });
+
+  it("reads tire widths with three decimals", () => {
+    expect(parseSpecText("12 x 2.125 tires", "listing").facts.wheelFrontIn).toBe(12);
+    expect(parseSpecText('20" x 2.125" tires', "listing").facts.wheelFrontIn).toBe(20);
+  });
+
+  it("rounds converted speeds and weights up, never down onto a limit", () => {
+    expect(parseSpecText("Weight: 45.4 kg", "listing").facts.weightLb).toBe(100.1);
+    expect(parseSpecText("Pedal assist up to 32.2 km/h", "listing").facts.assistMph).toBe(20.1);
+    expect(parseSpecText("Pedal assist up to 45.1 km/h", "listing").facts.assistMph).toBe(28.1);
+    expect(parseSpecText("Weight: 20 kg", "listing").facts.weightLb).toBe(44.1);
+  });
+
+  it("doesn't read warranty or bikeway wording as the bike's class", () => {
+    expect(parseSpecText("World-class 2-year warranty. Pedal assist, 750W rated motor, no throttle.", "listing").facts.classes).toBeUndefined();
+    expect(parseSpecText("First-class 1-year support.", "listing").facts.classes).toBeUndefined();
+    expect(parseSpecText("Ride on Class 1 bike paths and Class II bike lanes.", "listing").facts.classes).toBeUndefined();
+    expect(parseSpecText("Class 1 e-bike. Ride it on Class I bikeways.", "listing").facts.classes).toEqual([1]);
+    expect(parseSpecText("Class 3 bikes are fast", "listing").facts.classes).toEqual([3]);
   });
 });

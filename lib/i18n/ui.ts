@@ -144,6 +144,9 @@ const en = {
   flag_mentions_foot_pegs: "The text mentions foot pegs. Passenger pegs on a cargo bike are different from rider pegs.",
   flag_sold_as_motorbike: "The seller calls this an electric dirt bike or motorbike. Check for working pedals.",
   flag_several_wheel_sizes: "Different wheel sizes were found. The largest and smallest are used.",
+  flag_wheel_sizes_differ: "The text names different wheel sizes, maybe for other bikes on the page. None was used, so you may be asked for the wheel size.",
+  flag_throttle_unclear: "The text says both that it has a throttle and that it has none. Pick the answer for this bike.",
+  flag_other_products_skipped: "Text after a heading like \"You may also like\" was not read, because it describes other products.",
 };
 
 export type UiKey = keyof typeof en;
@@ -290,6 +293,9 @@ const es: Record<UiKey, string> = {
   flag_mentions_foot_pegs: "El texto menciona reposapiés. Los de pasajero en una bicicleta de carga no son lo mismo que los del conductor.",
   flag_sold_as_motorbike: "El vendedor la llama moto eléctrica de tierra o motocicleta. Revisa si tiene pedales que funcionen.",
   flag_several_wheel_sizes: "Se encontraron ruedas de distintos tamaños. Se usan la más grande y la más pequeña.",
+  flag_wheel_sizes_differ: "El texto menciona ruedas de distintos tamaños, quizá de otras bicicletas de la página. No se usó ninguno, así que puede que te preguntemos el tamaño.",
+  flag_throttle_unclear: "El texto dice que tiene acelerador y también que no tiene. Elige la respuesta para esta bicicleta.",
+  flag_other_products_skipped: "No se leyó el texto después de un título como \"You may also like\", porque describe otros productos.",
 };
 
 const UI: Record<Lang, Record<UiKey, string>> = { en, es };

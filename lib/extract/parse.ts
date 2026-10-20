@@ -40,6 +40,14 @@ export interface Extraction {
 const KMH_TO_MPH = 0.621371;
 const KG_TO_LB = 2.20462;
 
+/**
+ * Rounds a converted value up to one decimal. Speed and weight limits are upper limits, so a
+ * value just over the line (32.2 km/h is 20.008 mph) must never round down onto it.
+ */
+function roundUpTenth(value: number): number {
+  return Math.ceil(value * 10 - 1e-9) / 10;
+}
+
 /** OCR often turns "l" into "1", "I" or "|", so "C1ass" and "CIass" still count as "class". */
 const CLASS_WORD = String.raw`c[l1i|]ass(?:es)?`;
 const CLASS_TOKEN = String.raw`(?:[123]|iii|ii|i|one|two|three)`;
@@ -77,6 +85,12 @@ function firstMatch(text: string, re: RegExp): RegExpExecArray | null {
   return re.exec(text);
 }
 
+/** "World-class", "first-class" and "high-class" are not a bike class. */
+const CLASS_AS_ADJECTIVE = /[-‐]$/;
+/** "Class 2-year warranty" counts years, and "Class I bike path" or "Class II bike lane" is a bikeway type. */
+const NOT_A_BIKE_CLASS_AFTER =
+  /^\s*(?:-\s*)?(?:(?:years?|yrs?|months?|days?|weeks?|hours?|miles?|stars?|seats?|persons?|pieces?|packs?)\b|(?:bike|bicycle|cycle)?\s*(?:paths?|lanes?|ways?|routes?|trails?|tracks?)\b|bikeways?\b)/i;
+
 function parseClasses(text: string, out: Extraction): void {
   const found = new Set<ClassNum>();
   const listRe = new RegExp(
@@ -85,6 +99,8 @@ function parseClasses(text: string, out: Extraction): void {
   );
   for (const m of text.matchAll(listRe)) {
     if (m.index === undefined) continue;
+    if (CLASS_AS_ADJECTIVE.test(text.slice(Math.max(0, m.index - 1), m.index))) continue;
+    if (NOT_A_BIKE_CLASS_AFTER.test(text.slice(m.index + m[0].length, m.index + m[0].length + 20))) continue;
     for (const part of m[1].split(/\s*(?:,|\/|&|\+|\band\b|\bor\b)\s*/i)) {
       const range = /^([123])\s*(?:-|–|to)\s*([123])$/i.exec(part.trim());
       if (range) {
@@ -214,7 +230,7 @@ function parseSpeeds(text: string, out: Extraction): void {
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
     let mph = Number(m[1]);
-    if (/^k/i.test(m[2])) mph = Math.round(mph * KMH_TO_MPH * 10) / 10;
+    if (/^k/i.test(m[2])) mph = roundUpTenth(mph * KMH_TO_MPH);
     if (!Number.isFinite(mph) || mph < 3 || mph > 99) continue;
     const end = m.index + m[0].length;
     if (/\bwalk/.test(slice(text, m.index - 25, end + 10)) && mph <= 6) continue;
@@ -236,36 +252,62 @@ function parseSpeeds(text: string, out: Extraction): void {
   if (top.length > 0) out.facts.topSpeedMph = Math.max(...top);
 }
 
+const THROTTLE_NONE = /\b(no throttle|without (?:a )?throttle|throttle[- ]?free|pedal[- ]assist only|throttle\s*[:\-]\s*(?:no|none|n\/a))\b/gi;
+const THROTTLE_YES = /\b((?:thumb|twist|half[- ]twist|trigger)[- ]?throttle|throttle)\b/gi;
+
+/** True when this mention of a throttle is itself negated, as in "no throttle" or "Throttle: none". */
+function throttleNegated(text: string, index: number, end: number): boolean {
+  const before = slice(text, index - 12, index);
+  const after = slice(text, end, end + 10);
+  return /\b(no|without(?: a)?|not)\s*$/.test(before) || /^[- ]?free\b/.test(after) || /^\s*[:\-]\s*(no|none|n\/a)\b/.test(after);
+}
+
+/**
+ * A listing can say "no throttle" in one place and "thumb throttle" in another, for example
+ * "ride with no throttle for a workout" or a variant list "No throttle, Thumb throttle". Then the
+ * answer is left blank for the user, since a throttle bike read as throttle-free could get a YES.
+ */
 function parseThrottle(text: string, out: Extraction): void {
-  const none = firstMatch(
-    text,
-    /\b(no throttle|without (?:a )?throttle|throttle[- ]?free|pedal[- ]assist only|throttle\s*[:\-]\s*(?:no|none|n\/a))\b/i,
-  );
-  if (none) {
-    out.facts.hasThrottle = false;
-    push(out.evidence, "hasThrottle", snippet(text, none.index, none[0].length));
+  const none = [...text.matchAll(THROTTLE_NONE)];
+  const yes = [...text.matchAll(THROTTLE_YES)].filter((m) => m.index !== undefined && !throttleNegated(text, m.index, m.index + m[0].length));
+  for (const m of [...none, ...yes]) {
+    if (m.index !== undefined) push(out.evidence, "hasThrottle", snippet(text, m.index, m[0].length));
+  }
+  if (none.length > 0 && yes.length > 0) {
+    out.flags.push("throttle_unclear");
     return;
   }
-  const yes = firstMatch(text, /\b((?:thumb|twist|half[- ]twist|trigger)[- ]?throttle|throttle)\b/i);
-  if (yes) {
-    out.facts.hasThrottle = true;
-    push(out.evidence, "hasThrottle", snippet(text, yes.index, yes[0].length));
-  }
+  if (none.length > 0) out.facts.hasThrottle = false;
+  else if (yes.length > 0) out.facts.hasThrottle = true;
+}
+
+const PEDALS_NONE =
+  /\b(no pedals|without (?:any )?pedals|pedal-?less|pedalless|pedal[- ]free|pedals\s*[:\-]\s*(?:none|no)|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals)\b/i;
+
+/**
+ * True when this mention doesn't show bicycle pedals: "brake pedal", "no need to pedal", "no
+ * pedal assist", "Pedals: N/A" or "pedals not included". Those leave the answer to the user.
+ */
+function pedalNegated(text: string, index: number, end: number): boolean {
+  const before = slice(text, index - 20, index);
+  const after = slice(text, end, end + 20);
+  return (
+    /\b(brake|foot|no need to|without|no|not|non|never|zero|instead of|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/.test(before) ||
+    /^\s*(?:[:\-]\s*(?:no|none|n\/a)\b|(?:are |is )?(?:not included|sold separately))/.test(after)
+  );
 }
 
 function parsePedals(text: string, out: Extraction): void {
-  const none = firstMatch(text, /\b(no pedals|without pedals|pedal-?less|pedalless|pedal[- ]free)\b/i);
+  const none = firstMatch(text, PEDALS_NONE);
   if (none) {
     out.facts.hasPedals = false;
     push(out.evidence, "hasPedals", snippet(text, none.index, none[0].length));
     return;
   }
-  // "Brake pedal" and "no need to pedal" don't mean the bike has bicycle pedals.
   const re = /\b(pedal[- ]assist(?:ance)?|pedals|pas level|cadence sensor|torque sensor|crankset|cranks)\b/gi;
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
-    const before = slice(text, m.index - 14, m.index);
-    if (/\b(brake|foot|no need to|without)\s*$/.test(before)) continue;
+    if (pedalNegated(text, m.index, m.index + m[0].length)) continue;
     out.facts.hasPedals = true;
     push(out.evidence, "hasPedals", snippet(text, m.index, m[0].length));
     return;
@@ -304,7 +346,7 @@ function parseModesAndShape(text: string, out: Extraction, source: TextSource): 
   }
 }
 
-function parseWheels(text: string, out: Extraction): void {
+function parseWheels(text: string, out: Extraction, source: TextSource): void {
   const sizes: number[] = [];
   const add = (size: number, index: number, length: number) => {
     if (size < 10 || size > 29) return;
@@ -313,7 +355,7 @@ function parseWheels(text: string, out: Extraction): void {
   };
   // "20 x 4.0" or 26" x 2.25" tire sizes. The width is 1 to 5 inches, which skips "15x100mm"
   // axles and "9/16 x 20 TPI" threads.
-  for (const m of text.matchAll(/(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?(?:"|”|'')?\s?x\s?[1-5](?:\.\d{1,2})?(?:"|”|'')?(?![\d.])/gi)) {
+  for (const m of text.matchAll(/(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?(?:"|”|'')?\s?x\s?[1-5](?:\.\d{1,3})?(?:"|”|'')?(?![\d.])/gi)) {
     if (m.index !== undefined) add(Number(m[1]), m.index, m[0].length);
   }
   // "20-inch wheels", 16" tires.
@@ -323,9 +365,16 @@ function parseWheels(text: string, out: Extraction): void {
   const c700 = firstMatch(text, /\b700\s?c\b/i);
   if (c700) add(28, c700.index, c700[0].length);
   if (sizes.length === 0) return;
+  if (new Set(sizes).size > 1) {
+    // A store page can name other products' wheels, so mixed sizes in a listing are asked, not guessed.
+    if (source === "listing") {
+      out.flags.push("wheel_sizes_differ");
+      return;
+    }
+    out.flags.push("several_wheel_sizes");
+  }
   out.facts.wheelFrontIn = Math.max(...sizes);
   out.facts.wheelRearIn = Math.min(...sizes);
-  if (new Set(sizes).size > 1) out.flags.push("several_wheel_sizes");
 }
 
 function parseWeight(text: string, out: Extraction): void {
@@ -338,7 +387,7 @@ function parseWeight(text: string, out: Extraction): void {
     if (/(payload|load|capacity|rider|carry|max|maximum|up to|supports?|rack|limit)/.test(adjacent)) continue;
     if (!/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike|frame)/.test(after)) continue;
     let lb = Number(m[1]);
-    if (/kg/i.test(m[2])) lb = Math.round(lb * KG_TO_LB);
+    if (/kg/i.test(m[2])) lb = roundUpTenth(lb * KG_TO_LB);
     out.facts.weightLb = lb;
     push(out.evidence, "weightLb", snippet(text, m.index, m[0].length));
     return;
@@ -354,18 +403,27 @@ export function normalizeText(raw: string): string {
     .trim();
 }
 
+/** Store pages list other products under headings like these. Nothing after one is about this bike. */
+const OTHER_PRODUCTS =
+  /\b(you (?:may|might|will|'ll) also like|related (?:products|items|bikes)|customers (?:also|who) (?:bought|viewed|liked)|people also (?:bought|viewed)|frequently bought together|similar (?:products|items|bikes|e-?bikes)|recently viewed|compare (?:with )?similar|more from this collection|shop similar|recommended (?:for you|products|bikes|e-?bikes))\b/i;
+
 export function parseSpecText(raw: string, source: TextSource): Extraction {
   const text = normalizeText(raw);
   const out: Extraction = { text, facts: {}, evidence: {}, flags: [] };
   if (text.length === 0) return out;
-  parseClasses(text, out);
-  parseWatts(text, out, source);
-  parseSpeeds(text, out);
-  parseThrottle(text, out);
-  parsePedals(text, out);
-  parseModesAndShape(text, out, source);
-  parseWheels(text, out);
-  parseWeight(text, out);
+  // A listing's own specs come before its "You may also like" list. A watt figure or a wheel
+  // size from another product must never stand in for this bike's.
+  const other = source === "listing" ? OTHER_PRODUCTS.exec(text) : null;
+  const own = other ? text.slice(0, other.index) : text;
+  if (other) out.flags.push("other_products_skipped");
+  parseClasses(own, out);
+  parseWatts(own, out, source);
+  parseSpeeds(own, out);
+  parseThrottle(own, out);
+  parsePedals(own, out);
+  parseModesAndShape(own, out, source);
+  parseWheels(own, out, source);
+  parseWeight(own, out);
   return out;
 }
 
