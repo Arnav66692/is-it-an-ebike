@@ -326,3 +326,21 @@ describe("What's missing says a shared under-12 recheck once, naming every place
     expect(merged[0].where.map((w) => w.id)).toEqual(["encinitas", "del_mar"]);
   });
 });
+
+describe("California before 2027 never calls a factory fast mode 'not an e-bike' under 312.5(d)", () => {
+  it("a 25 mph throttle with no unlock fits no class, citing no 312.5(d), and the answer is still NO", () => {
+    const facts = classBike(2, { throttleMph: 25, ratedWatts: 750, motorOver20: true, switchable: false });
+    const result = evaluate({ state: "CA", riderAge: 14, rideDate: DATE, facts, places: [] });
+    expect(result.state.status).toBe("cant_confirm");
+    expect(result.state.reason.code).toBe("fits_no_class_mode");
+    expect(JSON.stringify(result.state)).not.toContain("312.5(d)");
+    expect(bottomLine(result, DATE).kind).toBe("no_unconfirmed");
+  });
+
+  it("from Jan 1, 2027 SB 1167's 312.5(c)(2) makes it not an e-bike", () => {
+    const facts = classBike(2, { throttleMph: 25, ratedWatts: 750, motorOver20: true, switchable: false });
+    const result = evaluate({ state: "CA", riderAge: 14, rideDate: "2027-01-01", facts, places: [] });
+    expect(result.state.status).toBe("not_ebike");
+    expect(bottomLine(result, "2027-01-01").kind).toBe("no_illegal");
+  });
+});

@@ -108,8 +108,9 @@ describe("fast modes and unlock settings", () => {
     expect(r.state.status).toBe("need_info");
     expect(r.state.questions).toContain("fast_mode");
   });
-  it("California: a mode over 20 mph on the motor alone is not an e-bike (VC 312.5(d))", () => {
-    expect(run("CA", 30, classBike(2, { motorOver20: true })).state.status).toBe("not_ebike");
+  it("California: a mode over 20 mph on the motor alone fits no class now, and is not an e-bike from 2027 (SB 1167)", () => {
+    expect(run("CA", 30, classBike(2, { motorOver20: true })).state.reason.code).toBe("fits_no_class_mode");
+    expect(run("CA", 30, classBike(2, { motorOver20: true }), "2027-01-02").state.status).toBe("not_ebike");
   });
   it("Delaware: a throttle over 20 mph makes it a moped", () => {
     expect(run("DE", 30, classBike(2, { motorOver20: true })).state.status).toBe("not_ebike");
