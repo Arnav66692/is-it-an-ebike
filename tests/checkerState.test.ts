@@ -10,8 +10,10 @@ import { PlacePicker } from "@/components/PlacePicker";
 import {
   keepAsked,
   LAST_RIDE_DATE,
+  msUntilNextDay,
   nextAsked,
   parseShareLink,
+  rideDateFor,
   rideDateIn,
   withWheelCount,
   withWheelSize,
@@ -126,7 +128,11 @@ describe("second review fixes: a follow-up stays on screen when the state change
     const source = readFileSync(join(__dirname, "..", "components", "Checker.tsx"), "utf8");
     expect(source).toContain("nextAsked(asked, round, pending)");
     expect(source).not.toMatch(/askKey|stateCode}`/);
-    expect(source).toContain("rideDateIn(dateText, today)");
+    expect(source).toContain("rideDateFor(pickDate, dateText, today)");
+    // "Today" is state that a timer and the page coming back into view refresh, not a value read once.
+    expect(source).toContain("const [today, setToday] = useState(");
+    expect(source).toContain("msUntilNextDay(");
+    expect(source).toContain('addEventListener("visibilitychange"');
     expect(source).toContain("<PlacePicker");
   });
 });
@@ -187,5 +193,28 @@ describe("second review fixes: the place picker", () => {
     const css = readFileSync(join(__dirname, "..", "app", "globals.css"), "utf8");
     const rule = /\.check input \{([^}]*)\}/.exec(css)?.[1] ?? "";
     expect(rule).toMatch(/flex:\s*none|flex-shrink:\s*0/);
+  });
+});
+
+describe("third review fixes (Oct 19, 2026): the ride date follows the real today", () => {
+  it("with no date picked, the ride date is the fresh today, not the day the page opened", () => {
+    // Page opened Nov 18, used after midnight. The stored date text still says Nov 18.
+    expect(rideDateFor(false, "2026-11-18", "2026-11-19")).toBe("2026-11-19");
+    const stale = evaluate({ state: "CA", riderAge: 10, rideDate: "2026-11-18", facts: classBike(1), places: ["encinitas"] });
+    const fresh = evaluate({ state: "CA", riderAge: 10, rideDate: rideDateFor(false, "2026-11-18", "2026-11-19") ?? "", facts: classBike(1), places: ["encinitas"] });
+    expect(bottomLine(stale, "2026-11-18").kind).toBe("yes");
+    expect(bottomLine(fresh, "2026-11-19").kind).toBe("no_unconfirmed");
+  });
+
+  it("a picked date that today has passed gets no answer", () => {
+    expect(rideDateFor(true, "2026-11-18", "2026-11-19")).toBeNull();
+    expect(rideDateFor(true, "2026-12-01", "2026-11-19")).toBe("2026-12-01");
+    expect(rideDateFor(false, "", "2030-01-01")).toBeNull();
+  });
+
+  it("re-reads today just after the next local midnight", () => {
+    const ms = msUntilNextDay(new Date(2026, 10, 18, 23, 59, 0));
+    expect(ms).toBe(61_000);
+    expect(msUntilNextDay(new Date(2026, 10, 19, 0, 0, 0, 500))).toBeGreaterThan(23 * 3600 * 1000);
   });
 });

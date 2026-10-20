@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { LAST_RIDE_DATE, nextAsked, parseShareLink, rideDateIn, type AskedQuestions } from "@/lib/checkerState";
+import { LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
@@ -69,7 +69,7 @@ export function Checker() {
   const [stateCode, setStateCode] = useState(initial.state);
   const [ageText, setAgeText] = useState("");
   const [ageError, setAgeError] = useState(false);
-  const today = initial.today;
+  const [today, setToday] = useState(initial.today);
   const [dateText, setDateText] = useState(initial.today);
   const [pickDate, setPickDate] = useState(false);
   const [places, setPlaces] = useState<PlaceId[]>(initial.places);
@@ -85,11 +85,38 @@ export function Checker() {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
+  // comes back into view, so an old tab never answers for yesterday.
+  useEffect(() => {
+    let timer = 0;
+    const arm = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(refresh, msUntilNextDay(new Date()));
+    };
+    function refresh() {
+      setToday(localToday());
+      arm();
+    }
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    arm();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+    };
+  }, []);
+
   const age = /^\d{1,3}$/.test(ageText.trim()) ? Number(ageText.trim()) : null;
   const ageValid = age !== null && age >= MIN_AGE_INPUT && age <= MAX_AGE_INPUT;
   // A typed date can fall outside the picker's range, so only a date from today to the last
   // date is ever checked. Anything else shows an error and no answer.
-  const date = rideDateIn(dateText, today);
+  const date = rideDateFor(pickDate, dateText, today);
 
   const result = useMemo(() => {
     if (stage !== "result" || !ageValid || age === null || date === null) return null;
@@ -140,12 +167,14 @@ export function Checker() {
   }
 
   function handleCheck() {
+    const now = localToday();
+    if (now !== today) setToday(now);
     if (!ageValid) {
       setAgeError(true);
       ageRef.current?.focus();
       return;
     }
-    if (date === null) {
+    if (rideDateFor(pickDate, dateText, now) === null) {
       dateRef.current?.focus();
       return;
     }
@@ -245,7 +274,14 @@ export function Checker() {
               <span>
                 {t(lang, "dateToday")}, {formatDate(today, lang)}
               </span>
-              <button type="button" className="text-sm underline" onClick={() => setPickDate(true)}>
+              <button
+                type="button"
+                className="text-sm underline"
+                onClick={() => {
+                  setDateText(today);
+                  setPickDate(true);
+                }}
+              >
                 {t(lang, "dateOther")}
               </button>
             </div>

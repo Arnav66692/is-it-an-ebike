@@ -42,6 +42,21 @@ export function rideDateIn(value: string, today: string, last: string = LAST_RID
 }
 
 /**
+ * The ride date the answer is for. With no date picked it is always today, read fresh, so a tab
+ * left open past midnight never answers for yesterday. A picked date is checked against the same
+ * fresh today, so it can't fall behind it either.
+ */
+export function rideDateFor(pickDate: boolean, dateText: string, today: string, last: string = LAST_RIDE_DATE): string | null {
+  return rideDateIn(pickDate ? dateText : today, today, last);
+}
+
+/** Milliseconds from now until the next local midnight, plus a second so the new day has begun. */
+export function msUntilNextDay(now: Date): number {
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+  return Math.max(1000, next.getTime() - now.getTime());
+}
+
+/**
  * The follow-up questions to show. A question stays once it has been asked, so an answer of
  * "not sure", or a wrong click, can always be changed. New questions are added at the end.
  */
