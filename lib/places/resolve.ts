@@ -9,7 +9,7 @@ import type { PlaceEntry } from "./types";
 
 /**
  * Why a place got the record it did.
- * checked_city: one of the 17 cities with its own checked record.
+ * checked_city: one of the 18 cities with its own checked record.
  * sd_neighborhood: a City of San Diego community planning area, so the City record.
  * sd_community: a Census CDP in San Diego County, so the county's record for unincorporated land.
  * sd_county: San Diego County itself, so the county's record for unincorporated land.

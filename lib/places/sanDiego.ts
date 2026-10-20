@@ -17,7 +17,7 @@ export interface CheckedCity {
 }
 
 /**
- * The 17 incorporated cities with a checked record in data/rules/san_diego_local.json. Each GEOID
+ * The 18 incorporated cities with a checked record in data/rules/san_diego_local.json. Each GEOID
  * was read from public/places/us-places.json as the one city row in county 06073 with that name,
  * and scripts/build-places.ts stops if a GEOID no longer names that city in San Diego County.
  */
@@ -34,6 +34,7 @@ export const CHECKED_CITIES: readonly CheckedCity[] = [
   { geoid: "0636294", name: "Imperial Beach", record: "imperial_beach" },
   { geoid: "0640004", name: "La Mesa", record: "la_mesa" },
   { geoid: "0641124", name: "Lemon Grove", record: "lemon_grove" },
+  { geoid: "0650398", name: "National City", record: "national_city" },
   { geoid: "0653322", name: "Oceanside", record: "oceanside" },
   { geoid: "0658520", name: "Poway", record: "poway" },
   { geoid: "0668196", name: "San Marcos", record: "san_marcos" },

@@ -2337,6 +2337,109 @@
       ]
     },
     {
+      "id": "national_city",
+      "jurisdiction": "City of National City",
+      "type": "city",
+      "covers": "All city streets, sidewalks, parks, playgrounds and recreation facilities.",
+      "verified": "statute_verified",
+      "verification_level": "primary_verified",
+      "checked_through": "2026-10-20",
+      "verified_note": "Read on Oct 20, 2026 in two independent passes. NCMC Ch. 7.20, 10.52, 10.53, 11.04, 11.36, 11.52 and 11.64 on Municode (codified through Ord. No. 2026-2560, Jan 20, 2026, content updated Aug 28, 2026, with no bicycle or traffic ordinance pending codification). The only e-bike text in the code is a definition. Council agenda packets from Jun 2 to Oct 20, 2026, city news and police press releases since Sep 1, 2026 show no e-bike ordinance and no under-12 campaign.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "National City Mun. Code Ch. 11.52",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR_CH11.52BI",
+          "quote": null,
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "No age provision anywhere in the code, read on Oct 20, 2026 in two passes. The only 'electric bicycle' text is the NCMC 11.52.010(B) definition. No quote is recorded, because the finding is that the code text has no age rule. VC 21214.7(b) allows an under-12 ban by ordinance or resolution, after a public information campaign of at least 30 calendar days (VC 21214.7(e)). Council packets from Jun 2 to Oct 20, 2026 have no e-bike item, and city news and police press releases since Sep 1, 2026 show no such campaign."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=21212",
+          "quote": "A person under 18 years of age shall not operate a bicycle ... unless they are wearing a properly fitted and fastened bicycle helmet",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No National City helmet rule for bicycles beyond state law. NCMC 10.53 requires a helmet and pads in the Kimball Park skate park, where motorized devices are barred."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "offroad_seizure",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "National City Mun. Code 7.20.100",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT7PRCOCOAPCO_CH7.20OUAC_7.20.100OADVE",
+          "quote": "It is unlawful for any person to operate for recreational purposes any vehicle or off-highway vehicle, as defined in the California Vehicle Code, or a motorized scooter, on any unimproved public or private property in the city.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. 2169 (1999). After a verbal notice is ignored, the vehicle may be seized and impounded at the owner's cost (7.20.100(C)). Likely reaches e-motos and off-highway bikes. Whether it reaches e-bikes depends on whether an e-bike is a vehicle under VC 670, which is not settled. NCMC 11.36.090 also bars motor vehicles, including motorcycles and motor bikes, in parks, which may reach electric e-motos. State removal power: VC 22651.08."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "sidewalk_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "National City Mun. Code 11.52.020(A)",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR_CH11.52BI",
+          "quote": "It is unlawful for any person to ride a bicycle upon a sidewalk within any business or residence district of the city, with the exception herein stated.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. No. 2023-2520 (Apr 18, 2023). The Council may allow sidewalk riding in residence districts by resolution (11.52.020(B)), and none was found. NCMC 11.52.010(A) defines bicycle as human powered, and 11.52.010(B) defines electric bicycle separately, so whether the ban reaches e-bikes is not settled. Business and residence districts together cover most sidewalks."
+        },
+        {
+          "rule": "park_motorized_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "National City Mun. Code 10.52.010(G)",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT10PUPEMOSA_VIOFAGPR_CH10.52REUSMUPAPLGOCO",
+          "quote": "Drive or ride a motorcycle, automobile, or any other motorized vehicle on any walkway or turfed area.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Applies 'within the premises of any city park, playground, golf course, or recreation facility'. A misdemeanor under 10.52.030. An e-bike has a motor, so in ordinary reading it is a motorized vehicle, but the city has not said so. 10.52.010(K) sets 15 mph for any motor vehicle in a park."
+        }
+      ],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Whether NCMC 11.52.020(A) (no bicycles on business or residence district sidewalks) reaches e-bikes.",
+        "Whether NCMC 10.52.010(G) ('any other motorized vehicle' in parks) reaches e-bikes."
+      ],
+      "resolved_questions": [],
+      "primary_sources": [
+        {
+          "number": "NCMC Ch. 11.52 (Ord. No. 2023-2520)",
+          "url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR_CH11.52BI",
+          "effective": null,
+          "quote": "An \"electric bicycle\" has the same meaning as in CVC section 312.5:"
+        },
+        {
+          "number": "NCMC 10.52.010",
+          "url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT10PUPEMOSA_VIOFAGPR_CH10.52REUSMUPAPLGOCO",
+          "effective": null,
+          "quote": "No person shall engage in any of the following acts within the premises of any city park, playground, golf course, or recreation facility:"
+        },
+        {
+          "number": "NCMC 7.20.100 (Ord. 2169)",
+          "url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT7PRCOCOAPCO_CH7.20OUAC_7.20.100OADVE",
+          "effective": null,
+          "quote": "It is unlawful for any person to operate for recreational purposes any vehicle or off-highway vehicle, as defined in the California Vehicle Code, or a motorized scooter, on any unimproved public or private property in the city."
+        },
+        {
+          "number": "Oct 20, 2026 agenda package",
+          "url": "https://www.nationalcityca.gov/home/showpublisheddocument/37546/639276839176930000",
+          "effective": null,
+          "quote": "Local Roadway Safety Plan"
+        }
+      ]
+    },
+    {
       "id": "oceanside",
       "jurisdiction": "City of Oceanside",
       "type": "city",

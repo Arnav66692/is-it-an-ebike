@@ -22,6 +22,7 @@ export const PLACE_IDS: PlaceId[] = [
   "imperial_beach",
   "la_mesa",
   "lemon_grove",
+  "national_city",
   "oceanside",
   "poway",
   "san_marcos",
@@ -376,6 +377,11 @@ interface CityNote {
  * never shows without its source. The age, warning and e-moto lines all cities share come first.
  */
 const CITY_NOTES: Partial<Record<PlaceId, CityNote[]>> = {
+  national_city: [
+    { code: "nc_sidewalks", rule: "sidewalk_ban", when: "ride" },
+    { code: "nc_parks", rule: "park_motorized_ban", when: "ride" },
+    { code: "nc_offroad", rule: "offroad_seizure", when: "not_ebike" },
+  ],
   lemon_grove: [
     { code: "lg_pending", rule: "no_local_age_limit_found", when: "ride" },
     { code: "lg_sidewalks", rule: "business_sidewalk_ban", when: "ride" },

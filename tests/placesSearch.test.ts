@@ -173,11 +173,12 @@ describe("no place gets a record it doesn't have", () => {
     }
   });
 
-  it("gives the one incorporated San Diego County city without a record state law only", () => {
+  it("has a checked record for every incorporated city in San Diego County, and no other place gets one", () => {
     const checked = new Set(CHECKED_CITIES.map((c) => c.geoid));
-    const others = INDEX.entries.filter((e) => e.source === "place" && e.kind !== "community" && e.counties.includes(SD_COUNTY_FIPS) && !checked.has(e.geoid ?? ""));
-    expect(others.map((e) => e.name)).toEqual(["National City"]);
-    for (const e of others) expect(resolvePlace(e).localRecord).toBeNull();
+    const cities = INDEX.entries.filter((e) => e.source === "place" && e.kind !== "community" && e.counties.includes(SD_COUNTY_FIPS));
+    expect(cities).toHaveLength(18);
+    expect(cities.filter((e) => !checked.has(e.geoid ?? ""))).toEqual([]);
+    expect(CHECKED_CITIES).toHaveLength(18);
   });
 
   it("never maps the SDUHSD campus record from a place", () => {

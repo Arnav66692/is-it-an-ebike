@@ -400,6 +400,12 @@ const EN = {
     "No riding a bicycle on sidewalks in a business district (LGMC 10.44.010). Treat e-bikes the same to be safe.",
   lg_parks: () =>
     "Lemon Grove bars motor vehicles in parks except in their parking areas (LGMC 12.20.140). It isn't settled whether that covers e-bikes.",
+  nc_sidewalks: () =>
+    "National City bans riding bicycles on sidewalks in business and residence districts, which covers most sidewalks (NCMC 11.52.020). The code defines bicycle as human powered, so it isn't settled whether that covers e-bikes. Ride in the street or bike lane to be safe.",
+  nc_parks: () =>
+    "In National City parks, playgrounds and golf courses, no riding a motorized vehicle on walkways or grass (NCMC 10.52.010(G)). That likely covers e-bikes.",
+  nc_offroad: () =>
+    "Riding an e-moto or other off-highway vehicle for fun on open, unimproved land is barred in National City, and the vehicle can be seized after a warning (NCMC 7.20.100).",
   city_starting: (p, c) => `Starting ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.en[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} had no under-12 e-bike ban when checked on ${formatDate(n(p.date), c.lang)}, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
@@ -709,6 +715,12 @@ const ES = {
     "No se puede andar en bicicleta por aceras de zonas comerciales (LGMC 10.44.010). Por seguridad, trata igual a las bicicletas eléctricas.",
   lg_parks: () =>
     "Lemon Grove prohíbe vehículos de motor en los parques, salvo en sus estacionamientos (LGMC 12.20.140). No está resuelto si eso incluye bicicletas eléctricas.",
+  nc_sidewalks: () =>
+    "National City prohíbe andar en bicicleta por las aceras de zonas comerciales y residenciales, que son casi todas (NCMC 11.52.020). El código define bicicleta como de pedal, así que no está resuelto si eso incluye bicicletas eléctricas. Por seguridad, anda por la calle o la ciclovía.",
+  nc_parks: () =>
+    "En parques, áreas de juegos y campos de golf de National City, no se puede andar en vehículos motorizados por andadores ni por el pasto (NCMC 10.52.010(G)). Eso probablemente incluye las bicicletas eléctricas.",
+  nc_offroad: () =>
+    "En National City está prohibido andar por diversión en una moto eléctrica u otro vehículo todoterreno en terrenos abiertos sin construir, y el vehículo puede ser confiscado después de una advertencia (NCMC 7.20.100).",
   city_starting: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.es[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} no tenía una prohibición para menores de 12 años cuando se revisó el ${formatDate(n(p.date), c.lang)}, pero la ley estatal le permite adoptar una (VC 21214.7(b)). Vuelve a revisar antes de salir.`,
