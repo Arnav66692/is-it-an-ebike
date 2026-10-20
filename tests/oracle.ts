@@ -236,7 +236,8 @@ function classBlockers(code: string, f: OracleFacts, cls: Cls, age: number, date
   if (cmp === "at_most" && max !== null && f.watts > max) reasons.push("watts_over");
   if (cmp === "less_than" && max !== null && f.watts >= max) reasons.push("watts_at_or_over_strict");
   if (cmp === "other" && max !== null && f.watts > max) reasons.push("watts_over");
-  if (cmp === "other" && max === null && hp !== null && f.watts >= hp * 745.7) reasons.push("watts_over_hp");
+  // Rhode Island: "not more than" 2 SAE horsepower, at 745.7 W per hp.
+  if (cmp === "other" && max === null && hp !== null && f.watts > hp * 745.7) reasons.push("watts_over_hp");
 
   const values = fieldValues(f);
   const cautions = cautionsOf(code);
@@ -345,9 +346,11 @@ function wattFallback(code: string, watts: number, date: string): boolean {
  * answers and fast modes the table doesn't name are not here, because they leave the answer open.
  */
 function classIllegal(code: string, f: OracleFacts, cls: Cls, age: number, date: string): string[] {
-  const { motor_watts_comparison: cmp, max_motor_watts: max } = STATES[code].definition;
+  const { motor_watts_comparison: cmp, max_motor_watts: max, max_motor_hp: hp } = STATES[code].definition;
   const reasons: string[] = [];
   if ((cmp === "at_most" || cmp === "other" || cmp === "less_than") && max !== null && f.watts > max) reasons.push("watts_over");
+  // A motor over a horsepower cap is outside the definition, like one over a watt cap.
+  if (cmp === "other" && max === null && hp !== null && f.watts > hp * 745.7) reasons.push("watts_over_hp");
   if (cmp === "less_than" && max !== null && f.watts === max && wattFallback(code, f.watts, date)) reasons.push("watts_other_vehicle");
   const values = fieldValues(f);
   for (const c of cautionsOf(code)) {

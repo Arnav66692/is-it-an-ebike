@@ -92,7 +92,7 @@ const EN = {
   watts_peak_only: (p) => `Only a peak figure (${p.peak} W) is given. The rated watts on the label decide.`,
   watts_upper_only: (p) => `The listing says ${p.watts} W but not whether that's rated or peak. The label decides.`,
   watts_unknown: () => "We need the motor watts printed on the label.",
-  hp_cap_unclear: (p, c) => `${c.state} caps the motor at ${p.hp} horsepower. This motor is too close to that line to confirm.`,
+  over_hp: (p, c) => `The motor is ${p.watts} W. ${c.state} allows up to ${p.hp} horsepower, about ${p.cap} W.`,
   vt_motor_assisted_bicycle: (p) =>
     `At ${p.watts} W it's a "motor-assisted bicycle" in Vermont, not an e-bike. No riders under 16 on highways, and no sidewalks.`,
   il_motor_driven_cycle: (p) =>
@@ -283,7 +283,7 @@ const ES = {
   watts_peak_only: (p) => `Solo aparece una cifra máxima (${p.peak} W). Decide la potencia nominal de la etiqueta.`,
   watts_upper_only: (p) => `El anuncio dice ${p.watts} W, pero no aclara si es potencia nominal o máxima. Decide la etiqueta.`,
   watts_unknown: () => "Necesitamos los vatios del motor que aparecen en la etiqueta.",
-  hp_cap_unclear: (p, c) => `${esSubj(c)} limita el motor a ${p.hp} caballos de fuerza. Este motor está demasiado cerca de ese límite para confirmarlo.`,
+  over_hp: (p, c) => `El motor es de ${p.watts} W. ${esSubj(c)} permite hasta ${p.hp} caballos de fuerza, unos ${p.cap} W.`,
   vt_motor_assisted_bicycle: (p) =>
     `Con ${p.watts} W es una "bicicleta asistida por motor" en Vermont, no una bicicleta eléctrica. Nadie menor de 16 en carreteras, y nada de aceras.`,
   il_motor_driven_cycle: (p) =>

@@ -281,3 +281,26 @@ describe("a New York YES names the 30 mph road limit and doesn't claim every pub
     for (const r of limits) expect(field(r.state, r.source_field)).toContain(r.source_quote);
   });
 });
+
+describe("Rhode Island's 2 horsepower cap", () => {
+  const ri = (over: Partial<BikeFacts>) => evaluate({ state: "RI", riderAge: 30, rideDate: DATE, facts: classBike(1, over), places: [] });
+
+  it("a 5000 W or 1600 W motor is clearly over it, so not an e-bike, never 'too close to that line'", () => {
+    for (const watts of [5000, 1600]) {
+      const result = ri({ ratedWatts: watts });
+      expect(result.state.status, String(watts)).toBe("not_ebike");
+      expect(result.state.reason).toMatchObject({ code: "over_hp", params: { watts, hp: 2, cap: 1491 } });
+      expect(renderLine(result.state.reason, "en", "Rhode Island")).toBe(`The motor is ${watts} W. Rhode Island allows up to 2 horsepower, about 1491 W.`);
+      expect(renderLine(result.state.reason, "es", "Rhode Island")).toContain("2 caballos de fuerza");
+      expect(bottomLine(result, DATE).kind).toBe("no_illegal");
+    }
+  });
+
+  it("a 750 W or 1491 W motor is within it, and a peak-only figure over it still needs the rated figure", () => {
+    expect(ri({ ratedWatts: 750 }).state.status).toBe("yes");
+    expect(ri({ ratedWatts: 1491 }).state.status).toBe("yes");
+    const peak = ri({ ratedWatts: null, peakWatts: 2000 });
+    expect(peak.state.status).toBe("cant_confirm");
+    expect(peak.state.reason.code).toBe("watts_peak_only");
+  });
+});

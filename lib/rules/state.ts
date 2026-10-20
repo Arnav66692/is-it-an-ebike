@@ -138,14 +138,15 @@ function checkWatts(cs: CompiledState, f: BikeFacts, date: string): DeviceResult
   const ok = null;
   if (comparison === "no_watt_cap") return ok;
 
-  // Rhode Island caps power in horsepower. Compare conservatively in watts.
+  // Rhode Island caps the motor at "not more than" 2 SAE horsepower, so compare in watts at 745.7 W
+  // per hp. A rated figure over that line is not an e-bike there, the same as a motor over a watt cap.
   if (maxWatts === null && maxHp !== null) {
     const capW = maxHp * WATTS_PER_HP;
-    if (compare(iv, "<", capW) === true) return ok;
-    if (f.ratedWatts === null && f.peakWatts === null && f.wattsUpTo === null) {
-      return device("cant_confirm", line("watts_unknown", undefined, cs.def.source));
+    if (compare(iv, "<=", capW) === true) return ok;
+    if (compare(iv, ">", capW) === true) {
+      return device("not_ebike", line("over_hp", { watts: iv.lo, hp: maxHp, cap: Math.floor(capW) }, cs.def.source));
     }
-    return device("cant_confirm", line("hp_cap_unclear", { hp: maxHp }, cs.def.source));
+    return ratedUnknown(cs, f, Math.floor(capW));
   }
   if (maxWatts === null) return ok;
 
@@ -176,11 +177,16 @@ function checkWatts(cs: CompiledState, f: BikeFacts, date: string): DeviceResult
     return device("cant_confirm", line("watts_750_strict", { cap: maxWatts }, cs.def.source));
   }
 
+  return ratedUnknown(cs, f, maxWatts);
+}
+
+/** The motor's rated watts aren't known well enough to settle the cap. Says which figure is missing. */
+function ratedUnknown(cs: CompiledState, f: BikeFacts, cap: number): DeviceResult {
   if (f.ratedWatts === null && f.peakWatts !== null) {
-    return device("cant_confirm", line("watts_peak_only", { peak: f.peakWatts, cap: maxWatts }, cs.def.source));
+    return device("cant_confirm", line("watts_peak_only", { peak: f.peakWatts, cap }, cs.def.source));
   }
   if (f.ratedWatts === null && f.wattsUpTo !== null) {
-    return device("cant_confirm", line("watts_upper_only", { watts: f.wattsUpTo, cap: maxWatts }, cs.def.source));
+    return device("cant_confirm", line("watts_upper_only", { watts: f.wattsUpTo, cap }, cs.def.source));
   }
   return device("cant_confirm", line("watts_unknown", undefined, cs.def.source));
 }
