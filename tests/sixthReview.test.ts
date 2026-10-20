@@ -177,3 +177,33 @@ describe("a weight without the battery never stands in for the bike's weight", (
     expect(flow(`${base}Weight: 62 lbs (with battery).`, "PA", 30).kind).toBe("yes");
   });
 });
+
+describe("a negated foot-peg mention is never read as foot pegs", () => {
+  const base = "Class 1. 250W rated. Pedal assist to 20 mph, no throttle. 20 x 2.4 tires. Weight 50 lbs. ";
+  const utah = (tail: string) => flow(base + tail, "UT", 30, [], { needsPedalKit: false });
+
+  it("'No foot pegs' and 'Foot pegs: No' are a no, so Utah does not call it 'not an e-bike'", () => {
+    for (const tail of ["No foot pegs.", "Foot pegs: No.", "Without footrests.", "Doesn't have foot pegs."]) {
+      const { facts, result, kind } = utah(tail);
+      expect(facts.hasFootPegs, tail).toBe(false);
+      expect(result.state.status, tail).toBe("yes");
+      expect(kind, tail).toBe("yes");
+    }
+  });
+
+  it("optional, sold-separately or mixed mentions are left to the family", () => {
+    for (const tail of ["Foot pegs sold separately.", "Optional foot pegs.", "Doesn't come with foot pegs.", "No rider foot pegs. Passenger foot pegs included."]) {
+      const { facts, extraction, result, kind } = utah(tail);
+      expect(facts.hasFootPegs, tail).toBeNull();
+      expect(extraction.flags, tail).toContain("mentions_foot_pegs");
+      expect(result.state.questions, tail).toContain("pegs_kit");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("a plain mention is still foot pegs", () => {
+    const { facts, result } = utah("Fold-down foot pegs.");
+    expect(facts.hasFootPegs).toBe(true);
+    expect(result.state.reason.code).toBe("caution_foot_pegs");
+  });
+});

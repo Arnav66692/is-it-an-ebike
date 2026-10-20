@@ -468,13 +468,49 @@ function parsePedals(text: string, out: Extraction): void {
 /** Store pages list other products in menus, so a listing's shape words only count near the top. */
 const LISTING_HEAD = 400;
 
-function parseModesAndShape(text: string, out: Extraction, source: TextSource): void {
-  const pegs = firstMatch(text, /\b(foot ?pegs?|footrests?|foot rests?)\b/i);
-  if (pegs) {
-    out.facts.hasFootPegs = true;
-    push(out.evidence, "hasFootPegs", snippet(text, pegs.index, pegs[0].length));
-    out.flags.push("mentions_foot_pegs");
+/** Words right before a foot-peg mention that say there are none: "No foot pegs", "without footrests". */
+const PEGS_NONE_BEFORE = /\b(?:no|without|zero|never|(?:does|do|did)(?: not|n't) have)\s+(?:any\s+)?(?:rider\s+|passenger\s+)?$/;
+/** An answer after a foot-peg label that says there are none: "Foot pegs: No". */
+const PEGS_NONE_AFTER = /^\s*(?:\?\s*)?[:\-(]?\s*(?:no|none|nope|n\/a)\b/;
+/** Words that make a foot-peg mention unsure: "Foot pegs sold separately", "optional footrests". */
+const PEGS_DOUBT_BEFORE =
+  /(?:\b(?:optional|add-?on|add(?:ing)?|removable|no need (?:for|of))|(?:\bnot|n't) (?:come with|comes with|include|includes|ship with|ships with|sold with))\s+(?:any\s+|the\s+)?(?:rider\s+|passenger\s+)?$/;
+const PEGS_DOUBT_AFTER =
+  /^\s*(?:[:\-(]\s*)?(?:are |is )?(?:not included|not installed|sold separately|available separately|optional|an option|extra|add[- ]?on|can be (?:added|installed|fitted|removed)|removable|removed)/;
+
+type PegMention = "yes" | "no" | "doubt";
+
+function pegMention(text: string, index: number, end: number): PegMention {
+  const before = slice(text, index - 30, index);
+  const after = slice(text, end, end + 30);
+  if (PEGS_NONE_BEFORE.test(before) || PEGS_NONE_AFTER.test(after)) return "no";
+  if (PEGS_DOUBT_BEFORE.test(before) || PEGS_DOUBT_AFTER.test(after)) return "doubt";
+  return "yes";
+}
+
+/**
+ * Foot pegs. A plain mention is a yes, since Utah treats a bike with foot pegs as not an e-bike.
+ * "No foot pegs" or "Foot pegs: No" is a no. Mentions that disagree, or that say the pegs are
+ * optional or sold separately, leave the answer to the family.
+ */
+function parseFootPegs(text: string, out: Extraction): void {
+  const kinds: PegMention[] = [];
+  for (const m of text.matchAll(/\b(foot ?pegs?|footrests?|foot rests?)\b/gi)) {
+    if (m.index === undefined) continue;
+    kinds.push(pegMention(text, m.index, m.index + m[0].length));
+    push(out.evidence, "hasFootPegs", snippet(text, m.index, m[0].length));
   }
+  if (kinds.length === 0) return;
+  if (kinds.every((k) => k === "no")) {
+    out.facts.hasFootPegs = false;
+    return;
+  }
+  if (kinds.every((k) => k === "yes")) out.facts.hasFootPegs = true;
+  out.flags.push("mentions_foot_pegs");
+}
+
+function parseModesAndShape(text: string, out: Extraction, source: TextSource): void {
+  parseFootPegs(text, out);
 
   const unlock = firstMatch(
     text,
