@@ -123,6 +123,28 @@ function parseClasses(text: string, out: Extraction): void {
 /** Letters and marks OCR often prints in place of a digit: l, I, i or | for 1, O or o for 0, S for 5, Z for 2, B for 8. */
 const OCR_DIGIT = String.raw`[\dlIi|OoSZB]`;
 
+/** A lone number, or a lone l or I that OCR prints for a 1, then one space: the "1 " of "1 500 W". */
+const NUMBER_THEN_SPACE = /(?<![\w.,|])(?:\d{1,3}|[lI])\s$/;
+/** A class word and its number, as in "Class 2 750W". That number is the class, not part of the figure. */
+const CLASS_THEN_SPACE = new RegExp(
+  String.raw`\b${CLASS_WORD}[\s:#\-]*${CLASS_TOKEN}(?:\s*(?:,|\/|&|\+|and|or|-|–|to)\s*${CLASS_TOKEN})*\s$`,
+  "i",
+);
+
+/**
+ * True when the figure at this index may be the end of a number split by a space: an OCR split
+ * like "1 500W" or "2 8 MPH", or a thousands space like "1 200 W". Read from its last group it
+ * would be far too low, so it is not read at all and the family checks it.
+ */
+function splitNumberBefore(text: string, index: number): boolean {
+  const before = text.slice(Math.max(0, index - 40), index);
+  return NUMBER_THEN_SPACE.test(before) && !CLASS_THEN_SPACE.test(before);
+}
+
+function flagSplit(out: Extraction): void {
+  if (!out.flags.includes("number_split")) out.flags.push("number_split");
+}
+
 const RATED_WORDS = /\b(nominal|rated|continuous|sustained)\b/g;
 const PEAK_WORDS = /\b(peak|burst|max(?:imum)?|up to)\b/g;
 
@@ -156,12 +178,16 @@ function parseWatts(text: string, out: Extraction, source: TextSource): void {
   const re = new RegExp(String.raw`(?<![\w.|]|${OCR_DIGIT},)(\d{1,2}(?:,\d{3})+|\d+(?:\.\d+)?)\s?(kw|w|watts?)(?![a-z])`, "gi");
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
-    let value = Number(m[1].replace(/,/g, ""));
-    if (m[2].toLowerCase() === "kw") value *= 1000;
-    if (!Number.isFinite(value) || value < 100 || value > 20000) continue;
     const end = m.index + m[0].length;
     const ctx = slice(text, m.index - 25, end + 25);
     if (/\b(charger|charging|headlight|lumens?|inverter)\b/.test(ctx)) continue;
+    if (splitNumberBefore(text, m.index)) {
+      flagSplit(out);
+      continue;
+    }
+    let value = Number(m[1].replace(/,/g, ""));
+    if (m[2].toLowerCase() === "kw") value *= 1000;
+    if (!Number.isFinite(value) || value < 100 || value > 20000) continue;
     const ev = snippet(text, m.index, m[0].length);
     const kind = wattKind(text, m.index, end);
     if (kind === "rated") {
@@ -248,6 +274,10 @@ function parseSpeeds(text: string, out: Extraction): void {
   const re = /(?<![\w.|])(\d{1,3}(?:\.\d)?)\s?(mph|miles per hour|km\/h|kmh|kph)\b/gi;
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
+    if (splitNumberBefore(text, m.index)) {
+      flagSplit(out);
+      continue;
+    }
     let mph = Number(m[1]);
     if (/^k/i.test(m[2])) mph = roundUpTenth(mph * KMH_TO_MPH);
     if (!Number.isFinite(mph) || mph < 3 || mph > MAX_READ_MPH) continue;
@@ -547,6 +577,10 @@ function parseWeight(text: string, out: Extraction): void {
     if (weightIsForPart(text, m.index, start)) continue;
     // Not cut at the sentence: "batt. not incl." has periods of its own, and skipping is the safe side.
     if (WITHOUT_BATTERY.test(slice(text, m.index - 30, end + 30))) continue;
+    if (splitNumberBefore(text, m.index)) {
+      flagSplit(out);
+      continue;
+    }
     let lb = Number(m[1]);
     if (/kg/i.test(m[2])) lb = roundUpTenth(lb * KG_TO_LB);
     found.push({ lb, ev: snippet(text, m.index, m[0].length) });
