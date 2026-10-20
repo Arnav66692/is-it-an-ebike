@@ -1,8 +1,8 @@
 "use client";
 
 // Wheels, number of wheels, weight and foot pegs, as read from a label or listing. Several state
-// rules turn on these alone, so a value read from the text is always shown with its source and
-// can be changed. Nothing here is hidden from the family.
+// rules turn on these alone, so a value read from the text is always shown with its source, marked
+// until the family checks it, and can be changed. Nothing here is hidden from the family.
 
 import {
   sameWheelSize,
@@ -16,16 +16,20 @@ import {
   withWheelSize,
 } from "@/lib/checkerState";
 import type { Evidence as Ev, FactKey } from "@/lib/extract/parse";
-import type { BikeFacts } from "@/lib/rules/types";
+import type { FactChecks } from "@/lib/provenance";
+import type { BikeFacts, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
-import { Choice, Evidence, NumberField, triValue } from "./controls";
+import { Choice, NumberField, triValue } from "./controls";
+import { ReadNote, type OnConfirm } from "./ReadCheck";
 
 interface Props {
   lang: Lang;
   facts: BikeFacts;
+  checks: FactChecks;
   evidence: Partial<Record<FactKey, Ev[]>>;
   onChange: (next: BikeFacts) => void;
+  onConfirm: OnConfirm;
 }
 
 /** True when the text gave any of these facts, or the facts already hold one. */
@@ -41,13 +45,13 @@ export function hasShapeFacts(facts: BikeFacts, evidence: Partial<Record<FactKey
   );
 }
 
-export function ShapeFacts({ lang, facts, evidence, onChange }: Props) {
+export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm }: Props) {
   if (!hasShapeFacts(facts, evidence)) return null;
   // Read from the facts, so an answer given in the follow-up questions shows here too. "Not sure" is
   // the same "not sure" the follow-up stores.
   const pegsUi = triValue(facts.hasFootPegs) ?? (facts.unsure.includes("pegs_kit") ? "unsure" : null);
 
-  const ev = (key: FactKey) => <Evidence label={t(lang, "readFrom")} texts={evidence[key]?.map((e) => e.text)} />;
+  const ev = (key: ReadField) => <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={onConfirm} evidence={evidence[key]} />;
   const wheelError = t(lang, "rangeError", { min: WHEEL_MIN_IN, max: WHEEL_MAX_IN });
   const wheelField = (label: string, value: number | null, set: (v: number | null) => void, withEvidence: boolean) => (
     <NumberField

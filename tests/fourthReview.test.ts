@@ -10,6 +10,7 @@ import { NumberField } from "@/components/controls";
 import { FactsCard } from "@/components/FactsCard";
 import { numberInRange, requestGate, WHEEL_MAX_IN, WHEEL_MIN_IN, withWheelCount, withWheelSize } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
+import { fromRead } from "@/lib/provenance";
 import { parseSpecText } from "@/lib/extract/parse";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
@@ -25,13 +26,17 @@ const DATE = "2026-10-20";
 /** The facts card's visible text, with each number box shown as [value]. */
 function factsCardText(text: string, lang: "en" | "es" = "en"): string {
   const e = parseSpecText(text, "listing");
+  const read = fromRead(factsFromExtraction(e, emptyFacts()));
   const html = renderToStaticMarkup(
     createElement(FactsCard, {
       lang,
-      facts: factsFromExtraction(e, emptyFacts()),
+      facts: read.facts,
+      checks: read.checks,
       evidence: e.evidence,
       flags: e.flags,
       onChange: () => undefined,
+      onConfirm: () => undefined,
+      onPedalCall: () => undefined,
       onCheck: () => undefined,
     }),
   );
@@ -74,9 +79,12 @@ describe("a negated throttle after a speed", () => {
       createElement(FactsCard, {
         lang: "en",
         facts: { ...emptyFacts(), hasPedals: true, classes: [1], hasThrottle: false, throttleMph: 20 },
+        checks: {},
         evidence: {},
         flags: [],
         onChange: () => undefined,
+        onConfirm: () => undefined,
+        onPedalCall: () => undefined,
         onCheck: () => undefined,
       }),
     );
@@ -213,7 +221,17 @@ describe("the facts card shows every wheel, wheel count and weight fact it read"
     expect(card).toMatch(/Wheel size \(inches\)\s+\[12\]/);
     // A count the family picks shows as picked.
     const picked = renderToStaticMarkup(
-      createElement(FactsCard, { lang: "en", facts: { ...emptyFacts(), wheelCount: 3 }, evidence: {}, flags: [], onChange: () => undefined, onCheck: () => undefined }),
+      createElement(FactsCard, {
+        lang: "en",
+        facts: { ...emptyFacts(), wheelCount: 3 },
+        checks: {},
+        evidence: {},
+        flags: [],
+        onChange: () => undefined,
+        onConfirm: () => undefined,
+        onPedalCall: () => undefined,
+        onCheck: () => undefined,
+      }),
     );
     expect(/<input[^>]*checked=""[^>]*value="3"/.test(picked) || /<input[^>]*value="3"[^>]*checked=""/.test(picked)).toBe(true);
   });

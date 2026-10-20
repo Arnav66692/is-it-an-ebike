@@ -314,3 +314,30 @@ body {
     color: #000;
   }
 }
+
+/* A fact read from a link or photo that the family has not checked against the bike yet. */
+.read-mark {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.6rem;
+  background: var(--maybe-bg);
+  color: var(--maybe);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.read-mark-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.05rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1;
+}

@@ -5,6 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
+import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit, withPedalCall, type CheckedFacts } from "@/lib/provenance";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId } from "@/lib/rules/types";
@@ -74,7 +75,10 @@ export function Checker() {
   const [pickDate, setPickDate] = useState(false);
   const [places, setPlaces] = useState<PlaceId[]>(initial.places);
   const [otherPlaces, setOtherPlaces] = useState(false);
-  const [facts, setFacts] = useState<BikeFacts>(emptyFacts());
+  // The facts and where each came from change together. Nothing here is saved, so a reload or a
+  // shared link starts with no facts and nothing checked.
+  const [bike, setBike] = useState<CheckedFacts>(emptyChecked);
+  const facts = bike.facts;
   const [evidence, setEvidence] = useState<Partial<Record<FactKey, Ev[]>>>({});
   const [flags, setFlags] = useState<string[]>([]);
   const [stage, setStage] = useState<Stage>("input");
@@ -132,7 +136,9 @@ export function Checker() {
     });
   }, [stage, ageValid, age, stateCode, date, facts, places, otherPlaces]);
 
-  const summary = useMemo(() => (result && date ? bottomLine(result, date) : null), [result, date]);
+  // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
+  const unconfirmed = useMemo(() => unconfirmedFields(bike.checks), [bike.checks]);
+  const summary = useMemo(() => (result && date ? bottomLine(result, date, unconfirmed) : null), [result, date, unconfirmed]);
 
   const pending: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]
@@ -151,8 +157,14 @@ export function Checker() {
     requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
+  /** A change the family makes by hand. A read fact they change counts as checked. */
+  function editFacts(next: BikeFacts) {
+    setBike((cur) => withEdit(cur, next));
+  }
+
   function handleRead(extraction: Extraction) {
-    setFacts(factsFromExtraction(extraction, emptyFacts()));
+    // A new link, pasted text or label photo is a new bike. Every value it gives comes in not checked.
+    setBike(fromRead(factsFromExtraction(extraction, emptyFacts()), "text"));
     setEvidence(extraction.evidence);
     setFlags(extraction.flags);
     setStage("facts");
@@ -162,7 +174,7 @@ export function Checker() {
 
   function handleManual() {
     readGate.cancel();
-    setFacts(emptyFacts());
+    setBike(emptyChecked());
     setEvidence({});
     setFlags([]);
     setStage("facts");
@@ -300,14 +312,25 @@ export function Checker() {
 
       <div ref={factsRef} className="scroll-mt-4">
         {stage !== "input" ? (
-          <FactsCard key={`facts-${round}`} lang={lang} facts={facts} evidence={evidence} flags={flags} onChange={setFacts} onCheck={handleCheck} />
+          <FactsCard
+            key={`facts-${round}`}
+            lang={lang}
+            facts={facts}
+            checks={bike.checks}
+            evidence={evidence}
+            flags={flags}
+            onChange={editFacts}
+            onConfirm={(field, yes) => setBike((cur) => withConfirmed(cur, field, yes))}
+            onPedalCall={(call) => setBike((cur) => withPedalCall(cur, call))}
+            onCheck={handleCheck}
+          />
         ) : null}
       </div>
 
       <div ref={resultsRef} className="scroll-mt-4 space-y-4">
         {result ? (
           <>
-            <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={setFacts} />
+            <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />
             <h2 className="text-xl font-bold">{t(lang, "results")}</h2>
             <VerdictCard verdict={result.state} lang={lang} stateCode={stateCode} showLocalNotice={result.localNotice} />
             {result.local.map((v) => (
@@ -333,7 +356,7 @@ export function Checker() {
                 onClick={() => {
                   readGate.cancel();
                   setStage("input");
-                  setFacts(emptyFacts());
+                  setBike(emptyChecked());
                   setEvidence({});
                   setFlags([]);
                   window.scrollTo({ top: 0, behavior: "smooth" });

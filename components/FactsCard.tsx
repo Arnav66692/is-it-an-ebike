@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
 import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/parse";
-import type { BikeFacts, ClassNum } from "@/lib/rules/types";
+import { checkCounts, type FactChecks } from "@/lib/provenance";
+import type { BikeFacts, ClassNum, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
-import { answerGate, applyPedalCall } from "@/lib/photo/pedalRule";
-import { Card, Choice, Evidence, fromTri, NumberField, triValue } from "./controls";
+import { answerGate, type PedalCall } from "@/lib/photo/pedalRule";
+import { Card, Choice, fromTri, NumberField, triValue } from "./controls";
 import { PedalPhotoCheck } from "./PedalPhotoCheck";
+import { ReadNote, type OnConfirm } from "./ReadCheck";
 import { ShapeFacts } from "./ShapeFacts";
 
 type Tri3 = "yes" | "no" | "unsure";
@@ -18,20 +20,33 @@ const MAX_WATTS = 20000;
 interface Props {
   lang: Lang;
   facts: BikeFacts;
+  /** Which facts were read from a link or photo, and which of those the family has checked. */
+  checks: FactChecks;
   evidence: Partial<Record<FactKey, Ev[]>>;
   flags: string[];
-  onChange: Dispatch<SetStateAction<BikeFacts>>;
+  /** The family changed the facts. A read fact they change counts as checked. */
+  onChange: (next: BikeFacts) => void;
+  /** The family ticked or cleared "It matches the bike" on a read fact. */
+  onConfirm: OnConfirm;
+  /** The whole-bike photo check made a call. It only fills the pedals answer. */
+  onPedalCall: (call: PedalCall) => void;
   onCheck: () => void;
 }
 
-export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: Props) {
+export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onConfirm, onPedalCall, onCheck }: Props) {
   const [pedalsUi, setPedalsUi] = useState<Tri3 | null>(triValue(facts.hasPedals));
   const [throttleUi, setThrottleUi] = useState<Tri3 | null>(triValue(facts.hasThrottle));
   // A pedals answer the family picks while a photo check runs must not be replaced by the photo's call.
   const [pedalAnswers] = useState(answerGate);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
   const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
-  const ev = (key: FactKey) => <Evidence label={t(lang, "readFrom")} texts={evidence[key]?.map((e) => e.text)} />;
+  const confirm: OnConfirm = (field, confirmed) => {
+    // Ticking the pedals box is the family's own pedals answer, newer than a photo check still running.
+    if (field === "hasPedals") pedalAnswers.edited();
+    onConfirm(field, confirmed);
+  };
+  const ev = (key: ReadField) => <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={confirm} evidence={evidence[key]} />;
+  const counts = checkCounts(checks);
   const triOptions = [
     { value: "yes" as const, label: t(lang, "yes") },
     { value: "no" as const, label: t(lang, "no") },
@@ -47,6 +62,7 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
   return (
     <Card title={t(lang, "step3")} step={3}>
       <p className="text-sm text-muted">{t(lang, "step3Help")}</p>
+      {counts.read > 0 ? <p className="read-mark">{t(lang, "readIntro")}</p> : null}
       {flags.length > 0 ? (
         <ul className="list-disc space-y-1 rounded-lg bg-sunk p-3 pl-7 text-sm">
           {[...new Set(flags)].map((f) => {
@@ -74,7 +90,7 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
           onCall={(call) => {
             if (call === "ask") return;
             setPedalsUi(call === "pedals" ? "yes" : "no");
-            onChange((prev) => applyPedalCall(prev, call));
+            onPedalCall(call);
           }}
         />
       </div>
@@ -129,7 +145,7 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
         ) : null}
       </div>
 
-      <ShapeFacts lang={lang} facts={facts} evidence={evidence} onChange={onChange} />
+      <ShapeFacts lang={lang} facts={facts} checks={checks} evidence={evidence} onChange={onChange} onConfirm={confirm} />
 
       {facts.switchable === true || evidence.switchable ? (
         <div>
@@ -141,6 +157,11 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
         </div>
       ) : null}
 
+      {counts.read > 0 ? (
+        <p role="status" className="text-sm font-semibold">
+          {t(lang, "readCount", { done: counts.confirmed, total: counts.read })}
+        </p>
+      ) : null}
       <button type="button" className="btn w-full sm:w-auto" onClick={onCheck}>
         {t(lang, "check")}
       </button>

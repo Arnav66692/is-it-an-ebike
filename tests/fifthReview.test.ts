@@ -566,7 +566,7 @@ describe("the follow-ups and the facts card always show the same answer", () => 
 
   it("the facts card shows the follow-up's pegs answer, including not sure", () => {
     const shape = (facts: BikeFacts) =>
-      picked(renderToStaticMarkup(createElement(ShapeFacts, { lang: "en", facts, evidence: {}, onChange: () => undefined })));
+      picked(renderToStaticMarkup(createElement(ShapeFacts, { lang: "en", facts, checks: {}, evidence: {}, onChange: () => undefined, onConfirm: () => undefined })));
     expect(shape({ ...base, hasFootPegs: null, needsPedalKit: null, unsure: ["pegs_kit"], wheelFrontIn: 20 })).toContain("Foot pegs for the rider?: unsure");
     expect(shape({ ...base, hasFootPegs: true })).toContain("Foot pegs for the rider?: yes");
   });

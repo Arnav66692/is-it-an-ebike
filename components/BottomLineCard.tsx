@@ -21,17 +21,22 @@ const SUBTITLE = {
 /**
  * The line under YES or NO. When the only "no" is that the bike is not an e-bike, it says that,
  * not that a rule bars the ride, since the bike may be legal as another vehicle, like Vermont's
- * motor-assisted bicycle.
+ * motor-assisted bicycle. When the only thing missing is checking the facts read from a link or
+ * photo, it says that, so the family knows the next step is on the facts card.
  */
-export function subtitleKey(line: BottomLine): (typeof SUBTITLE)[BottomLine["kind"]] | "blNotEbikeSub" {
-  return line.kind === "no_illegal" && line.notEbikeOnly ? "blNotEbikeSub" : SUBTITLE[line.kind];
+export function subtitleKey(line: BottomLine): (typeof SUBTITLE)[BottomLine["kind"]] | "blNotEbikeSub" | "blFactsSub" {
+  if (line.kind === "no_illegal" && line.notEbikeOnly) return "blNotEbikeSub";
+  if (line.kind === "no_unconfirmed" && line.missing.every((m) => m.kind === "facts")) return "blFactsSub";
+  return SUBTITLE[line.kind];
 }
 
 /**
  * The places one item applies to, as a label: "City of San Diego and an SDUHSD campus".
- * Each place uses its list form, and only the first word is capitalized.
+ * Each place uses its list form, and only the first word is capitalized. An item about the bike's
+ * facts names no place, since every card rests on them.
  */
 export function whereLabel(where: CardRef[], lang: Lang, stateCode: string): string {
+  if (where.length === 0) return t(lang, "blFactsWhere");
   const names = where.map((r) => (r.scope === "state" ? stateLaw(stateCode, lang, "list") : placeNameInList(r.id, lang)));
   return capitalize(joinList(names, lang));
 }
