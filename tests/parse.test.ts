@@ -227,3 +227,21 @@ describe("fourth review fixes (Oct 19, 2026)", () => {
     expect(parseSpecText("Pedal assist to 20.5 mph", "listing").facts.assistMph).toBe(20.5);
   });
 });
+
+describe("fourth review fixes: a negated throttle after a speed", () => {
+  it("doesn't read '20 mph, no throttle' as a throttle speed", () => {
+    for (const text of [
+      "Class 1 e-bike. 250W rated. Top speed 20 mph, no throttle. Pedals.",
+      "Top speed 20 mph, without a throttle.",
+      "Top speed 20 mph - throttle-free.",
+      "Top speed 20 mph, throttle: none.",
+    ]) {
+      const e = parseSpecText(text, "listing");
+      expect(e.facts.throttleMph, text).toBeUndefined();
+      expect(e.facts.topSpeedMph, text).toBe(20);
+      expect(e.facts.hasThrottle, text).toBe(false);
+    }
+    expect(parseSpecText("Up to 20 mph throttle only.", "listing").facts.throttleMph).toBe(20);
+    expect(parseSpecText("No throttle. Pedal assist to 20 mph.", "listing").facts.assistMph).toBe(20);
+  });
+});

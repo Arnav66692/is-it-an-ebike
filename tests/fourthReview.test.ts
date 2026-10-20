@@ -1,7 +1,10 @@
 // End-to-end cases from the fourth review (Oct 19, 2026): listing text, through the parser and
 // the engine, to the bottom line. The family's only answer is No and No to the fast-mode questions.
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { FactsCard } from "@/components/FactsCard";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { evaluate } from "@/lib/rules";
@@ -24,5 +27,30 @@ describe("speeds", () => {
     expect(result.state.status).toBe("cant_confirm");
     expect(result.state.reason).toMatchObject({ code: "fits_no_class_speed", params: { mph: 74.6 } });
     expect(kind).toBe("no_unconfirmed");
+  });
+});
+
+describe("a negated throttle after a speed", () => {
+  it("'Top speed 20 mph, no throttle' is a plain Class 1 yes, not facts that disagree", () => {
+    const { facts, result, kind } = flow("Class 1 e-bike. 250W rated. Top speed 20 mph, no throttle. Pedals.", "CA", 30, {}, ["encinitas"]);
+    expect(facts.throttleMph).toBeNull();
+    expect(facts.hasThrottle).toBe(false);
+    expect(result.state.status).toBe("yes");
+    expect(kind).toBe("yes");
+  });
+
+  it("a throttle speed in the facts stays on the card even when the throttle answer is no", () => {
+    const html = renderToStaticMarkup(
+      createElement(FactsCard, {
+        lang: "en",
+        facts: { ...emptyFacts(), hasPedals: true, classes: [1], hasThrottle: false, throttleMph: 20 },
+        evidence: {},
+        flags: [],
+        onChange: () => undefined,
+        onCheck: () => undefined,
+      }),
+    );
+    expect(html).toContain("Throttle top speed (mph)");
+    expect(html).toContain('value="20"');
   });
 });

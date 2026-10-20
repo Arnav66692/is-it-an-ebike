@@ -211,11 +211,21 @@ function lastKeyword(before: string, words: string[]): number {
 
 type SpeedRole = "throttle" | "assist" | "top";
 
-/** The mode word closest before the number in the same clause decides, then a word right after it. */
+/** "No throttle", "without a throttle", "throttle-free" and "throttle: none" name no throttle mode. */
+const NEGATED_THROTTLE = /\b(?:no|without)\s+(?:a\s+)?throttle\b|\bthrottle[- ]?free\b|\bthrottle\s*[:\-]\s*(?:no|none|n\/a)\b/g;
+
+function withoutNegatedThrottle(lower: string): string {
+  return lower.replace(NEGATED_THROTTLE, " ");
+}
+
+/**
+ * The mode word closest before the number in the same clause decides, then a word right after it.
+ * A negated throttle on either side is no throttle mode, so "20 mph, no throttle" is not a throttle speed.
+ */
 function speedRole(text: string, index: number, end: number): SpeedRole {
   const { start, stop } = clauseAround(text, index, end);
-  const before = slice(text, start, index).replace(/\b(no|without)\s+(a\s+)?throttle/g, "");
-  const after = slice(text, end, Math.min(stop, end + 15));
+  const before = withoutNegatedThrottle(slice(text, start, index));
+  const after = withoutNegatedThrottle(slice(text, end, Math.min(stop, end + 40))).slice(0, 15);
   const t = lastKeyword(before, ["throttle"]);
   const a = lastKeyword(before, ["assist", "pedal", "pas ", "pedelec"]);
   if (t >= 0 || a >= 0) return t > a ? "throttle" : "assist";

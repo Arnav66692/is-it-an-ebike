@@ -110,7 +110,8 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {facts.hasThrottle !== false ? (
+        {/* A throttle speed read from the text stays visible even with "no throttle", so a stray one can be cleared. */}
+        {facts.hasThrottle !== false || facts.throttleMph !== null ? (
           <NumberField label={t(lang, "throttleMph")} value={facts.throttleMph} min={0} max={99} onChange={(v) => set({ throttleMph: v })} evidence={ev("throttleMph")} />
         ) : null}
         <NumberField label={t(lang, "assistMph")} value={facts.assistMph} min={0} max={99} onChange={(v) => set({ assistMph: v })} evidence={ev("assistMph")} />
