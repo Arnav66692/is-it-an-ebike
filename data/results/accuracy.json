@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-20T10:29:56.656Z",
-  "commit": "a8431e7",
+  "generated_at": "2026-10-20T23:17:07.329Z",
+  "commit": "1110dd4",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
@@ -15,7 +15,9 @@
       "need_info": 14894
     },
     "false_legal": 0,
-    "missed_yes": 0
+    "missed_yes": 0,
+    "hedged": 0,
+    "answer_cards": 2113
   },
   "bottom_line": {
     "cases": 605200,
@@ -58,11 +60,13 @@
     "missed_illegal": 0,
     "wrong_kind": 0,
     "missing_caveat": 0,
-    "rendered_cards": 195
+    "rendered_cards": 195,
+    "hedged": 0,
+    "answer_cards": 434
   },
   "tests": {
-    "total": 576,
-    "passed": 576,
+    "total": 600,
+    "passed": 600,
     "failed": 0
   },
   "pilot": {

@@ -2,14 +2,15 @@
 
 import { useId } from "react";
 import type { BottomLine, BottomLineItem, CardRef } from "@/lib/rules/bottomLine";
-import { capitalize, formatDate, joinList, placeNameInList, placeNameInline, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
+import { capitalize, cardWhere, formatDate, joinList, placeNameInList, placeNameInline, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
 
+/** YES or NO, never a maybe. A ride we can't confirm is legal is a NO, with the reason under it. */
 const MARK: Record<BottomLine["kind"], string> = {
   yes: "✓",
   no_illegal: "✕",
-  no_unconfirmed: "?",
+  no_unconfirmed: "✕",
 };
 
 const SUBTITLE = {
@@ -28,6 +29,28 @@ export function subtitleKey(line: BottomLine): (typeof SUBTITLE)[BottomLine["kin
   if (line.kind === "no_illegal" && line.notEbikeOnly) return "blNotEbikeSub";
   if (line.kind === "no_unconfirmed" && line.missing.every((m) => m.kind === "facts")) return "blFactsSub";
   return SUBTITLE[line.kind];
+}
+
+/**
+ * The one card a NO rests on when every gap it names, apart from the read facts, is about that
+ * card. Null when the gaps are about more than one card, or only about the facts.
+ */
+function onlyOpenCard(line: BottomLine): CardRef | null {
+  const refs = line.missing.flatMap((m) => m.where);
+  const first = refs[0];
+  if (!first) return null;
+  return refs.every((r) => r.scope === first.scope && r.id === first.id) ? first : null;
+}
+
+/**
+ * The plain reason under YES or NO. A NO we can't confirm names the one place it rests on when
+ * there is one, like "We can't confirm it's legal in South Carolina.", and says every place we
+ * checked when there are more. It is never a hedge like "not confirmed" in place of the answer.
+ */
+export function subtitle(line: BottomLine, lang: Lang): string {
+  const key = subtitleKey(line);
+  const only = key === "blUnconfirmedSub" ? onlyOpenCard(line) : null;
+  return only ? t(lang, "answerCantConfirm", { where: cardWhere(only.scope, only.id, lang) }) : t(lang, key);
 }
 
 /**
@@ -50,14 +73,15 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
 
 /**
  * The one short sentence screen readers announce when the bottom line appears or changes,
- * for example "Bottom line: NO. Not allowed. At least one rule we checked says no."
+ * for example "Bottom line: NO. Not allowed. At least one rule we checked says no." or "Bottom
+ * line: NO. We can't confirm it's legal in South Carolina." It always says YES or NO first.
  * A NO, not allowed that still rests on unchecked read facts adds that it could change once
  * they are checked. The full card stays out of the live region, so it is never read again on
  * every edit.
  */
 export function announcement(line: BottomLine, lang: Lang): string {
   const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
-  const head = `${t(lang, "blTitle")}: ${word}. ${t(lang, subtitleKey(line))}`;
+  const head = `${t(lang, "blTitle")}: ${word}. ${subtitle(line, lang)}`;
   return line.factsNote ? `${head} ${t(lang, "blFactsCouldChange")}` : head;
 }
 
@@ -130,13 +154,15 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
         <h3 id={headingId} className="text-sm font-semibold uppercase tracking-wide text-muted">
           {t(lang, "blTitle")}
         </h3>
-        <p className="bl-head">
+        <p className="bl-head" data-answer={yes ? "yes" : "no"}>
           <span className="bl-mark" aria-hidden="true">
             {MARK[line.kind]}
           </span>
           <span>{yes ? t(lang, "blYes") : t(lang, "blNo")}</span>
         </p>
-        <p className="text-lg font-semibold leading-snug">{t(lang, subtitleKey(line))}</p>
+        <p className="text-lg font-semibold leading-snug" data-answer-line="">
+          {subtitle(line, lang)}
+        </p>
         <p className="text-sm">
           {t(lang, "blRideDate", { date: formatDate(line.rideDate, lang) })} {coversSentence(line, lang, stateCode)}
         </p>

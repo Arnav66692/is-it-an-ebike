@@ -15,6 +15,7 @@ interface BottomLineResults {
   false_illegal?: number;
   missed_illegal?: number;
   missing_caveat: number;
+  hedged?: number;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
@@ -33,6 +34,8 @@ export function AccuracyView({ lang }: { lang: Lang }) {
   const text = ACCURACY_TEXT[lang];
   const locale = lang === "es" ? "es-US" : "en-US";
   const e = accuracy.engine;
+  // Rendered answers that are not a plain YES or NO. Older result files don't have the count.
+  const hedged = (e as { hedged?: number }).hedged;
   const bl = (accuracy as { bottom_line?: BottomLineResults }).bottom_line ?? null;
   const fmt = (n: number) => n.toLocaleString(locale);
   const share = (n: number) => `${((100 * n) / e.cases).toFixed(1)}%`;
@@ -61,6 +64,7 @@ export function AccuracyView({ lang }: { lang: Lang }) {
           <tbody>
             <Row label={text.falseLegal} value={fmt(e.false_legal)} strong />
             <Row label={text.missedYes} value={fmt(e.missed_yes)} />
+            {hedged !== undefined ? <Row label={text.hedged} value={fmt(hedged)} /> : null}
             <Row label={text.statusYes} value={`${fmt(e.by_status.yes)} (${share(e.by_status.yes)})`} />
             <Row label={text.statusNo} value={`${fmt(e.by_status.no)} (${share(e.by_status.no)})`} />
             <Row label={text.statusNotEbike} value={`${fmt(e.by_status.not_ebike)} (${share(e.by_status.not_ebike)})`} />
@@ -84,6 +88,7 @@ export function AccuracyView({ lang }: { lang: Lang }) {
               {bl.false_illegal !== undefined ? <Row label={text.blFalseIllegal} value={fmt(bl.false_illegal)} /> : null}
               {bl.missed_illegal !== undefined ? <Row label={text.blMissedIllegal} value={fmt(bl.missed_illegal)} /> : null}
               <Row label={text.blMissingCaveat} value={fmt(bl.missing_caveat)} />
+              {bl.hedged !== undefined ? <Row label={text.hedged} value={fmt(bl.hedged)} /> : null}
               <Row label={text.blYes} value={fmt(bl.by_kind.yes)} />
               <Row label={text.blNoIllegal} value={fmt(bl.by_kind.no_illegal)} />
               <Row label={text.blNoUnconfirmed} value={fmt(bl.by_kind.no_unconfirmed)} />

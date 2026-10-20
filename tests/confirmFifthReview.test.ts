@@ -404,7 +404,7 @@ describe("the page turns ticks into the bottom line", () => {
     vi.unstubAllGlobals();
   });
 
-  it("says NO, not confirmed, after a read until every read fact is ticked, then YES, and NO again on an untick", () => {
+  it("says NO, can't confirm, after a read until every read fact is ticked, then YES, and NO again on an untick", () => {
     const m = mount(Checker, {}, { effects: false });
     const find = (type: unknown, what: string) => one(m.tree(), (e) => e.type === type, what);
     const line = () => find(BottomLineCard, "bottom line").props.line as BottomLine;

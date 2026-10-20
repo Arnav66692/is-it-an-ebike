@@ -360,7 +360,7 @@ describe("the campus card names every class a multi-class bike can run as", () =
       "This bike can run as Class 1/2. Each of those classes is allowed on SDUHSD campuses, after these steps.",
     );
     expect(renderLine(campus.reason, "es", "California")).toContain("Clase 1/2");
-    // SDUHSD stays NO, not confirmed: its class, tag and course rules come only from a web page.
+    // SDUHSD stays NO, can't confirm: its class, tag and course rules come only from a web page.
     expect(bottomLine(result, DATE).kind).toBe("no_unconfirmed");
   });
 

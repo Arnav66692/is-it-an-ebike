@@ -1,17 +1,44 @@
 "use client";
 
-import type { Line, Source, Verdict } from "@/lib/rules/types";
-import { citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
+import type { Line, Source, Status, Verdict } from "@/lib/rules/types";
+import { cardWhere, citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
-import { renderLine, STATUS_LABEL, uniqueRendered } from "@/lib/i18n/verdicts";
+import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
 
-const STATUS_MARK: Record<Verdict["status"], string> = {
-  yes: "✓",
-  no: "✕",
-  not_ebike: "✕",
-  cant_confirm: "?",
-  need_info: "…",
+/**
+ * Every card answers YES or NO. Only an allowed card is YES. Not allowed, not an e-bike, can't
+ * confirm and questions still open are all NO, so uncertainty never reads as a YES or a maybe.
+ * The engine's status is not changed, only how it reads.
+ */
+export function cardAnswer(status: Status): "yes" | "no" {
+  return status === "yes" ? "yes" : "no";
+}
+
+type Lead = ((v: Verdict, lang: Lang, stateCode: string) => string) | null;
+
+/**
+ * The plain line under a NO when the card's own reason doesn't say what the NO means on its own.
+ * Null for YES and for not allowed, whose own reason is that line, like "Riders under 16 can't
+ * ride a Class 3 e-bike in Alabama." Only state law decides what is an e-bike, so a not-an-e-bike
+ * card names the state's law, on a local card too.
+ */
+const LEAD: Record<Status, Lead> = {
+  yes: null,
+  no: null,
+  not_ebike: (_v, lang, stateCode) => t(lang, "answerNotEbike", { law: stateLaw(stateCode, lang, "inline") }),
+  cant_confirm: (v, lang) => t(lang, "answerCantConfirm", { where: cardWhere(v.scope, v.id, lang) }),
+  need_info: (v, lang) => t(lang, "answerNeedInfo", { where: cardWhere(v.scope, v.id, lang) }),
 };
+
+/**
+ * The line right under the YES or NO when the card needs one, for example "Not an e-bike under
+ * Vermont state law." or "We can't confirm it's legal in South Carolina." The card's own reason
+ * comes next. Null when the card's own reason is the line under the answer.
+ */
+export function answerLead(verdict: Verdict, lang: Lang, stateCode: string): string | null {
+  const lead = LEAD[verdict.status];
+  return lead ? lead(verdict, lang, stateCode) : null;
+}
 
 function safeHref(url: string | null): string | undefined {
   if (!url) return undefined;
@@ -93,16 +120,22 @@ export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props
   const verifiedKey =
     verdict.scope === "state" ? `state_verified_${verdict.verified}` : verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";
+  const answer = cardAnswer(verdict.status);
+  const lead = answerLead(verdict, lang, stateCode);
+  const reason = renderLine(verdict.reason, lang, state);
 
   return (
-    <article className="card verdict space-y-4" data-status={verdict.status} aria-label={title}>
+    <article className="card verdict space-y-4" data-status={verdict.status} data-answer={answer} aria-label={title}>
       <header className="space-y-2">
         <h3 className="text-base font-bold">{title}</h3>
-        <p className="badge" data-status={verdict.status}>
-          <span aria-hidden="true">{STATUS_MARK[verdict.status]}</span>
-          {STATUS_LABEL[lang][verdict.status]}
+        <p className="badge" data-status={verdict.status} data-answer={answer}>
+          <span aria-hidden="true">{answer === "yes" ? "✓" : "✕"}</span>
+          <span>{t(lang, answer === "yes" ? "blYes" : "blNo")}</span>
         </p>
-        <p className="text-lg font-semibold leading-snug">{renderLine(verdict.reason, lang, state)}</p>
+        <p className="text-lg font-semibold leading-snug" data-answer-line="">
+          {lead ?? reason}
+        </p>
+        {lead ? <p>{reason}</p> : null}
         {verdict.reason.detail ? (
           <details className="text-sm text-muted">
             <summary className="cursor-pointer">{t(lang, "details")}</summary>

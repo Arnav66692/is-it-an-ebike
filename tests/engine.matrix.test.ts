@@ -21,6 +21,14 @@ describe("generated test matrix", () => {
     const sample = summary.missedYes.slice(0, 5);
     expect(sample, JSON.stringify(sample, null, 1)).toEqual([]);
   });
+
+  it("shows every rendered place card's answer as a plain YES or NO, never can't confirm, unsure or not sure", () => {
+    // Every status comes up, so cards that can't confirm or still ask questions are among those read.
+    for (const status of ["yes", "no", "not_ebike", "cant_confirm", "need_info"] as const) expect(summary.byStatus[status], status).toBeGreaterThan(0);
+    expect(summary.answerCards).toBeGreaterThan(1_000);
+    const sample = summary.hedged.slice(0, 5);
+    expect(sample, JSON.stringify(sample, null, 1)).toEqual([]);
+  });
 });
 
 describe("generated bottom-line matrix", () => {
@@ -84,6 +92,11 @@ describe("generated bottom-line matrix", () => {
 
   it("is never YES when a card is not allowed, can't confirm, unanswered, not sure or unverified, or a read fact is unchecked", () => {
     expect(summary.wrongKind.slice(0, 5), show(summary.wrongKind)).toEqual([]);
+  });
+
+  it("shows every rendered bottom line and announcement as a plain YES or NO, never can't confirm, unsure or not sure", () => {
+    expect(summary.answerCards).toBeGreaterThan(300);
+    expect(summary.hedged.slice(0, 5), show(summary.hedged)).toEqual([]);
   });
 
   it("shows the unchecked-places line on the rendered card exactly when a place was not checked", () => {

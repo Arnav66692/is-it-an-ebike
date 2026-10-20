@@ -2,7 +2,7 @@
 // code and the numbers. These templates are the only legal text in the app.
 
 import type { BottomLineCode } from "@/lib/rules/bottomLine";
-import { isQuestionId, QUESTION_IDS, READ_FIELDS, type Line, type QuestionId, type ReadField, type Status } from "@/lib/rules/types";
+import { isQuestionId, QUESTION_IDS, READ_FIELDS, type Line, type QuestionId, type ReadField } from "@/lib/rules/types";
 import { formatDate, joinList, placeName, placeNameInline, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
@@ -144,7 +144,7 @@ const EN = {
   no_pedals: (_p, c) => `No working pedals, so it's not an e-bike in ${c.state}. The law treats it as a motor vehicle.`,
   no_pedals_unclear: (_p, c) => `${c.state}'s definition doesn't clearly require pedals, so we can't confirm a machine without them.`,
   pedals_unknown: () => "We need to know whether it has working pedals.",
-  never_legal: (_p, c) => `We can't confirm any e-bike as legal in ${c.state}. Its law doesn't clearly cover e-bikes.`,
+  never_legal: (_p, c) => `${c.state}'s law doesn't clearly cover e-bikes of any class.`,
   facts_conflict: () => "Some facts disagree with each other. Check the speeds and modes you entered.",
   class_unknown: () => "We couldn't find the class. Look for the label near the pedals, or type the class in.",
   class_conflict_throttle: (p) => `A Class ${cls(p)} e-bike only helps while you pedal. A throttle means it fits no single class.`,
@@ -190,7 +190,7 @@ const EN = {
   unsure_watts_hp: (_p, c) =>
     `${c.state} also caps the motor at 1 horsepower (about 745 W). The text doesn't give the rated watts, so we need the rated figure from the label to confirm this.`,
   unsure_class_age_unclear: (p, c) => `${c.state}'s law is unclear for Class ${cls(p)} riders this young.`,
-  need_info: () => "A few quick questions first. A label can't show these.",
+  need_info: () => "A label can't show the answers, and the law here depends on them.",
   req_helmet_under: (p) => `Helmet required for riders under ${p.underAge}.`,
   req_helmet_all_ages: (p) => `Helmet required at every age on a Class ${cls(p)}.`,
   req_supervision: (p) => `Under ${p.minAge}, only with a parent or another adult right there.`,
@@ -450,7 +450,7 @@ const ES = {
   no_pedals: (_p, c) => `No tiene pedales que funcionen, así que no es una bicicleta eléctrica en ${esName(c)}. La ley la trata como un vehículo motorizado.`,
   no_pedals_unclear: (_p, c) => `La definición ${esOf(c)} no exige pedales con claridad, así que no podemos confirmar una máquina sin ellos.`,
   pedals_unknown: () => "Necesitamos saber si tiene pedales que funcionen.",
-  never_legal: (_p, c) => `No podemos confirmar que una bicicleta eléctrica sea legal en ${esName(c)}. Su ley no las cubre con claridad.`,
+  never_legal: (_p, c) => `La ley ${esOf(c)} no cubre con claridad las bicicletas eléctricas de ninguna clase.`,
   facts_conflict: () => "Algunos datos no coinciden entre sí. Revisa las velocidades y los modos que escribiste.",
   class_unknown: () => "No encontramos la clase. Busca la etiqueta cerca de los pedales o escribe la clase.",
   class_conflict_throttle: (p) => `Una bicicleta Clase ${cls(p)} solo ayuda mientras pedaleas. Un acelerador significa que no cabe en una sola clase.`,
@@ -496,7 +496,7 @@ const ES = {
   unsure_watts_hp: (_p, c) =>
     `${esSubj(c)} también limita el motor a 1 caballo de fuerza (unos 745 W). El texto no da los vatios nominales, así que necesitamos la cifra nominal de la etiqueta para confirmarlo.`,
   unsure_class_age_unclear: (p, c) => `La ley ${esOf(c)} no es clara para conductores tan jóvenes en una Clase ${cls(p)}.`,
-  need_info: () => "Primero, unas preguntas rápidas. Una etiqueta no muestra esto.",
+  need_info: () => "Una etiqueta no muestra las respuestas, y la ley de aquí depende de ellas.",
   req_helmet_under: (p) => `Casco obligatorio para menores de ${p.underAge} años.`,
   req_helmet_all_ages: (p) => `Casco obligatorio a cualquier edad en una Clase ${cls(p)}.`,
   req_supervision: (p) => `Menores de ${p.minAge}, solo con su padre, madre u otro adulto presente.`,
@@ -795,22 +795,5 @@ export function uniqueRendered(lines: Line[], lang: Lang, state: string): Line[]
 export function hasTemplate(code: string): boolean {
   return code in EN && code in ES;
 }
-
-export const STATUS_LABEL: Record<Lang, Record<Status, string>> = {
-  en: {
-    yes: "Allowed",
-    no: "Not allowed",
-    not_ebike: "Not an e-bike",
-    cant_confirm: "Can't confirm",
-    need_info: "A few questions",
-  },
-  es: {
-    yes: "Permitida",
-    no: "No permitida",
-    not_ebike: "No es bicicleta eléctrica",
-    cant_confirm: "No se puede confirmar",
-    need_info: "Unas preguntas",
-  },
-};
 
 export const CHANGE_CODES = Object.keys(CHANGES.en);

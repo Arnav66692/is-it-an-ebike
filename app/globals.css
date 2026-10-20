@@ -205,18 +205,12 @@ body {
   border-left: 6px solid var(--line);
 }
 
-.verdict[data-status="yes"] {
+/* Every answer is YES or NO. Not allowed, not an e-bike, can't confirm and questions still open are all NO. */
+.verdict[data-answer="yes"] {
   border-left-color: var(--yes);
 }
-.verdict[data-status="no"],
-.verdict[data-status="not_ebike"] {
+.verdict[data-answer="no"] {
   border-left-color: var(--no);
-}
-.verdict[data-status="cant_confirm"] {
-  border-left-color: var(--maybe);
-}
-.verdict[data-status="need_info"] {
-  border-left-color: var(--ask);
 }
 
 .badge {
@@ -229,22 +223,13 @@ body {
   font-size: 0.95rem;
 }
 
-.badge[data-status="yes"] {
+.badge[data-answer="yes"] {
   background: var(--yes-bg);
   color: var(--yes);
 }
-.badge[data-status="no"],
-.badge[data-status="not_ebike"] {
+.badge[data-answer="no"] {
   background: var(--no-bg);
   color: var(--no);
-}
-.badge[data-status="cant_confirm"] {
-  background: var(--maybe-bg);
-  color: var(--maybe);
-}
-.badge[data-status="need_info"] {
-  background: var(--ask-bg);
-  color: var(--ask);
 }
 
 .bottom-line {
@@ -254,11 +239,9 @@ body {
 .bottom-line[data-kind="yes"] {
   border-color: var(--yes);
 }
-.bottom-line[data-kind="no_illegal"] {
-  border-color: var(--no);
-}
+.bottom-line[data-kind="no_illegal"],
 .bottom-line[data-kind="no_unconfirmed"] {
-  border-color: var(--maybe);
+  border-color: var(--no);
 }
 
 .bl-head {
@@ -284,13 +267,10 @@ body {
   background: var(--yes-bg);
   color: var(--yes);
 }
-.bottom-line[data-kind="no_illegal"] .bl-mark {
+.bottom-line[data-kind="no_illegal"] .bl-mark,
+.bottom-line[data-kind="no_unconfirmed"] .bl-mark {
   background: var(--no-bg);
   color: var(--no);
-}
-.bottom-line[data-kind="no_unconfirmed"] .bl-mark {
-  background: var(--maybe-bg);
-  color: var(--maybe);
 }
 
 .bl-item {
