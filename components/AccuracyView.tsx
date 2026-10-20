@@ -63,9 +63,9 @@ export function AccuracyView({ lang }: { lang: Lang }) {
   return (
     <main className="page flex-1" lang={lang}>
       <nav className="no-print">
-        <Link href={lang === "es" ? "/?lang=es" : "/"} className="link-btn inline-flex items-center gap-2">
+        <Link href={lang === "es" ? "/?lang=es" : "/"} className="link-btn back-link inline-flex items-center gap-2">
           <span aria-hidden="true">&larr;</span>
-          {text.back}
+          <span>{text.back}</span>
         </Link>
       </nav>
       <header className="app-head">

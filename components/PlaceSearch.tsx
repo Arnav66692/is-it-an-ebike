@@ -5,7 +5,7 @@
 // and a screen reader hears how many places matched. The place index loads the first time the
 // box is used. Each pick shows as a chip with a labeled remove button.
 
-import { useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { placeHint, type Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
 import { pickLabels, type PickLabels } from "@/lib/places/linked";
@@ -86,14 +86,11 @@ export function resultHint(entry: PlaceEntry, lang: Lang): string {
   return placeHint(r.localRecord, lang);
 }
 
-/** A chip's second line: where the pick is, like "City of San Diego, San Diego County, CA". */
-export function chipDetail(label: PlaceLabel): string {
-  return label.where ? `${label.where}, ${label.state}` : label.name === label.text ? "" : label.state;
-}
-
 export interface ChipPick {
   id: string;
   label: PlaceLabel;
+  /** The chip's second line, the same as the result's, like "City, San Diego County, CA". */
+  detail: string;
 }
 
 interface Props {
@@ -122,6 +119,7 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
   const helpId = useId();
   const listId = useId();
   const input = useRef<HTMLInputElement>(null);
+  const list = useRef<HTMLUListElement>(null);
   const [query, setQuery] = useState("");
   const [combo, setCombo] = useState<ComboState>(CLOSED);
   const [index, setIndex] = useState<PlaceIndex | null>(null);
@@ -149,6 +147,13 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
   const expanded = combo.open && results.length > 0;
   const optionId = (i: number) => `${listId}-o${i}`;
   const status = comboStatus(lang, query, loading || (index === null && !failed), failed, results.length);
+
+  // The highlighted place stays in view as the arrow keys move through a list that scrolls.
+  useEffect(() => {
+    if (!expanded || combo.active < 0) return;
+    const option = list.current?.children?.[combo.active] as HTMLElement | undefined;
+    option?.scrollIntoView?.({ block: "nearest" });
+  }, [expanded, combo.active]);
 
   function pick(i: number) {
     const entry = results[i];
@@ -208,7 +213,7 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
             onBlur={() => setCombo(CLOSED)}
           />
         </div>
-        <ul id={listId} role="listbox" aria-label={t(lang, "whereResults")} hidden={!expanded} className="combo-list">
+        <ul ref={list} id={listId} role="listbox" aria-label={t(lang, "whereResults")} hidden={!expanded} className="combo-list">
           {results.map((entry, i) => {
             const label = index ? placeLabel(index, entry, lang) : null;
             if (!label) return null;
@@ -244,7 +249,7 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
             <li key={p.id} className="chip">
               <span className="chip-text">
                 <span className="chip-name">{p.label.name}</span>
-                {chipDetail(p.label) ? <span className="chip-where">{chipDetail(p.label)}</span> : null}
+                {p.detail ? <span className="chip-where">{p.detail}</span> : null}
               </span>
               <button
                 type="button"

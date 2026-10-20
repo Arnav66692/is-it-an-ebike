@@ -101,7 +101,7 @@ describe("the search box on the page", () => {
   function box(lang: Lang = "en") {
     const onPick = vi.fn();
     const onRemove = vi.fn();
-    const props = { lang, picks: [] as { id: string; label: ReturnType<typeof placeLabel> }[], onPick, onRemove, loadIndex: () => Promise.resolve(INDEX) };
+    const props = { lang, picks: [] as { id: string; label: ReturnType<typeof placeLabel>; detail: string }[], onPick, onRemove, loadIndex: () => Promise.resolve(INDEX) };
     const m = mount(PlaceSearch, props);
     const input = () => one(m.tree(), (e) => e.type === "input" && e.props.role === "combobox", "combobox");
     const options = () => elements(m.tree()).filter((e) => e.props.role === "option");
@@ -182,11 +182,12 @@ describe("the search box on the page", () => {
       const label = placeLabel(INDEX, carmel, lang);
       const onRemove = vi.fn();
       const html = renderToStaticMarkup(
-        createElement(PlaceSearch, { lang, picks: [{ id: carmel.id, label }], onPick: () => {}, onRemove, loadIndex: () => Promise.resolve(INDEX) }),
+        createElement(PlaceSearch, { lang, picks: [{ id: carmel.id, label, detail: resultDetail(carmel, label, lang) }], onPick: () => {}, onRemove, loadIndex: () => Promise.resolve(INDEX) }),
       );
       expect(html).toContain(`aria-label="${t(lang, "whereRemove", { place: label.text })}"`);
       expect(html).toContain(`aria-label="${t(lang, "wherePicked")}"`);
       expect(html).toContain(placeName("city_of_san_diego", lang));
+      expect(html).toContain(`${t(lang, "kind_neighborhood")}, ${placeName("city_of_san_diego", lang)}, San Diego County, CA`);
     }
   });
 

@@ -19,7 +19,7 @@ import { announcement, BottomLineCard } from "./BottomLineCard";
 import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
-import { PlaceSearch } from "./PlaceSearch";
+import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { VerdictCard } from "./VerdictCard";
 
 type Stage = "input" | "facts" | "result";
@@ -331,7 +331,10 @@ export function Checker() {
       <Card title={t(lang, "step1")} step={1}>
         <PlaceSearch
           lang={lang}
-          picks={where.picks.map((p) => ({ id: p.id, label: (labels[p.id] ?? pickLabels(SD_COUNTY_NAMES, p))[lang] }))}
+          picks={where.picks.map((p) => {
+            const label = (labels[p.id] ?? pickLabels(SD_COUNTY_NAMES, p))[lang];
+            return { id: p.id, label, detail: resultDetail(p, label, lang) };
+          })}
           onPick={pickPlace}
           onRemove={removePlace}
         />

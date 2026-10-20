@@ -20,9 +20,9 @@ export function Flyer() {
   return (
     <div className="page">
       <div className="no-print flex items-center justify-between">
-        <Link href="/" className="link-btn inline-flex items-center gap-2">
+        <Link href="/" className="link-btn back-link inline-flex items-center gap-2">
           <span aria-hidden="true">&larr;</span>
-          Back
+          <span>Back</span>
         </Link>
         <button type="button" className="btn btn-quiet" onClick={() => window.print()}>
           Print

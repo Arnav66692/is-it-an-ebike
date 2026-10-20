@@ -395,6 +395,16 @@ textarea.field {
   text-underline-offset: 0.2em;
 }
 
+/* A back link: the arrow sits outside the underline. */
+.back-link {
+  text-decoration: none;
+}
+
+.back-link > span:last-child {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 /* ---------- Choices ---------- */
 
 .choice {
@@ -1048,16 +1058,30 @@ textarea.field {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   gap: 0.75rem;
 }
 
 .stat {
   display: grid;
-  gap: 0.25rem;
-  padding: 1rem 1.1rem;
+  grid-template-columns: 5rem 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
   border-radius: 1rem;
   background: var(--yes-bg);
+}
+
+@media (min-width: 640px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .stat {
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: 0.35rem;
+    padding: 1.1rem 1.2rem;
+  }
 }
 
 .stat[data-pass="false"] {
