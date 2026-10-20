@@ -2,8 +2,8 @@
 // code and the numbers. These templates are the only legal text in the app.
 
 import type { BottomLineCode } from "@/lib/rules/bottomLine";
-import { isQuestionId, type Line, type QuestionId, type Status } from "@/lib/rules/types";
-import { formatDate, joinList, placeName, type Lang } from "./names";
+import { isQuestionId, QUESTION_IDS, type Line, type QuestionId, type Status } from "@/lib/rules/types";
+import { formatDate, joinList, placeNameInline, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
 interface Ctx {
@@ -21,6 +21,25 @@ const aAge = (age: string | number | undefined): string => {
 };
 const cls = (p: Params) => n(p.cls);
 
+/** Spanish place names that take an article in a sentence: "en el Distrito de Columbia". */
+const ES_ARTICLE: Record<string, string> = { "Distrito de Columbia": "el Distrito de Columbia" };
+/** The state as an object in Spanish: "California", "el Distrito de Columbia". */
+const esName = (c: Ctx): string => ES_ARTICLE[c.state] ?? c.state;
+/** "de California", "del Distrito de Columbia". */
+const esOf = (c: Ctx): string => {
+  const name = esName(c);
+  return name.startsWith("el ") ? `del ${name.slice(3)}` : `de ${name}`;
+};
+/** The state starting a sentence: "California", "El Distrito de Columbia". */
+const esSubj = (c: Ctx): string => {
+  const name = esName(c);
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
+/** Which fast-mode answers were left at "not sure": the motor alone past 20 mph, pedal assist past 28 mph, or both. */
+const fastUnsure = (p: Params): "both" | "motor" | "assist" =>
+  Number(p.motor) && Number(p.assist) ? "both" : Number(p.assist) && !Number(p.motor) ? "assist" : "motor";
+
 /** State-law removal power for e-motos, shared by several San Diego notes (VC 22651.08). */
 const EMOTO_REMOVAL_EN =
   "police can remove an e-moto that can top 20 mph on the motor alone when the rider has no license for it (VC 22651.08).";
@@ -29,16 +48,14 @@ const EMOTO_REMOVAL_ES =
 
 /** Keyed by QuestionId, so a new follow-up question can't ship without a name in both languages. */
 const QUESTION_NAMES: Record<Lang, Record<QuestionId, string>> = {
-  en: { wheels: "wheel size and number of wheels", fast_mode: "fast modes", weight: "weight", pegs_kit: "foot pegs or a pedal kit" },
-  es: { wheels: "el tamaño y el número de ruedas", fast_mode: "los modos rápidos", weight: "el peso", pegs_kit: "los reposapiés o el kit de pedales" },
+  en: { wheels: "the wheels", fast_mode: "fast modes", weight: "weight", pegs_kit: "foot pegs or a pedal kit" },
+  es: { wheels: "las ruedas", fast_mode: "los modos rápidos", weight: "el peso", pegs_kit: "los reposapiés o el kit de pedales" },
 };
 
-/** "fast_mode,wheels" becomes "fast modes and wheel size". */
+/** "fast_mode,wheels" becomes "the wheels and fast modes", in the order the questions appear on the page. */
 function questionList(ids: string, lang: Lang): string {
-  const names = ids
-    .split(",")
-    .filter(isQuestionId)
-    .map((id) => QUESTION_NAMES[lang][id]);
+  const asked = ids.split(",").filter(isQuestionId);
+  const names = QUESTION_IDS.filter((id) => asked.includes(id)).map((id) => QUESTION_NAMES[lang][id]);
   if (names.length === 0) return lang === "es" ? "la bicicleta" : "the bike";
   return joinList(names, lang);
 }
@@ -124,7 +141,12 @@ const EN = {
   req_campus_walk: () => "Walk the bike on campus. Passengers only on a factory passenger seat.",
   caution_stop_pedaling_class2: (_p, c) =>
     `${c.state}'s law also says the motor must stop when you stop pedaling or brake. Read literally, that clashes with a throttle. Reviewers kept Class 2 legal, but no court or agency has settled it.`,
-  caution_fast_mode_unverified: () => "If it has any mode over 20 mph on the motor alone, it is not a legal e-bike.",
+  caution_fast_mode_unverified: (p) =>
+    ({
+      both: "If it has any mode over 20 mph on the motor alone, or over 28 mph with pedal assist, it is not a legal e-bike.",
+      motor: "If it has any mode over 20 mph on the motor alone, it is not a legal e-bike.",
+      assist: "If pedal assist can go past 28 mph in any mode, it is not a legal e-bike.",
+    })[fastUnsure(p)],
   caution_helmet_unknown: (_p, c) => `${c.state}'s helmet rule for e-bikes is unclear. Wear one.`,
   no_state_min_age: () => "No statewide minimum age for this class.",
   no_state_helmet: () => "No statewide helmet rule. Towns may have one.",
@@ -137,7 +159,7 @@ const EN = {
     `The local code bars riders under 12 from Class 1 and 2 e-bikes and gives no end date. The state law that allows that ban ends ${formatDate(n(p.powerEnds), c.lang)}, and it isn't settled whether the ban still applies after that. Check before riding.`,
   local_under_12_after_check: (p, c) =>
     `This place's rules for riders under 12 were last checked on ${formatDate(n(p.checked), c.lang)}, and they can change before your ride date. We can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`,
-  local_allowed: (p, c) => `Allowed in ${placeName(n(p.place), c.lang)} for ${aAge(p.age)}.`,
+  local_allowed: (p, c) => `Allowed in ${placeNameInline(n(p.place), c.lang)} for ${aAge(p.age)}.`,
   campus_allowed: (p) => `Class ${cls(p)} e-bikes are allowed on SDUHSD campuses, after these steps.`,
   campus_class3: () => "Only Class 1 and 2 e-bikes are allowed on SDUHSD campuses.",
   campus_no_emoto: () => "E-motos and other non-e-bikes aren't allowed on SDUHSD campuses.",
@@ -207,9 +229,16 @@ const EN = {
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
-  bl_unsure_fast_mode: () =>
-    "You answered \"not sure\" about fast modes. A mode over 20 mph on the motor alone would make it not a legal e-bike.",
-  bl_unverified_state: (_p, c) => `${c.state}'s rules here were not confirmed against statute text.`,
+  bl_unsure_fast_mode: (p) =>
+    ({
+      both: "You answered \"not sure\" about fast modes. A mode over 20 mph on the motor alone, or over 28 mph with pedal assist, would make it not a legal e-bike.",
+      motor: "You answered \"not sure\" about the motor alone going past 20 mph. A mode like that would make it not a legal e-bike.",
+      assist: "You answered \"not sure\" about pedal assist going past 28 mph. A mode like that would make it not a legal e-bike.",
+    })[fastUnsure(p)],
+  bl_unverified_state: (p, c) =>
+    p.verified === "unclear"
+      ? `${c.state}'s statutes were read, but they don't clearly cover e-bikes, so no answer here can be confirmed.`
+      : `${c.state}'s rules here were not confirmed against statute text.`,
   bl_unverified_primary_partial: (p) =>
     p.place === "sduhsd_campuses"
       ? "The class, tag and course rules come only from the district's web page. No board policy or regulation has them, and the Board has not voted on them."
@@ -223,19 +252,19 @@ const EN = {
 const ES = {
   allowed: (p, c) =>
     p.multi
-      ? `Esta bicicleta puede funcionar como Clase ${p.multi}. Permitida en todos sus modos para alguien de ${p.age} años en ${c.state}.`
-      : `Bicicleta eléctrica Clase ${cls(p)}. Permitida para alguien de ${p.age} años en ${c.state}.`,
+      ? `Esta bicicleta puede funcionar como Clase ${p.multi}. Permitida en todos sus modos para alguien de ${p.age} años en ${esName(c)}.`
+      : `Bicicleta eléctrica Clase ${cls(p)}. Permitida para alguien de ${p.age} años en ${esName(c)}.`,
   under_min_age: (p, c) =>
     Number(p.cls) > 0
-      ? `Los menores de ${p.minAge} años no pueden usar una bicicleta eléctrica Clase ${cls(p)} en ${c.state}.`
-      : `Los menores de ${p.minAge} años no pueden usar una bicicleta eléctrica en ${c.state}.`,
+      ? `Los menores de ${p.minAge} años no pueden usar una bicicleta eléctrica Clase ${cls(p)} en ${esName(c)}.`
+      : `Los menores de ${p.minAge} años no pueden usar una bicicleta eléctrica en ${esName(c)}.`,
   under_min_age_license: (p, c) =>
-    `Los menores de ${p.minAge} años necesitan licencia o permiso de conducir para usar una bicicleta eléctrica en ${c.state}, así que en la práctica no pueden.`,
+    `Los menores de ${p.minAge} años necesitan licencia o permiso de conducir para usar una bicicleta eléctrica en ${esName(c)}, así que en la práctica no pueden.`,
   no_any_class: () => "No está permitida como bicicleta eléctrica para esta persona, sea cual sea su clase.",
-  no_pedals: (_p, c) => `No tiene pedales que funcionen, así que no es una bicicleta eléctrica en ${c.state}. La ley la trata como un vehículo motorizado.`,
-  no_pedals_unclear: (_p, c) => `La definición de ${c.state} no exige pedales con claridad, así que no podemos confirmar una máquina sin ellos.`,
+  no_pedals: (_p, c) => `No tiene pedales que funcionen, así que no es una bicicleta eléctrica en ${esName(c)}. La ley la trata como un vehículo motorizado.`,
+  no_pedals_unclear: (_p, c) => `La definición ${esOf(c)} no exige pedales con claridad, así que no podemos confirmar una máquina sin ellos.`,
   pedals_unknown: () => "Necesitamos saber si tiene pedales que funcionen.",
-  never_legal: (_p, c) => `No podemos confirmar que una bicicleta eléctrica sea legal en ${c.state}. Su ley no las cubre con claridad.`,
+  never_legal: (_p, c) => `No podemos confirmar que una bicicleta eléctrica sea legal en ${esName(c)}. Su ley no las cubre con claridad.`,
   facts_conflict: () => "Algunos datos no coinciden entre sí. Revisa las velocidades y los modos que escribiste.",
   class_unknown: () => "No encontramos la clase. Busca la etiqueta cerca de los pedales o escribe la clase.",
   class_conflict_throttle: (p) => `Una bicicleta Clase ${cls(p)} solo ayuda mientras pedaleas. Un acelerador significa que no cabe en una sola clase.`,
@@ -244,38 +273,38 @@ const ES = {
   fits_no_class_speed: (p) => `${p.mph} mph es más rápido de lo que permite cualquier clase. La Clase 3 llega a 28 mph como máximo.`,
   fits_no_class_mode: () =>
     "En algún modo puede pasar de 20 mph solo con el motor, o de 28 mph pedaleando. Eso no cabe en ninguna clase de bicicleta eléctrica.",
-  over_watts: (p, c) => `El motor es de ${p.watts} W. ${c.state} permite ${Number(p.strict) ? "menos de" : "hasta"} ${p.cap} W.`,
-  watts_750_strict: (p, c) => `La ley de ${c.state} dice menos de ${p.cap} W. Una etiqueta de exactamente ${p.cap} W no cumple con claridad.`,
+  over_watts: (p, c) => `El motor es de ${p.watts} W. ${esSubj(c)} permite ${Number(p.strict) ? "menos de" : "hasta"} ${p.cap} W.`,
+  watts_750_strict: (p, c) => `La ley ${esOf(c)} dice menos de ${p.cap} W. Una etiqueta de exactamente ${p.cap} W no cumple con claridad.`,
   watts_peak_only: (p) => `Solo aparece una cifra máxima (${p.peak} W). Decide la potencia nominal de la etiqueta.`,
   watts_upper_only: (p) => `El anuncio dice ${p.watts} W, pero no aclara si es potencia nominal o máxima. Decide la etiqueta.`,
   watts_unknown: () => "Necesitamos los vatios del motor que aparecen en la etiqueta.",
-  hp_cap_unclear: (p, c) => `${c.state} limita el motor a ${p.hp} caballos de fuerza. Este motor está demasiado cerca de ese límite para confirmarlo.`,
+  hp_cap_unclear: (p, c) => `${esSubj(c)} limita el motor a ${p.hp} caballos de fuerza. Este motor está demasiado cerca de ese límite para confirmarlo.`,
   vt_motor_assisted_bicycle: (p) =>
     `Con ${p.watts} W es una "bicicleta asistida por motor" en Vermont, no una bicicleta eléctrica. Nadie menor de 16 en carreteras, y nada de aceras.`,
   il_motor_driven_cycle: (p) =>
     `Con ${p.watts} W es un ciclomotor (motor driven cycle) en Illinois desde el 1 de enero de 2027. Necesita licencia de conducir y seguro.`,
   caution_wheel_size: (p, c) =>
     p.verdict === "not_an_ebike"
-      ? `Sus ruedas son demasiado pequeñas para la definición de bicicleta eléctrica de ${c.state}.`
-      : `Sus ruedas podrían ser demasiado pequeñas para la definición de bicicleta eléctrica de ${c.state}.`,
-  caution_trike: (_p, c) => `La definición de ${c.state} podría no cubrir un triciclo.`,
-  caution_foot_pegs: (_p, c) => `Los reposapiés la dejan fuera de la definición de bicicleta eléctrica de ${c.state}.`,
-  caution_pedal_kit: (_p, c) => `Una bicicleta que necesita un kit de pedales queda fuera de la definición de ${c.state}.`,
-  caution_weight: (_p, c) => `Con más de 100 libras queda fuera de la definición de bicicleta eléctrica de ${c.state}.`,
+      ? `Sus ruedas son demasiado pequeñas para la definición de bicicleta eléctrica ${esOf(c)}.`
+      : `Sus ruedas podrían ser demasiado pequeñas para la definición de bicicleta eléctrica ${esOf(c)}.`,
+  caution_trike: (_p, c) => `La definición ${esOf(c)} podría no cubrir un triciclo.`,
+  caution_foot_pegs: (_p, c) => `Los reposapiés la dejan fuera de la definición de bicicleta eléctrica ${esOf(c)}.`,
+  caution_pedal_kit: (_p, c) => `Una bicicleta que necesita un kit de pedales queda fuera de la definición ${esOf(c)}.`,
+  caution_weight: (_p, c) => `Con más de 100 libras queda fuera de la definición de bicicleta eléctrica ${esOf(c)}.`,
   caution_watts_hp: (_p, c) =>
-    `${c.state} también limita el motor a 1 caballo de fuerza (unos 745 W), así que no se puede confirmar una etiqueta de 746 W o más.`,
+    `${esSubj(c)} también limita el motor a 1 caballo de fuerza (unos 745 W), así que no se puede confirmar una etiqueta de 746 W o más.`,
   caution_fast_mode: (_p, c) =>
-    `Un modo de más de 20 mph solo con el motor, o un ajuste que lo desbloquea, la deja fuera de la definición de ${c.state}.`,
+    `Un modo de más de 20 mph solo con el motor, o un ajuste que lo desbloquea, la deja fuera de la definición ${esOf(c)}.`,
   caution_class_not_recognized: (p, c) =>
-    `${c.state} no reconoce las bicicletas eléctricas Clase ${cls(p)}, así que la ley trata esta como un vehículo motorizado.`,
-  caution_class_unclear: (p, c) => `La ley de ${c.state} no cubre con claridad una bicicleta eléctrica Clase ${cls(p)}.`,
-  caution_class_age_unclear: (p, c) => `La ley de ${c.state} no es clara para conductores tan jóvenes en una Clase ${cls(p)}.`,
-  unsure_wheel_size: (_p, c) => `Necesitamos el tamaño de las ruedas para confirmarlo en ${c.state}.`,
-  unsure_trike: (_p, c) => `Necesitamos saber cuántas ruedas tiene para confirmarlo en ${c.state}.`,
-  unsure_fast_mode: (_p, c) => `Necesitamos saber si tiene modos rápidos o desbloqueados para confirmarlo en ${c.state}.`,
-  unsure_weight: (_p, c) => `Necesitamos saber si pesa más de 100 libras para confirmarlo en ${c.state}.`,
-  unsure_foot_pegs: (_p, c) => `Necesitamos saber si tiene reposapiés para confirmarlo en ${c.state}.`,
-  unsure_pedal_kit: (_p, c) => `Necesitamos saber si necesita un kit de pedales para confirmarlo en ${c.state}.`,
+    `${esSubj(c)} no reconoce las bicicletas eléctricas Clase ${cls(p)}, así que la ley la trata como un vehículo motorizado.`,
+  caution_class_unclear: (p, c) => `La ley ${esOf(c)} no cubre con claridad una bicicleta eléctrica Clase ${cls(p)}.`,
+  caution_class_age_unclear: (p, c) => `La ley ${esOf(c)} no es clara para conductores tan jóvenes en una Clase ${cls(p)}.`,
+  unsure_wheel_size: (_p, c) => `Necesitamos el tamaño de las ruedas para confirmarlo en ${esName(c)}.`,
+  unsure_trike: (_p, c) => `Necesitamos saber cuántas ruedas tiene para confirmarlo en ${esName(c)}.`,
+  unsure_fast_mode: (_p, c) => `Necesitamos saber si tiene modos rápidos o desbloqueados para confirmarlo en ${esName(c)}.`,
+  unsure_weight: (_p, c) => `Necesitamos saber si pesa más de 100 libras para confirmarlo en ${esName(c)}.`,
+  unsure_foot_pegs: (_p, c) => `Necesitamos saber si tiene reposapiés para confirmarlo en ${esName(c)}.`,
+  unsure_pedal_kit: (_p, c) => `Necesitamos saber si necesita un kit de pedales para confirmarlo en ${esName(c)}.`,
   need_info: () => "Primero, unas preguntas rápidas. Una etiqueta no muestra esto.",
   req_helmet_under: (p) => `Casco obligatorio para menores de ${p.underAge} años.`,
   req_helmet_all_ages: (p) => `Casco obligatorio a cualquier edad en una Clase ${cls(p)}.`,
@@ -283,8 +312,8 @@ const ES = {
   req_supervision_or_certificate: (p) => `Menores de ${p.minAge}, solo con supervisión de un adulto o un certificado estatal de seguridad.`,
   req_speedometer_class3: (p, c) =>
     Number(p.definition)
-      ? `Debe tener velocímetro. Sin uno no es una bicicleta eléctrica Clase 3 en ${c.state}.`
-      : `Una bicicleta eléctrica Clase 3 debe tener velocímetro en ${c.state}.`,
+      ? `Debe tener velocímetro. Sin uno no es una bicicleta eléctrica Clase 3 en ${esName(c)}.`
+      : `Una bicicleta eléctrica Clase 3 debe tener velocímetro en ${esName(c)}.`,
   req_license: () => "Se necesita licencia o permiso de conducir.",
   nj_license_by_age: (p) =>
     Number(p.age) <= 16
@@ -297,9 +326,14 @@ const ES = {
   req_campus_helmet: () => "Usa casco abrochado en cada viaje a la escuela, a cualquier edad.",
   req_campus_walk: () => "Camina con la bicicleta dentro de la escuela. Pasajeros solo en un asiento de fábrica.",
   caution_stop_pedaling_class2: (_p, c) =>
-    `La ley de ${c.state} también dice que el motor debe parar cuando dejas de pedalear o frenas. Leído al pie de la letra, eso choca con un acelerador. Los revisores mantuvieron la Clase 2 como legal, pero ningún tribunal ni agencia lo ha resuelto.`,
-  caution_fast_mode_unverified: () => "Si tiene algún modo de más de 20 mph solo con el motor, no es una bicicleta eléctrica legal.",
-  caution_helmet_unknown: (_p, c) => `La regla de casco de ${c.state} para bicicletas eléctricas no es clara. Usa uno.`,
+    `La ley ${esOf(c)} también dice que el motor debe parar cuando dejas de pedalear o frenas. Leído al pie de la letra, eso choca con un acelerador. Los revisores mantuvieron la Clase 2 como legal, pero ningún tribunal ni agencia lo ha resuelto.`,
+  caution_fast_mode_unverified: (p) =>
+    ({
+      both: "Si tiene algún modo de más de 20 mph solo con el motor, o de más de 28 mph con asistencia al pedalear, no es una bicicleta eléctrica legal.",
+      motor: "Si tiene algún modo de más de 20 mph solo con el motor, no es una bicicleta eléctrica legal.",
+      assist: "Si la asistencia al pedalear puede pasar de 28 mph en algún modo, no es una bicicleta eléctrica legal.",
+    })[fastUnsure(p)],
+  caution_helmet_unknown: (_p, c) => `La regla de casco ${esOf(c)} para bicicletas eléctricas no es clara. Usa uno.`,
   no_state_min_age: () => "No hay edad mínima estatal para esta clase.",
   no_state_helmet: () => "No hay regla estatal de casco. Las ciudades pueden tener una.",
   upcoming_change: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${CHANGES.es[n(p.change)] ?? ""}`,
@@ -311,7 +345,7 @@ const ES = {
     `El código local prohíbe a los menores de 12 años usar bicicletas eléctricas Clase 1 y 2, sin fecha de fin. La ley estatal que permite esa prohibición termina el ${formatDate(n(p.powerEnds), c.lang)}, y no está resuelto si la prohibición sigue vigente después. Verifica antes de salir.`,
   local_under_12_after_check: (p, c) =>
     `Las reglas de este lugar para menores de 12 años se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}, y pueden cambiar antes de la fecha de tu viaje. Solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`,
-  local_allowed: (p, c) => `Permitida en ${placeName(n(p.place), c.lang)} para alguien de ${p.age} años.`,
+  local_allowed: (p, c) => `Permitida en ${placeNameInline(n(p.place), c.lang)} para alguien de ${p.age} años.`,
   campus_allowed: (p) => `Las bicicletas eléctricas Clase ${cls(p)} se permiten en las escuelas de SDUHSD, después de estos pasos.`,
   campus_class3: () => "En las escuelas de SDUHSD solo se permiten bicicletas eléctricas Clase 1 y 2.",
   campus_no_emoto: () => "Las motos eléctricas y otros vehículos que no son bicicletas eléctricas no se permiten en las escuelas de SDUHSD.",
@@ -382,9 +416,16 @@ const ES = {
     "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
   county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",
   bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
-  bl_unsure_fast_mode: () =>
-    "Respondiste \"no sé\" sobre los modos rápidos. Un modo de más de 20 mph solo con el motor haría que no fuera una bicicleta eléctrica legal.",
-  bl_unverified_state: (_p, c) => `Las reglas de ${c.state} no se confirmaron contra el texto de la ley.`,
+  bl_unsure_fast_mode: (p) =>
+    ({
+      both: "Respondiste \"no sé\" sobre los modos rápidos. Un modo de más de 20 mph solo con el motor, o de más de 28 mph con asistencia al pedalear, haría que no fuera una bicicleta eléctrica legal.",
+      motor: "Respondiste \"no sé\" sobre si el motor solo pasa de 20 mph. Un modo así haría que no fuera una bicicleta eléctrica legal.",
+      assist: "Respondiste \"no sé\" sobre si la asistencia al pedalear pasa de 28 mph. Un modo así haría que no fuera una bicicleta eléctrica legal.",
+    })[fastUnsure(p)],
+  bl_unverified_state: (p, c) =>
+    p.verified === "unclear"
+      ? `Se leyeron las leyes ${esOf(c)}, pero no cubren con claridad las bicicletas eléctricas, así que aquí no se puede confirmar ninguna respuesta.`
+      : `Las reglas ${esOf(c)} no se confirmaron contra el texto de la ley.`,
   bl_unverified_primary_partial: (p) =>
     p.place === "sduhsd_campuses"
       ? "Las reglas de clase, etiqueta y curso vienen solo de la página web del distrito. Ninguna política ni reglamento de la junta las incluye, y la junta no ha votado sobre ellas."

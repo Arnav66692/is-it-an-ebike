@@ -131,6 +131,14 @@ export function joinList(items: string[], lang: Lang): string {
   return `${items.slice(0, -1).join(", ")} ${lang === "es" ? "y" : "and"} ${last}`;
 }
 
+/**
+ * A legal citation as the card shows it. Citation lists use semicolons, and the app writes with
+ * periods and commas only, so "AS 28.90.990(a)(20); 13 AAC 40.010" shows as "AS 28.90.990(a)(20), 13 AAC 40.010".
+ */
+export function citationText(citation: string): string {
+  return citation.replace(/\s*;\s*/g, ", ");
+}
+
 export function formatDate(iso: string, lang: Lang): string {
   const [y, m, d] = iso.split("-").map(Number);
   const date = new Date(Date.UTC(y, m - 1, d));

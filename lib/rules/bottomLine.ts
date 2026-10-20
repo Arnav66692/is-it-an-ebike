@@ -105,7 +105,7 @@ function merge<T extends BottomLineItem>(items: T[], extraKey: (item: T) => stri
 }
 
 function unverifiedLine(v: Verdict): Line {
-  if (v.scope === "state") return { code: "bl_unverified_state" satisfies BottomLineCode };
+  if (v.scope === "state") return { code: "bl_unverified_state" satisfies BottomLineCode, params: { verified: v.verified } };
   const found = v.level;
   // Only called for a card that is not primary_verified. No level means nothing was found.
   const level: UnverifiedLevel = found === undefined || found === "primary_verified" ? "primary_not_found" : found;
@@ -124,7 +124,7 @@ function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
   }
   for (const caution of v.cautions) {
     const code = UNSURE_CAUTIONS.get(caution.code);
-    if (code) gaps.push({ kind: "unsure", where, line: { code } });
+    if (code) gaps.push({ kind: "unsure", where, line: caution.params ? { code, params: caution.params } : { code } });
   }
   if (!isTopVerified(v)) gaps.push({ kind: "unverified", where, line: unverifiedLine(v) });
   if (v.scope === "state") {

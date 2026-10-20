@@ -170,7 +170,7 @@ describe("NO, not confirmed", () => {
   it("blocks a state card that is not statute-verified", () => {
     const bl = run(stateCard({ id: "AK", verified: "unclear" }));
     expect(bl.kind).toBe("no_unconfirmed");
-    expect(bl.missing[0]).toEqual({ kind: "unverified", where: [{ scope: "state", id: "AK" }], line: { code: "bl_unverified_state" } });
+    expect(bl.missing[0]).toEqual({ kind: "unverified", where: [{ scope: "state", id: "AK" }], line: { code: "bl_unverified_state", params: { verified: "unclear" } } });
   });
   it("blocks a local card whose record is only partly verified, and says which place", () => {
     const bl = run(stateCard(), [placeCard("sduhsd_campuses", { level: "primary_partial" })]);

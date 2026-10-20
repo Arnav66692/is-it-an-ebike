@@ -255,7 +255,8 @@ function evaluateDevice(
     } else if (cs.fastModeExplicit) {
       unclear = unclear ?? line("unsure_fast_mode", { cls });
     } else {
-      cautions.push(line(CAUTION_FAST_MODE_UNVERIFIED));
+      // Name the sub-question still open, so the card never asks about one already answered no.
+      cautions.push(line(CAUTION_FAST_MODE_UNVERIFIED, { motor: f.motorOver20 === null ? 1 : 0, assist: f.assistOver28 === null ? 1 : 0 }));
     }
   }
 

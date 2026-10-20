@@ -1,7 +1,7 @@
 "use client";
 
 import type { Line, Source, Verdict } from "@/lib/rules/types";
-import { formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
+import { citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
 import { renderLine, STATUS_LABEL } from "@/lib/i18n/verdicts";
 
@@ -43,7 +43,7 @@ function SourceItem({ source, lang }: { source: Source; lang: Lang }) {
   const kindKey = `source_${source.kind ?? "statute"}`;
   const kind = isUiKey(kindKey) ? t(lang, kindKey) : "";
   const href = safeHref(source.url);
-  const label = source.citation ?? source.url ?? "";
+  const label = source.citation ? citationText(source.citation) : (source.url ?? "");
   const effective = source.effective && /^\d{4}-\d{2}-\d{2}$/.test(source.effective)
     ? ` (${t(lang, "effective", { date: formatDate(source.effective, lang) })})`
     : "";
@@ -87,8 +87,10 @@ export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props
   const state = stateName(stateCode, lang);
   const title =
     verdict.scope === "state" ? stateLaw(stateCode, lang, "title") : placeName(verdict.id, lang);
-  // Local cards say how completely the place's record was read in enacted text.
-  const verifiedKey = verdict.scope === "local" && verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
+  // Local cards say how completely the place's record was read in enacted text. State cards
+  // say how the state's statutes were read, in words written for state law.
+  const verifiedKey =
+    verdict.scope === "state" ? `state_verified_${verdict.verified}` : verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";
 
   return (
