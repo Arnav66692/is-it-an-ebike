@@ -2,6 +2,9 @@
 
 import { describe, expect, it } from "vitest";
 import sdJson from "@/data/rules/san_diego_local.json";
+import { factsFromExtraction } from "@/lib/extract/merge";
+import { parseSpecText } from "@/lib/extract/parse";
+import { fromRead, unconfirmedFields, withConfirmed, withEdit, type CheckedFacts } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
@@ -261,3 +264,57 @@ describe("bottom line, third review fixes (Oct 19, 2026)", () => {
 function at14Class3(date: string): string {
   return bottomLine(evaluate({ state: "CA", riderAge: 14, rideDate: date, facts: classBike(3), places: [] }), date).kind;
 }
+
+describe("bottom line for a listing read from text, with facts not yet checked (Oct 19, 2026)", () => {
+  /** A listing pasted in, read the way the page reads it, with every fact it gives still unchecked. */
+  const read = (text: string): CheckedFacts => fromRead(factsFromExtraction(parseSpecText(text, "listing"), emptyFacts()));
+  const answer = (bike: CheckedFacts, places: PlaceId[] = ["city_of_san_diego"]) =>
+    bottomLine(evaluate({ state: "CA", riderAge: 14, rideDate: TODAY_PT, facts: bike.facts, places }), TODAY_PT, unconfirmedFields(bike.checks));
+
+  it("a listing that reads as no pedals is NO, not an e-bike, and names the unchecked pedals in English and Spanish", () => {
+    const bike = read("Kids electric balance bike. No pedals.");
+    expect(bike.facts.hasPedals).toBe(false);
+    expect(unconfirmedFields(bike.checks)).toEqual(["hasPedals"]);
+    const bl = answer(bike);
+    expect(bl.kind).toBe("no_illegal");
+    expect(bl.notEbikeOnly).toBe(true);
+    expect(bl.blocked).toEqual([{ where: [{ scope: "state", id: "CA" }, { scope: "local", id: "city_of_san_diego" }], line: expect.objectContaining({ code: "no_pedals" }) }]);
+    expect(bl.factsNote).toEqual({ code: "bl_no_unchecked_facts", params: { fields: "hasPedals" } });
+    expect(renderLine(bl.factsNote!, "en", "California")).toBe(
+      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under it in "Here\'s what I read" above, or fix it.',
+    );
+    expect(renderLine(bl.factsNote!, "es", "California")).toBe(
+      'Todavía no comparaste con la bicicleta los pedales. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato.',
+    );
+  });
+
+  it("ticking the pedals keeps the same NO, not an e-bike, with nothing left to check", () => {
+    const bike = read("Kids electric balance bike. No pedals.");
+    const before = answer(bike);
+    const after = answer(withConfirmed(bike, "hasPedals", true));
+    expect(after.kind).toBe("no_illegal");
+    expect(after.notEbikeOnly).toBe(true);
+    expect(after.blocked).toEqual(before.blocked);
+    expect(after.factsNote).toBeNull();
+  });
+
+  it("if the pedals were misread and the family fixes them, the answer does change, which is why the line says it could", () => {
+    const bike = read("Kids electric balance bike. No pedals.");
+    const fixed = withEdit(bike, { ...bike.facts, hasPedals: true });
+    expect(unconfirmedFields(fixed.checks)).toEqual([]);
+    const bl = answer(fixed);
+    expect(bl.kind).not.toBe("no_illegal");
+    expect(bl.factsNote).toBeNull();
+  });
+
+  it("names only the facts still unchecked once the family ticks the others", () => {
+    const bike = read("Electric dirt bike for kids with foot pegs and no pedals. 15 mph top speed.");
+    expect(unconfirmedFields(bike.checks)).toEqual(["hasPedals", "topSpeedMph", "hasFootPegs"]);
+    expect(answer(bike).factsNote).toEqual({ code: "bl_no_unchecked_facts", params: { fields: "hasPedals,topSpeedMph,hasFootPegs" } });
+    const others = withConfirmed(withConfirmed(bike, "topSpeedMph", true), "hasFootPegs", true);
+    const bl = answer(others);
+    expect(bl.kind).toBe("no_illegal");
+    expect(bl.notEbikeOnly).toBe(true);
+    expect(bl.factsNote).toEqual({ code: "bl_no_unchecked_facts", params: { fields: "hasPedals" } });
+  });
+});

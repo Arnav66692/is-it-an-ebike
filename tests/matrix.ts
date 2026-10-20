@@ -1,14 +1,15 @@
 // Builds the test matrix from the data: every state, class, age band, caution condition
 // and switch date. The bottom line also runs each case four ways: typed in, and read from a link
 // or photo with no fact checked, every fact checked, or one fact left unchecked because it was
-// changed and put back after its tick. Used by tests/engine.matrix.test.ts and
-// scripts/build-results.ts.
+// changed and put back after its tick. Every NO must name exactly the facts left unchecked, in one
+// line, and a NO, not allowed must stay word for word the same as with the facts typed in. Used
+// by tests/engine.matrix.test.ts and scripts/build-results.ts.
 
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { BottomLineCard } from "@/components/BottomLineCard";
 import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
+import { announcement, BottomLineCard } from "@/components/BottomLineCard";
 import { bottomLine, type BottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
@@ -17,12 +18,15 @@ import {
   emptyFacts,
   READ_FIELDS,
   type BikeFacts,
+  type Line,
   type PlaceId,
   type QuestionId,
   type ReadField,
   type Status,
 } from "@/lib/rules/types";
+import { stateName } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
+import { renderLine } from "@/lib/i18n/verdicts";
 import {
   bottomLineBlockers,
   classesOf,
@@ -340,8 +344,18 @@ export interface BottomLineSummary {
   byRead: Record<ReadVariant, Record<BottomLineKind, number>>;
   /** YES while a fact read from a link or photo is not checked. */
   uncheckedYes: BottomLineCase[];
-  /** NO, not confirmed that doesn't name exactly the unchecked read facts, or names some when none are left. */
+  /**
+   * Any NO that doesn't name exactly the unchecked read facts in one line, or a bottom line that
+   * names some when none are left. A NO, not confirmed names them under missing, and a NO, not
+   * allowed in its own line that says the answer could change once they are checked.
+   */
   factsNotNamed: BottomLineCase[];
+  /** A NO, not allowed whose kind, reasons or not-an-e-bike line differ from the same ride typed in. */
+  illegalChanged: BottomLineCase[];
+  /** The rendered card or its announcement leaves out the line naming the unchecked facts, or shows it twice. */
+  factsNotShown: BottomLineCase[];
+  /** How many distinct rendered cards were read for the unchecked-facts check. */
+  factsCards: number;
   /** YES while the independent checker lists a reason against it. */
   falseYes: BottomLineCase[];
   /** Not YES while the independent checker lists no reason against it. */
@@ -368,6 +382,44 @@ function expectedCaveat(state: string, places: PlaceId[], otherPlaces: boolean, 
   const townChecked = state === "CA" && places.some((p) => p !== "sduhsd_campuses");
   if (!townChecked) return "blNoCity";
   return otherPlaces ? "blOtherPlaces" : null;
+}
+
+/** The card's visible text, with tags turned into line breaks and quotes put back. */
+function cardText(bl: BottomLine, lang: "en" | "es", state: string): string {
+  return renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: state }))
+    .replace(/<[^>]+>/g, "\n")
+    .replace(/&#x27;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
+}
+
+/** Every line on this bottom line that names read facts, and the facts each one names. */
+function factLines(bl: BottomLine): { line: Line; fields: string[] }[] {
+  const lines = [...bl.missing.filter((m) => m.kind === "facts").map((m) => m.line), ...(bl.factsNote ? [bl.factsNote] : [])];
+  return lines.map((line) => ({ line, fields: String(line.params?.fields ?? "").split(",").filter(Boolean) }));
+}
+
+/**
+ * Renders the real card in both languages and lists what is wrong with the line that names the
+ * unchecked facts: it must be shown exactly once, under "Still to check" only on a NO, not allowed,
+ * and the announcement must say a NO, not allowed could change exactly when that line is there.
+ */
+function factsProblems(bl: BottomLine, state: string): string[] {
+  const problems: string[] = [];
+  const lines = factLines(bl);
+  for (const lang of ["en", "es"] as const) {
+    const text = cardText(bl, lang, state);
+    for (const { line } of lines) {
+      const sentence = renderLine(line, lang, stateName(state, lang));
+      const times = text.split(sentence).length - 1;
+      if (times !== 1) problems.push(`${lang}: ${line.code} shown ${times} times`);
+    }
+    const heading = text.split("\n").some((s) => s.trim() === t(lang, "blToCheck"));
+    if (heading !== (bl.factsNote !== null)) problems.push(`${lang}: "${t(lang, "blToCheck")}" ${heading ? "shown without" : "missing for"} the note`);
+    const said = announcement(bl, lang).includes(t(lang, "blFactsCouldChange"));
+    if (said !== (bl.factsNote !== null)) problems.push(`${lang}: announcement ${said ? "says" : "leaves out"} that the answer could change`);
+  }
+  return problems;
 }
 
 /** Renders the real card in both languages and lists what is wrong with its caveat line. */
@@ -403,7 +455,10 @@ export function runBottomLineMatrix(): BottomLineSummary {
   const missingCaveat: BottomLineCase[] = [];
   const uncheckedYes: BottomLineCase[] = [];
   const factsNotNamed: BottomLineCase[] = [];
+  const illegalChanged: BottomLineCase[] = [];
+  const factsNotShown: BottomLineCase[] = [];
   const rendered = new Set<string>();
+  const factsRendered = new Set<string>();
   let cases = 0;
   let bottomLines = 0;
 
@@ -431,8 +486,11 @@ export function runBottomLineMatrix(): BottomLineSummary {
               const oneLeft = runs.oneLeft.length > 0 ? [runs.oneLeft[cases % runs.oneLeft.length]] : [];
               cases += 1;
 
+              // runs.fixed starts with the facts typed in, so a NO, not allowed can be compared with it.
+              let typed: BottomLine | null = null;
               for (const run of [...runs.fixed, ...oneLeft]) {
                 const bl = bottomLine(result, date, run.unconfirmed);
+                if (run.variant === "typed") typed = bl;
                 bottomLines += 1;
                 byRead[run.variant][bl.kind] += 1;
                 const base = {
@@ -460,10 +518,30 @@ export function runBottomLineMatrix(): BottomLineSummary {
                 }
                 if (bl.kind !== "no_illegal" && illegal.length > 0) missedIllegal.push({ ...base, why: illegal });
 
-                const named = bl.missing.filter((m) => m.kind === "facts").flatMap((m) => String(m.line.params?.fields ?? "").split(","));
-                const expectedNamed = bl.kind === "no_unconfirmed" ? run.expected : [];
-                if ([...named].sort().join(",") !== [...expectedNamed].sort().join(",")) {
-                  factsNotNamed.push({ ...base, why: [`named ${named.join(",") || "none"}`, `expected ${expectedNamed.join(",") || "none"}`] });
+                // Any NO names every unchecked read fact, once, in one line. A YES names none.
+                const lines = factLines(bl);
+                const named = lines.flatMap((l) => l.fields);
+                const expectedNamed = bl.kind === "yes" ? [] : run.expected;
+                const wrongWhere = bl.kind === "no_illegal" ? lines.some((l) => l.line.code !== "bl_no_unchecked_facts") : bl.factsNote !== null;
+                if ([...named].sort().join(",") !== [...expectedNamed].sort().join(",") || lines.length > 1 || wrongWhere) {
+                  factsNotNamed.push({
+                    ...base,
+                    why: [`named ${named.join(",") || "none"} in ${lines.map((l) => l.line.code).join("+") || "no line"}`, `expected ${expectedNamed.join(",") || "none"}`],
+                  });
+                }
+
+                // The NO itself never moves: same kind, same reasons, same not-an-e-bike line as typed in.
+                if (typed && (bl.kind === "no_illegal" || typed.kind === "no_illegal")) {
+                  const same = (b: BottomLine) => JSON.stringify([b.kind, b.notEbikeOnly, b.blocked]);
+                  if (same(bl) !== same(typed)) illegalChanged.push({ ...base, why: [`typed ${typed.kind}`, `read ${bl.kind}`] });
+                }
+
+                // The rendered line depends only on the kind and the facts named, so one card per pair covers it.
+                const factsKey = `${bl.kind}|${expectedNamed.join(",")}`;
+                if (!factsRendered.has(factsKey)) {
+                  factsRendered.add(factsKey);
+                  const problems = factsProblems(bl, state);
+                  if (problems.length > 0) factsNotShown.push({ ...base, why: problems });
                 }
 
                 const unchecked = run.expected.length > 0;
@@ -508,5 +586,8 @@ export function runBottomLineMatrix(): BottomLineSummary {
     renderedCards: rendered.size,
     uncheckedYes,
     factsNotNamed,
+    illegalChanged,
+    factsNotShown,
+    factsCards: factsRendered.size,
   };
 }

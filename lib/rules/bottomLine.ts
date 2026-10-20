@@ -4,7 +4,8 @@
 // YES needs every card allowed, no question left open, every rule behind the cards read in
 // enacted text, and every fact read from a link or photo checked by the family against the bike.
 // Anything illegal is NO. Anything uncertain is NO, not confirmed, with the exact gap named.
-// Uncertainty never turns into a YES.
+// Uncertainty never turns into a YES. Every NO names the read facts still unchecked, since a NO
+// can rest on a misread fact too, like pedals read as missing.
 
 import { addDays } from "./dates";
 import {
@@ -46,8 +47,17 @@ export interface BottomLine {
   covered: CardRef[];
   /** no_illegal: each card that is not allowed, with its reason. Cards with the same reason share an item. */
   blocked: BottomLineItem[];
-  /** no_unconfirmed: exactly what keeps the answer from a YES. Empty for the other kinds. */
+  /**
+   * no_unconfirmed: exactly what keeps the answer from a YES. Empty for the other kinds. Read
+   * facts the family has not checked come first, in one item that names them all.
+   */
   missing: BottomLineGap[];
+  /**
+   * no_illegal: one line that names every read fact the family has not checked and says the answer
+   * could change once they are checked. Null when none is left, and always null for the other kinds,
+   * since a NO, not confirmed names them first under missing and a YES never has one left.
+   */
+  factsNote: Line | null;
   /** yes: everything the rider must still do, merged across cards with duplicates removed. */
   requirements: Line[];
   /** yes: a requirement limits which public streets the rider may use, like New York's 30 mph roads. */
@@ -72,6 +82,7 @@ export type UnsureCode = "bl_unsure_fast_mode";
  */
 export type BottomLineCode =
   | "bl_unconfirmed_facts"
+  | "bl_no_unchecked_facts"
   | "bl_unanswered"
   | UnsureCode
   | `bl_unverified_${"state" | UnverifiedLevel}`
@@ -164,20 +175,42 @@ function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
 }
 
 /**
- * The gap for read facts not yet checked. It names every one, in the order the facts card shows
- * them, not only the facts a card happened to use, since a wrong fact can change which rules apply.
+ * The unchecked read facts as a line parameter, each once, in the order the facts card shows them.
+ * Empty when none is left. It names every one, not only the facts a card happened to use, since a
+ * wrong fact can change which rules apply.
  */
+function factsParam(unconfirmed: readonly ReadField[]): string {
+  return READ_FIELDS.filter((f) => unconfirmed.includes(f)).join(",");
+}
+
+/** The gap for read facts not yet checked. */
 function factsGap(unconfirmed: readonly ReadField[]): BottomLineGap[] {
-  const fields = READ_FIELDS.filter((f) => unconfirmed.includes(f));
-  if (fields.length === 0) return [];
+  const fields = factsParam(unconfirmed);
+  if (fields === "") return [];
   const code: BottomLineCode = "bl_unconfirmed_facts";
-  return [{ kind: "facts", where: [], line: { code, params: { fields: fields.join(",") } } }];
+  return [{ kind: "facts", where: [], line: { code, params: { fields } } }];
+}
+
+/**
+ * The line a NO, not allowed adds while read facts are unchecked. The NO stays a NO, since an
+ * unchecked fact can only hold an answer back from YES, never push it there. But the rule that
+ * says no may rest on a misread fact, like pedals read as missing or a Class 3 read for a Class 1,
+ * so the line names every unchecked fact and says the answer could change once they are checked.
+ * Null for a YES, which can't have one left, and for a NO, not confirmed, which already names them
+ * first in what's missing, so no card names them twice.
+ */
+export function uncheckedFactsNote(kind: BottomLineKind, unconfirmed: readonly ReadField[]): Line | null {
+  if (kind !== "no_illegal") return null;
+  const fields = factsParam(unconfirmed);
+  if (fields === "") return null;
+  const code: BottomLineCode = "bl_no_unchecked_facts";
+  return { code, params: { fields } };
 }
 
 /**
  * The bottom line for one ride. `unconfirmed` lists the facts read from a product link, a label
  * photo or the pedal photo check that the family has not checked against the bike. While any is
- * left, the answer can't be YES. A rule that says no still says no.
+ * left, the answer can't be YES. A rule that says no still says no, and names them too.
  */
 export function bottomLine(result: EngineResult, rideDate: string, unconfirmed: readonly ReadField[] = []): BottomLine {
   const cards = [result.state, ...result.local];
@@ -195,6 +228,7 @@ export function bottomLine(result: EngineResult, rideDate: string, unconfirmed: 
       kind: "no_illegal",
       blocked: merge(illegal.map((v) => ({ where: [refOf(v)], line: v.reason }))),
       missing: [],
+      factsNote: uncheckedFactsNote("no_illegal", unconfirmed),
       requirements: [],
       roadLimit: false,
       notEbikeOnly: illegal.every((v) => v.status === "not_ebike"),
@@ -209,6 +243,7 @@ export function bottomLine(result: EngineResult, rideDate: string, unconfirmed: 
       kind: "no_unconfirmed",
       blocked: [],
       missing: merge(ordered, (g) => g.kind),
+      factsNote: uncheckedFactsNote("no_unconfirmed", unconfirmed),
       requirements: [],
       roadLimit: false,
       notEbikeOnly: false,
@@ -225,5 +260,5 @@ export function bottomLine(result: EngineResult, rideDate: string, unconfirmed: 
       return true;
     });
   const roadLimit = requirements.some((l) => ROAD_LIMIT_CODES.includes(l.code));
-  return { ...base, kind: "yes", blocked: [], missing: [], requirements, roadLimit, notEbikeOnly: false };
+  return { ...base, kind: "yes", blocked: [], missing: [], factsNote: uncheckedFactsNote("yes", unconfirmed), requirements, roadLimit, notEbikeOnly: false };
 }

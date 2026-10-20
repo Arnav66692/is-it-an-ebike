@@ -51,11 +51,14 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
 /**
  * The one short sentence screen readers announce when the bottom line appears or changes,
  * for example "Bottom line: NO. Not allowed. At least one rule we checked says no."
- * The full card stays out of the live region, so it is never read again on every edit.
+ * A NO, not allowed that still rests on unchecked read facts adds that it could change once
+ * they are checked. The full card stays out of the live region, so it is never read again on
+ * every edit.
  */
 export function announcement(line: BottomLine, lang: Lang): string {
   const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
-  return `${t(lang, "blTitle")}: ${word}. ${t(lang, subtitleKey(line))}`;
+  const head = `${t(lang, "blTitle")}: ${word}. ${t(lang, subtitleKey(line))}`;
+  return line.factsNote ? `${head} ${t(lang, "blFactsCouldChange")}` : head;
 }
 
 /**
@@ -118,6 +121,8 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
   const state = stateName(stateCode, lang);
   const yes = line.kind === "yes";
   const unchecked = !line.citiesChecked ? t(lang, "blNoCity") : line.uncheckedPlaces ? t(lang, "blOtherPlaces") : null;
+  // A NO, not allowed names the read facts still unchecked right under its reasons.
+  const toCheck: BottomLineItem[] = line.factsNote ? [{ where: [], line: line.factsNote }] : [];
 
   return (
     <section className="card bottom-line space-y-4" data-kind={line.kind} aria-labelledby={headingId}>
@@ -138,6 +143,7 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
       </header>
 
       <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
+      <ItemList title={t(lang, "blToCheck")} items={toCheck} lang={lang} state={state} stateCode={stateCode} />
       <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
 
       {yes && line.requirements.length > 0 ? (

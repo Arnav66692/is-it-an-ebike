@@ -49,13 +49,21 @@ describe("generated bottom-line matrix", () => {
     expect(summary.uncheckedYes.slice(0, 5), show(summary.uncheckedYes)).toEqual([]);
   });
 
-  it("names exactly the unchecked facts whenever the answer is NO, not confirmed, and none once all are checked", () => {
+  it("names exactly the unchecked facts, in one line, whenever the answer is any kind of NO, and none once all are checked", () => {
     expect(summary.factsNotNamed.slice(0, 5), show(summary.factsNotNamed)).toEqual([]);
+    // A NO, not allowed with facts left unchecked really comes up, so the gate above is not empty.
+    expect(summary.byRead.read_none_checked.no_illegal).toBeGreaterThan(0);
   });
 
   it("keeps NO, not allowed the same whether the facts were read or typed, and checked or not", () => {
     expect(summary.byRead.read_none_checked.no_illegal).toBe(summary.byRead.typed.no_illegal);
     expect(summary.byRead.read_one_unchecked.no_illegal).toBe(summary.byRead.typed.no_illegal);
+    expect(summary.illegalChanged.slice(0, 5), show(summary.illegalChanged)).toEqual([]);
+  });
+
+  it("shows the line naming the unchecked facts once on the rendered card, and announces that a NO, not allowed could change", () => {
+    expect(summary.factsCards).toBeGreaterThan(30);
+    expect(summary.factsNotShown.slice(0, 5), show(summary.factsNotShown)).toEqual([]);
   });
 
   it("never says YES when the independent checker lists any reason against it", () => {
