@@ -8,15 +8,18 @@ import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, type CheckedFacts } from "@/lib/provenance";
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
-import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
-import { formatDate, stateName, type Lang } from "@/lib/i18n/names";
+import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
+import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
+import { linkedWhere, pickLabels, SD_COUNTY_NAMES, type PickLabels } from "@/lib/places/linked";
+import { addPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
+import type { PlaceEntry } from "@/lib/places/types";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
 import { Card } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
-import { PlacePicker } from "./PlacePicker";
+import { PlaceSearch } from "./PlaceSearch";
 import { VerdictCard } from "./VerdictCard";
 
 type Stage = "input" | "facts" | "result";
@@ -33,7 +36,9 @@ function readStoredLang(): Lang | null {
 interface Initial {
   lang: Lang;
   state: string;
-  places: PlaceId[];
+  where: PlacePicks;
+  labels: Record<string, PickLabels>;
+  campus: boolean;
   today: string;
 }
 
@@ -43,9 +48,23 @@ function readInitial(): Initial {
   return {
     lang: link.lang ?? readStoredLang() ?? (navigator.language.startsWith("es") ? "es" : "en"),
     state: link.state,
-    places: link.places,
+    ...linkedWhere(link.state, link.places),
     today: checkerToday(localToday()),
   };
+}
+
+/** A status line about the places: one added or removed, or a start over in another state. */
+interface WhereNote {
+  key: "whereAdded" | "whereRemoved" | "whereStartedOver" | "whereStateSwitched";
+  place?: PickLabels;
+  from?: string;
+  to?: string;
+}
+
+function whereNoteText(note: WhereNote | null, lang: Lang): string {
+  if (!note) return "";
+  if (note.place) return t(lang, note.key, { place: note.place[lang].text });
+  return t(lang, note.key, { from: stateName(note.from ?? "", lang), to: stateName(note.to ?? "", lang) });
 }
 
 function storeLang(lang: Lang): void {
@@ -73,8 +92,12 @@ export function Checker() {
   const [today, setToday] = useState(initial.today);
   const [dateText, setDateText] = useState(initial.today);
   const [pickDate, setPickDate] = useState(false);
-  const [places, setPlaces] = useState<PlaceId[]>(initial.places);
-  const [otherPlaces, setOtherPlaces] = useState(false);
+  // The places picked in the search, all in the state the answer uses, and their labels.
+  const [where, setWhere] = useState<PlacePicks>(initial.where);
+  const [labels, setLabels] = useState<Record<string, PickLabels>>(initial.labels);
+  const [campus, setCampus] = useState(initial.campus);
+  const [whereNote, setWhereNote] = useState<WhereNote | null>(null);
+  const campusId = useId();
   // The facts and where each came from change together. Nothing here is saved, so a reload or a
   // shared link starts with no facts and nothing checked.
   const [bike, setBike] = useState<CheckedFacts>(emptyChecked);
@@ -143,6 +166,7 @@ export function Checker() {
   // date is ever checked. Anything else shows an error and no answer.
   const date = rideDateFor(pickDate, dateText, today);
 
+  const ride = useMemo(() => rideWhere(where, stateCode, campus), [where, stateCode, campus]);
   const result = useMemo(() => {
     if (stage !== "result" || !ageValid || age === null || date === null) return null;
     return evaluate({
@@ -150,10 +174,12 @@ export function Checker() {
       riderAge: age,
       rideDate: date,
       facts,
-      places: stateCode === "CA" ? places : [],
-      otherPlaces,
+      places: ride.places,
+      otherPlaces: ride.otherPlaces,
     });
-  }, [stage, ageValid, age, stateCode, date, facts, places, otherPlaces]);
+  }, [stage, ageValid, age, stateCode, date, facts, ride]);
+  // The picks whose own city and county rules were not checked, named on the bottom line.
+  const unchecked = uncheckedPicks(where).map((p) => labels[p.id]?.[lang].name ?? p.name);
 
   // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
   // Worked out on every draw from the checks on screen, so no list kept from an earlier draw can reach it.
@@ -252,8 +278,31 @@ export function Checker() {
     scrollTo(resultsRef);
   }
 
-  function togglePlace(p: PlaceId) {
-    setPlaces((cur) => (cur.includes(p) ? cur.filter((x) => x !== p) : [...cur, p]));
+  /** A place picked in the search. A place in another state starts over in that state. */
+  function pickPlace(entry: PlaceEntry, entryLabels: PickLabels) {
+    const change = addPick(where, entry);
+    setLabels((cur) => ({ ...cur, [entry.id]: entryLabels }));
+    setWhere(change.next);
+    if (entry.state !== stateCode) {
+      setStateCode(entry.state);
+      setCampus(false);
+    }
+    setWhereNote(change.startedOver ? { key: "whereStartedOver", ...change.startedOver } : { key: "whereAdded", place: entryLabels });
+  }
+
+  function removePlace(id: string) {
+    setWhere(removePick(where, id));
+    setWhereNote(labels[id] ? { key: "whereRemoved", place: labels[id] } : null);
+  }
+
+  /** The plain state picker. Another state starts over, since one answer covers one state. */
+  function pickState(code: string) {
+    if (code === stateCode) return;
+    const had = where.picks.length > 0;
+    setStateCode(code);
+    setCampus(false);
+    setWhere({ state: code, picks: [] });
+    setWhereNote(had ? { key: "whereStateSwitched", from: stateCode, to: code } : null);
   }
 
   function switchLang() {
@@ -261,6 +310,7 @@ export function Checker() {
     setLang(next);
     storeLang(next);
     setReadNote(null);
+    setWhereNote(null);
   }
 
   return (
@@ -276,11 +326,46 @@ export function Checker() {
       </header>
 
       <Card title={t(lang, "step1")} step={1}>
+        <PlaceSearch
+          lang={lang}
+          picks={where.picks.map((p) => ({ id: p.id, label: (labels[p.id] ?? pickLabels(SD_COUNTY_NAMES, p))[lang] }))}
+          onPick={pickPlace}
+          onRemove={removePlace}
+        />
+        <p role="status" className={whereNote?.from ? "note" : "sr-only"}>
+          {whereNoteText(whereNote, lang)}
+        </p>
+
+        {ride.campusShown ? (
+          <fieldset className="space-y-1">
+            <legend className="field-label">{t(lang, "campusLegend")}</legend>
+            <label className="check">
+              <input
+                id={campusId}
+                type="checkbox"
+                aria-label={placeName("sduhsd_campuses", lang)}
+                aria-describedby={`${campusId}-hint`}
+                checked={campus}
+                onChange={(e) => setCampus(e.target.checked)}
+              />
+              <span>
+                {placeName("sduhsd_campuses", lang)}
+                <span id={`${campusId}-hint`} className="block help">
+                  {placeHint("sduhsd_campuses", lang)}
+                </span>
+              </span>
+            </label>
+          </fieldset>
+        ) : null}
+
         <div className="space-y-1">
-          <label htmlFor={stateId} className="block text-sm font-semibold">
+          <label htmlFor={stateId} className="field-label">
             {t(lang, "state")}
           </label>
-          <select id={stateId} className="field w-full" value={stateCode} onChange={(e) => setStateCode(e.target.value)}>
+          <p id={`${stateId}-help`} className="help">
+            {t(lang, "stateHelp")}
+          </p>
+          <select id={stateId} aria-describedby={`${stateId}-help`} className="field w-full" value={stateCode} onChange={(e) => pickState(e.target.value)}>
             {sortedStates.map((c) => (
               <option key={c} value={c}>
                 {stateName(c, lang)}
@@ -358,9 +443,6 @@ export function Checker() {
           )}
         </div>
 
-        {stateCode === "CA" ? (
-          <PlacePicker lang={lang} places={places} otherPlaces={otherPlaces} onTogglePlace={togglePlace} onOtherPlaces={setOtherPlaces} />
-        ) : null}
       </Card>
 
       <BikeInput key={`input-${starts}`} lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
@@ -396,7 +478,7 @@ export function Checker() {
             ))}
           </>
         ) : null}
-        {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} /> : null}
+        {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null}
         {/* Always in the page. Screen readers hear one short sentence when the answer appears or
             changes, not the whole card on every edit. */}
         <p role="status" className="sr-only">

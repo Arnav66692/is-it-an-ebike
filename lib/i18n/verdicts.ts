@@ -415,11 +415,11 @@ const EN = {
   city_age_12: () => "This city's ban covers only riders under 12. A 12-year-old may ride Class 1 or 2.",
   city_emoto_state_law: (p, c) => `${placeName(n(p.place), c.lang)} has no e-moto rule of its own that we found. Under state law, ${EMOTO_REMOVAL_EN}`,
   bl_unconfirmed_facts: (p, c) =>
-    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under that fact in "Here's what I read" above, or fix that fact` : `under each one in "Here's what I read" above, or fix any that are wrong`}.`,
+    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under that fact in "Check the facts" above, or fix that fact` : `under each one in "Check the facts" above, or fix any that are wrong`}.`,
   bl_no_unchecked_facts: (p, c) =>
     oneReadField(n(p.fields))
-      ? `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Here's what I read" above, or fix that fact.`
-      : `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so this answer could change once you check them. Look at the bike and tick "It matches the bike" under each one in "Here's what I read" above, or fix any that are wrong.`,
+      ? `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Check the facts" above, or fix that fact.`
+      : `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so this answer could change once you check them. Look at the bike and tick "It matches the bike" under each one in "Check the facts" above, or fix any that are wrong.`,
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({
@@ -731,11 +731,11 @@ const ES = {
   city_emoto_state_law: (p, c) =>
     `${placeName(n(p.place), c.lang)} no tiene una regla propia sobre motos eléctricas que hayamos encontrado. Según la ley estatal, ${EMOTO_REMOVAL_ES}`,
   bl_unconfirmed_facts: (p, c) =>
-    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? `debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato` : `debajo de cada uno en "Esto es lo que leí", arriba, o corrige los que estén mal`}.`,
+    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? `debajo de ese dato en "Revisa los datos", arriba, o corrige el dato` : `debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal`}.`,
   bl_no_unchecked_facts: (p, c) =>
     oneReadField(n(p.fields))
-      ? `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato.`
-      : `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que esta respuesta podría cambiar cuando los compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Esto es lo que leí", arriba, o corrige los que estén mal.`,
+      ? `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Revisa los datos", arriba, o corrige el dato.`
+      : `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que esta respuesta podría cambiar cuando los compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal.`,
   bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({

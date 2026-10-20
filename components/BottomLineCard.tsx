@@ -137,14 +137,26 @@ interface Props {
   line: BottomLine;
   lang: Lang;
   stateCode: string;
+  /** Picked places whose own city and county rules were not checked, like "Austin". */
+  uncheckedPlaces?: readonly string[];
+}
+
+/**
+ * The line that says which local rules were not checked. It names the picked places when there are
+ * any, like "City and county rules for Austin were not checked." Null when every place was checked.
+ */
+export function uncheckedLine(line: BottomLine, lang: Lang, names: readonly string[] = []): string | null {
+  if (line.citiesChecked && !line.uncheckedPlaces) return null;
+  if (names.length > 0) return t(lang, "blLocalUnchecked", { list: joinList([...names], lang) });
+  return !line.citiesChecked ? t(lang, "blNoCity") : t(lang, "blOtherPlaces");
 }
 
 /** The one-word answer for the whole ride, shown after every card. */
-export function BottomLineCard({ line, lang, stateCode }: Props) {
+export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: Props) {
   const headingId = useId();
   const state = stateName(stateCode, lang);
   const yes = line.kind === "yes";
-  const unchecked = !line.citiesChecked ? t(lang, "blNoCity") : line.uncheckedPlaces ? t(lang, "blOtherPlaces") : null;
+  const unchecked = uncheckedLine(line, lang, uncheckedPlaces);
   // A NO, not allowed names the read facts still unchecked right under its reasons.
   const toCheck: BottomLineItem[] = line.factsNote ? [{ where: [], line: line.factsNote }] : [];
 

@@ -157,7 +157,7 @@ export interface PlaceLabel {
   text: string;
 }
 
-function countyText(index: PlaceIndex, entry: PlaceEntry, lang: Lang): string {
+function countyText(index: CountyNames, entry: PlaceEntry, lang: Lang): string {
   const main = index.countyNames.get(entry.counties[0]) ?? entry.counties[0];
   const more = entry.counties.length - 1;
   if (more === 0) return main;
@@ -165,8 +165,11 @@ function countyText(index: PlaceIndex, entry: PlaceEntry, lang: Lang): string {
   return `${main} and ${more} other ${more === 1 ? "county" : "counties"}`;
 }
 
+/** The part of the index a label needs, so a pick from an old share link can be labeled before the index loads. */
+export type CountyNames = Pick<PlaceIndex, "countyNames">;
+
 /** The result's label, always with its county and state. */
-export function placeLabel(index: PlaceIndex, entry: PlaceEntry, lang: Lang): PlaceLabel {
+export function placeLabel(index: CountyNames, entry: PlaceEntry, lang: Lang): PlaceLabel {
   if (entry.kind === "state") {
     const name = stateName(entry.state, lang);
     return { name, where: "", state: entry.state, text: name };

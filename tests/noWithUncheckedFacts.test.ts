@@ -105,19 +105,19 @@ describe("the words a family reads", () => {
 
   it("names one fact and says the answer could change once it is checked, in English and Spanish", () => {
     expect(note("hasPedals", "en")).toBe(
-      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Here\'s what I read" above, or fix that fact.',
+      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Check the facts" above, or fix that fact.',
     );
     expect(note("hasPedals", "es")).toBe(
-      'Todavía no comparaste con la bicicleta los pedales. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato.',
+      'Todavía no comparaste con la bicicleta los pedales. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Revisa los datos", arriba, o corrige el dato.',
     );
   });
 
   it("names several facts and says the answer could change once they are checked, in English and Spanish", () => {
     expect(note("classes,weightLb", "en")).toBe(
-      'You haven\'t checked the class and the weight against the bike yet. Facts read from a link or photo can be wrong, so this answer could change once you check them. Look at the bike and tick "It matches the bike" under each one in "Here\'s what I read" above, or fix any that are wrong.',
+      'You haven\'t checked the class and the weight against the bike yet. Facts read from a link or photo can be wrong, so this answer could change once you check them. Look at the bike and tick "It matches the bike" under each one in "Check the facts" above, or fix any that are wrong.',
     );
     expect(note("classes,weightLb", "es")).toBe(
-      'Todavía no comparaste con la bicicleta la clase y el peso. Los datos leídos de un enlace o una foto pueden estar mal, así que esta respuesta podría cambiar cuando los compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Esto es lo que leí", arriba, o corrige los que estén mal.',
+      'Todavía no comparaste con la bicicleta la clase y el peso. Los datos leídos de un enlace o una foto pueden estar mal, así que esta respuesta podría cambiar cuando los compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal.',
     );
   });
 

@@ -255,7 +255,7 @@ describe("the sentence for unchecked facts", () => {
       expect(text).not.toMatch(/[A-Z][a-z]+[A-Z]|_|[—;]|undefined/);
     }
     expect(renderLine({ code: "bl_unconfirmed_facts", params: { fields: "classes,weightLb" } }, "en", "California")).toBe(
-      'You haven\'t checked the class and the weight against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under each one in "Here\'s what I read" above, or fix any that are wrong.',
+      'You haven\'t checked the class and the weight against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under each one in "Check the facts" above, or fix any that are wrong.',
     );
     expect(renderLine({ code: "bl_unconfirmed_facts", params: { fields: "classes,weightLb" } }, "es", "California")).toContain(
       "Todavía no comparaste con la bicicleta la clase y el peso.",

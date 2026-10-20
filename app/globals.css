@@ -348,3 +348,150 @@ body {
   font-weight: 900;
   line-height: 1;
 }
+
+/* Labels and help text for a form field. */
+.field-label {
+  display: block;
+  font-weight: 600;
+}
+
+.help {
+  color: var(--muted);
+}
+
+/* A status line the family should see, like a start over in another state. */
+.note {
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.75rem;
+  background: var(--sunk);
+  font-weight: 600;
+}
+
+/* The place search: a combobox with a list of results under it. */
+.combo {
+  position: relative;
+}
+
+.combo-field {
+  position: relative;
+}
+
+.combo-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.combo-input {
+  width: 100%;
+  min-height: 3rem;
+  padding-left: 2.6rem;
+}
+
+.combo-list {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  max-height: min(24rem, 60vh);
+  overflow-y: auto;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--card);
+  box-shadow: 0 12px 32px rgb(16 24 40 / 0.14);
+}
+
+.combo-list[hidden] {
+  display: none;
+}
+
+.combo-option {
+  display: grid;
+  gap: 0.1rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+.combo-option:hover,
+.combo-option[aria-selected="true"] {
+  background: var(--sunk);
+}
+
+.combo-option[aria-selected="true"] {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.combo-name {
+  font-weight: 600;
+}
+
+.combo-where {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.combo-checked {
+  justify-self: start;
+  margin-top: 0.15rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: var(--yes-bg);
+  color: var(--yes);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* The places picked, as chips with a remove button. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+  max-width: 100%;
+  padding: 0.25rem 0.25rem 0.25rem 0.85rem;
+  border-radius: 1rem;
+  background: var(--sunk);
+}
+
+.chip-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.chip-name {
+  font-weight: 600;
+}
+
+.chip-where {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.chip-remove {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.chip-remove:hover {
+  background: var(--line);
+  color: var(--ink);
+}

@@ -1,0 +1,269 @@
+"use client";
+
+// "Where do they ride?": one search box for any US state, county, city, town or community. It is
+// an ARIA 1.2 combobox with a list of results, so it works with the arrow keys, Enter and Escape,
+// and a screen reader hears how many places matched. The place index loads the first time the
+// box is used. Each pick shows as a chip with a labeled remove button.
+
+import { useId, useMemo, useRef, useState } from "react";
+import { placeHint, type Lang } from "@/lib/i18n/names";
+import { isUiKey, t } from "@/lib/i18n/ui";
+import { pickLabels, type PickLabels } from "@/lib/places/linked";
+import { loadPlaceIndex } from "@/lib/places/load";
+import { resolvePlace } from "@/lib/places/resolve";
+import { placeLabel, searchPlaces, type PlaceLabel } from "@/lib/places/search";
+import type { PlaceEntry, PlaceIndex } from "@/lib/places/types";
+
+/** Where the list's highlight is. -1 means no option is highlighted. */
+export interface ComboState {
+  open: boolean;
+  active: number;
+}
+
+export const CLOSED: ComboState = { open: false, active: -1 };
+
+export interface ComboKeyResult {
+  next: ComboState;
+  /** The option to pick, or null. */
+  pick: number | null;
+  /** True when Escape on a closed list clears the box. */
+  clear: boolean;
+  /** True when the key was used here, so the browser's own action is stopped. */
+  handled: boolean;
+}
+
+/**
+ * What a key does in the search box, following the ARIA 1.2 combobox pattern. Down and Up open
+ * the list and move the highlight, wrapping at the ends. Enter picks the highlighted place, or the
+ * first one when none is highlighted. Escape closes the list, and on a closed list clears the box.
+ */
+export function comboKey(state: ComboState, key: string, count: number, hasText: boolean): ComboKeyResult {
+  const none = { pick: null, clear: false, handled: true };
+  switch (key) {
+    case "ArrowDown":
+      if (count === 0) return { next: { open: true, active: -1 }, ...none };
+      return { next: { open: true, active: state.open ? (state.active + 1) % count : 0 }, ...none };
+    case "ArrowUp":
+      if (count === 0) return { next: { open: true, active: -1 }, ...none };
+      return { next: { open: true, active: state.open && state.active > 0 ? state.active - 1 : count - 1 }, ...none };
+    case "Enter":
+      if (!state.open || count === 0) return { next: state, pick: null, clear: false, handled: false };
+      return { next: CLOSED, pick: state.active >= 0 && state.active < count ? state.active : 0, clear: false, handled: true };
+    case "Escape":
+      if (state.open) return { next: CLOSED, ...none };
+      return { next: CLOSED, pick: null, clear: hasText, handled: hasText };
+    case "Tab":
+      return { next: CLOSED, pick: null, clear: false, handled: false };
+    default:
+      return { next: state, pick: null, clear: false, handled: false };
+  }
+}
+
+/** The words a screen reader hears about the list: loading, a failed load, no match, or how many matched. */
+export function comboStatus(lang: Lang, query: string, loading: boolean, failed: boolean, count: number): string {
+  if (failed) return t(lang, "whereFailed");
+  if (query.trim() === "") return "";
+  if (loading) return t(lang, "whereLoading");
+  if (count === 0) return t(lang, "whereNone");
+  return count === 1 ? t(lang, "whereCountOne") : t(lang, "whereCountMany", { n: count });
+}
+
+/** The second line of a result: what kind of place it is, then its county and state. */
+export function resultDetail(entry: PlaceEntry, label: PlaceLabel, lang: Lang): string {
+  const key = `kind_${entry.kind}`;
+  const kind = isUiKey(key) ? t(lang, key) : "";
+  if (entry.kind === "state") return kind;
+  return [kind, label.where, label.state].filter(Boolean).join(", ");
+}
+
+/**
+ * A short cue under a checked record's own result, like "Includes Carmel Valley, Pacific Highlands
+ * Ranch and the CCA area" under the City of San Diego. Empty for every other place.
+ */
+export function resultHint(entry: PlaceEntry, lang: Lang): string {
+  const r = resolvePlace(entry);
+  if (!r.localRecord || (r.why !== "checked_city" && r.why !== "sd_county")) return "";
+  return placeHint(r.localRecord, lang);
+}
+
+/** A chip's second line: where the pick is, like "City of San Diego, San Diego County, CA". */
+export function chipDetail(label: PlaceLabel): string {
+  return label.where ? `${label.where}, ${label.state}` : label.name === label.text ? "" : label.state;
+}
+
+export interface ChipPick {
+  id: string;
+  label: PlaceLabel;
+}
+
+interface Props {
+  lang: Lang;
+  /** The places picked so far, labeled in the page's language. */
+  picks: ChipPick[];
+  onPick: (entry: PlaceEntry, labels: PickLabels) => void;
+  onRemove: (id: string) => void;
+  /** Called when the index fails to load, so the page can point to the state picker. */
+  onLoadFailed?: () => void;
+  /** Loads the place index. Tests pass their own. */
+  loadIndex?: () => Promise<PlaceIndex>;
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20" width="20" height="20" className="combo-icon">
+      <circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M13 13l4.25 4.25" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadIndex = loadPlaceIndex }: Props) {
+  const inputId = useId();
+  const helpId = useId();
+  const listId = useId();
+  const input = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState("");
+  const [combo, setCombo] = useState<ComboState>(CLOSED);
+  const [index, setIndex] = useState<PlaceIndex | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  /** Starts loading the index the first time the box is used, and again after a failed load. */
+  function ensureIndex() {
+    if (index || loading) return;
+    setLoading(true);
+    setFailed(false);
+    loadIndex()
+      .then((loaded) => {
+        setIndex(loaded);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+        setFailed(true);
+        onLoadFailed?.();
+      });
+  }
+
+  const results = useMemo(() => (index && query.trim() !== "" ? searchPlaces(index, query) : []), [index, query]);
+  const expanded = combo.open && results.length > 0;
+  const optionId = (i: number) => `${listId}-o${i}`;
+  const status = comboStatus(lang, query, loading || (index === null && !failed), failed, results.length);
+
+  function pick(i: number) {
+    const entry = results[i];
+    if (!entry || !index) return;
+    onPick(entry, pickLabels(index, entry));
+    setQuery("");
+    setCombo(CLOSED);
+    input.current?.focus();
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <label htmlFor={inputId} className="field-label">
+          {t(lang, "whereLabel")}
+        </label>
+        <p id={helpId} className="help">
+          {t(lang, "whereHelp")}
+        </p>
+      </div>
+      <div className="combo">
+        <div className="combo-field">
+          <SearchIcon />
+          <input
+            ref={input}
+            id={inputId}
+            type="text"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={expanded}
+            aria-controls={listId}
+            aria-activedescendant={expanded && combo.active >= 0 ? optionId(combo.active) : undefined}
+            aria-describedby={helpId}
+            autoComplete="off"
+            autoCapitalize="words"
+            spellCheck={false}
+            enterKeyHint="search"
+            placeholder={t(lang, "wherePlaceholder")}
+            value={query}
+            className="field combo-input"
+            onFocus={ensureIndex}
+            onChange={(e) => {
+              ensureIndex();
+              setQuery(e.target.value);
+              setCombo({ open: true, active: -1 });
+            }}
+            onKeyDown={(e) => {
+              const r = comboKey(combo, e.key, results.length, query !== "");
+              if (r.handled) e.preventDefault();
+              if (r.pick !== null) {
+                pick(r.pick);
+                return;
+              }
+              if (r.clear) setQuery("");
+              setCombo(r.next);
+            }}
+            onBlur={() => setCombo(CLOSED)}
+          />
+        </div>
+        <ul id={listId} role="listbox" aria-label={t(lang, "whereResults")} hidden={!expanded} className="combo-list">
+          {results.map((entry, i) => {
+            const label = index ? placeLabel(index, entry, lang) : null;
+            if (!label) return null;
+            const checked = resolvePlace(entry).checked;
+            const hint = resultHint(entry, lang);
+            return (
+              <li
+                key={entry.id}
+                id={optionId(i)}
+                role="option"
+                aria-selected={i === combo.active}
+                className="combo-option"
+                // Keeps focus in the box, so a tap picks the place without closing the list first.
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pick(i)}
+              >
+                <span className="combo-name">{label.name}</span>
+                <span className="combo-where">{resultDetail(entry, label, lang)}</span>
+                {hint ? <span className="combo-where">{hint}</span> : null}
+                {checked ? <span className="combo-checked">{t(lang, "whereChecked")}</span> : null}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      {/* Always on the page, so a screen reader hears each change in the count. */}
+      <p role="status" className={failed ? "help font-semibold" : "sr-only"}>
+        {status}
+      </p>
+      {picks.length > 0 ? (
+        <ul className="chips" aria-label={t(lang, "wherePicked")}>
+          {picks.map((p) => (
+            <li key={p.id} className="chip">
+              <span className="chip-text">
+                <span className="chip-name">{p.label.name}</span>
+                {chipDetail(p.label) ? <span className="chip-where">{chipDetail(p.label)}</span> : null}
+              </span>
+              <button
+                type="button"
+                className="chip-remove"
+                aria-label={t(lang, "whereRemove", { place: p.label.text })}
+                title={t(lang, "whereRemove", { place: p.label.text })}
+                onClick={() => {
+                  onRemove(p.id);
+                  input.current?.focus();
+                }}
+              >
+                <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
