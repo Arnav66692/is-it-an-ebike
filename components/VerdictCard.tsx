@@ -1,7 +1,7 @@
 "use client";
 
 import type { Line, Source, Verdict } from "@/lib/rules/types";
-import { formatDate, placeName, stateName, type Lang } from "@/lib/i18n/names";
+import { formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
 import { renderLine, STATUS_LABEL } from "@/lib/i18n/verdicts";
 
@@ -86,7 +86,7 @@ interface Props {
 export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props) {
   const state = stateName(stateCode, lang);
   const title =
-    verdict.scope === "state" ? t(lang, "stateCardTitle", { state }) : placeName(verdict.id, lang);
+    verdict.scope === "state" ? stateLaw(stateCode, lang, "title") : placeName(verdict.id, lang);
   // Local cards say how completely the place's record was read in enacted text.
   const verifiedKey = verdict.scope === "local" && verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";

@@ -18,6 +18,7 @@ export const PLACE_IDS: PlaceId[] = [
   "sduhsd_campuses",
 ];
 
+/** VC 21214.7, the state power behind every local under-12 ban, is repealed on this date. */
 const UNDER_12_RULE_ENDS =
   SD.statewide_baseline.find((r) => r.rule === "local_under_12_authority")?.ends ?? "2029-01-01";
 
@@ -56,6 +57,10 @@ function kindOf(sourceType: string): SourceKind {
       return "ordinance_text";
     case "administrative_regulation":
       return "administrative_regulation";
+    case "staff_report":
+      return "staff_report";
+    case "packet_draft":
+      return "packet_draft";
     default:
       return "official_page";
   }
@@ -101,17 +106,30 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
   }
   // VC 21214.7(b) lets a city or the county ban riders under 12 from Class 1 and 2.
   // The data says whether a place adopted the ban, or has the power with adoption unconfirmed.
-  const under12 = (cls === 1 || cls === 2) && date < UNDER_12_RULE_ENDS;
+  const classOneOrTwo = cls === 1 || cls === 2;
   const ban = ruleNamed(j, "under_12_ban");
-  if (ban && under12 && age < (ban.min_age ?? 12) && ban.effective_date !== null && date >= ban.effective_date) {
-    return {
-      status: "no",
-      reason: line("local_under_12", { place, since: ban.effective_date, cls }, ban),
-      requirements: [],
-    };
+  if (ban && classOneOrTwo && age < (ban.min_age ?? 12) && ban.effective_date !== null && date >= ban.effective_date) {
+    // A ban with its own end date (the City of San Diego) is repealed on that date. A ban
+    // whose text gives no end date (Carlsbad) stays on the books after the state power lapses,
+    // and whether it still applies then is unsettled, so it can't turn into a yes.
+    const repealed = typeof ban.ends === "string" && date >= ban.ends;
+    if (!repealed && date >= UNDER_12_RULE_ENDS) {
+      return {
+        status: "cant_confirm",
+        reason: line("local_under_12_no_end", { place, cls, powerEnds: UNDER_12_RULE_ENDS }, ban),
+        requirements: [],
+      };
+    }
+    if (!repealed) {
+      return {
+        status: "no",
+        reason: line("local_under_12", { place, since: ban.effective_date, cls }, ban),
+        requirements: [],
+      };
+    }
   }
   const power = ruleNamed(j, "authority_exists_no_adoption_found");
-  if (power && under12 && age < 12) {
+  if (power && classOneOrTwo && date < UNDER_12_RULE_ENDS && age < 12) {
     return { status: "cant_confirm", reason: line("local_under_12_unclear", { place, cls }, power), requirements: [] };
   }
   return pass;
@@ -151,7 +169,26 @@ function warningSource(rule: RawLocalRule): Source {
   };
 }
 
-function placeNotes(place: PlaceId, j: RawJurisdiction, input: EngineInput, status: Status, classes: number[]): Line[] {
+/**
+ * True when the card says no only because of the local under-12 ban, in every class it could be.
+ * Local relief, like a fine waiver or an exemption, only matters then. When state law also says
+ * no, for example a Class 3 under 16, that relief changes nothing.
+ */
+function onlyLocalBan(outcome: ClassOutcome, perClass: ClassOutcome[]): boolean {
+  if (outcome.status !== "no") return false;
+  const outcomes = perClass.length > 0 ? perClass : [outcome];
+  const illegal = outcomes.filter((o) => o.status === "no" || o.status === "not_ebike");
+  return illegal.length > 0 && illegal.every((o) => o.reason.code === "local_under_12");
+}
+
+function placeNotes(
+  place: PlaceId,
+  j: RawJurisdiction,
+  input: EngineInput,
+  status: Status,
+  classes: number[],
+  localBanOnly: boolean,
+): Line[] {
   const notes: Line[] = [];
   const age = input.riderAge;
   const watts = input.facts.ratedWatts;
@@ -170,8 +207,8 @@ function placeNotes(place: PlaceId, j: RawJurisdiction, input: EngineInput, stat
   switch (place) {
     case "city_of_san_diego": {
       const ban = ruleNamed(j, "under_12_ban");
-      if (status === "no" && age < 12) add("sd_course_in_lieu", "course_in_lieu_of_fine");
-      if (ban?.citations_from && input.rideDate < ban.citations_from && age < 12) {
+      if (localBanOnly) add("sd_course_in_lieu", "course_in_lieu_of_fine");
+      if (localBanOnly && ban?.citations_from && input.rideDate < ban.citations_from) {
         notes.push({ code: "sd_warning_period", params: { from: ban.citations_from }, source: warningSource(ban), detail: null });
       }
       if (age === 12) add("sd_age_12", "under_12_ban");
@@ -185,7 +222,7 @@ function placeNotes(place: PlaceId, j: RawJurisdiction, input: EngineInput, stat
       break;
     }
     case "carlsbad":
-      if (status === "no" && age < 12) add("carlsbad_disability", "disability_exemption");
+      if (localBanOnly) add("carlsbad_disability", "disability_exemption");
       if (status === "not_ebike") add("carlsbad_emoto", "emoto_impound");
       if (mayBeClass1or2 && status !== "not_ebike") add("carlsbad_under_12_passengers", "under_12_passenger_ban");
       if (mayRide) {
@@ -194,7 +231,10 @@ function placeNotes(place: PlaceId, j: RawJurisdiction, input: EngineInput, stat
         add("carlsbad_trail_dismount", "trail_dismount");
         add("carlsbad_passengers", "passengers_only_on_passenger_bikes");
         if (age < 18) add("carlsbad_impound", "in_person_course_to_recover_impounded_bike");
-        if (hasClass3) add("carlsbad_class3_paths", "park_and_trail_vehicle_limit");
+        if (hasClass3) {
+          add("carlsbad_class3_paths", "park_and_trail_vehicle_limit");
+          add("carlsbad_class3_trails", "class3_trails_city_flier");
+        }
       }
       if (watts === 750) notes.push(line("city_page_750"));
       break;
@@ -263,8 +303,11 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
   let outcome: ClassOutcome;
   let perClass: ClassOutcome[] = [];
   if (se.outcomes.length === 0) {
-    // The state verdict came from a check that doesn't depend on class (pedals, never-legal).
-    const fake: ClassOutcome = {
+    // The state verdict came from a check that doesn't depend on class: no pedals, pedals
+    // unknown, facts that disagree, or a state that never confirms. The class is unknown, so
+    // no class rule may run here. A campus still bars a machine that is not an e-bike, and
+    // anything else carries the state answer through unchanged.
+    const stateOutcome: ClassOutcome = {
       cls: 3,
       status: state.status,
       reason: state.reason,
@@ -272,7 +315,7 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
       cautions: state.cautions,
       questions: state.questions,
     };
-    outcome = localOutcome(place, j, fake, age, date);
+    outcome = state.status === "not_ebike" ? localOutcome(place, j, stateOutcome, age, date) : stateOutcome;
   } else {
     perClass = se.outcomes.map((o) => localOutcome(place, j, o, age, date));
     if (se.classesKnown) {
@@ -289,7 +332,7 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
     }
   }
 
-  const notes = placeNotes(place, j, input, outcome.status, state.classes);
+  const notes = placeNotes(place, j, input, outcome.status, state.classes, onlyLocalBan(outcome, perClass));
   if (outcome.status === "no" && outcome.reason.code === "no_any_class") {
     notes.unshift(...perClass.map((o) => ({ ...o.reason, params: { ...o.reason.params, cls: o.cls } })));
   }

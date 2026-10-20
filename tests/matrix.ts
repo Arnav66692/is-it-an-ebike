@@ -1,12 +1,26 @@
 // Builds the test matrix from the data: every state, class, age band, caution condition
-// and switch date. Used by tests/engine.matrix.test.ts and scripts/engine-matrix.ts.
+// and switch date. Used by tests/engine.matrix.test.ts and scripts/build-results.ts.
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { BottomLineCard } from "@/components/BottomLineCard";
 import { evaluate } from "@/lib/rules";
-import { bottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
+import { bottomLine, type BottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
-import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type Status } from "@/lib/rules/types";
-import { bottomLineBlockers, localBlockers, stateBlockers, topVerifiedInData, type OracleFacts } from "./oracle";
+import { CAUTION_FAST_MODE_UNVERIFIED, emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type Status } from "@/lib/rules/types";
+import { t, type UiKey } from "@/lib/i18n/ui";
+import {
+  bottomLineBlockers,
+  classesOf,
+  hasThrottle,
+  illegalReasons,
+  localBlockers,
+  pedalsOf,
+  stateBlockers,
+  topVerifiedInData,
+  type OracleFacts,
+} from "./oracle";
 
 export const AGES = [7, 11, 12, 13, 14, 15, 16, 17, 18, 30];
 export const DATES = [
@@ -50,9 +64,30 @@ export const VARIANTS: Variant[] = [
   { name: "pegs_kit_unsure", pegs: null, kit: null, unsure: ["pegs_kit"] },
 ];
 
-function oracleFacts(cls: 1 | 2 | 3, v: Variant): OracleFacts {
+type Shape = { name: string; cls: 1 | 2 | 3 } & Partial<OracleFacts>;
+
+/**
+ * Bike shapes that are not one plain class: pedals unknown or missing, no class, more than
+ * one class, and facts that disagree. Each runs on the standard bike, across every state,
+ * age, date and place set.
+ */
+export const SHAPES: Shape[] = [
+  { name: "pedals_unknown_class_1", cls: 1, pedals: null },
+  { name: "pedals_unknown_class_3", cls: 3, pedals: null },
+  { name: "no_pedals_class_2", cls: 2, pedals: false },
+  { name: "class_unknown", cls: 1, classes: [] },
+  { name: "classes_1_and_2", cls: 1, classes: [1, 2] },
+  { name: "classes_1_and_3", cls: 1, classes: [1, 3] },
+  { name: "classes_2_and_3", cls: 2, classes: [2, 3] },
+  { name: "facts_conflict", cls: 2, conflict: true },
+];
+
+function oracleFacts(cls: 1 | 2 | 3, v: Partial<OracleFacts>): OracleFacts {
   return {
     cls,
+    classes: v.classes,
+    pedals: v.pedals,
+    conflict: v.conflict,
     watts: v.watts ?? 500,
     front: v.front === undefined ? 20 : v.front,
     rear: v.rear === undefined ? 20 : v.rear,
@@ -67,14 +102,17 @@ function oracleFacts(cls: 1 | 2 | 3, v: Variant): OracleFacts {
 }
 
 function engineFacts(o: OracleFacts): BikeFacts {
+  const classes = classesOf(o);
+  const throttle = hasThrottle(o);
   return {
     ...emptyFacts(),
-    hasPedals: true,
-    classes: [o.cls],
+    hasPedals: pedalsOf(o),
+    classes,
     ratedWatts: o.watts,
-    hasThrottle: o.cls === 2,
-    throttleMph: o.cls === 2 ? 20 : null,
-    assistMph: o.cls === 3 ? 28 : 20,
+    hasThrottle: throttle,
+    // A stated 28 mph throttle against a "never over 20 on the motor" answer is a conflict.
+    throttleMph: o.conflict ? 28 : throttle ? 20 : null,
+    assistMph: classes.length === 0 ? null : classes.includes(3) ? 28 : 20,
     motorOver20: o.motorOver20,
     assistOver28: o.assistOver28,
     switchable: o.motorOver20 === null && o.assistOver28 === null ? null : false,
@@ -88,6 +126,21 @@ function engineFacts(o: OracleFacts): BikeFacts {
     unsure: o.unsure as QuestionId[],
   };
 }
+
+/** Every bike the matrices run: each class with each variant, then each shape. */
+function bikes(): { name: string; cls: number; facts: OracleFacts }[] {
+  const out: { name: string; cls: number; facts: OracleFacts }[] = [];
+  for (const cls of [1, 2, 3] as const) {
+    for (const v of VARIANTS) out.push({ name: v.name, cls, facts: oracleFacts(cls, v) });
+  }
+  for (const s of SHAPES) out.push({ name: s.name, cls: s.cls, facts: oracleFacts(s.cls, s) });
+  return out;
+}
+
+const localBlockersAllClasses = (place: string, f: OracleFacts, age: number, date: string): string[] => {
+  const classes = classesOf(f);
+  return (classes.length > 0 ? classes : ([1, 2, 3] as const)).flatMap((cls) => localBlockers(place, cls, age, date));
+};
 
 export interface MatrixCase {
   scope: string;
@@ -123,30 +176,19 @@ export function runMatrix(): MatrixSummary {
   };
 
   for (const state of STATE_CODES) {
-    for (const cls of [1, 2, 3] as const) {
-      for (const variant of VARIANTS) {
-        const of = oracleFacts(cls, variant);
-        const facts = engineFacts(of);
-        for (const age of AGES) {
-          for (const date of DATES) {
-            const places = state === "CA" ? PLACE_IDS : [];
-            const result = evaluate({ state, riderAge: age, rideDate: date, facts, places });
-            const blockers = stateBlockers(state, of, age, date);
-            stateCases += 1;
-            check({ scope: "state", state, cls, age, date, variant: variant.name, status: result.state.status, blockers });
-            for (const v of result.local) {
-              localCases += 1;
-              check({
-                scope: v.id,
-                state,
-                cls,
-                age,
-                date,
-                variant: variant.name,
-                status: v.status,
-                blockers: [...blockers, ...localBlockers(v.id, of, age, date)],
-              });
-            }
+    for (const bike of bikes()) {
+      const facts = engineFacts(bike.facts);
+      for (const age of AGES) {
+        for (const date of DATES) {
+          const places = state === "CA" ? PLACE_IDS : [];
+          const result = evaluate({ state, riderAge: age, rideDate: date, facts, places });
+          const blockers = stateBlockers(state, bike.facts, age, date);
+          const base = { state, cls: bike.cls, age, date, variant: bike.name };
+          stateCases += 1;
+          check({ ...base, scope: "state", status: result.state.status, blockers });
+          for (const v of result.local) {
+            localCases += 1;
+            check({ ...base, scope: v.id, status: v.status, blockers: [...blockers, ...localBlockersAllClasses(v.id, bike.facts, age, date)] });
           }
         }
       }
@@ -178,65 +220,107 @@ export interface BottomLineSummary {
   falseYes: BottomLineCase[];
   /** Not YES while the independent checker lists no reason against it. */
   missedYes: BottomLineCase[];
+  /** "NO, not allowed" while the independent checker finds no rule that says no. */
+  falseIllegal: BottomLineCase[];
+  /** A rule says no, but the bottom line is something else. */
+  missedIllegal: BottomLineCase[];
   /** YES or NO of the wrong kind for the cards on the page. */
   wrongKind: BottomLineCase[];
-  /** YES for a place we did not check, with no line saying so. */
+  /** The rendered card leaves out, or wrongly adds, the line that says which places were not checked. */
   missingCaveat: BottomLineCase[];
+  /** How many distinct rendered cards were read for the caveat check. */
+  renderedCards: number;
 }
 
 /**
- * Every state, class, bike variant, age and date, and in California every place set with and
- * without "Somewhere else". Each bottom line is checked three ways: against the independent
- * checker, against the cards on the page, and for the unchecked-places caveat.
+ * The caveat the card must show, from the inputs alone. No city or county picked: say city and
+ * county rules were not checked. A town picked plus "Somewhere else": say other places were not
+ * checked. Every place the rider goes picked: no caveat. A "NO, not allowed" needs none.
+ */
+function expectedCaveat(state: string, places: PlaceId[], otherPlaces: boolean, kind: BottomLineKind): UiKey | null {
+  if (kind === "no_illegal") return null;
+  const townChecked = state === "CA" && places.some((p) => p !== "sduhsd_campuses");
+  if (!townChecked) return "blNoCity";
+  return otherPlaces ? "blOtherPlaces" : null;
+}
+
+/** Renders the real card in both languages and lists what is wrong with its caveat line. */
+function caveatProblems(bl: BottomLine, state: string, expected: UiKey | null): string[] {
+  const problems: string[] = [];
+  for (const lang of ["en", "es"] as const) {
+    const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: state }));
+    for (const key of ["blNoCity", "blOtherPlaces"] as const) {
+      const shown = html.includes(t(lang, key));
+      if (key === expected && !shown) problems.push(`${lang}: missing ${key}`);
+      if (key !== expected && shown) problems.push(`${lang}: extra ${key}`);
+    }
+  }
+  return problems;
+}
+
+/**
+ * Every state, bike, age and date, and in California every place set with and without
+ * "Somewhere else". Each bottom line is checked against the independent checker for YES and for
+ * "NO, not allowed", against the cards on the page, and for the caveat on the rendered card.
  */
 export function runBottomLineMatrix(): BottomLineSummary {
   const byKind: Record<BottomLineKind, number> = { yes: 0, no_illegal: 0, no_unconfirmed: 0 };
   const falseYes: BottomLineCase[] = [];
   const missedYes: BottomLineCase[] = [];
+  const falseIllegal: BottomLineCase[] = [];
+  const missedIllegal: BottomLineCase[] = [];
   const wrongKind: BottomLineCase[] = [];
   const missingCaveat: BottomLineCase[] = [];
+  const rendered = new Set<string>();
   let cases = 0;
 
   for (const state of STATE_CODES) {
     const placeSets = state === "CA" ? PLACE_SETS : [[]];
     const otherOptions = state === "CA" ? [false, true] : [false];
-    for (const cls of [1, 2, 3] as const) {
-      for (const variant of VARIANTS) {
-        const of = oracleFacts(cls, variant);
-        const facts = engineFacts(of);
-        for (const age of AGES) {
-          for (const date of DATES) {
-            for (const places of placeSets) {
-              for (const otherPlaces of otherOptions) {
-                const result = evaluate({ state, riderAge: age, rideDate: date, facts, places, otherPlaces });
-                const bl = bottomLine(result, date);
-                const cards = [result.state, ...result.local];
-                const statuses = cards.map((v) => v.status);
-                const base = { state, cls, age, date, variant: variant.name, places: places.join("+") || "none", otherPlaces, kind: bl.kind, statuses };
-                cases += 1;
-                byKind[bl.kind] += 1;
+    for (const bike of bikes()) {
+      const facts = engineFacts(bike.facts);
+      for (const age of AGES) {
+        for (const date of DATES) {
+          for (const places of placeSets) {
+            for (const otherPlaces of otherOptions) {
+              const result = evaluate({ state, riderAge: age, rideDate: date, facts, places, otherPlaces });
+              const bl = bottomLine(result, date);
+              const cards = [result.state, ...result.local];
+              const statuses = cards.map((v) => v.status);
+              const base = { state, cls: bike.cls, age, date, variant: bike.name, places: places.join("+") || "none", otherPlaces, kind: bl.kind, statuses };
+              cases += 1;
+              byKind[bl.kind] += 1;
 
-                const blockers = bottomLineBlockers(state, of, age, date, places);
-                if (bl.kind === "yes" && blockers.length > 0) falseYes.push({ ...base, why: blockers });
-                if (bl.kind !== "yes" && blockers.length === 0) missedYes.push({ ...base, why: [] });
+              const blockers = bottomLineBlockers(state, bike.facts, age, date, places);
+              if (bl.kind === "yes" && blockers.length > 0) falseYes.push({ ...base, why: blockers });
+              if (bl.kind !== "yes" && blockers.length === 0) missedYes.push({ ...base, why: [] });
 
-                const illegal = statuses.some((st) => st === "no" || st === "not_ebike");
-                const open = statuses.some((st) => st === "cant_confirm" || st === "need_info");
-                const unverified = cards.filter((v) => !topVerifiedInData(v.scope, v.id)).map((v) => v.id);
-                const unsure = cards.some((v) => v.cautions.some((c) => c.code === "caution_fast_mode_unverified"));
-                if (illegal && bl.kind !== "no_illegal") wrongKind.push({ ...base, why: ["a card is not allowed"] });
-                if (!illegal && bl.kind === "no_illegal") wrongKind.push({ ...base, why: ["no card is illegal"] });
-                if (bl.kind === "yes" && (open || unverified.length > 0 || unsure)) {
-                  wrongKind.push({ ...base, why: [open ? "open card" : "", unsure ? "not sure" : "", ...unverified].filter(Boolean) });
-                }
-                if (!illegal && !open && !unsure && unverified.length === 0 && bl.kind !== "yes") {
-                  wrongKind.push({ ...base, why: ["every card is a verified yes"] });
-                }
+              const illegal = illegalReasons(state, bike.facts, age, date, places);
+              if (bl.kind === "no_illegal" && illegal.length === 0) {
+                falseIllegal.push({ ...base, why: bl.blocked.map((b) => b.line.code) });
+              }
+              if (bl.kind !== "no_illegal" && illegal.length > 0) missedIllegal.push({ ...base, why: illegal });
 
-                const townChecked = places.some((p) => p !== "sduhsd_campuses");
-                const needsCaveat = state !== "CA" || !townChecked || otherPlaces;
-                if (bl.kind === "yes" && needsCaveat && !bl.uncheckedPlaces) missingCaveat.push({ ...base, why: ["no unchecked-places line"] });
-                if (bl.kind === "yes" && !townChecked && bl.citiesChecked) missingCaveat.push({ ...base, why: ["claims a city was checked"] });
+              const anyNo = statuses.some((st) => st === "no" || st === "not_ebike");
+              const open = statuses.some((st) => st === "cant_confirm" || st === "need_info");
+              const unverified = cards.filter((v) => !topVerifiedInData(v.scope, v.id)).map((v) => v.id);
+              const unsure = cards.some((v) => v.cautions.some((c) => c.code === CAUTION_FAST_MODE_UNVERIFIED));
+              if (anyNo && bl.kind !== "no_illegal") wrongKind.push({ ...base, why: ["a card is not allowed"] });
+              if (!anyNo && bl.kind === "no_illegal") wrongKind.push({ ...base, why: ["no card is illegal"] });
+              if (bl.kind === "yes" && (open || unverified.length > 0 || unsure)) {
+                wrongKind.push({ ...base, why: [open ? "open card" : "", unsure ? "not sure" : "", ...unverified].filter(Boolean) });
+              }
+              if (!anyNo && !open && !unsure && unverified.length === 0 && bl.kind !== "yes") {
+                wrongKind.push({ ...base, why: ["every card is a verified yes"] });
+              }
+
+              // The caveat depends only on the state, the places, Somewhere else and the kind,
+              // so one rendered card per combination covers every case.
+              const key = `${state}|${base.places}|${otherPlaces}|${bl.kind}`;
+              if (!rendered.has(key)) {
+                rendered.add(key);
+                const problems = caveatProblems(bl, state, expectedCaveat(state, places, otherPlaces, bl.kind));
+                if (problems.length > 0) missingCaveat.push({ ...base, why: problems });
               }
             }
           }
@@ -244,5 +328,5 @@ export function runBottomLineMatrix(): BottomLineSummary {
       }
     }
   }
-  return { cases, byKind, falseYes, missedYes, wrongKind, missingCaveat };
+  return { cases, byKind, falseYes, missedYes, falseIllegal, missedIllegal, wrongKind, missingCaveat, renderedCards: rendered.size };
 }

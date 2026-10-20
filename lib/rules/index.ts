@@ -8,7 +8,7 @@ import { evaluateState } from "./state";
 import type { EngineInput, EngineResult } from "./types";
 
 export { bottomLine, isTopVerified } from "./bottomLine";
-export type { BottomLine, BottomLineGap, BottomLineItem, BottomLineKind, CardRef, GapKind } from "./bottomLine";
+export type { BottomLine, BottomLineCode, BottomLineGap, BottomLineItem, BottomLineKind, CardRef, GapKind, UnsureCode } from "./bottomLine";
 export { STATE_CODES } from "./compile";
 export { PLACE_IDS } from "./local";
 export { emptyFacts } from "./types";

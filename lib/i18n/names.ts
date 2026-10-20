@@ -43,7 +43,38 @@ export function stateName(code: string, lang: Lang): string {
   return STATE_NAMES_EN[code] ?? code;
 }
 
-const PLACE_NAMES: Record<PlaceId, { en: string; es: string; hint: { en: string; es: string }; inline?: { en: string; es: string } }> = {
+/** Washington, DC is not a state, so its law is never called state law. */
+const NOT_A_STATE = new Set(["DC"]);
+
+export function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/**
+ * The name of the state's law. "title" heads a card, "inline" sits in a sentence and "list"
+ * sits in a list of places. "California state law", "Washington, DC law", "la ley estatal de
+ * California", "la ley del Distrito de Columbia".
+ */
+export function stateLaw(code: string, lang: Lang, form: "title" | "inline" | "list"): string {
+  const name = stateName(code, lang);
+  const district = NOT_A_STATE.has(code);
+  if (lang === "en") return district ? `${name} law` : `${name} state law`;
+  const base = district ? `ley del ${name}` : `ley estatal de ${name}`;
+  if (form === "title") return capitalize(base);
+  return form === "inline" ? `la ${base}` : base;
+}
+
+interface PlaceNames {
+  en: string;
+  es: string;
+  hint: { en: string; es: string };
+  /** In the middle of a sentence. */
+  inline?: { en: string; es: string };
+  /** In a list of places, when the standalone name starts with a capital that isn't a proper name. */
+  list?: { en: string; es: string };
+}
+
+const PLACE_NAMES: Record<PlaceId, PlaceNames> = {
   city_of_san_diego: {
     en: "City of San Diego",
     es: "Ciudad de San Diego",
@@ -58,12 +89,14 @@ const PLACE_NAMES: Record<PlaceId, { en: string; es: string; hint: { en: string;
     en: "Unincorporated San Diego County",
     es: "Zona no incorporada del condado de San Diego",
     inline: { en: "unincorporated San Diego County", es: "la zona no incorporada del condado de San Diego" },
+    list: { en: "unincorporated San Diego County", es: "zona no incorporada del condado de San Diego" },
     hint: { en: "Rancho Santa Fe, Fairbanks Ranch and similar", es: "Rancho Santa Fe, Fairbanks Ranch y zonas parecidas" },
   },
   sduhsd_campuses: {
     en: "An SDUHSD campus",
     es: "Una escuela de SDUHSD",
     inline: { en: "SDUHSD campus rules", es: "las reglas de las escuelas de SDUHSD" },
+    list: { en: "an SDUHSD campus", es: "una escuela de SDUHSD" },
     hint: { en: "Canyon Crest Academy, Torrey Pines and the other district schools", es: "Canyon Crest Academy, Torrey Pines y las demás escuelas del distrito" },
   },
 };
@@ -78,6 +111,13 @@ export function placeNameInline(id: string, lang: Lang): string {
   const p = PLACE_NAMES[id as PlaceId];
   if (!p) return id;
   return p.inline ? p.inline[lang] : p[lang];
+}
+
+/** The place name as an item in a list, for example the second item in "City of San Diego and an SDUHSD campus". */
+export function placeNameInList(id: string, lang: Lang): string {
+  const p = PLACE_NAMES[id as PlaceId];
+  if (!p) return id;
+  return p.list ? p.list[lang] : p[lang];
 }
 
 export function placeHint(id: PlaceId, lang: Lang): string {

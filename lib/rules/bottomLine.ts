@@ -5,7 +5,7 @@
 // in enacted text. Anything illegal is NO. Anything uncertain is NO, not confirmed, with the
 // exact gap named. Uncertainty never turns into a YES.
 
-import type { EngineResult, Line, QuestionId, Verdict, VerificationLevel } from "./types";
+import { CAUTION_FAST_MODE_UNVERIFIED, type EngineResult, type Line, type Verdict, type VerificationLevel } from "./types";
 
 export type BottomLineKind = "yes" | "no_illegal" | "no_unconfirmed";
 
@@ -44,10 +44,20 @@ export interface BottomLine {
   uncheckedPlaces: boolean;
 }
 
+/** The sentence for a "not sure" answer that blocks a YES. */
+export type UnsureCode = "bl_unsure_fast_mode";
+
+/**
+ * Every line code the bottom line itself writes. lib/i18n/verdicts.ts must have a sentence for
+ * each one in both languages, and the compiler checks that.
+ */
+export type BottomLineCode = "bl_unanswered" | UnsureCode | `bl_unverified_${"state" | UnverifiedLevel}`;
+
+/** The levels that keep a local card from a YES. */
+type UnverifiedLevel = Exclude<VerificationLevel, "primary_verified">;
+
 /** Cautions the engine adds only because the user answered "not sure". They block a YES. */
-const UNSURE_CAUTIONS: Record<string, QuestionId> = {
-  caution_fast_mode_unverified: "fast_mode",
-};
+const UNSURE_CAUTIONS: ReadonlyMap<string, UnsureCode> = new Map([[CAUTION_FAST_MODE_UNVERIFIED, "bl_unsure_fast_mode"]]);
 
 const GAP_ORDER: GapKind[] = ["cant_confirm", "unanswered", "unsure", "unverified"];
 
@@ -82,9 +92,12 @@ function merge<T extends BottomLineItem>(items: T[], extraKey: (item: T) => stri
 }
 
 function unverifiedLine(v: Verdict): Line {
-  if (v.scope === "state") return { code: "bl_unverified_state" };
-  const level: VerificationLevel = v.level ?? "primary_not_found";
-  return { code: `bl_unverified_${level}`, params: { place: v.id } };
+  if (v.scope === "state") return { code: "bl_unverified_state" satisfies BottomLineCode };
+  const found = v.level;
+  // Only called for a card that is not primary_verified. No level means nothing was found.
+  const level: UnverifiedLevel = found === undefined || found === "primary_verified" ? "primary_not_found" : found;
+  const code: BottomLineCode = `bl_unverified_${level}`;
+  return { code, params: { place: v.id } };
 }
 
 /** Every reason this card keeps the answer from a YES, short of being illegal. */
@@ -93,11 +106,12 @@ function gapsOf(v: Verdict): BottomLineGap[] {
   const gaps: BottomLineGap[] = [];
   if (v.status === "cant_confirm") gaps.push({ kind: "cant_confirm", where, line: v.reason });
   if (v.status === "need_info") {
-    gaps.push({ kind: "unanswered", where, line: { code: "bl_unanswered", params: { questions: v.questions.join(",") } } });
+    const code: BottomLineCode = "bl_unanswered";
+    gaps.push({ kind: "unanswered", where, line: { code, params: { questions: v.questions.join(",") } } });
   }
   for (const caution of v.cautions) {
-    const question = UNSURE_CAUTIONS[caution.code];
-    if (question) gaps.push({ kind: "unsure", where, line: { code: `bl_unsure_${question}` } });
+    const code = UNSURE_CAUTIONS.get(caution.code);
+    if (code) gaps.push({ kind: "unsure", where, line: { code } });
   }
   if (!isTopVerified(v)) gaps.push({ kind: "unverified", where, line: unverifiedLine(v) });
   return gaps;

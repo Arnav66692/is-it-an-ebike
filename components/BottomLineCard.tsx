@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import type { BottomLine, BottomLineItem, CardRef } from "@/lib/rules/bottomLine";
-import { formatDate, joinList, placeName, placeNameInline, stateName, type Lang } from "@/lib/i18n/names";
+import { capitalize, formatDate, joinList, placeNameInList, placeNameInline, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
 
@@ -18,15 +18,41 @@ const SUBTITLE = {
   no_unconfirmed: "blUnconfirmedSub",
 } as const;
 
+/**
+ * The places one item applies to, as a label: "City of San Diego and an SDUHSD campus".
+ * Each place uses its list form, and only the first word is capitalized.
+ */
+export function whereLabel(where: CardRef[], lang: Lang, stateCode: string): string {
+  const names = where.map((r) => (r.scope === "state" ? stateLaw(stateCode, lang, "list") : placeNameInList(r.id, lang)));
+  return capitalize(joinList(names, lang));
+}
+
+/** "This covers California state law and the City of San Diego." */
+export function coversSentence(line: BottomLine, lang: Lang, stateCode: string): string {
+  if (line.covered.length === 1) return t(lang, "blCoversStateOnly", { law: stateLaw(stateCode, lang, "inline") });
+  const names = line.covered.map((r) => (r.scope === "state" ? stateLaw(stateCode, lang, "inline") : placeNameInline(r.id, lang)));
+  return t(lang, "blCovers", { list: joinList(names, lang) });
+}
+
+/**
+ * The one short sentence screen readers announce when the bottom line appears or changes,
+ * for example "Bottom line: NO. Not allowed. At least one place you picked says no."
+ * The full card stays out of the live region, so it is never read again on every edit.
+ */
+export function announcement(line: BottomLine, lang: Lang): string {
+  const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
+  return `${t(lang, "blTitle")}: ${word}. ${t(lang, SUBTITLE[line.kind])}`;
+}
+
 interface ItemListProps {
   title: string;
   items: BottomLineItem[];
   lang: Lang;
   state: string;
-  label: (r: CardRef) => string;
+  stateCode: string;
 }
 
-function ItemList({ title, items, lang, state, label }: ItemListProps) {
+function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
   if (items.length === 0) return null;
   return (
     <div className="space-y-1">
@@ -34,7 +60,7 @@ function ItemList({ title, items, lang, state, label }: ItemListProps) {
       <ul className="space-y-2">
         {items.map((item, i) => (
           <li key={`${item.line.code}-${i}`} className="bl-item">
-            <span className="block text-sm font-semibold">{joinList(item.where.map(label), lang)}</span>
+            <span className="block text-sm font-semibold">{whereLabel(item.where, lang, stateCode)}</span>
             <span className="block">{renderLine(item.line, lang, state)}</span>
           </li>
         ))}
@@ -54,16 +80,6 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
   const headingId = useId();
   const state = stateName(stateCode, lang);
   const yes = line.kind === "yes";
-  const label = (r: CardRef) => (r.scope === "state" ? t(lang, "stateCardTitle", { state }) : placeName(r.id, lang));
-  const covers =
-    line.covered.length === 1
-      ? t(lang, "blCoversStateOnly", { state })
-      : t(lang, "blCovers", {
-          list: joinList(
-            line.covered.map((r) => (r.scope === "state" ? t(lang, "blStateLaw", { state }) : placeNameInline(r.id, lang))),
-            lang,
-          ),
-        });
   const unchecked = !line.citiesChecked ? t(lang, "blNoCity") : line.uncheckedPlaces ? t(lang, "blOtherPlaces") : null;
 
   return (
@@ -80,12 +96,12 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
         </p>
         <p className="text-lg font-semibold leading-snug">{t(lang, SUBTITLE[line.kind])}</p>
         <p className="text-sm">
-          {t(lang, "blRideDate", { date: formatDate(line.rideDate, lang) })} {covers}
+          {t(lang, "blRideDate", { date: formatDate(line.rideDate, lang) })} {coversSentence(line, lang, stateCode)}
         </p>
       </header>
 
-      <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} label={label} />
-      <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} label={label} />
+      <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
+      <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
 
       {yes && line.requirements.length > 0 ? (
         <div className="space-y-1">
@@ -99,7 +115,11 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
       ) : null}
 
       {yes ? <p className="text-sm">{t(lang, "blStreets")}</p> : null}
-      {unchecked && line.kind !== "no_illegal" ? <p className="text-sm font-semibold">{unchecked}</p> : null}
+      {unchecked && line.kind !== "no_illegal" ? (
+        <p className="text-sm font-semibold" data-unchecked="">
+          {unchecked}
+        </p>
+      ) : null}
 
       <footer className="border-t border-line pt-3 text-xs text-muted">
         <p>{t(lang, "notLegalAdvice")}</p>

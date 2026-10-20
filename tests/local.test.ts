@@ -153,3 +153,51 @@ describe("rules read in enacted text on Oct 19, 2026", () => {
     expect(helmet?.source?.kind).toBe("administrative_regulation");
   });
 });
+
+describe("review fixes to local notes and sources (Oct 19, 2026)", () => {
+  it("a Class 3 under 12 is barred by state law, so Carlsbad's disability note and the City's fine waiver don't show", () => {
+    const r = run("CA", 11, classBike(3), "2026-10-19", ["carlsbad", "city_of_san_diego"]);
+    expect(local(r, "carlsbad").reason.code).toBe("under_min_age");
+    expect(codes(local(r, "carlsbad").notes)).not.toContain("carlsbad_disability");
+    expect(codes(local(r, "city_of_san_diego").notes)).not.toContain("sd_course_in_lieu");
+  });
+  it("before citations start, a Class 3 under 12 gets no City warnings-only note", () => {
+    const sd = local(run("CA", 11, classBike(3), "2026-09-01", ["city_of_san_diego"]), "city_of_san_diego");
+    expect(codes(sd.notes)).not.toContain("sd_warning_period");
+  });
+  it("an unknown class under 12 is barred partly by state law, so local relief notes don't show", () => {
+    const unknown = classBike(1, { classes: [], hasThrottle: false, assistMph: null });
+    const r = run("CA", 11, unknown, "2026-10-19", ["carlsbad", "city_of_san_diego"]);
+    expect(local(r, "carlsbad").reason.code).toBe("no_any_class");
+    expect(codes(local(r, "carlsbad").notes)).not.toContain("carlsbad_disability");
+    expect(codes(local(r, "city_of_san_diego").notes)).not.toContain("sd_course_in_lieu");
+  });
+  it("the City fine waiver still shows when the local ban is the only reason", () => {
+    const sd = local(run("CA", 11, classBike(2), "2026-10-19", ["city_of_san_diego"]), "city_of_san_diego");
+    expect(codes(sd.notes)).toContain("sd_course_in_lieu");
+  });
+  it("Carlsbad's Class 3 trail note cites the city flier, and the code note cites CMC 11.32", () => {
+    const carlsbad = local(run("CA", 16, classBike(3), "2026-10-19", ["carlsbad"]), "carlsbad");
+    const flier = carlsbad.notes.find((n) => n.code === "carlsbad_class3_trails");
+    expect(flier?.source?.kind).toBe("official_page");
+    expect(flier?.source?.url).toContain("showpublisheddocument/25500");
+    const code = carlsbad.notes.find((n) => n.code === "carlsbad_class3_paths");
+    expect(code?.source?.citation).toContain("11.32.030");
+    expect(carlsbad.sources.some((s) => s.url?.includes("25500"))).toBe(true);
+  });
+  it("Encinitas's no-age-limit note cites the Aug 19 staff report as a staff report, not as ordinance text", () => {
+    const enc = local(run("CA", 15, classBike(1), "2026-10-19", ["encinitas"]), "encinitas");
+    const note = enc.notes.find((n) => n.code === "encinitas_no_age_limit");
+    expect(note?.source?.kind).toBe("staff_report");
+    expect(note?.source?.url).toContain("encinitas.granicus.com");
+    expect(note?.source?.quote).toContain("consistent with those cities");
+  });
+  it("Carlsbad's park ban is labeled a packet draft with no effective date, and the passenger rule predates CS-509", () => {
+    const carlsbad = local(run("CA", 15, classBike(1), "2026-10-19", ["carlsbad"]), "carlsbad");
+    const park = carlsbad.notes.find((n) => n.code === "carlsbad_parks");
+    expect(park?.source?.kind).toBe("packet_draft");
+    expect(park?.source?.effective).toBeNull();
+    const passengers = carlsbad.notes.find((n) => n.code === "carlsbad_passengers");
+    expect(passengers?.source?.effective).toBeNull();
+  });
+});

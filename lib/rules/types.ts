@@ -9,7 +9,18 @@ export type AppliesTo = "all_ebikes" | ClassKey;
 export type Tri = boolean | null;
 
 /** Follow-up questions the engine can ask when a state rule needs a fact a label can't show. */
-export type QuestionId = "wheels" | "fast_mode" | "weight" | "pegs_kit";
+export const QUESTION_IDS = ["wheels", "fast_mode", "weight", "pegs_kit"] as const;
+export type QuestionId = (typeof QUESTION_IDS)[number];
+
+export function isQuestionId(value: string): value is QuestionId {
+  return (QUESTION_IDS as readonly string[]).includes(value);
+}
+
+/**
+ * The caution the engine adds when the fast-mode answer is "not sure" in a state whose
+ * table names no fast-mode rule. The card can still say yes, but the bottom line can't.
+ */
+export const CAUTION_FAST_MODE_UNVERIFIED = "caution_fast_mode_unverified";
 
 /** Everything the engine knows about one bike. Null means unknown. */
 export interface BikeFacts {
@@ -55,6 +66,8 @@ export type SourceKind =
   | "news"
   | "ordinance_text"
   | "administrative_regulation"
+  | "staff_report"
+  | "packet_draft"
   | "rules_table";
 
 /**

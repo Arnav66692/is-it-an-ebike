@@ -1,7 +1,8 @@
 // An independent check of the engine. It reads the raw JSON itself and lists every reason
-// a case must NOT get a "yes". It shares no logic with lib/rules: conditions are run as
-// plain JavaScript and dates are compared directly. If the engine says "yes" while this
-// list is non-empty, that is a false-legal result and the test fails.
+// a case must NOT get a "yes", and separately every rule that says a ride is definitely not
+// allowed. It shares no logic with lib/rules: conditions are run as plain JavaScript and
+// dates are compared directly. If the engine says "yes" while the first list is non-empty,
+// that is a false-legal result and the test fails.
 
 import statesJson from "@/data/rules/all_states.normalized.json";
 import sdJson from "@/data/rules/san_diego_local.json";
@@ -16,6 +17,7 @@ interface CautionRaw {
   applies_to: string;
   rider_under_age: number | null;
   condition: string | null;
+  /** "not_an_ebike" when the rule puts the bike outside the definition. */
   verdict: string;
   valid_until: string | null;
 }
@@ -43,11 +45,14 @@ const OVERLAY = overlayJson as unknown as {
   supplemental_cautions: (CautionRaw & { state: string })[];
   age_exceptions: { state: string; applies_to: string; min_age: number; from_age: number }[];
   scheduled_changes: { state: string; effective_date: string; effects: Effect[] }[];
+  watt_fallbacks: { state: string; from: string | null; min_watts: number; max_watts: number | null }[];
 };
 interface SdRuleRaw {
   rule: string;
   min_age?: number | null;
   effective_date: string | null;
+  /** The rule's own end date, or null when its text gives none. */
+  ends?: string | null;
 }
 const SD = sdJson as unknown as {
   jurisdictions: {
@@ -60,8 +65,17 @@ const SD = sdJson as unknown as {
 /** VC 21214.7, the under-12 power, is repealed on this date. */
 const UNDER_12_POWER_ENDS = "2029-01-01";
 
+type Cls = 1 | 2 | 3;
+const ALL_CLASSES: Cls[] = [1, 2, 3];
+
 export interface OracleFacts {
-  cls: 1 | 2 | 3;
+  cls: Cls;
+  /** The classes on the label. Defaults to [cls]. Empty means no class is known. */
+  classes?: Cls[];
+  /** Working pedals. Defaults to true. Null means unknown. */
+  pedals?: boolean | null;
+  /** The stated facts contradict each other. */
+  conflict?: boolean;
   watts: number;
   front: number | null;
   rear: number | null;
@@ -87,10 +101,23 @@ const FIELD_GROUP: Record<string, string> = {
   label_watts: "watts",
 };
 
+export function classesOf(f: OracleFacts): Cls[] {
+  return f.classes ?? [f.cls];
+}
+
+/** A throttle comes with a Class 2 label. A bike with no class known is taken to have none. */
+export function hasThrottle(f: OracleFacts): boolean {
+  return classesOf(f).includes(2);
+}
+
+export function pedalsOf(f: OracleFacts): boolean | null {
+  return f.pedals === undefined ? true : f.pedals;
+}
+
 function fieldValues(f: OracleFacts): Record<string, number | boolean | undefined> {
   const wheelsKnown = f.front !== null && f.rear !== null && f.wheelCount !== null;
   const fastKnown = f.motorOver20 !== null && f.assistOver28 !== null;
-  const motor = f.motorOver20 ? 25 : f.cls === 2 ? 20 : 0;
+  const motor = f.motorOver20 ? 25 : hasThrottle(f) ? 20 : 0;
   return {
     max_wheel_diameter_in: wheelsKnown ? Math.max(f.front as number, f.rear as number) : undefined,
     min_wheel_diameter_in: wheelsKnown ? Math.min(f.front as number, f.rear as number) : undefined,
@@ -131,11 +158,35 @@ function classOk(appliesTo: string, cls: number): boolean {
 
 const FAST_FIELDS = /\b(throttle_max_mph|motor_only_max_mph|switchable_out_of_class)\b/;
 
+function cautionsOf(code: string): CautionRaw[] {
+  return [...STATES[code].verdict_cautions, ...OVERLAY.supplemental_cautions.filter((c) => c.state === code)];
+}
+
+function cautionApplies(c: CautionRaw, cls: Cls, age: number, date: string): boolean {
+  if (c.valid_until !== null && date >= c.valid_until) return false;
+  if (!classOk(c.applies_to, cls)) return false;
+  return !(c.rider_under_age !== null && age >= c.rider_under_age);
+}
+
 /** Every reason the table gives for "not yes" in this state on this date. Empty means yes. */
 export function stateBlockers(code: string, f: OracleFacts, age: number, date: string): string[] {
   const s = STATES[code];
   const reasons: string[] = [];
   if (s.never_return_legal) reasons.push("never_return_legal");
+  const pedals = pedalsOf(f);
+  if (pedals === false) reasons.push(s.definition.requires_pedals === true ? "no_pedals" : "no_pedals_unclear");
+  if (pedals === null) reasons.push("pedals_unknown");
+  if (f.conflict) reasons.push("facts_conflict");
+  const classes = classesOf(f);
+  if (classes.length === 0) reasons.push("class_unknown");
+  for (const cls of classes.length > 0 ? classes : ALL_CLASSES) reasons.push(...classBlockers(code, f, cls, age, date));
+  return [...new Set(reasons)];
+}
+
+/** Reasons for "not yes" that depend on the class: watts, the table's cautions, fast modes and age. */
+function classBlockers(code: string, f: OracleFacts, cls: Cls, age: number, date: string): string[] {
+  const s = STATES[code];
+  const reasons: string[] = [];
 
   const { motor_watts_comparison: cmp, max_motor_watts: max, max_motor_hp: hp } = s.definition;
   if (cmp === "at_most" && max !== null && f.watts > max) reasons.push("watts_over");
@@ -144,14 +195,9 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
   if (cmp === "other" && max === null && hp !== null && f.watts >= hp * 745.7) reasons.push("watts_over_hp");
 
   const values = fieldValues(f);
-  const cautions = [
-    ...s.verdict_cautions,
-    ...OVERLAY.supplemental_cautions.filter((c) => c.state === code),
-  ];
+  const cautions = cautionsOf(code);
   for (const c of cautions) {
-    if (c.valid_until !== null && date >= c.valid_until) continue;
-    if (!classOk(c.applies_to, f.cls)) continue;
-    if (c.rider_under_age !== null && age >= c.rider_under_age) continue;
+    if (!cautionApplies(c, cls, age, date)) continue;
     if (c.condition === null) {
       reasons.push(`caution:${c.applies_to}`);
       continue;
@@ -168,6 +214,14 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
     if (!answeredUnsure || explicitFast) reasons.push("fast_mode_unknown");
   }
 
+  reasons.push(...ageBlocks(code, cls, age, date));
+  return reasons;
+}
+
+/** Each age rule that bars this rider from this class on this date. */
+function ageBlocks(code: string, cls: Cls, age: number, date: string): string[] {
+  const s = STATES[code];
+  const reasons: string[] = [];
   const changes = OVERLAY.scheduled_changes.filter((c) => c.state === code && c.effective_date <= date);
   const ended = (rule: AgeRuleRaw) =>
     changes.some((c) =>
@@ -190,30 +244,91 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
     }
   }
   for (const r of rules) {
-    if (!classOk(r.applies_to, f.cls) || age >= r.min_age) continue;
+    if (!classOk(r.applies_to, cls) || age >= r.min_age) continue;
     if (r.fromAge !== null && age >= r.fromAge) continue;
     reasons.push(`under_${r.min_age}`);
   }
   return reasons;
 }
 
-/** Extra San Diego reasons on top of the state reasons. Read from the raw San Diego records. */
-export function localBlockers(place: string, f: OracleFacts, age: number, date: string): string[] {
+/**
+ * Extra San Diego reasons for one class on top of the state reasons. Read from the raw San Diego
+ * records. An under-12 ban with its own end date is gone after it. A ban whose text gives no end
+ * date can't be confirmed after the state power behind it lapses.
+ */
+export function localBlockers(place: string, cls: Cls, age: number, date: string): string[] {
   const reasons: string[] = [];
   const j = SD.jurisdictions.find((x) => x.id === place);
   if (!j) return [`unknown_place:${place}`];
-  const classOneOrTwo = f.cls === 1 || f.cls === 2;
-  if (place === "sduhsd_campuses" && f.cls === 3) {
+  const classOneOrTwo = cls === 1 || cls === 2;
+  if (place === "sduhsd_campuses" && cls === 3) {
     const limit = j.campus_class_limits.find((r) => r.rule === "class_1_and_2_only_on_campus");
     if (limit && (limit.effective_date === null || date >= limit.effective_date)) reasons.push("campus_class_3");
   }
   const ban = j.local_age_limits.find((r) => r.rule === "under_12_ban");
-  if (ban && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? 12) && date >= ban.effective_date && date < UNDER_12_POWER_ENDS) {
-    reasons.push("local_under_12");
+  if (ban && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? 12) && date >= ban.effective_date) {
+    const repealed = typeof ban.ends === "string" && date >= ban.ends;
+    if (!repealed) reasons.push(date < UNDER_12_POWER_ENDS ? "local_under_12" : "local_under_12_no_end");
   }
   const unclear = j.local_age_limits.some((r) => r.rule === "authority_exists_no_adoption_found");
   if (unclear && classOneOrTwo && age < 12 && date < UNDER_12_POWER_ENDS) reasons.push("local_under_12_unclear");
   return reasons;
+}
+
+/** San Diego rules that definitely bar this class at this place on this date. */
+function localIllegal(place: string, cls: Cls, age: number, date: string): string[] {
+  return localBlockers(place, cls, age, date).filter((r) => r === "campus_class_3" || r === "local_under_12");
+}
+
+/** A rated watt figure at the cap of a "less than" state that the overlay files under another vehicle type. */
+function wattFallback(code: string, watts: number, date: string): boolean {
+  return OVERLAY.watt_fallbacks.some(
+    (w) => w.state === code && (w.from === null || date >= w.from) && watts >= w.min_watts && (w.max_watts === null || watts <= w.max_watts),
+  );
+}
+
+/**
+ * State rules that definitely bar this class for this rider: a motor over the watt cap, a table
+ * caution that puts the bike outside the definition, or an age rule. Unclear cautions, unknown
+ * answers and fast modes the table doesn't name are not here, because they leave the answer open.
+ */
+function classIllegal(code: string, f: OracleFacts, cls: Cls, age: number, date: string): string[] {
+  const { motor_watts_comparison: cmp, max_motor_watts: max } = STATES[code].definition;
+  const reasons: string[] = [];
+  if ((cmp === "at_most" || cmp === "other" || cmp === "less_than") && max !== null && f.watts > max) reasons.push("watts_over");
+  if (cmp === "less_than" && max !== null && f.watts === max && wattFallback(code, f.watts, date)) reasons.push("watts_other_vehicle");
+  const values = fieldValues(f);
+  for (const c of cautionsOf(code)) {
+    if (c.verdict !== "not_an_ebike" || !cautionApplies(c, cls, age, date)) continue;
+    if (c.condition === null || runCondition(c.condition, values) === true) reasons.push(`not_an_ebike:${c.condition ?? c.applies_to}`);
+  }
+  reasons.push(...ageBlocks(code, cls, age, date));
+  return reasons;
+}
+
+/**
+ * Every rule that says the ride is definitely not allowed, in the state or at any picked place.
+ * The bottom line must say "NO, not allowed" exactly when this list is non-empty.
+ *
+ * A pedal-less machine is out wherever the definition requires pedals. Otherwise a state that
+ * never confirms an e-bike, unknown pedals and facts that disagree leave everything open. With
+ * one or more known classes, any class that is barred is enough, since the bike can run as each.
+ * With no class known, a card says no only when every class it could be is barred there.
+ */
+export function illegalReasons(code: string, f: OracleFacts, age: number, date: string, places: string[]): string[] {
+  const s = STATES[code];
+  const pedals = pedalsOf(f);
+  if (pedals === false) return s.definition.requires_pedals === true ? ["no_pedals"] : [];
+  if (s.never_return_legal || pedals === null || f.conflict) return [];
+  const barred = (cls: Cls, place: string | null) =>
+    place === null ? classIllegal(code, f, cls, age, date) : [...classIllegal(code, f, cls, age, date), ...localIllegal(place, cls, age, date)];
+  const classes = classesOf(f);
+  if (classes.length > 0) {
+    return classes.flatMap((cls) => [...barred(cls, null), ...places.flatMap((p) => localIllegal(p, cls, age, date).map((r) => `${p}:${r}`))]);
+  }
+  return [null, ...places]
+    .filter((place) => ALL_CLASSES.every((cls) => barred(cls, place).length > 0))
+    .map((place) => `every_class:${place ?? "state"}`);
 }
 
 /**
@@ -226,8 +341,11 @@ export function bottomLineBlockers(code: string, f: OracleFacts, age: number, da
   if ((f.motorOver20 === null || f.assistOver28 === null) && !reasons.includes("fast_mode_unknown")) {
     reasons.push("fast_mode_not_answered");
   }
+  const classes = classesOf(f);
   for (const place of places) {
-    reasons.push(...localBlockers(place, f, age, date).map((r) => `${place}:${r}`));
+    for (const cls of classes.length > 0 ? classes : ALL_CLASSES) {
+      reasons.push(...localBlockers(place, cls, age, date).map((r) => `${place}:${r}`));
+    }
     const level = SD.jurisdictions.find((x) => x.id === place)?.verification_level;
     if (level !== "primary_verified") reasons.push(`${place}:not_primary_verified`);
   }

@@ -28,7 +28,7 @@ describe("generated bottom-line matrix", () => {
   const show = (cases: unknown[]) => JSON.stringify(cases.slice(0, 5), null, 1);
 
   it("covers every state, and every California place set with and without Somewhere else", () => {
-    expect(summary.cases).toBeGreaterThan(350_000);
+    expect(summary.cases).toBeGreaterThan(400_000);
     expect(summary.byKind.yes).toBeGreaterThan(0);
     expect(summary.byKind.no_illegal).toBeGreaterThan(0);
     expect(summary.byKind.no_unconfirmed).toBeGreaterThan(0);
@@ -42,11 +42,20 @@ describe("generated bottom-line matrix", () => {
     expect(summary.missedYes.slice(0, 5), show(summary.missedYes)).toEqual([]);
   });
 
+  it("says NO, not allowed only when the independent checker finds a rule that says no", () => {
+    expect(summary.falseIllegal.slice(0, 5), show(summary.falseIllegal)).toEqual([]);
+  });
+
+  it("says NO, not allowed whenever the independent checker finds a rule that says no", () => {
+    expect(summary.missedIllegal.slice(0, 5), show(summary.missedIllegal)).toEqual([]);
+  });
+
   it("is never YES when a card is not allowed, can't confirm, unanswered, not sure or unverified", () => {
     expect(summary.wrongKind.slice(0, 5), show(summary.wrongKind)).toEqual([]);
   });
 
-  it("never shows a bare YES for a place it did not check", () => {
+  it("shows the unchecked-places line on the rendered card exactly when a place was not checked", () => {
+    expect(summary.renderedCards).toBeGreaterThan(150);
     expect(summary.missingCaveat.slice(0, 5), show(summary.missingCaveat)).toEqual([]);
   });
 });

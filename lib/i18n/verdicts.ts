@@ -1,7 +1,8 @@
 // Every sentence a verdict card can show, in English and Spanish. The engine picks the
 // code and the numbers. These templates are the only legal text in the app.
 
-import type { Line, Status } from "@/lib/rules/types";
+import type { BottomLineCode } from "@/lib/rules/bottomLine";
+import { isQuestionId, type Line, type QuestionId, type Status } from "@/lib/rules/types";
 import { formatDate, joinList, placeName, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
@@ -26,7 +27,8 @@ const EMOTO_REMOVAL_EN =
 const EMOTO_REMOVAL_ES =
   "la policía puede retirar una moto eléctrica que pase de 20 mph solo con el motor cuando quien la maneja no tiene licencia para ella (VC 22651.08).";
 
-const QUESTION_NAMES: Record<Lang, Record<string, string>> = {
+/** Keyed by QuestionId, so a new follow-up question can't ship without a name in both languages. */
+const QUESTION_NAMES: Record<Lang, Record<QuestionId, string>> = {
   en: { wheels: "wheel size", fast_mode: "fast modes", weight: "weight", pegs_kit: "foot pegs or a pedal kit" },
   es: { wheels: "el tamaño de las ruedas", fast_mode: "los modos rápidos", weight: "el peso", pegs_kit: "los reposapiés o el kit de pedales" },
 };
@@ -35,13 +37,16 @@ const QUESTION_NAMES: Record<Lang, Record<string, string>> = {
 function questionList(ids: string, lang: Lang): string {
   const names = ids
     .split(",")
-    .filter(Boolean)
-    .map((id) => QUESTION_NAMES[lang][id] ?? id);
+    .filter(isQuestionId)
+    .map((id) => QUESTION_NAMES[lang][id]);
   if (names.length === 0) return lang === "es" ? "la bicicleta" : "the bike";
   return joinList(names, lang);
 }
 
-const EN: Record<string, Template> = {
+/** Every bottom-line code must have a sentence. Other codes are checked by tests/i18n.test.ts. */
+type Templates = Record<BottomLineCode, Template> & Record<string, Template>;
+
+const EN = {
   allowed: (p, c) =>
     p.multi
       ? `This bike can run as Class ${p.multi}. Allowed in every mode for ${aAge(p.age)} in ${c.state}.`
@@ -120,9 +125,11 @@ const EN: Record<string, Template> = {
   no_state_helmet: () => "No statewide helmet rule. Towns may have one.",
   upcoming_change: (p, c) => `Coming ${formatDate(n(p.date), c.lang)}: ${CHANGES.en[n(p.change)] ?? ""}`,
   local_under_12: (p, c) =>
-    `${placeName(n(p.place), c.lang)}: riders under 12 can't ride Class 1 or 2 e-bikes (since ${formatDate(n(p.since), c.lang)}).`,
-  local_under_12_unclear: (p, c) =>
-    `${placeName(n(p.place), c.lang)} may ban riders under 12 from Class 1 and 2, and we couldn't confirm whether it has. Check before riding.`,
+    `Riders under 12 can't ride Class 1 or 2 e-bikes here (since ${formatDate(n(p.since), c.lang)}).`,
+  local_under_12_unclear: () =>
+    "This place may ban riders under 12 from Class 1 and 2, and we couldn't confirm whether it has. Check before riding.",
+  local_under_12_no_end: (p, c) =>
+    `The local code bars riders under 12 from Class 1 and 2 e-bikes and gives no end date. The state law that allows that ban ends ${formatDate(n(p.powerEnds), c.lang)}, and it isn't settled whether the ban still applies after that. Check before riding.`,
   local_allowed: (p, c) => `Allowed in ${placeName(n(p.place), c.lang)} for ${aAge(p.age)}.`,
   campus_allowed: (p) => `Class ${cls(p)} e-bikes are allowed on SDUHSD campuses, after these steps.`,
   campus_class3: () => "Only Class 1 and 2 e-bikes are allowed on SDUHSD campuses.",
@@ -155,7 +162,8 @@ const EN: Record<string, Template> = {
     "No riding any bike or e-bike on any sidewalk in Carlsbad (CMC 10.56.020(B)). The seawall walk from Tamarack Ave to Pine St is for people on foot only.",
   carlsbad_trail_dismount: () => "On a city trail narrower than 5 feet, get off and walk when a person or horse is within 50 feet.",
   carlsbad_class3_paths: () =>
-    "No Carlsbad code singles out Class 3 on bike lanes or bikeways. Trails are unclear. City code bars vehicles in parks and on public trails unless the City Manager allows them (CMC 11.32.030), and the city says Class 3 is not allowed on trails.",
+    "No Carlsbad code singles out Class 3 on bike lanes or bikeways. Trails are unclear. City code bars vehicles in parks and on public trails unless the City Manager allows them (CMC 11.32.030).",
+  carlsbad_class3_trails: () => "The city's e-bike flier says Class 3 is not allowed on trails.",
   city_page_750: () => "This city's page still says \"less than 750 watts,\" the wording before 2025. State law now allows up to 750 W.",
   encinitas_no_age_limit: (p, c) =>
     `Encinitas had no local age limit when checked on ${formatDate(n(p.date), c.lang)}. State rules apply. The council has discussed adding one, so check again before riding.`,
@@ -198,9 +206,10 @@ const EN: Record<string, Template> = {
       ? "The class, tag and course rules come only from the district's web page. No board policy or regulation has them, and the Board has not voted on them."
       : "Only part of these rules was found in enacted text. The rest comes from an official web page.",
   bl_unverified_primary_not_found: () => "The enacted text behind these rules was not found. They come from an official page or a release.",
-};
+} satisfies Templates;
 
-const ES: Record<string, Template> = {
+/** Spanish must have a sentence for every English code, and no code English lacks. */
+const ES = {
   allowed: (p, c) =>
     p.multi
       ? `Esta bicicleta puede funcionar como Clase ${p.multi}. Permitida en todos sus modos para alguien de ${p.age} años en ${c.state}.`
@@ -279,9 +288,11 @@ const ES: Record<string, Template> = {
   no_state_helmet: () => "No hay regla estatal de casco. Las ciudades pueden tener una.",
   upcoming_change: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${CHANGES.es[n(p.change)] ?? ""}`,
   local_under_12: (p, c) =>
-    `${placeName(n(p.place), c.lang)}: los menores de 12 años no pueden usar bicicletas eléctricas Clase 1 o 2 (desde el ${formatDate(n(p.since), c.lang)}).`,
-  local_under_12_unclear: (p, c) =>
-    `${placeName(n(p.place), c.lang)} puede prohibir las Clases 1 y 2 a menores de 12 años, y no pudimos confirmar si lo ha hecho. Verifica antes de salir.`,
+    `Aquí los menores de 12 años no pueden usar bicicletas eléctricas Clase 1 o 2 (desde el ${formatDate(n(p.since), c.lang)}).`,
+  local_under_12_unclear: () =>
+    "Este lugar puede prohibir las Clases 1 y 2 a menores de 12 años, y no pudimos confirmar si lo ha hecho. Verifica antes de salir.",
+  local_under_12_no_end: (p, c) =>
+    `El código local prohíbe a los menores de 12 años usar bicicletas eléctricas Clase 1 y 2, sin fecha de fin. La ley estatal que permite esa prohibición termina el ${formatDate(n(p.powerEnds), c.lang)}, y no está resuelto si la prohibición sigue vigente después. Verifica antes de salir.`,
   local_allowed: (p, c) => `Permitida en ${placeName(n(p.place), c.lang)} para alguien de ${p.age} años.`,
   campus_allowed: (p) => `Las bicicletas eléctricas Clase ${cls(p)} se permiten en las escuelas de SDUHSD, después de estos pasos.`,
   campus_class3: () => "En las escuelas de SDUHSD solo se permiten bicicletas eléctricas Clase 1 y 2.",
@@ -314,7 +325,8 @@ const ES: Record<string, Template> = {
   carlsbad_trail_dismount: () =>
     "En un sendero de la ciudad de menos de 5 pies de ancho, bájate y camina cuando haya una persona o un caballo a menos de 50 pies.",
   carlsbad_class3_paths: () =>
-    "Ningún código de Carlsbad se refiere a la Clase 3 en carriles o ciclovías. Los senderos no están claros. El código prohíbe vehículos en parques y senderos públicos salvo que el administrador de la ciudad los permita (CMC 11.32.030), y la ciudad dice que la Clase 3 no se permite en senderos.",
+    "Ningún código de Carlsbad se refiere a la Clase 3 en carriles o ciclovías. Los senderos no están claros. El código prohíbe vehículos en parques y senderos públicos salvo que el administrador de la ciudad los permita (CMC 11.32.030).",
+  carlsbad_class3_trails: () => "El folleto de la ciudad sobre bicicletas eléctricas dice que la Clase 3 no se permite en senderos.",
   city_page_750: () => "La página de esta ciudad todavía dice \"menos de 750 vatios\", la redacción de antes de 2025. La ley estatal ahora permite hasta 750 W.",
   encinitas_no_age_limit: (p, c) =>
     `Encinitas no tenía límite de edad local cuando se revisó el ${formatDate(n(p.date), c.lang)}. Se aplican las reglas estatales. El concejo ha hablado de agregar uno, así que vuelve a revisar antes de salir.`,
@@ -358,7 +370,7 @@ const ES: Record<string, Template> = {
       ? "Las reglas de clase, etiqueta y curso vienen solo de la página web del distrito. Ninguna política ni reglamento de la junta las incluye, y la junta no ha votado sobre ellas."
       : "Solo una parte de estas reglas se encontró en un texto vigente. El resto viene de una página web oficial.",
   bl_unverified_primary_not_found: () => "No se encontró el texto vigente de estas reglas. Vienen de una página o un comunicado oficial.",
-};
+} satisfies Record<keyof typeof EN, Template>;
 
 const CHANGES: Record<Lang, Record<string, string>> = {
   en: {
@@ -385,7 +397,7 @@ const CHANGES: Record<Lang, Record<string, string>> = {
   },
 };
 
-const TEMPLATES: Record<Lang, Record<string, Template>> = { en: EN, es: ES };
+const TEMPLATES: Record<Lang, Record<string, Template>> = { en: EN, es: ES satisfies Templates };
 
 export function renderLine(line: Line, lang: Lang, state: string): string {
   const template = TEMPLATES[lang][line.code] ?? TEMPLATES.en[line.code];

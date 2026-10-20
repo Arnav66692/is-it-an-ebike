@@ -7,8 +7,10 @@ import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
 import { CHANGE_CODES, hasTemplate, renderLine } from "@/lib/i18n/verdicts";
 import { t, UI_KEYS } from "@/lib/i18n/ui";
+import { ACCURACY_TEXT, localizeResult, type AccuracyText } from "@/lib/i18n/accuracy";
+import { placeNameInList, stateLaw } from "@/lib/i18n/names";
 import { OVERLAY } from "@/lib/rules/compile";
-import type { Line } from "@/lib/rules/types";
+import { QUESTION_IDS, type Line } from "@/lib/rules/types";
 import { classBike } from "./helpers";
 
 const VARIANTS = [
@@ -85,11 +87,26 @@ describe("translations", () => {
     const line: Line = { code: "local_under_12", params: { place: "city_of_san_diego", since: "2026-08-13", cls: 2 } };
     const en = renderLine(line, "en", "California");
     const es = renderLine(line, "es", "California");
-    expect(en).toContain("City of San Diego");
     expect(en).toContain("Aug 13, 2026");
-    expect(es).toContain("Ciudad de San Diego");
     expect(es).toContain("13 de agosto de 2026");
     expect(en + es).not.toMatch(/undefined|NaN|\{|\}/);
+  });
+
+  it("doesn't repeat the place name in the under-12 sentence, since the card title and the bottom-line label already name it", () => {
+    const line: Line = { code: "local_under_12", params: { place: "city_of_san_diego", since: "2026-08-13", cls: 2 } };
+    expect(renderLine(line, "en", "California")).not.toContain("City of San Diego");
+    expect(renderLine(line, "es", "California")).not.toContain("Ciudad de San Diego");
+  });
+
+  it("names every follow-up question in both languages, never by its raw id", () => {
+    for (const id of QUESTION_IDS) {
+      for (const lang of ["en", "es"] as const) {
+        const text = renderLine({ code: "bl_unanswered", params: { questions: id } }, lang, "California");
+        expect(text, `${lang} ${id}`).not.toContain("_");
+        expect(text, `${lang} ${id}`).not.toMatch(/the bike|la bicicleta/);
+        if (lang === "es") expect(text, id).not.toContain(id);
+      }
+    }
   });
 
   it("writes in Arnav's style: no em dashes or semicolons in user-facing text", () => {
@@ -106,9 +123,9 @@ describe("translations", () => {
   });
 
   it("covers the bottom-line sentences, and the YES headline reads SÍ in Spanish", () => {
-    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_state", "bl_unverified_primary_partial", "bl_unverified_primary_not_found"]) {
+    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_state", "bl_unverified_primary_partial", "bl_unverified_primary_not_found", "local_under_12_no_end", "carlsbad_class3_trails"]) {
       expect(hasTemplate(code), code).toBe(true);
-      expect(codes.has(code) || code === "bl_unverified_state" || code === "bl_unverified_primary_not_found", code).toBe(true);
+      expect(codes.has(code) || ["bl_unverified_state", "bl_unverified_primary_not_found", "local_under_12_no_end"].includes(code), code).toBe(true);
     }
     expect(t("en", "blYes")).toBe("YES");
     expect(t("es", "blYes")).toBe("SÍ");
@@ -124,5 +141,49 @@ describe("translations", () => {
       }
     }
     expect(t("en", "notLegalAdvice")).toContain("General information, not legal advice.");
+  });
+
+  it("never calls Washington, DC a state, and keeps the article in Spanish", () => {
+    expect(stateLaw("DC", "en", "title")).toBe("Washington, DC law");
+    expect(stateLaw("DC", "es", "title")).toBe("Ley del Distrito de Columbia");
+    expect(stateLaw("DC", "es", "inline")).toBe("la ley del Distrito de Columbia");
+    expect(t("es", "blCoversStateOnly", { law: stateLaw("DC", "es", "inline") })).toBe("Esto cubre solo la ley del Distrito de Columbia.");
+    expect(t("en", "blCoversStateOnly", { law: stateLaw("DC", "en", "inline") })).toBe("This covers Washington, DC law only.");
+    expect(stateLaw("CA", "en", "title")).toBe("California state law");
+    expect(stateLaw("CA", "es", "inline")).toBe("la ley estatal de California");
+    expect(t("es", "howBody")).not.toContain("Washington, DC");
+  });
+
+  it("gives common-noun places a lowercase list form, so lists don't read 'and An SDUHSD campus'", () => {
+    expect(placeNameInList("sduhsd_campuses", "en")).toBe("an SDUHSD campus");
+    expect(placeNameInList("sduhsd_campuses", "es")).toBe("una escuela de SDUHSD");
+    expect(placeNameInList("unincorporated_san_diego_county", "en")).toBe("unincorporated San Diego County");
+    expect(placeNameInList("city_of_san_diego", "en")).toBe("City of San Diego");
+  });
+});
+
+describe("accuracy page text", () => {
+  const sample = (text: AccuracyText): string[] =>
+    Object.values(text).map((v) => (typeof v === "function" ? (v as (...a: unknown[]) => string)("1,234", 7) : v));
+
+  it("has every string in English and Spanish, in Arnav's style", () => {
+    for (const lang of ["en", "es"] as const) {
+      for (const s of sample(ACCURACY_TEXT[lang])) {
+        expect(s, `${lang}: ${s}`).not.toMatch(/[—;]/);
+        expect(s, `${lang}: ${s}`).not.toMatch(/undefined|NaN/);
+      }
+    }
+    expect(Object.keys(ACCURACY_TEXT.es).sort()).toEqual(Object.keys(ACCURACY_TEXT.en).sort());
+  });
+
+  it("translates the bottom-line rows, not only the English page", () => {
+    const keys = ["blTitle", "blFalseYes", "blMissedYes", "blFalseIllegal", "blMissedIllegal", "blMissingCaveat", "blNoIllegal", "blNoUnconfirmed"] as const;
+    for (const key of keys) expect(ACCURACY_TEXT.es[key], key).not.toBe(ACCURACY_TEXT.en[key]);
+  });
+
+  it("puts pilot results like '9 of 12' into Spanish", () => {
+    expect(localizeResult("9 of 12", "es")).toBe("9 de 12");
+    expect(localizeResult("0 of 24 photos", "es")).toBe("0 de 24 fotos");
+    expect(localizeResult("9 of 12", "en")).toBe("9 of 12");
   });
 });

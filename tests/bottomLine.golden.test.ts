@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import sdJson from "@/data/rules/san_diego_local.json";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
-import type { BikeFacts, PlaceId } from "@/lib/rules/types";
+import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
 import { renderLine } from "@/lib/i18n/verdicts";
 import { classBike } from "./helpers";
 
@@ -124,5 +124,92 @@ describe("bottom line, more real cases", () => {
     const bl = check("CA", 11, classBike(2), all);
     expect(bl.kind).toBe("no_illegal");
     expect(bl.blocked.flatMap((b) => b.where.map((w) => w.id))).toEqual(["city_of_san_diego", "carlsbad"]);
+  });
+});
+
+describe("bottom line, review fixes (Oct 19, 2026)", () => {
+  it("pedals left blank with a Class 1 label and an SDUHSD campus is NO, not confirmed, and names the pedals, not the Class 3 ban", () => {
+    const facts = { ...emptyFacts(), classes: [1 as const], ratedWatts: 500, hasThrottle: false, assistMph: 20 };
+    const result = evaluate({ state: "CA", riderAge: 15, rideDate: TODAY_PT, facts, places: ["sduhsd_campuses"] });
+    expect(result.state.reason.code).toBe("pedals_unknown");
+    expect(result.local[0].status).toBe("cant_confirm");
+    expect(result.local[0].reason.code).toBe("pedals_unknown");
+    const bl = bottomLine(result, TODAY_PT);
+    expect(bl.kind).toBe("no_unconfirmed");
+    expect(bl.blocked).toEqual([]);
+    expect(bl.missing[0]).toMatchObject({ kind: "cant_confirm", line: { code: "pedals_unknown" } });
+    expect(bl.missing.flatMap((m) => m.line.code)).not.toContain("campus_class3");
+  });
+
+  it("pedals answered not sure with the City and the campus is still NO, not confirmed", () => {
+    const bl = check("CA", 15, classBike(1, { hasPedals: null }), ["city_of_san_diego", "sduhsd_campuses"]);
+    expect(bl.kind).toBe("no_unconfirmed");
+    expect(bl.missing[0].where.map((w) => w.id)).toEqual(["CA", "city_of_san_diego", "sduhsd_campuses"]);
+  });
+
+  it("no pedals is NO, not allowed on campus, as an e-moto", () => {
+    const result = evaluate({ state: "CA", riderAge: 15, rideDate: TODAY_PT, facts: classBike(1, { hasPedals: false }), places: ["sduhsd_campuses"] });
+    expect(result.local[0].reason.code).toBe("campus_no_emoto");
+    expect(bottomLine(result, TODAY_PT).kind).toBe("no_illegal");
+  });
+
+  it("facts that disagree are NO, not confirmed everywhere, never a campus Class 3 ban", () => {
+    const bl = check("CA", 15, classBike(2, { throttleMph: 28 }), ["sduhsd_campuses"]);
+    expect(bl.kind).toBe("no_unconfirmed");
+    expect(bl.missing[0].line.code).toBe("facts_conflict");
+  });
+
+  it("Carlsbad's under-12 ban has no end date, so an 11-year-old there in 2029 is NO, not confirmed, never YES", () => {
+    for (const cls of [1, 2] as const) {
+      const result = evaluate({ state: "CA", riderAge: 11, rideDate: "2029-01-02", facts: classBike(cls), places: ["carlsbad"] });
+      expect(result.local[0].status).toBe("cant_confirm");
+      expect(result.local[0].reason.code).toBe("local_under_12_no_end");
+      expect(bottomLine(result, "2029-01-02").kind).toBe("no_unconfirmed");
+    }
+  });
+
+  it("the City of San Diego ban ends Jan 1, 2029 by its own terms, so the City alone is YES then", () => {
+    const result = evaluate({ state: "CA", riderAge: 11, rideDate: "2029-01-02", facts: classBike(2), places: ["city_of_san_diego"] });
+    expect(result.local[0].status).toBe("yes");
+    expect(bottomLine(result, "2029-01-02").kind).toBe("yes");
+  });
+
+  it("Carlsbad is still NO, not allowed for an 11-year-old on the last day of 2028", () => {
+    expect(check("CA", 11, classBike(1), ["carlsbad"]).kind).toBe("no_illegal");
+    const result = evaluate({ state: "CA", riderAge: 11, rideDate: "2028-12-31", facts: classBike(1), places: ["carlsbad"] });
+    expect(bottomLine(result, "2028-12-31").kind).toBe("no_illegal");
+  });
+
+  it("with no place picked, a YES says city and county rules were not checked", () => {
+    const bl = check("CA", 13, classBike(1), []);
+    expect(bl.kind).toBe("yes");
+    expect(bl.citiesChecked).toBe(false);
+    expect(bl.uncheckedPlaces).toBe(true);
+  });
+
+  it("an unknown class with the City and the campus is NO, not allowed for an 11-year-old, because in the City every class is barred", () => {
+    const bl = check("CA", 11, classBike(1, { classes: [], hasThrottle: false, assistMph: null }), ["city_of_san_diego", "sduhsd_campuses"]);
+    expect(bl.kind).toBe("no_illegal");
+    expect(bl.blocked.map((b) => b.line.code)).toEqual(["no_any_class"]);
+    // State law and the campus each allow Class 1 or 2 at 11, so only the City card says no.
+    expect(bl.blocked[0].where.map((w) => w.id)).toEqual(["city_of_san_diego"]);
+  });
+
+  it("an unknown class for a 15-year-old at the campus is NO, not confirmed, not a Class 3 ban", () => {
+    const bl = check("CA", 15, classBike(1, { classes: [], hasThrottle: false, assistMph: null }), ["sduhsd_campuses"]);
+    expect(bl.kind).toBe("no_unconfirmed");
+    expect(bl.missing[0].line.code).toBe("class_unknown");
+  });
+
+  it("a bike that runs as Class 1 or 3 is NO, not allowed on campus and for a 14-year-old, naming both rules", () => {
+    const bl = check("CA", 14, classBike(1, { classes: [1, 3], assistMph: 28 }), ["city_of_san_diego", "sduhsd_campuses"]);
+    expect(bl.kind).toBe("no_illegal");
+    expect(bl.blocked.map((b) => b.line.code).sort()).toEqual(["campus_class3", "under_min_age"]);
+  });
+
+  it("a bike that runs as Class 1 or 2 is YES for a 14-year-old in Encinitas, with a helmet", () => {
+    const bl = check("CA", 14, classBike(1, { classes: [1, 2], hasThrottle: true, throttleMph: 20 }), ["encinitas"]);
+    expect(bl.kind).toBe("yes");
+    expect(bl.requirements.map((l) => l.code)).toContain("req_helmet_under");
   });
 });

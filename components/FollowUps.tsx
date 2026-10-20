@@ -96,6 +96,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           <button
             type="button"
             className="btn btn-quiet"
+            aria-pressed={facts.unsure.includes("wheels")}
             onClick={() => onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) })}
           >
             {t(lang, "notSure")}

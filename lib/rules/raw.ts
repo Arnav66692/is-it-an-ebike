@@ -107,7 +107,8 @@ export interface RawLocalRule {
   citations_from_citation?: string;
   citations_from_source_url?: string;
   citations_from_source_type?: string;
-  ends?: string;
+  /** The local rule's own end date. Null means its enacted text gives none. */
+  ends?: string | null;
   source_type: string;
   notes?: string;
 }

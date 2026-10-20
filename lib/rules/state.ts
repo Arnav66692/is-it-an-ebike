@@ -15,6 +15,7 @@ import { getState, type CompiledCaution, type CompiledState } from "./compile";
 import { inWindow } from "./dates";
 import { factsEnv, ratedWattsInterval } from "./facts";
 import {
+  CAUTION_FAST_MODE_UNVERIFIED,
   CLASS_KEYS,
   type BikeFacts,
   type ClassNum,
@@ -226,7 +227,7 @@ function evaluateDevice(
     } else if (cs.fastModeExplicit) {
       unclear = unclear ?? line("unsure_fast_mode", { cls });
     } else {
-      cautions.push(line("caution_fast_mode_unverified"));
+      cautions.push(line(CAUTION_FAST_MODE_UNVERIFIED));
     }
   }
 

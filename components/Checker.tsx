@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { keepAsked, parseShareLink } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, PLACE_IDS, STATE_CODES } from "@/lib/rules";
@@ -10,7 +11,7 @@ import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId } from "@/lib
 import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { BikeInput } from "./BikeInput";
-import { BottomLineCard } from "./BottomLineCard";
+import { announcement, BottomLineCard } from "./BottomLineCard";
 import { Card } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
@@ -37,16 +38,11 @@ interface Initial {
 
 /** Reads the QR or shared-link settings once. This component only renders in the browser. */
 function readInitial(): Initial {
-  const params = new URLSearchParams(window.location.search);
-  const urlLang = params.get("lang");
-  const lang: Lang =
-    urlLang === "es" || urlLang === "en" ? urlLang : (readStoredLang() ?? (navigator.language.startsWith("es") ? "es" : "en"));
-  const urlState = params.get("state")?.toUpperCase();
-  const urlPlaces = (params.get("place") ?? "").split(",").filter((p): p is PlaceId => PLACE_IDS.includes(p as PlaceId));
+  const link = parseShareLink(window.location.search);
   return {
-    lang,
-    state: urlState && STATE_CODES.includes(urlState) ? urlState : "CA",
-    places: urlPlaces.length > 0 ? urlPlaces : ["city_of_san_diego"],
+    lang: link.lang ?? readStoredLang() ?? (navigator.language.startsWith("es") ? "es" : "en"),
+    state: link.state,
+    places: link.places,
     today: localToday(),
   };
 }
@@ -82,6 +78,7 @@ export function Checker() {
   const [flags, setFlags] = useState<string[]>([]);
   const [stage, setStage] = useState<Stage>("input");
   const [round, setRound] = useState(0);
+  const [asked, setAsked] = useState<{ key: string; ids: QuestionId[] }>({ key: "", ids: [] });
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -104,9 +101,17 @@ export function Checker() {
 
   const summary = useMemo(() => (result ? bottomLine(result, date) : null), [result, date]);
 
-  const questions: QuestionId[] = result
+  const pending: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]
     : [];
+  // A follow-up stays on screen once asked, so "not sure" or a wrong answer can be changed.
+  // The list starts over with new bike facts or a different state.
+  const askKey = `${round}|${stateCode}`;
+  const askedBefore = asked.key === askKey ? asked.ids : [];
+  const questions = keepAsked(askedBefore, pending);
+  if (asked.key !== askKey || questions.length !== askedBefore.length) {
+    setAsked({ key: askKey, ids: questions });
+  }
 
   const sortedStates = [...STATE_CODES].sort((a, b) => stateName(a, lang).localeCompare(stateName(b, lang), lang));
 
@@ -264,10 +269,12 @@ export function Checker() {
             ))}
           </>
         ) : null}
-        {/* Always in the page, so screen readers announce the bottom line when it appears or changes. */}
-        <div role="status" aria-live="polite" aria-atomic="true">
-          {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} /> : null}
-        </div>
+        {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} /> : null}
+        {/* Always in the page. Screen readers hear one short sentence when the answer appears or
+            changes, not the whole card on every edit. */}
+        <p role="status" className="sr-only">
+          {summary ? announcement(summary, lang) : ""}
+        </p>
         {result ? (
           <>
             <div className="no-print flex flex-wrap gap-3">
@@ -302,7 +309,7 @@ export function Checker() {
           <p>{t(lang, "privacyBody")}</p>
         </section>
         <nav className="no-print flex flex-wrap gap-x-5 gap-y-2">
-          <Link href="/accuracy" className="underline">
+          <Link href={lang === "es" ? "/accuracy/es" : "/accuracy"} className="underline">
             {t(lang, "accuracy")}
           </Link>
           <Link href={`/qr?lang=${lang}`} className="underline">
