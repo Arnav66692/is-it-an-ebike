@@ -184,6 +184,16 @@ export function sameWheelSize(facts: BikeFacts): boolean {
   return facts.wheelRearIn === null || facts.wheelRearIn === facts.wheelFrontIn;
 }
 
+/**
+ * True when the facts card shows Front and Rear boxes instead of one wheel size box. Once it has
+ * shown two boxes it keeps them. A number box passes on an unknown size midway through typing,
+ * like the "1" of "18", and a front size can be typed to match the rear. Going back to one box
+ * then would remove the box being typed in, drop keyboard focus and hide the other size.
+ */
+export function twoWheelBoxes(shownBefore: boolean, facts: BikeFacts): boolean {
+  return shownBefore || !sameWheelSize(facts);
+}
+
 /** The facts after switching back to one wheel size. The rear takes the front size, so no hidden size is left behind. */
 export function withOneWheelSize(facts: BikeFacts): BikeFacts {
   return { ...facts, wheelRearIn: facts.wheelFrontIn };

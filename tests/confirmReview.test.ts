@@ -186,8 +186,9 @@ describe("the pedals evidence after the photo check changes the answer", () => {
       expect(t(lang, "photoCheckPedalsTick")).toContain(`"${t(lang, "readMatches")}"`);
       expect(t(lang, "photoCheckNoPedalsTick")).toContain(`"${t(lang, "readMatches")}"`);
     }
+    // The tick is worked out for the call when it lands (tests/confirmSecondReview.test.ts).
     const card = readFileSync(join(ROOT, "components", "FactsCard.tsx"), "utf8");
-    expect(card).toContain('needsTick={checks.hasPedals?.status === "unchecked"}');
+    expect(card).toContain("tickAfter={(call) => pedalCallNeedsTick({ facts, checks }, call)}");
   });
 });
 
@@ -249,7 +250,7 @@ describe("two different wheel sizes share one check", () => {
     const bike = read(LABEL, "label");
     expect([bike.facts.wheelFrontIn, bike.facts.wheelRearIn]).toEqual([24, 20]);
     const front = withEdit(bike, withWheelSize(bike.facts, 26, false));
-    expect(front.checks.wheelSize).toEqual({ source: "text", status: "unchecked" });
+    expect(front.checks.wheelSize).toEqual({ source: "text", status: "unchecked", wheelsAsRead: ["rear"] });
     expect(unconfirmedFields(front.checks)).toContain("wheelSize");
     const rear = withEdit(bike, { ...bike.facts, wheelRearIn: 22 });
     expect(rear.checks.wheelSize?.status).toBe("unchecked");

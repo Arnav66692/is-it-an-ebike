@@ -577,7 +577,10 @@ describe("the follow-ups and the facts card always show the same answer", () => 
     expect(followSource).toContain("value={weightShown(facts)}");
     expect(followSource).toContain("value={pegsKitShown(facts)}");
     const shapeSource = readFileSync(join(__dirname, "..", "components", "ShapeFacts.tsx"), "utf8");
-    expect(shapeSource).not.toContain("useState");
+    // Its only state is whether it shows Front and Rear boxes, never an answer.
+    expect(shapeSource).not.toMatch(/useState[^;]*(weight|pegs)/i);
+    expect(shapeSource.match(/useState\(/g)).toHaveLength(1);
+    expect(shapeSource).toContain("useState(() => twoWheelBoxes(false, facts))");
     expect(shapeSource).toContain("withFootPegs(facts, v)");
   });
 });

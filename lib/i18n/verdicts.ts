@@ -102,10 +102,19 @@ export const READ_FIELD_NAMES: Record<Lang, Record<ReadField, string>> = {
   },
 };
 
+function namedReadFields(ids: string): ReadField[] {
+  const named = ids.split(",");
+  return READ_FIELDS.filter((f) => named.includes(f));
+}
+
+/** True when the list names one read fact, so the sentence says "under it", not "under each one". */
+function oneReadField(ids: string): boolean {
+  return namedReadFields(ids).length === 1;
+}
+
 /** "classes,wheelSize" becomes "the class and the wheel size", in the order the facts card shows them. */
 export function readFieldList(ids: string, lang: Lang): string {
-  const named = ids.split(",");
-  const fields = READ_FIELDS.filter((f) => named.includes(f));
+  const fields = namedReadFields(ids);
   if (fields.length === 0) return lang === "es" ? "los datos leídos" : "the facts that were read";
   return joinList(
     fields.map((f) => READ_FIELD_NAMES[lang][f]),
@@ -294,7 +303,7 @@ const EN = {
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
   bl_unconfirmed_facts: (p, c) =>
-    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under each one in "Here's what I read" above, or fix it.`,
+    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? "under it" : "under each one"} in "Here's what I read" above, or fix it.`,
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({
@@ -495,7 +504,7 @@ const ES = {
     "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
   county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",
   bl_unconfirmed_facts: (p, c) =>
-    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Esto es lo que leí", arriba, o corrige el dato.`,
+    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? "debajo de ese dato" : "debajo de cada uno"} en "Esto es lo que leí", arriba, o corrige el dato.`,
   bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({

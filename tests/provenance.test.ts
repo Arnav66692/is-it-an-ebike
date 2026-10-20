@@ -47,7 +47,9 @@ describe("where each fact came from", () => {
     expect(unconfirmedFields(bike.checks)).toEqual(["hasPedals", "classes", "ratedWatts", "hasThrottle", "throttleMph", "assistMph", "wheelSize", "weightLb"]);
     for (const field of READ_FIELDS) {
       expect(bike.checks[field] !== undefined, field).toBe(hasValue(bike.facts, field));
-      if (bike.checks[field]) expect(bike.checks[field]).toEqual({ source: "text", status: "unchecked" });
+      // The wheel size check also lists the read sizes, so each can be changed one box at a time.
+      const sizes = field === "wheelSize" ? { wheelsAsRead: ["front", "rear"] } : {};
+      if (bike.checks[field]) expect(bike.checks[field]).toEqual({ source: "text", status: "unchecked", ...sizes });
     }
     expect(checkCounts(bike.checks)).toEqual({ read: 8, confirmed: 0 });
   });

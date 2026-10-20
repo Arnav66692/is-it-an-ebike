@@ -128,10 +128,13 @@ export function Evidence({ label, texts }: { label: string; texts?: string[] }) 
 }
 
 export function Card({ title, step, children }: { title: string; step?: number; children: ReactNode }) {
+  // An id from useId, not from the title. aria-labelledby is a list split on spaces, so a title
+  // like "Here's what I read" would point at ids that don't exist and leave the region unnamed.
+  const headingId = useId();
   return (
-    <section className="card space-y-4" aria-labelledby={`${title}-h`}>
+    <section className="card space-y-4" aria-labelledby={headingId}>
       {/* tabIndex -1 lets the page move keyboard focus to a card's heading without adding a tab stop. */}
-      <h2 id={`${title}-h`} tabIndex={-1} className="flex items-center gap-2 text-lg font-bold">
+      <h2 id={headingId} tabIndex={-1} className="flex items-center gap-2 text-lg font-bold">
         {step ? (
           <span aria-hidden="true" className="step">
             {step}

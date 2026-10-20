@@ -122,7 +122,7 @@ describe("the words a family reads", () => {
 
   it("never replaces a pedals answer picked while the check ran, and a pedals tick counts as that answer", () => {
     const card = readFileSync(join(__dirname, "..", "components", "FactsCard.tsx"), "utf8");
-    expect(card).toContain('pedalAnswers.edited();\n            setPedalsUnsure(v === "unsure");');
+    expect(card).toContain('pedalAnswers.edited();\n            setPedalPicks((n) => n + 1);\n            setPedalsUnsure(v === "unsure");');
     expect(card).toContain('if (field === "hasPedals") pedalAnswers.edited();');
     expect(card).toContain("onPedalCall(call);");
     expect(card).not.toContain("applyPedalCall");

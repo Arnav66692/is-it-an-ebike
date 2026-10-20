@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/parse";
-import { checkCounts, type FactChecks } from "@/lib/provenance";
+import { checkCounts, pedalCallNeedsTick, type FactChecks } from "@/lib/provenance";
 import type { BikeFacts, ClassNum, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
@@ -43,6 +43,8 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
   const throttleUi: Tri3 | null = triValue(facts.hasThrottle) ?? (throttleUnsure ? "unsure" : null);
   // A pedals answer the family picks while a photo check runs must not be replaced by the photo's call.
   const [pedalAnswers] = useState(answerGate);
+  // Goes up with each pedals answer the family picks, so the photo check's message about the old answer is cleared.
+  const [pedalPicks, setPedalPicks] = useState(0);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
   const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
   const confirm: OnConfirm = (field, confirmed) => {
@@ -84,15 +86,19 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           value={pedalsUi}
           onChange={(v) => {
             pedalAnswers.edited();
+            setPedalPicks((n) => n + 1);
             setPedalsUnsure(v === "unsure");
             set({ hasPedals: fromTri(v) });
           }}
         />
         {ev("hasPedals")}
+        {/* tickAfter sees the facts on screen as the check started. Only a pedals pick or tick
+            could change the pedals answer before the call lands, and either one drops the call. */}
         <PedalPhotoCheck
           lang={lang}
           startCheck={pedalAnswers.start}
-          needsTick={checks.hasPedals?.status === "unchecked"}
+          tickAfter={(call) => pedalCallNeedsTick({ facts, checks }, call)}
+          picks={pedalPicks}
           onCall={(call) => {
             if (call !== "ask") onPedalCall(call);
           }}

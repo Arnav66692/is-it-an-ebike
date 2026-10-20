@@ -19,9 +19,13 @@ const TICK_KEY: Partial<Record<UiKey, UiKey>> = {
   photoCheckNoPedals: "photoCheckNoPedalsTick",
 };
 
-/** The message to show. A right call still needs the family's tick, so the message says so while the box is empty. */
-export function photoMessage(message: UiKey, needsTick: boolean): UiKey {
-  return needsTick ? (TICK_KEY[message] ?? message) : message;
+/**
+ * The message for a call. When the pedals answer still needs the family's tick after the call,
+ * the message says so. It is picked once, when the call lands, so a later tick never changes the
+ * words and a screen reader doesn't hear them again.
+ */
+export function photoMessage(message: UiKey, tick: boolean): UiKey {
+  return tick ? (TICK_KEY[message] ?? message) : message;
 }
 
 interface Props {
@@ -29,16 +33,26 @@ interface Props {
   /** Called as a check starts. The check it returns turns false once the family picks a pedals answer. */
   startCheck: () => () => boolean;
   onCall: (call: PedalCall) => void;
-  /** True while the pedals answer is read and not yet checked against the bike. */
-  needsTick: boolean;
+  /** True when the pedals answer will still have to be ticked once this call is applied. */
+  tickAfter: (call: PedalCall) => boolean;
+  /**
+   * Goes up each time the family picks a pedals answer. The message is about the answer before
+   * that pick, so it is cleared rather than left saying something like "the answer above is now no".
+   */
+  picks: number;
 }
 
 /** Optional whole-bike photo check. It loads nothing until tapped and only ever fills the pedals answer. */
-export function PedalPhotoCheck({ lang, startCheck, onCall, needsTick }: Props) {
+export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: Props) {
   const id = useId();
   const [step, setStep] = useState<Step>("closed");
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState<UiKey | null>(null);
+  const [seenPicks, setSeenPicks] = useState(picks);
+  if (picks !== seenPicks) {
+    setSeenPicks(picks);
+    setMessage(null);
+  }
   // False once this card leaves the page, for example when a new label is read.
   const onPage = useRef(true);
   useEffect(() => {
@@ -72,7 +86,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, needsTick }: Props) 
         () => onPage.current && untouched(),
         onCall,
       );
-      if (call !== null) setMessage(RESULT_KEY[call]);
+      if (call !== null) setMessage(photoMessage(RESULT_KEY[call], tickAfter(call)));
       else if (onPage.current) setMessage("photoCheckKept");
     } catch {
       if (onPage.current) setMessage("photoCheckFailed");
@@ -143,7 +157,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, needsTick }: Props) 
 
       {message ? (
         <p role={isProblem ? "alert" : "status"} className="text-sm font-semibold">
-          {t(lang, photoMessage(message, needsTick))}
+          {t(lang, message)}
         </p>
       ) : null}
     </div>

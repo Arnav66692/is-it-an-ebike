@@ -20,9 +20,18 @@ export type FactSource = "text" | "photo";
  */
 export type CheckStatus = "unchecked" | "ticked" | "theirs";
 
+/** A wheel whose size can be read. */
+export type Wheel = "front" | "rear";
+
 export interface FactCheck {
   source: FactSource;
   status: CheckStatus;
+  /**
+   * Wheel size only: the read sizes the family hasn't changed yet. Two different sizes share one
+   * check, so it becomes theirs once they have changed every size that was read, both at once or
+   * one box at a time.
+   */
+  wheelsAsRead?: readonly Wheel[];
 }
 
 /** One entry per fact whose value was read. A fact the family typed has none, since it is already theirs. */
@@ -91,23 +100,49 @@ export function emptyChecked(): CheckedFacts {
  * every value comes in not checked, even one the family checked on the last bike.
  */
 export function fromRead(facts: BikeFacts, source: FactSource = "text"): CheckedFacts {
-  const checks = buildChecks((field) => (hasValue(facts, field) ? { source, status: "unchecked" } : undefined));
+  const checks = buildChecks((field) => {
+    if (!hasValue(facts, field)) return undefined;
+    if (field === "wheelSize") return { source, status: "unchecked", wheelsAsRead: wheelsHeld(facts) };
+    return { source, status: "unchecked" };
+  });
   return { facts, checks };
 }
 
+const WHEELS: readonly Wheel[] = ["front", "rear"];
+
+function wheelIn(facts: BikeFacts, wheel: Wheel): number | null {
+  return wheel === "front" ? facts.wheelFrontIn : facts.wheelRearIn;
+}
+
+/** The wheels whose size the facts hold. */
+function wheelsHeld(facts: BikeFacts): Wheel[] {
+  return WHEELS.filter((w) => wheelIn(facts, w) !== null);
+}
+
+function theirs(check: FactCheck): FactCheck {
+  return { source: check.source, status: "theirs" };
+}
+
 /**
- * True when an edit replaced the read value. Two different wheel sizes share one check, so the
- * check is only replaced when every size it held changed. Fixing the front size alone leaves the
- * rear size as it was read, still to be checked.
+ * The wheel size check after an edit. A read size counts as changed once the family changes it,
+ * and stays changed, so they can fix the Front box and then the Rear box. The check is theirs
+ * once every read size has changed. Fixing the front size alone leaves the rear size as it was
+ * read, still to be checked.
  */
-function replaced(before: BikeFacts, after: BikeFacts, field: ReadField): boolean {
-  if (field !== "wheelSize") return fieldValue(before, field) !== fieldValue(after, field);
-  const held = [
-    { was: before.wheelFrontIn, now: after.wheelFrontIn },
-    { was: before.wheelRearIn, now: after.wheelRearIn },
-  ].filter((w) => w.was !== null);
-  if (held.length === 0) return fieldValue(before, field) !== fieldValue(after, field);
-  return held.every((w) => w.now !== w.was);
+function wheelEdit(check: FactCheck, before: BikeFacts, after: BikeFacts): FactCheck {
+  const held = check.wheelsAsRead ?? wheelsHeld(before);
+  if (held.length === 0) return fieldValue(before, "wheelSize") === fieldValue(after, "wheelSize") ? check : theirs(check);
+  const left = held.filter((w) => wheelIn(before, w) === wheelIn(after, w));
+  if (left.length === 0) return theirs(check);
+  return left.length === held.length && check.wheelsAsRead ? check : { ...check, wheelsAsRead: left };
+}
+
+/** One read fact's check after an edit from `before` to `after`. */
+function editedCheck(check: FactCheck, field: ReadField, before: BikeFacts, after: BikeFacts, answered: boolean): FactCheck {
+  if (check.status === "theirs") return check;
+  if (answered) return theirs(check);
+  if (field === "wheelSize") return wheelEdit(check, before, after);
+  return fieldValue(before, field) === fieldValue(after, field) ? check : theirs(check);
 }
 
 /**
@@ -121,9 +156,7 @@ function replaced(before: BikeFacts, after: BikeFacts, field: ReadField): boolea
 export function withEdit(cur: CheckedFacts, next: BikeFacts, answered: readonly ReadField[] = []): CheckedFacts {
   const checks = buildChecks((field) => {
     const check = cur.checks[field];
-    if (!check) return undefined;
-    const theirs = check.status === "theirs" || answered.includes(field) || replaced(cur.facts, next, field);
-    return theirs ? { source: check.source, status: "theirs" } : check;
+    return check ? editedCheck(check, field, cur.facts, next, answered.includes(field)) : undefined;
   });
   return { facts: next, checks };
 }
@@ -137,7 +170,7 @@ export function withConfirmed(cur: CheckedFacts, field: ReadField, confirmed: bo
   if (!check || check.status === "theirs") return cur;
   const status: CheckStatus = confirmed ? "ticked" : "unchecked";
   if (check.status === status) return cur;
-  return { facts: cur.facts, checks: withCheck(cur.checks, field, { source: check.source, status }) };
+  return { facts: cur.facts, checks: withCheck(cur.checks, field, { ...check, status }) };
 }
 
 /**
@@ -151,6 +184,15 @@ export function withPedalCall(cur: CheckedFacts, call: PedalCall): CheckedFacts 
   const facts = applyPedalCall(cur.facts, call);
   if (facts.hasPedals === cur.facts.hasPedals) return cur;
   return { facts, checks: withCheck(cur.checks, "hasPedals", { source: "photo", status: "unchecked" }) };
+}
+
+/**
+ * True when the pedals answer still has to be ticked once this photo call is applied. The photo
+ * check's message is picked from this when the call lands, so ticking the box or picking an
+ * answer later never changes the words a screen reader already heard.
+ */
+export function pedalCallNeedsTick(cur: CheckedFacts, call: PedalCall): boolean {
+  return withPedalCall(cur, call).checks.hasPedals?.status === "unchecked";
 }
 
 /**
