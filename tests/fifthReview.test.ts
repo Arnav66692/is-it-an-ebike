@@ -321,3 +321,27 @@ describe("a state that never confirms an e-bike names its gap once", () => {
     expect(bottomLine(unverified, DATE).missing.map((g) => g.line.code)).toEqual(["bl_unverified_state"]);
   });
 });
+
+describe("a NO that only says 'not an e-bike' doesn't claim a rule bars the ride", () => {
+  it("a 1000 W Vermont bike for an adult says not an e-bike, matching its Why line, in both languages", () => {
+    const result = evaluate({ state: "VT", riderAge: 30, rideDate: DATE, facts: classBike(1, { ratedWatts: 1000 }), places: [] });
+    const line = bottomLine(result, DATE);
+    expect(line.kind).toBe("no_illegal");
+    expect(line.notEbikeOnly).toBe(true);
+    const en = cardText(result, "VT");
+    expect(en).toContain("Not an e-bike under the law we checked.");
+    expect(en).not.toContain("At least one rule we checked says no.");
+    expect(en).toContain("motor-assisted bicycle");
+    const es = cardText(result, "VT", "es");
+    expect(es).toContain("No es una bicicleta eléctrica según la ley que revisamos.");
+    expect(es).not.toContain("Al menos una regla que revisamos dice que no.");
+  });
+
+  it("keeps 'Not allowed' when a rule does bar the ride, like an age limit or the campus e-moto rule", () => {
+    const young = evaluate({ state: "CA", riderAge: 14, rideDate: DATE, facts: classBike(3, { hasThrottle: false }), places: [] });
+    expect(bottomLine(young, DATE).notEbikeOnly).toBe(false);
+    expect(cardText(young, "CA")).toContain("Not allowed. At least one rule we checked says no.");
+    const emoto = evaluate({ state: "CA", riderAge: 15, rideDate: DATE, facts: classBike(2, { ratedWatts: 2000 }), places: ["sduhsd_campuses"] });
+    expect(bottomLine(emoto, DATE).notEbikeOnly).toBe(false);
+  });
+});

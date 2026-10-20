@@ -19,6 +19,15 @@ const SUBTITLE = {
 } as const;
 
 /**
+ * The line under YES or NO. When the only "no" is that the bike is not an e-bike, it says that,
+ * not that a rule bars the ride, since the bike may be legal as another vehicle, like Vermont's
+ * motor-assisted bicycle.
+ */
+export function subtitleKey(line: BottomLine): (typeof SUBTITLE)[BottomLine["kind"]] | "blNotEbikeSub" {
+  return line.kind === "no_illegal" && line.notEbikeOnly ? "blNotEbikeSub" : SUBTITLE[line.kind];
+}
+
+/**
  * The places one item applies to, as a label: "City of San Diego and an SDUHSD campus".
  * Each place uses its list form, and only the first word is capitalized.
  */
@@ -41,7 +50,7 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
  */
 export function announcement(line: BottomLine, lang: Lang): string {
   const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
-  return `${t(lang, "blTitle")}: ${word}. ${t(lang, SUBTITLE[line.kind])}`;
+  return `${t(lang, "blTitle")}: ${word}. ${t(lang, subtitleKey(line))}`;
 }
 
 interface ItemListProps {
@@ -94,7 +103,7 @@ export function BottomLineCard({ line, lang, stateCode }: Props) {
           </span>
           <span>{yes ? t(lang, "blYes") : t(lang, "blNo")}</span>
         </p>
-        <p className="text-lg font-semibold leading-snug">{t(lang, SUBTITLE[line.kind])}</p>
+        <p className="text-lg font-semibold leading-snug">{t(lang, subtitleKey(line))}</p>
         <p className="text-sm">
           {t(lang, "blRideDate", { date: formatDate(line.rideDate, lang) })} {coversSentence(line, lang, stateCode)}
         </p>

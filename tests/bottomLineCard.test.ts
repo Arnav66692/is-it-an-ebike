@@ -87,7 +87,10 @@ describe("bottom-line card", () => {
     const bl = bottomLine(evaluate({ state: "TX", riderAge: 30, rideDate: DAY, facts: classBike(1, { hasPedals: false }), places: [] }), DAY);
     expect(bl.kind).toBe("no_illegal");
     expect(bl.blocked.flatMap((b) => b.where)).toEqual([{ scope: "state", id: "TX" }]);
-    expect(announcement(bl, "en")).toBe("Bottom line: NO. Not allowed. At least one rule we checked says no.");
+    // A machine with no pedals is not an e-bike, so the line says that rather than citing a rule that bars the ride.
+    expect(announcement(bl, "en")).toBe(
+      "Bottom line: NO. Not an e-bike under the law we checked. E-bike rules don't cover it, and the rules for other vehicles are not checked here.",
+    );
     for (const lang of ["en", "es"] as const) {
       const text = render(bl, lang, "TX");
       expect(text).not.toMatch(/place you picked|lugar que marcaste/);

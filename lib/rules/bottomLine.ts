@@ -48,6 +48,11 @@ export interface BottomLine {
   requirements: Line[];
   /** yes: a requirement limits which public streets the rider may use, like New York's 30 mph roads. */
   roadLimit: boolean;
+  /**
+   * no_illegal: every card that says no says the bike is not an e-bike, and no rule bars the rider
+   * outright. It may still be legal as another vehicle, like Vermont's motor-assisted bicycle.
+   */
+  notEbikeOnly: boolean;
   /** At least one city or county was checked, not only state law or the campus. */
   citiesChecked: boolean;
   /** The rider may ride somewhere we did not check (Somewhere else, or a state without a local layer). */
@@ -167,6 +172,7 @@ export function bottomLine(result: EngineResult, rideDate: string): BottomLine {
       missing: [],
       requirements: [],
       roadLimit: false,
+      notEbikeOnly: illegal.every((v) => v.status === "not_ebike"),
     };
   }
 
@@ -180,6 +186,7 @@ export function bottomLine(result: EngineResult, rideDate: string): BottomLine {
       missing: merge(ordered, (g) => g.kind),
       requirements: [],
       roadLimit: false,
+      notEbikeOnly: false,
     };
   }
 
@@ -193,5 +200,5 @@ export function bottomLine(result: EngineResult, rideDate: string): BottomLine {
       return true;
     });
   const roadLimit = requirements.some((l) => ROAD_LIMIT_CODES.includes(l.code));
-  return { ...base, kind: "yes", blocked: [], missing: [], requirements, roadLimit };
+  return { ...base, kind: "yes", blocked: [], missing: [], requirements, roadLimit, notEbikeOnly: false };
 }
