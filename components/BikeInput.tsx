@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import type { RequestGate } from "@/lib/checkerState";
 import { parseSpecText, type Extraction, type TextSource } from "@/lib/extract/parse";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
@@ -12,7 +13,11 @@ interface Props {
   lang: Lang;
   onRead: (extraction: Extraction, source: TextSource) => void;
   onManual: () => void;
+  /** Only the newest read may fill in the facts. Switching tabs drops the older ones. */
+  gate: RequestGate;
 }
+
+type ReaderProps = Pick<Props, "lang" | "onRead" | "gate">;
 
 const MAX_SIDE = 2000;
 
@@ -30,12 +35,17 @@ async function prepareImage(file: File): Promise<Blob> {
   return new Promise((resolve) => canvas.toBlob((b) => resolve(b ?? file), "image/jpeg", 0.92));
 }
 
-function LabelReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
+function LabelReader({ lang, onRead, gate }: ReaderProps) {
   const id = useId();
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<UiKey | null>(null);
+  // The photo this reader is busy with. Picking a second photo makes the first one's progress stale.
+  const job = useRef(0);
 
   async function handleFile(file: File) {
+    const isCurrent = gate.start();
+    job.current += 1;
+    const mine = job.current;
     setError(null);
     setProgress(0);
     try {
@@ -43,18 +53,20 @@ function LabelReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) 
       const { createWorker } = await import("tesseract.js");
       const worker = await createWorker("eng", 1, {
         logger: (m: { status: string; progress: number }) => {
-          if (m.status === "recognizing text") setProgress(m.progress);
+          if (m.status === "recognizing text" && isCurrent()) setProgress(m.progress);
         },
       });
       const { data } = await worker.recognize(image);
       await worker.terminate();
+      // The family moved on while this ran, so this label is no longer the bike being checked.
+      if (!isCurrent()) return;
       const extraction = parseSpecText(data.text, "label");
-      setProgress(null);
       if (Object.keys(extraction.facts).length === 0) setError("readFailed");
       onRead(extraction, "label");
     } catch {
-      setProgress(null);
-      setError("readFailed");
+      if (isCurrent()) setError("readFailed");
+    } finally {
+      if (job.current === mine) setProgress(null);
     }
   }
 
@@ -94,7 +106,7 @@ function LabelReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) 
   );
 }
 
-function LinkReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
+function LinkReader({ lang, onRead, gate }: ReaderProps) {
   const urlId = useId();
   const textId = useId();
   const [url, setUrl] = useState("");
@@ -103,6 +115,7 @@ function LinkReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
   const [error, setError] = useState<UiKey | null>(null);
 
   async function fetchLink() {
+    const isCurrent = gate.start();
     setError(null);
     setBusy(true);
     try {
@@ -112,6 +125,8 @@ function LinkReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
         body: JSON.stringify({ url }),
       });
       const body = (await res.json()) as { ok: boolean; text?: string; error?: string };
+      // The family moved on while this loaded, for example by pasting text or typing the facts in.
+      if (!isCurrent()) return;
       if (!body.ok || !body.text) {
         const map: Record<string, UiKey> = { invalid: "linkInvalid", blocked: "linkBlocked", limited: "linkLimited" };
         setError(map[body.error ?? ""] ?? "linkFailed");
@@ -121,7 +136,7 @@ function LinkReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
       if (Object.keys(extraction.facts).length === 0) setError("nothingFound");
       onRead(extraction, "listing");
     } catch {
-      setError("linkFailed");
+      if (isCurrent()) setError("linkFailed");
     } finally {
       setBusy(false);
     }
@@ -162,6 +177,8 @@ function LinkReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
         className="btn btn-quiet"
         disabled={paste.trim().length === 0}
         onClick={() => {
+          // Pasted text is read at once, and any link still loading no longer counts.
+          gate.start();
           const extraction = parseSpecText(paste, "listing");
           setError(Object.keys(extraction.facts).length === 0 ? "nothingFound" : null);
           onRead(extraction, "listing");
@@ -173,7 +190,7 @@ function LinkReader({ lang, onRead }: { lang: Lang; onRead: Props["onRead"] }) {
   );
 }
 
-export function BikeInput({ lang, onRead, onManual }: Props) {
+export function BikeInput({ lang, onRead, onManual, gate }: Props) {
   const [tab, setTab] = useState<Tab>("label");
   const tabs: { id: Tab; key: UiKey }[] = [
     { id: "label", key: "tabLabel" },
@@ -190,6 +207,8 @@ export function BikeInput({ lang, onRead, onManual }: Props) {
             role="tab"
             aria-selected={tab === x.id}
             onClick={() => {
+              // A label or link still being read is for the tab the family just left.
+              if (x.id !== tab) gate.cancel();
               setTab(x.id);
               if (x.id === "type") onManual();
             }}
@@ -199,8 +218,8 @@ export function BikeInput({ lang, onRead, onManual }: Props) {
         ))}
       </div>
       <div role="tabpanel">
-        {tab === "label" ? <LabelReader lang={lang} onRead={onRead} /> : null}
-        {tab === "link" ? <LinkReader lang={lang} onRead={onRead} /> : null}
+        {tab === "label" ? <LabelReader lang={lang} onRead={onRead} gate={gate} /> : null}
+        {tab === "link" ? <LinkReader lang={lang} onRead={onRead} gate={gate} /> : null}
         {tab === "type" ? <p className="text-sm text-muted">{t(lang, "step3Help")}</p> : null}
       </div>
     </Card>

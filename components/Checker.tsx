@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
+import { LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
@@ -80,6 +80,8 @@ export function Checker() {
   const [stage, setStage] = useState<Stage>("input");
   const [round, setRound] = useState(0);
   const [asked, setAsked] = useState<AskedQuestions>({ round: -1, ids: [] });
+  // Only the newest label or link read may fill in the facts.
+  const [readGate] = useState(requestGate);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -159,6 +161,7 @@ export function Checker() {
   }
 
   function handleManual() {
+    readGate.cancel();
     setFacts(emptyFacts());
     setEvidence({});
     setFlags([]);
@@ -293,7 +296,7 @@ export function Checker() {
         ) : null}
       </Card>
 
-      <BikeInput lang={lang} onRead={handleRead} onManual={handleManual} />
+      <BikeInput lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
 
       <div ref={factsRef} className="scroll-mt-4">
         {stage !== "input" ? (
@@ -328,6 +331,7 @@ export function Checker() {
                 type="button"
                 className="btn btn-quiet"
                 onClick={() => {
+                  readGate.cancel();
                   setStage("input");
                   setFacts(emptyFacts());
                   setEvidence({});

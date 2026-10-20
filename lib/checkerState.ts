@@ -141,3 +141,32 @@ export function numberInRange(raw: string, min?: number, max?: number): number |
   if (max !== undefined && n > max) return null;
   return n;
 }
+
+/** True while a bike read is still the newest one. */
+export type IsCurrent = () => boolean;
+
+export interface RequestGate {
+  /** Call when a read starts. The check it returns stays true until a newer read starts or the gate is cancelled. */
+  start: () => IsCurrent;
+  /** Call when the family moves on: another tab, typing the facts in, or starting over. */
+  cancel: () => void;
+}
+
+/**
+ * Lets only the newest bike read deliver its result. A label photo or a product link can take
+ * many seconds. In that time the family can switch tabs, type the facts in, read another label
+ * or start over. A result for the old bike must never replace the bike they moved on to.
+ */
+export function requestGate(): RequestGate {
+  let latest = 0;
+  return {
+    start() {
+      latest += 1;
+      const mine = latest;
+      return () => mine === latest;
+    },
+    cancel() {
+      latest += 1;
+    },
+  };
+}

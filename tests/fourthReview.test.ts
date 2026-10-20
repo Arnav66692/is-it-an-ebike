@@ -1,12 +1,14 @@
 // End-to-end cases from the fourth review (Oct 19, 2026): listing text, through the parser and
 // the engine, to the bottom line. The family's only answer is No and No to the fast-mode questions.
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { NumberField } from "@/components/controls";
 import { FactsCard } from "@/components/FactsCard";
-import { numberInRange, WHEEL_MAX_IN, WHEEL_MIN_IN, withWheelCount, withWheelSize } from "@/lib/checkerState";
+import { numberInRange, requestGate, WHEEL_MAX_IN, WHEEL_MIN_IN, withWheelCount, withWheelSize } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { evaluate } from "@/lib/rules";
@@ -215,5 +217,34 @@ describe("the facts card shows every wheel, wheel count and weight fact it read"
   it("is in Spanish too, and stays out of the way when nothing was read", () => {
     expect(factsCardText(PA, "es")).toContain("Peso con la batería (libras)");
     expect(factsCardText("Class 1. 250W rated. Pedal assist to 20 mph, no throttle.")).not.toContain("Wheels and weight");
+  });
+});
+
+describe("a slow label or link read never replaces the bike the family moved on to", () => {
+  it("only the newest read counts, and moving on drops every read still running", () => {
+    const gate = requestGate();
+    const label = gate.start();
+    expect(label()).toBe(true);
+    const link = gate.start();
+    expect(label()).toBe(false);
+    expect(link()).toBe(true);
+    gate.cancel();
+    expect(link()).toBe(false);
+    const next = gate.start();
+    expect(next()).toBe(true);
+  });
+
+  it("is the guard the label and link readers run, and tabs, typing and starting over cancel it", () => {
+    const source = (name: string) => readFileSync(join(__dirname, "..", "components", name), "utf8");
+    const input = source("BikeInput.tsx");
+    expect(input.match(/const isCurrent = gate\.start\(\);/g)?.length).toBe(2);
+    expect(input.match(/if \(!isCurrent\(\)\) return;\n\s+[^\n]*\n(?:[^\n]*\n)*?\s+onRead\(/g)?.length).toBe(2);
+    expect(input).toContain("if (x.id !== tab) gate.cancel();");
+    expect(input).toMatch(/gate\.start\(\);\n\s+const extraction = parseSpecText\(paste, "listing"\);/);
+    const checker = source("Checker.tsx");
+    expect(checker).toContain("useState(requestGate)");
+    expect(checker).toMatch(/function handleManual\(\) \{\n\s+readGate\.cancel\(\);/);
+    expect(checker).toMatch(/onClick=\{\(\) => \{\n\s+readGate\.cancel\(\);\n\s+setStage\("input"\);/);
+    expect(checker).toContain("gate={readGate}");
   });
 });
