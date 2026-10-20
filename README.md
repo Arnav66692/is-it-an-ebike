@@ -20,7 +20,8 @@ The AI only reads. A fixed rules table decides.
    - **YES** only if every card says allowed, every follow-up question is answered (a "not sure" fast-mode answer counts as open), and every rule behind the cards was read in enacted text. That means statute-verified state rules and `primary_verified` San Diego records. It lists what the rider must still do, merged with duplicates removed, and says it covers streets and bike lanes, since sidewalks, parks, beaches and trails have their own rules.
    - **NO, not allowed** if any card says not allowed or not an e-bike. It names each place and the reason.
    - **NO, not confirmed** if nothing is illegal but something is open, can't be confirmed, or rests on rules that weren't read in enacted text. It says exactly what is missing. Uncertainty never becomes a YES.
-   - If the rider also rides somewhere we don't cover, or the state has no local layer, the answer says city rules were not checked. There is never a bare YES for an unchecked place.
+   - No place is ticked unless a QR code or shared link names one, so the places an answer covers are always the family's own pick. If no city or county is picked, the rider also rides somewhere else, or the state has no local layer, the answer says those rules were not checked. There is never a bare YES for an unchecked place.
+   - Local rules end on their own dates. The City of San Diego's under-12 ban ends Jan 1, 2029 with the state law behind it. Carlsbad's code gives its ban no end date, so from that day a Carlsbad answer for a rider under 12 is can't confirm, never YES.
 
 The San Diego records are held to a reference standard. On Oct 19, 2026 an independent skeptic pass reread each one against enacted ordinance, code, resolution, board and statute text, and only changes it confirmed from that text went in. Each record in `data/rules/san_diego_local.json` carries a `verification_level` and its `primary_sources` (number, link, effective date and quote). Six places are `primary_verified`. SDUHSD is `primary_partial`. Its helmet rule is in Administrative Regulation 5142, but its class, tag and course rules are only on the district's web page and the Board has not voted on them, so a campus answer can be NO, not allowed, but never YES.
 
@@ -34,9 +35,9 @@ The costly mistake is calling a bike legal when it isn't, so the engine is built
 
 ## Accuracy
 
-See `RESULTS.md` and the in-app accuracy page. The headline: on 334,080 generated cases (every state, class, age band, caution condition and switch date), checked against an independent reading of the raw table in `tests/oracle.ts`, the engine gave **zero false-legal results** and never refused a case the table allows.
+See `RESULTS.md` and the in-app accuracy page, in English at `/accuracy` and Spanish at `/accuracy/es`. The headline: on 371,200 generated cases (every state, class, age band, caution condition and switch date, plus bikes with pedals unknown or missing, no class, two classes, or facts that disagree), checked against an independent reading of the raw table in `tests/oracle.ts`, the engine gave **zero false-legal results** and never refused a case the table allows.
 
-The bottom line has its own gate. On 391,680 generated cases, including every San Diego place alone, all of them and none, with and without "Somewhere else", it never said YES when the independent checker listed a reason against it, and never refused when it listed none.
+The bottom line has its own gates. On 435,200 generated cases, including every San Diego place alone, all of them and none, with and without "Somewhere else", it never said YES when the independent checker listed a reason against it, and never refused when it listed none. It said "NO, not allowed" exactly when the checker found a rule that says no. The line naming unchecked places is checked on the real rendered card, in both languages.
 
 Those tests prove the engine matches the table, not that the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (`data/rules/verification_report.md`, `data/rules/corrections.json`). The San Diego records were checked against enacted text on Oct 19, 2026, as described above.
 
