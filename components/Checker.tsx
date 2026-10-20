@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
+import { checkerToday, focusGate, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, readMayMoveFocus, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, type CheckedFacts } from "@/lib/provenance";
@@ -86,8 +86,9 @@ export function Checker() {
   const [asked, setAsked] = useState<AskedQuestions>({ round: -1, ids: [] });
   // Goes up on Start over, so the bike input starts fresh on its first tab.
   const [starts, setStarts] = useState(0);
-  // Only the newest label or link read may fill in the facts.
-  const [readGate] = useState(requestGate);
+  // Only the newest label or link read may fill in the facts. The gate also notes the control
+  // each read started from, so a read that lands late takes focus only from that control.
+  const [readGate] = useState(() => focusGate(() => document.activeElement));
   // How many facts the last read gave, for the status line a screen reader hears. Null clears it.
   // It is cleared once the family edits or ticks a fact, or switches the language, so it is never
   // drawn again in the other language and read out long after it was true.
@@ -100,12 +101,14 @@ export function Checker() {
   }, [lang]);
 
   // After a read, keyboard and screen reader focus moves to the heading of the new facts card, so
-  // the family lands on the marked facts instead of staying on the button they pressed.
+  // the family lands on the marked facts instead of staying on the button they pressed. A family
+  // who moved on to another control while the label or link was read keeps their place.
   useEffect(() => {
     if (!focusFacts.current) return;
     focusFacts.current = false;
+    if (!readMayMoveFocus(document.activeElement, document.body, readGate.startedFrom())) return;
     factsRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
-  }, [round]);
+  }, [round, readGate]);
 
   // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
   // comes back into view, so an old tab never answers for yesterday.

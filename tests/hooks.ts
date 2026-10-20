@@ -50,6 +50,9 @@ export class FakeNode {
   contains(other: unknown): boolean {
     return other instanceof FakeNode && (other.path === this.path || other.path.startsWith(`${this.path}/`));
   }
+
+  /** Scrolling does nothing here. It is on the node so a page that scrolls to it still runs. */
+  scrollIntoView(): void {}
 }
 
 /** A stand-in for the page: its body, the element with focus, and a node for each host element drawn. */
@@ -59,12 +62,19 @@ export class FakeDom {
   private nodes = new Map<string, FakeNode>();
   private refs = new Map<string, { current: unknown }>();
 
-  /** The object to stand in for `document`. */
+  /**
+   * The object to stand in for `document`. It also has the few parts the checker's own effects
+   * use, the root element whose language it sets and the listeners it adds, which do nothing here.
+   */
   readonly document = ((dom: FakeDom) => ({
     body: dom.body,
     get activeElement(): FakeNode {
       return dom.active ?? dom.body;
     },
+    documentElement: { lang: "" },
+    visibilityState: "visible",
+    addEventListener(): void {},
+    removeEventListener(): void {},
   }))(this);
 
   /** A node somewhere else on the page, outside the component, like a box on another card. */
@@ -150,6 +160,11 @@ export interface Mounted<P> {
   act(event: () => void): void;
   /** Waits for promises the component started, then draws again. */
   settle(): Promise<void>;
+  /**
+   * Takes the component off the page the way React does when its parent stops drawing it or
+   * draws it with a new key: every effect's cleanup runs, and its elements leave the page.
+   */
+  unmount(): void;
 }
 
 interface Options {
@@ -166,6 +181,7 @@ export function mount<P>(component: (props: P) => ReactNode, first: P, options: 
   let drawing = false;
   let drawAgain = false;
   let dirty = false;
+  let unmounted = false;
   let tree: ReactNode = null;
 
   const slot = <T>(make: () => T): T => {
@@ -275,13 +291,24 @@ export function mount<P>(component: (props: P) => ReactNode, first: P, options: 
     },
     act(event) {
       event();
-      if (dirty) draw();
+      if (dirty && !unmounted) draw();
     },
     async settle() {
       for (let n = 0; n < 10; n++) {
         await new Promise((resolve) => setTimeout(resolve, 0));
-        if (dirty) draw();
+        if (dirty && !unmounted) draw();
       }
+    },
+    unmount() {
+      unmounted = true;
+      for (const s of slots) {
+        if (!s || typeof s !== "object" || !("create" in s)) continue;
+        const effect = s as EffectSlot;
+        effect.cleanup?.();
+        effect.cleanup = undefined;
+      }
+      tree = null;
+      options.dom?.commit(null);
     },
   };
 }

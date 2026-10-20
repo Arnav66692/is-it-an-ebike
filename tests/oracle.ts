@@ -96,7 +96,16 @@ export interface OracleFacts {
   throttleUnknown?: boolean;
   /** A top speed whose mode the text doesn't say, given on top of the class's assist speed. */
   topSpeed?: number;
+  /** Rated watts. Always given, so they settle the cap. */
   watts: number;
+  /**
+   * A peak figure the listing gives next to the rated watts. The rules read a peak or up-to
+   * figure only when rated watts are missing, so the checker reads no rule from these. They are
+   * here so the bottom line is tested with them as read facts the family must check.
+   */
+  peakWatts?: number;
+  /** A "watts up to" figure the listing gives next to the rated watts, read the same way. */
+  wattsUpTo?: number;
   front: number | null;
   rear: number | null;
   wheelCount: 2 | 3 | null;

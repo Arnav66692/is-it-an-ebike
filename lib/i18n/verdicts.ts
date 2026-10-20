@@ -107,7 +107,11 @@ function namedReadFields(ids: string): ReadField[] {
   return READ_FIELDS.filter((f) => named.includes(f));
 }
 
-/** True when the list names one read fact, so the sentence says "under it", not "under each one". */
+/**
+ * True when the list names one read fact, so the sentence says "under that fact", not "under each
+ * one". It never says "under it", since many fact names are plural, like "the pedals", and "it"
+ * would read as the bike.
+ */
 function oneReadField(ids: string): boolean {
   return namedReadFields(ids).length === 1;
 }
@@ -303,10 +307,10 @@ const EN = {
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
   bl_unconfirmed_facts: (p, c) =>
-    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under it in "Here's what I read" above, or fix it` : `under each one in "Here's what I read" above, or fix any that are wrong`}.`,
+    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under that fact in "Here's what I read" above, or fix that fact` : `under each one in "Here's what I read" above, or fix any that are wrong`}.`,
   bl_no_unchecked_facts: (p, c) =>
     oneReadField(n(p.fields))
-      ? `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under it in "Here's what I read" above, or fix it.`
+      ? `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Here's what I read" above, or fix that fact.`
       : `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so this answer could change once you check them. Look at the bike and tick "It matches the bike" under each one in "Here's what I read" above, or fix any that are wrong.`,
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>

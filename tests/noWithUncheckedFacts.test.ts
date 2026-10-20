@@ -105,7 +105,7 @@ describe("the words a family reads", () => {
 
   it("names one fact and says the answer could change once it is checked, in English and Spanish", () => {
     expect(note("hasPedals", "en")).toBe(
-      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under it in "Here\'s what I read" above, or fix it.',
+      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Here\'s what I read" above, or fix that fact.',
     );
     expect(note("hasPedals", "es")).toBe(
       'Todavía no comparaste con la bicicleta los pedales. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato.',

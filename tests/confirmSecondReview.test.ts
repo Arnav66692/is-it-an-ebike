@@ -281,11 +281,11 @@ describe("the bottom line names the box the family will find", () => {
     }
   });
 
-  it("says under it for one unchecked fact, and under each one for more", () => {
+  it("says under that fact for one unchecked fact, and under each one for more", () => {
     const one = (lang: "en" | "es") => renderLine({ code: "bl_unconfirmed_facts", params: { fields: "wheelSize" } }, lang, "California");
     const two = (lang: "en" | "es") => renderLine({ code: "bl_unconfirmed_facts", params: { fields: "classes,wheelSize" } }, lang, "California");
     expect(one("en")).toBe(
-      'You haven\'t checked the wheel size against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under it in "Here\'s what I read" above, or fix it.',
+      'You haven\'t checked the wheel size against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under that fact in "Here\'s what I read" above, or fix that fact.',
     );
     expect(one("es")).toBe(
       'Todavía no comparaste con la bicicleta el tamaño de las ruedas. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato.',

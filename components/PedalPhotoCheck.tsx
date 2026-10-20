@@ -13,10 +13,16 @@ const RESULT_KEY: Record<PedalCall, UiKey> = {
   ask: "photoCheckAsk",
 };
 
-/** The same result, for when the pedals answer still has to be ticked before the answer can say YES. */
+/**
+ * The same result, for when the pedals answer still has to be ticked before the answer can say YES.
+ * A close call leaves the answer as it was, so when that answer was read from text and is still
+ * unchecked, the message says to tick it rather than to pick an answer. Picking the answer already
+ * shown changes nothing, so it would leave the answer unchecked.
+ */
 const TICK_KEY: Partial<Record<UiKey, UiKey>> = {
   photoCheckPedals: "photoCheckPedalsTick",
   photoCheckNoPedals: "photoCheckNoPedalsTick",
+  photoCheckAsk: "photoCheckAskTick",
 };
 
 /**

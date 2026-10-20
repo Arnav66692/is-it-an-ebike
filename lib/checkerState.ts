@@ -272,6 +272,41 @@ export function requestGate(): RequestGate {
   };
 }
 
+/** A request gate that also keeps the element that had keyboard focus as the newest read started. */
+export interface FocusGate extends RequestGate {
+  /** The element that had focus as the newest read started, or null before any read. */
+  startedFrom: () => unknown;
+}
+
+/**
+ * A request gate that notes where keyboard focus was as each read starts. A reader calls start()
+ * as the family presses its button or picks its photo, so that is the control the read came from.
+ * `active` gives the element with focus, document.activeElement on the page.
+ */
+export function focusGate(active: () => unknown): FocusGate {
+  const gate = requestGate();
+  let from: unknown = null;
+  return {
+    start() {
+      from = active();
+      return gate.start();
+    },
+    cancel: gate.cancel,
+    startedFrom: () => from,
+  };
+}
+
+/**
+ * True when a read that just landed may move keyboard focus to the new facts card. That is when
+ * focus dropped to the page, or is still on the control the read started from. A label photo or a
+ * product link can take several seconds, and a family who moved on to another box in that time,
+ * like the rider's age or the paste box, keeps their place, so their typing isn't cut off and a
+ * phone's keyboard doesn't close.
+ */
+export function readMayMoveFocus(active: unknown, body: unknown, startedFrom: unknown): boolean {
+  return active === null || active === body || active === startedFrom;
+}
+
 /** The three ways to give the bike: a label photo, a product link or pasted text, or typing it in. */
 export type InputTab = "label" | "link" | "type";
 

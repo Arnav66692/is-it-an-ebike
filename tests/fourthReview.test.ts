@@ -265,7 +265,8 @@ describe("a slow label or link read never replaces the bike the family moved on 
     expect(input).toMatch(/if \(!tap\.change\) return;\n(?:\s*\/\/[^\n]*\n)?\s+gate\.cancel\(\);/);
     expect(input).toMatch(/gate\.start\(\);\n\s+const extraction = parseSpecText\(paste, "listing"\);/);
     const checker = source("Checker.tsx");
-    expect(checker).toContain("useState(requestGate)");
+    // A request gate that also notes where focus was as each read started (sixth confirm review).
+    expect(checker).toContain("useState(() => focusGate(() => document.activeElement))");
     expect(checker).toMatch(/function handleManual\(\) \{\n\s+readGate\.cancel\(\);/);
     expect(checker).toMatch(/onClick=\{\(\) => \{\n\s+readGate\.cancel\(\);\n\s+setStage\("input"\);/);
     expect(checker).toContain("gate={readGate}");

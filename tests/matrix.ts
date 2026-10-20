@@ -56,12 +56,16 @@ export const DATES = [
 
 type Variant = { name: string } & Partial<Omit<OracleFacts, "cls">>;
 
-/** Each variant flips the facts one caution condition reads, including unknown answers. */
+/**
+ * Each variant flips the facts one caution condition reads, including unknown answers. The 750 W
+ * bike also lists a peak and an up-to figure, as many listings do. Rated watts settle the cap, so
+ * they change no card, but each is a fact read from a link or photo that the family must check.
+ */
 export const VARIANTS: Variant[] = [
   { name: "standard" },
   { name: "watts_745", watts: 745 },
   { name: "watts_746", watts: 746 },
-  { name: "watts_750", watts: 750 },
+  { name: "watts_750", watts: 750, peakWatts: 1200, wattsUpTo: 1200 },
   { name: "watts_1000", watts: 1000 },
   { name: "watts_1600", watts: 1600 },
   { name: "wheels_10", front: 10, rear: 10 },
@@ -122,6 +126,8 @@ function oracleFacts(cls: 1 | 2 | 3, v: Partial<OracleFacts>): OracleFacts {
     throttleUnknown: v.throttleUnknown,
     topSpeed: v.topSpeed,
     watts: v.watts ?? 500,
+    peakWatts: v.peakWatts,
+    wattsUpTo: v.wattsUpTo,
     front: v.front === undefined ? 20 : v.front,
     rear: v.rear === undefined ? 20 : v.rear,
     wheelCount: v.wheelCount === undefined ? 2 : v.wheelCount,
@@ -142,6 +148,8 @@ function engineFacts(o: OracleFacts): BikeFacts {
     hasPedals: pedalsOf(o),
     classes,
     ratedWatts: o.watts,
+    peakWatts: o.peakWatts ?? null,
+    wattsUpTo: o.wattsUpTo ?? null,
     // "Not sure" about the throttle, with the throttle speed the text gave still filled in.
     // A blank throttle answer leaves both the answer and its speed empty.
     hasThrottle: o.throttleUnsureMph !== undefined || o.throttleUnknown ? null : throttle,
@@ -171,6 +179,11 @@ function bikes(): { name: string; cls: number; facts: OracleFacts }[] {
   }
   for (const s of SHAPES) out.push({ name: s.name, cls: s.cls, facts: oracleFacts(s.cls, s) });
   return out;
+}
+
+/** The facts of every bike the matrices run, so a test can see which read facts they cover. */
+export function matrixBikeFacts(): BikeFacts[] {
+  return bikes().map((b) => engineFacts(b.facts));
 }
 
 const localBlockersAllClasses = (place: string, f: OracleFacts, age: number, date: string): string[] => {

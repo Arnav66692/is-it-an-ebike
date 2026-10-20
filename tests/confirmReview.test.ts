@@ -182,7 +182,9 @@ describe("the pedals evidence after the photo check changes the answer", () => {
     expect(photoMessage("photoCheckPedals", true)).toBe("photoCheckPedalsTick");
     expect(photoMessage("photoCheckNoPedals", true)).toBe("photoCheckNoPedalsTick");
     expect(photoMessage("photoCheckPedals", false)).toBe("photoCheckPedals");
-    expect(photoMessage("photoCheckAsk", true)).toBe("photoCheckAsk");
+    // A close call leaves the answer as it was, so one still unchecked needs the tick too (sixth review).
+    expect(photoMessage("photoCheckAsk", true)).toBe("photoCheckAskTick");
+    expect(photoMessage("photoCheckAsk", false)).toBe("photoCheckAsk");
     expect(photoMessage("photoCheckKept", true)).toBe("photoCheckKept");
     for (const lang of ["en", "es"] as const) {
       expect(t(lang, "photoCheckPedalsTick")).toContain(`"${t(lang, "readMatches")}"`);
