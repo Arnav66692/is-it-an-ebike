@@ -372,4 +372,14 @@ describe("third review fixes (Oct 19, 2026)", () => {
     expect(young.state.status).toBe("no");
     expect(young.state.reason.code).toBe("under_min_age");
   });
+
+  it("a California Class 3 yes says the bike must have a speedometer (VC 312.5(a)(3))", () => {
+    const r = run("CA", 16, classBike(3));
+    expect(r.state.status).toBe("yes");
+    expect(codes(r.state.requirements)).toEqual(["req_helmet_all_ages", "req_speedometer_class3"]);
+    expect(r.state.requirements[1].source?.citation).toBe("Cal. Veh. Code 312.5(a)(3)");
+    expect(bottomLine(r, TODAY).requirements.map((l) => l.code)).toContain("req_speedometer_class3");
+    expect(codes(run("CA", 16, classBike(1)).state.requirements)).not.toContain("req_speedometer_class3");
+    expect(codes(run("CA", 16, classBike(1, { classes: [1, 3], assistMph: 28 })).state.requirements)).toContain("req_speedometer_class3");
+  });
 });

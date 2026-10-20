@@ -89,6 +89,8 @@ export interface CompiledState {
   nonEbike: { treatedAs: string | null; source: Source };
   localAuthority: { canAdd: boolean | null; details: string | null; source: Source };
   stopPedalingClass2: boolean;
+  /** Equipment a Class 3 must have here, like California's speedometer. */
+  class3Equipment: { code: string; definition: boolean; source: Source }[];
   wattFallbacks: OverlayWattFallback[];
   scheduled: OverlayScheduledChange[];
 }
@@ -282,6 +284,13 @@ function compileState(raw: RawState): CompiledState {
       source: sourceOf(raw.local_authority),
     },
     stopPedalingClass2: OVERLAY.stop_pedaling_class2.states.includes(raw.code),
+    class3Equipment: OVERLAY.class3_equipment
+      .filter((e) => e.state === raw.code)
+      .map((e) => ({
+        code: e.code,
+        definition: e.definition,
+        source: { citation: e.citation, url: e.source_url, quote: e.statute_quote, kind: "statute" as const },
+      })),
     wattFallbacks: OVERLAY.watt_fallbacks.filter((w) => w.state === raw.code),
     scheduled,
   };

@@ -143,6 +143,20 @@
     }
   ],
 
+  "class3_equipment": [
+    {
+      "state": "CA",
+      "code": "req_speedometer_class3",
+      "definition": true,
+      "source_field": "where_allowed.class3_restrictions",
+      "source_quote": "Speedometer required.",
+      "citation": "Cal. Veh. Code 312.5(a)(3)",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=312.5",
+      "statute_quote": "ceases to provide assistance when the bicycle reaches the speed of 28 miles per hour, and equipped with a speedometer.",
+      "note": "Read on leginfo on Oct 19, 2026 (as amended by SB 1271, effective Jan 1, 2025) and on FindLaw (current as of Jan 1, 2026). A speedometer is part of the Class 3 definition, so a Class 3 YES lists it as something the bike must have. Other states' records also say a Class 3 needs a speedometer. They can be added here after each section is checked."
+    }
+  ],
+
   "license_detail": [
     {
       "state": "NJ",

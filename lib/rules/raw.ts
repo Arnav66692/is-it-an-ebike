@@ -204,8 +204,22 @@ export interface OverlayWattFallback {
   source_quote: string;
 }
 
+/** Equipment a Class 3 must have in a state, shown as a requirement on a Class 3 yes. */
+export interface OverlayClass3Equipment {
+  state: string;
+  code: string;
+  /** The equipment is part of the Class 3 definition, so without it the bike is not a Class 3. */
+  definition: boolean;
+  source_field: string;
+  source_quote: string;
+  citation: string;
+  source_url: string;
+  statute_quote: string;
+}
+
 export interface Overlay {
   stop_pedaling_class2: { states: string[]; decided_on: string; decided_by: string };
+  class3_equipment: OverlayClass3Equipment[];
   supplemental_cautions: OverlayCaution[];
   age_exceptions: OverlayAgeException[];
   license_detail: { state: string; code: string; source_quote: string }[];

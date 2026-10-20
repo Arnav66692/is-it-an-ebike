@@ -107,6 +107,10 @@ const EN = {
   req_helmet_all_ages: (p) => `Helmet required at every age on a Class ${cls(p)}.`,
   req_supervision: (p) => `Under ${p.minAge}, only with a parent or another adult right there.`,
   req_supervision_or_certificate: (p) => `Under ${p.minAge}, only with adult supervision or a state e-bike safety certificate.`,
+  req_speedometer_class3: (p, c) =>
+    Number(p.definition)
+      ? `It must have a speedometer. Without one it isn't a Class 3 e-bike in ${c.state}.`
+      : `A Class 3 e-bike must have a speedometer in ${c.state}.`,
   req_license: () => "A driver's license or permit is required.",
   nj_license_by_age: (p) =>
     Number(p.age) <= 16
@@ -275,6 +279,10 @@ const ES = {
   req_helmet_all_ages: (p) => `Casco obligatorio a cualquier edad en una Clase ${cls(p)}.`,
   req_supervision: (p) => `Menores de ${p.minAge}, solo con su padre, madre u otro adulto presente.`,
   req_supervision_or_certificate: (p) => `Menores de ${p.minAge}, solo con supervisión de un adulto o un certificado estatal de seguridad.`,
+  req_speedometer_class3: (p, c) =>
+    Number(p.definition)
+      ? `Debe tener velocímetro. Sin uno no es una bicicleta eléctrica Clase 3 en ${c.state}.`
+      : `Una bicicleta eléctrica Clase 3 debe tener velocímetro en ${c.state}.`,
   req_license: () => "Se necesita licencia o permiso de conducir.",
   nj_license_by_age: (p) =>
     Number(p.age) <= 16

@@ -143,7 +143,16 @@ describe("the hand-built overlay", () => {
   const states = statesJson as unknown as Record<string, Record<string, unknown>>;
   const overlay = overlayJson as unknown as {
     supplemental_cautions: { state: string; condition: string; source_field: string; source_quote: string }[];
+    class3_equipment: { state: string; code: string; source_field: string; source_quote: string }[];
   };
+
+  it("quotes every Class 3 equipment entry word for word from the field it names", () => {
+    expect(overlay.class3_equipment.map((e) => e.state)).toContain("CA");
+    for (const e of overlay.class3_equipment) {
+      const value = e.source_field.split(".").reduce<unknown>((v, k) => (v as Record<string, unknown>)[k], states[e.state]);
+      expect(String(value), `${e.state} ${e.code}`).toContain(e.source_quote);
+    }
+  });
 
   it("quotes every supplemental caution word for word from the field it names", () => {
     for (const c of overlay.supplemental_cautions) {

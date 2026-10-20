@@ -315,6 +315,10 @@ function evaluateRider(cs: CompiledState, cls: ClassNum, age: number, date: stri
     requirements.push(line("req_helmet_under", { underAge: strictest.underAge ?? 0 }, strictest.source));
   }
 
+  if (cls === 3) {
+    for (const e of cs.class3Equipment) requirements.push(line(e.code, { definition: e.definition ? 1 : 0 }, e.source));
+  }
+
   const key = CLASS_KEYS[cls];
   const until = cs.license.byClassUntil[key];
   const useByClass = cs.license.byClass !== null && (until === undefined || date < until);
