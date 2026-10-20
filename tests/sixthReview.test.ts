@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { BottomLineCard, mergeRendered } from "@/components/BottomLineCard";
 import { VerdictCard } from "@/components/VerdictCard";
 import { tabTap } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
@@ -297,5 +298,31 @@ describe("a class-unknown NO says each sentence once and names a shared reason",
     const b: Line = { code: "local_under_12", params: { since: "2026-08-13", cls: 2 }, detail: null };
     const c: Line = { code: "local_under_12", params: { since: "2026-03-26", cls: 1 }, detail: null };
     expect(uniqueRendered([a, b, c], "en", "California")).toEqual([a, c]);
+  });
+});
+
+describe("What's missing says a shared under-12 recheck once, naming every place", () => {
+  const date = "2026-11-25";
+  const places: PlaceId[] = ["encinitas", "solana_beach", "del_mar", "unincorporated_san_diego_county"];
+
+  it("four places with the same check date share one item", () => {
+    const result = evaluate({ state: "CA", riderAge: 10, rideDate: date, facts: classBike(1), places });
+    const line = bottomLine(result, date);
+    const recheck = line.missing.filter((m) => m.line.code === "local_under_12_after_check");
+    expect(recheck).toHaveLength(1);
+    expect(recheck[0].where.map((w) => w.id)).toEqual(places);
+    for (const lang of ["en", "es"] as const) {
+      const html = renderToStaticMarkup(createElement(BottomLineCard, { line, lang, stateCode: "CA" }));
+      const sentence = renderLine(recheck[0].line, lang, "California").replace(/'/g, "&#x27;");
+      expect(html.split(sentence).length - 1, lang).toBe(1);
+    }
+  });
+
+  it("the card also merges items whose sentences match, whatever their numbers", () => {
+    const a = { where: [{ scope: "local" as const, id: "encinitas" }], line: { code: "local_under_12_unclear", params: { place: "encinitas", cls: 1 } } };
+    const b = { where: [{ scope: "local" as const, id: "del_mar" }], line: { code: "local_under_12_unclear", params: { place: "del_mar", cls: 2 } } };
+    const merged = mergeRendered([a, b], "en", "California");
+    expect(merged).toHaveLength(1);
+    expect(merged[0].where.map((w) => w.id)).toEqual(["encinitas", "del_mar"]);
   });
 });

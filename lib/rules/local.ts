@@ -145,7 +145,7 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
     if (!repealed && date >= UNDER_12_RULE_ENDS) {
       return {
         status: "cant_confirm",
-        reason: line("local_under_12_no_end", { place, cls, powerEnds: UNDER_12_RULE_ENDS }, ban),
+        reason: line("local_under_12_no_end", { powerEnds: UNDER_12_RULE_ENDS }, ban),
         requirements: [],
       };
     }
@@ -157,19 +157,21 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
       };
     }
   }
+  // These sentences don't name the place or the class, so the lines carry neither. Places with the
+  // same check date then share one item under What's missing instead of repeating it word for word.
   // No ban in force on the ride date. That is only known up to the place's check, plus the time
   // a new ordinance needs to take effect. Past that, an under-12 answer can't be a yes.
   const checkedThrough = under12CheckedThrough(j);
   if (classOneOrTwo && age < UNDER_12_AGE && date > checkedThrough) {
     return {
       status: "cant_confirm",
-      reason: line("local_under_12_after_check", { place, cls, checked: j.checked_through, through: checkedThrough }, ban ?? ruleNamed(j, "no_local_age_limit_found")),
+      reason: line("local_under_12_after_check", { checked: j.checked_through, through: checkedThrough }, ban ?? ruleNamed(j, "no_local_age_limit_found")),
       requirements: [],
     };
   }
   const power = ruleNamed(j, "authority_exists_no_adoption_found");
   if (power && classOneOrTwo && date < UNDER_12_RULE_ENDS && age < UNDER_12_AGE) {
-    return { status: "cant_confirm", reason: line("local_under_12_unclear", { place, cls }, power), requirements: [] };
+    return { status: "cant_confirm", reason: line("local_under_12_unclear", undefined, power), requirements: [] };
   }
   return { ...pass, requirements: placeRequirements(j, date) };
 }

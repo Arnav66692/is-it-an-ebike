@@ -53,6 +53,28 @@ export function announcement(line: BottomLine, lang: Lang): string {
   return `${t(lang, "blTitle")}: ${word}. ${t(lang, subtitleKey(line))}`;
 }
 
+/**
+ * Items that render to the same sentence become one item naming every place, in the order they
+ * first appear, so What's missing never repeats a paragraph word for word.
+ */
+export function mergeRendered(items: BottomLineItem[], lang: Lang, state: string): BottomLineItem[] {
+  const out: BottomLineItem[] = [];
+  const index = new Map<string, number>();
+  for (const item of items) {
+    const key = renderLine(item.line, lang, state);
+    const at = index.get(key);
+    if (at === undefined) {
+      index.set(key, out.length);
+      out.push({ ...item, where: [...item.where] });
+    } else {
+      const known = out[at].where;
+      const added = item.where.filter((w) => !known.some((k) => k.scope === w.scope && k.id === w.id));
+      out[at] = { ...out[at], where: [...known, ...added] };
+    }
+  }
+  return out;
+}
+
 interface ItemListProps {
   title: string;
   items: BottomLineItem[];
@@ -62,12 +84,13 @@ interface ItemListProps {
 }
 
 function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
-  if (items.length === 0) return null;
+  const shown = mergeRendered(items, lang, state);
+  if (shown.length === 0) return null;
   return (
     <div className="space-y-1">
       <h4 className="text-sm font-semibold uppercase tracking-wide text-muted">{title}</h4>
       <ul className="space-y-2">
-        {items.map((item, i) => (
+        {shown.map((item, i) => (
           <li key={`${item.line.code}-${i}`} className="bl-item">
             <span className="block text-sm font-semibold">{whereLabel(item.where, lang, stateCode)}</span>
             <span className="block">{renderLine(item.line, lang, state)}</span>
