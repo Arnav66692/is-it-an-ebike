@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-10-20T01:14:47.874Z",
-  "commit": "b781793",
+  "generated_at": "2026-10-20T01:54:17.746Z",
+  "commit": "a56d236",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
-    "cases": 371200,
-    "state_cases": 326400,
-    "local_cases": 44800,
+    "cases": 399040,
+    "state_cases": 350880,
+    "local_cases": 48160,
     "by_status": {
-      "yes": 181600,
-      "no": 59380,
-      "not_ebike": 53320,
-      "cant_confirm": 65070,
-      "need_info": 11830
+      "yes": 182074,
+      "no": 63050,
+      "not_ebike": 53820,
+      "cant_confirm": 88086,
+      "need_info": 12010
     },
     "false_legal": 0,
     "missed_yes": 0
   },
   "bottom_line": {
-    "cases": 435200,
+    "cases": 467840,
     "by_kind": {
-      "yes": 195198,
-      "no_illegal": 138124,
-      "no_unconfirmed": 101878
+      "yes": 193918,
+      "no_illegal": 143150,
+      "no_unconfirmed": 130772
     },
     "false_yes": 0,
     "missed_yes": 0,
@@ -33,8 +33,8 @@
     "rendered_cards": 195
   },
   "tests": {
-    "total": 223,
-    "passed": 223,
+    "total": 258,
+    "passed": 258,
     "failed": 0
   },
   "pilot": {
