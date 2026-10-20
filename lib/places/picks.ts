@@ -51,6 +51,14 @@ export function engineWhere(current: PlacePicks): EngineWhere | null {
   return { state: current.state, places, otherPlaces: resolved.some((r) => !r.checked) };
 }
 
+/**
+ * The picks whose own city or county rules are not in the checked table, so the answer names them
+ * as not checked. A state pick is left out, since its law is the one the answer uses.
+ */
+export function uncheckedPicks(current: PlacePicks): PlaceEntry[] {
+  return current.picks.filter((p) => p.kind !== "state" && !resolvePlace(p).checked);
+}
+
 /** True when a pick is in San Diego County, so the page offers the SDUHSD campus choice. */
 export function inSanDiegoCounty(current: PlacePicks): boolean {
   return current.picks.some((p) => p.state === SD_STATE && p.counties.includes(SD_COUNTY_FIPS));
@@ -71,4 +79,27 @@ export function picksFromIds(index: PlaceIndex, ids: readonly string[]): PlacePi
   const state = known[0].state;
   const picks = known.filter((e, i) => e.state === state && known.findIndex((k) => k.id === e.id) === i);
   return { state, picks };
+}
+
+/** What the rules engine gets for the ride, and whether the page shows the SDUHSD campus choice. */
+export interface RideWhere {
+  /** The checked local records, then the SDUHSD campus when it is picked. Empty outside California. */
+  places: PlaceId[];
+  /** True when a pick has no checked record, so the answer says that place's own rules were not checked. */
+  otherPlaces: boolean;
+  /** True when the page shows the SDUHSD campus choice: the ride is in San Diego County, or the choice is already on. */
+  campusShown: boolean;
+}
+
+/**
+ * The engine's places for the picks and the campus choice. The campus choice shows for a ride in San
+ * Diego County, and stays on the page while it is ticked, so the campus never counts without being
+ * seen. Picks only count in their own state, so one state's places never mix into another's answer.
+ */
+export function rideWhere(current: PlacePicks, stateCode: string, campus: boolean): RideWhere {
+  const where = current.state === stateCode ? engineWhere(current) : null;
+  if (stateCode !== SD_STATE) return { places: [], otherPlaces: where?.otherPlaces ?? false, campusShown: false };
+  const campusShown = inSanDiegoCounty(current) || campus;
+  const places: PlaceId[] = [...(where?.places ?? []), ...(campusShown && campus ? (["sduhsd_campuses"] as PlaceId[]) : [])];
+  return { places, otherPlaces: where?.otherPlaces ?? false, campusShown };
 }

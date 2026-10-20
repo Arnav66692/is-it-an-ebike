@@ -199,15 +199,15 @@ describe("with one unchecked fact, the English line never says it after a plural
         const text = renderLine({ code, params: { fields: field } }, "en", "California");
         expect(text, `${code} ${field}`).toContain(READ_FIELD_NAMES.en[field]);
         expect(text, `${code} ${field}`).not.toMatch(/under it\b|fix it\b/);
-        expect(text, `${code} ${field}`).toMatch(/tick "It matches the bike" under that fact in "Here's what I read" above, or fix that fact\.$/);
+        expect(text, `${code} ${field}`).toMatch(/tick "It matches the bike" under that fact in "Check the facts" above, or fix that fact\.$/);
       }
     }
   });
 
   it("matches the Spanish, which already says that fact, and keeps the plural wording for several facts", () => {
     for (const code of lines) {
-      expect(renderLine({ code, params: { fields: "hasPedals" } }, "es", "California"), code).toMatch(/debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato\.$/);
-      expect(renderLine({ code, params: { fields: "hasPedals,peakWatts" } }, "en", "California"), code).toMatch(/under each one in "Here's what I read" above, or fix any that are wrong\.$/);
+      expect(renderLine({ code, params: { fields: "hasPedals" } }, "es", "California"), code).toMatch(/debajo de ese dato en "Revisa los datos", arriba, o corrige el dato\.$/);
+      expect(renderLine({ code, params: { fields: "hasPedals,peakWatts" } }, "en", "California"), code).toMatch(/under each one in "Check the facts" above, or fix any that are wrong\.$/);
     }
   });
 });

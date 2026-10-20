@@ -284,10 +284,10 @@ describe("the new words", () => {
 
   it("asks to fix any that are wrong when several facts are listed, and to fix that fact for one", () => {
     const line = (fields: string, lang: "en" | "es") => renderLine({ code: "bl_unconfirmed_facts", params: { fields } }, lang, "California");
-    expect(line("classes,weightLb", "en")).toMatch(/under each one in "Here's what I read" above, or fix any that are wrong\.$/);
-    expect(line("classes,weightLb", "es")).toMatch(/debajo de cada uno en "Esto es lo que leí", arriba, o corrige los que estén mal\.$/);
-    expect(line("weightLb", "en")).toMatch(/under that fact in "Here's what I read" above, or fix that fact\.$/);
-    expect(line("weightLb", "es")).toMatch(/debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato\.$/);
+    expect(line("classes,weightLb", "en")).toMatch(/under each one in "Check the facts" above, or fix any that are wrong\.$/);
+    expect(line("classes,weightLb", "es")).toMatch(/debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal\.$/);
+    expect(line("weightLb", "en")).toMatch(/under that fact in "Check the facts" above, or fix that fact\.$/);
+    expect(line("weightLb", "es")).toMatch(/debajo de ese dato en "Revisa los datos", arriba, o corrige el dato\.$/);
     expect(t("en", "readIntro")).toContain("or fix any that are wrong.");
     expect(t("es", "readIntro")).toContain("o corrige los que estén mal.");
     for (const lang of LANGS) {

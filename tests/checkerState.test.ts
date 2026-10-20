@@ -4,9 +4,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { FollowUps } from "@/components/FollowUps";
-import { PlacePicker } from "@/components/PlacePicker";
+import { Checker } from "@/components/Checker";
+import { resultHint } from "@/components/PlaceSearch";
+import { linkedPick } from "@/lib/places/linked";
 import {
   answerShown,
   keepAsked,
@@ -25,9 +27,10 @@ import {
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type QuestionId } from "@/lib/rules/types";
-import { placeHint } from "@/lib/i18n/names";
+import { placeHint, placeName } from "@/lib/i18n/names";
 import { callIfCurrent, type PedalCall } from "@/lib/photo/pedalRule";
 import { classBike } from "./helpers";
+import { mount, one, textOf } from "./hooks";
 
 describe("share link and defaults", () => {
   it("ticks no place when the link names none, so the places covered are the family's own choice", () => {
@@ -137,7 +140,7 @@ describe("second review fixes: a follow-up stays on screen when the state change
     expect(source).toContain("const [today, setToday] = useState(");
     expect(source).toContain("msUntilNextDay(");
     expect(source).toContain('addEventListener("visibilitychange"');
-    expect(source).toContain("<PlacePicker");
+    expect(source).toContain("<PlaceSearch");
   });
 });
 
@@ -173,18 +176,31 @@ describe("second review fixes: typing a wheel size never picks the number of whe
 });
 
 describe("second review fixes: the place picker", () => {
-  it("ties each place hint to its checkbox, so screen readers hear the CCA cues", () => {
+  it("ties the SDUHSD campus hint to its checkbox, so screen readers hear the CCA cue", () => {
     for (const lang of ["en", "es"] as const) {
-      const html = renderToStaticMarkup(
-        createElement(PlacePicker, { lang, places: [], otherPlaces: false, onTogglePlace: () => {}, onOtherPlaces: () => {} }),
-      );
-      for (const place of ["city_of_san_diego", "sduhsd_campuses", "unincorporated_san_diego_county"] as const) {
-        const hint = placeHint(place, lang);
-        expect(hint, place).toBeTruthy();
-        const span = new RegExp(`<span id="([^"]+)"[^>]*>${(hint ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`).exec(html);
-        expect(span, `${lang} ${place}`).not.toBeNull();
-        expect(html).toContain(`aria-describedby="${span?.[1]}"`);
+      vi.stubGlobal("window", { location: { search: `?lang=${lang}&state=CA&place=city_of_san_diego,sduhsd_campuses` } });
+      try {
+        const m = mount(Checker, {}, { effects: false });
+        const box = one(m.tree(), (e) => e.type === "input" && e.props["aria-label"] === placeName("sduhsd_campuses", lang), "campus box");
+        expect(box.props.checked).toBe(true);
+        const hint = one(m.tree(), (e) => e.type === "span" && e.props.id === box.props["aria-describedby"], "campus hint");
+        expect(textOf(hint)).toBe(placeHint("sduhsd_campuses", lang));
+      } finally {
+        vi.unstubAllGlobals();
       }
+    }
+  });
+
+  it("shows the CCA area cue under the City of San Diego and the unincorporated county in the search results", () => {
+    for (const lang of ["en", "es"] as const) {
+      const city = linkedPick("city_of_san_diego");
+      const county = linkedPick("unincorporated_san_diego_county");
+      if (!city || !county) throw new Error("no linked pick");
+      expect(resultHint(city, lang)).toBe(placeHint("city_of_san_diego", lang));
+      expect(resultHint(county, lang)).toBe(placeHint("unincorporated_san_diego_county", lang));
+      const encinitas = linkedPick("encinitas");
+      if (!encinitas) throw new Error("no Encinitas");
+      expect(resultHint(encinitas, lang)).toBe("");
     }
   });
 

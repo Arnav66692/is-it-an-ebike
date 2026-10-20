@@ -288,10 +288,10 @@ describe("bottom line for a listing read from text, with facts not yet checked (
     expect(bl.blocked).toEqual([{ where: [{ scope: "state", id: "CA" }, { scope: "local", id: "city_of_san_diego" }], line: expect.objectContaining({ code: "no_pedals" }) }]);
     expect(bl.factsNote).toEqual({ code: "bl_no_unchecked_facts", params: { fields: "hasPedals" } });
     expect(renderLine(bl.factsNote!, "en", "California")).toBe(
-      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Here\'s what I read" above, or fix that fact.',
+      'You haven\'t checked the pedals against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Check the facts" above, or fix that fact.',
     );
     expect(renderLine(bl.factsNote!, "es", "California")).toBe(
-      'Todavía no comparaste con la bicicleta los pedales. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato.',
+      'Todavía no comparaste con la bicicleta los pedales. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Revisa los datos", arriba, o corrige el dato.',
     );
   });
 
