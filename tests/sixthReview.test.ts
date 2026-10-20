@@ -7,6 +7,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { BottomLineCard, mergeRendered } from "@/components/BottomLineCard";
 import { VerdictCard } from "@/components/VerdictCard";
+import sdJson from "@/data/rules/san_diego_local.json";
 import { tabTap } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText, type TextSource } from "@/lib/extract/parse";
@@ -14,6 +15,7 @@ import { t } from "@/lib/i18n/ui";
 import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
+import type { RawSanDiego } from "@/lib/rules/raw";
 import { emptyFacts, type BikeFacts, type Line, type PlaceId, type Verdict } from "@/lib/rules/types";
 import { classBike } from "./helpers";
 
@@ -342,5 +344,26 @@ describe("California before 2027 never calls a factory fast mode 'not an e-bike'
     const result = evaluate({ state: "CA", riderAge: 14, rideDate: "2027-01-01", facts, places: [] });
     expect(result.state.status).toBe("not_ebike");
     expect(bottomLine(result, "2027-01-01").kind).toBe("no_illegal");
+  });
+});
+
+describe("the SDUHSD record describes the Sep 10, 2026 BP 5142 revision, and the campus stays strict", () => {
+  const sduhsd = (sdJson as unknown as RawSanDiego).jurisdictions.find((j) => j.id === "sduhsd_campuses");
+
+  it("no longer says BP 5142 has no e-bike text, and names the AR 5142 update as unposted", () => {
+    const text = JSON.stringify(sduhsd);
+    expect(text).not.toContain("No e-bike or personal transportation device text");
+    const bp = sduhsd?.primary_sources.find((p) => p.number?.startsWith("BP 5142"));
+    expect(bp?.number).toContain("Streets and Highways Code 894");
+    expect(bp?.number).toContain("not yet posted");
+  });
+
+  it("keeps the campus at primary_partial, so a campus check is NO, not confirmed", () => {
+    expect(sduhsd?.verification_level).toBe("primary_partial");
+    const result = evaluate({ state: "CA", riderAge: 15, rideDate: DATE, facts: classBike(1), places: ["sduhsd_campuses"] });
+    expect(result.local[0].status).toBe("yes");
+    const line = bottomLine(result, DATE);
+    expect(line.kind).toBe("no_unconfirmed");
+    expect(line.missing.some((m) => m.line.code === "bl_unverified_primary_partial")).toBe(true);
   });
 });
