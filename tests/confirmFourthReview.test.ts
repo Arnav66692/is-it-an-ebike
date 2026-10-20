@@ -156,7 +156,7 @@ describe("a photo call for the last bike never fills in the new bike's pedals", 
 
 describe("the photo check and the read count speak from status lines already on the page", () => {
   const photoCheck = (lang: Lang) =>
-    renderToStaticMarkup(createElement(PedalPhotoCheck, { lang, startCheck: answerGate().start, onCall: () => undefined, tickAfter: () => false, picks: 0 }));
+    renderToStaticMarkup(createElement(PedalPhotoCheck, { lang, startCheck: answerGate().start, onCall: () => undefined, tickAfter: () => false, picks: 0, focusTick: () => false }));
 
   it("draws the photo check's one status line, empty, before anything happens", () => {
     for (const lang of LANGS) {

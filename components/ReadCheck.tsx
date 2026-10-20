@@ -4,7 +4,7 @@
 // read from a link or photo stays marked until it is ticked or changed, and until then the bottom
 // line can't say YES (lib/provenance.ts, lib/rules/bottomLine.ts).
 
-import { useId } from "react";
+import { useId, type Ref } from "react";
 import type { Evidence as Ev } from "@/lib/extract/parse";
 import type { FactCheck } from "@/lib/provenance";
 import type { ReadField } from "@/lib/rules/types";
@@ -22,6 +22,8 @@ interface CheckProps {
   onConfirm: OnConfirm;
   /** The words next to the box, when "It matches the bike" doesn't say enough, like two wheel sizes. */
   matchesKey?: UiKey;
+  /** Set to the box while it is on the page, so the page can move keyboard focus to it. */
+  boxRef?: Ref<HTMLInputElement>;
 }
 
 /**
@@ -30,7 +32,7 @@ interface CheckProps {
  * the mark into a "checked" line in the same place, at the same height, so the box never moves
  * under the finger and a quick second tap still lands on it.
  */
-export function ReadCheck({ lang, field, check, onConfirm, matchesKey }: CheckProps) {
+export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef }: CheckProps) {
   const noteId = useId();
   if (!check) return null;
   if (check.status === "theirs") {
@@ -58,6 +60,7 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey }: CheckPr
       </p>
       <label className="check">
         <input
+          ref={boxRef}
           type="checkbox"
           checked={ticked}
           data-read-check={check.status}
@@ -79,12 +82,12 @@ interface NoteProps extends CheckProps {
  * What the text said, then the check for that fact. Once the pedal photo check gave the answer,
  * the text's words are shown as what it said before, since they may say the opposite.
  */
-export function ReadNote({ lang, field, check, onConfirm, evidence, matchesKey }: NoteProps) {
+export function ReadNote({ lang, field, check, onConfirm, evidence, matchesKey, boxRef }: NoteProps) {
   const label = check?.source === "photo" ? t(lang, "readFromBefore") : t(lang, "readFrom");
   return (
     <>
       <Evidence label={label} texts={evidence?.map((e) => e.text)} />
-      <ReadCheck lang={lang} field={field} check={check} onConfirm={onConfirm} matchesKey={matchesKey} />
+      <ReadCheck lang={lang} field={field} check={check} onConfirm={onConfirm} matchesKey={matchesKey} boxRef={boxRef} />
     </>
   );
 }

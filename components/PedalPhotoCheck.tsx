@@ -42,6 +42,23 @@ export function photoStatus(step: Step, progress: number, message: UiKey | null)
   return message !== null && !isProblem(message) ? message : null;
 }
 
+/** Where keyboard focus goes once the check moves to a step: the open button, the start button, the photo input or the pedals box. */
+export type FocusTarget = "open" | "start" | "choose" | "tick";
+
+const NEEDS_TICK: ReadonlySet<UiKey> = new Set(Object.values(TICK_KEY));
+
+/**
+ * Where keyboard focus goes after the check moves to `step`. Each step draws different controls,
+ * so the one just used leaves the page, and focus must move or it drops to the page itself. While
+ * a photo is checked, the photo input stays on the page, so focus stays on it. A result that says
+ * to tick the pedals box moves focus to that box.
+ */
+export function focusAfter(step: Step, message: UiKey | null): FocusTarget {
+  if (step === "closed") return "open";
+  if (step === "confirm") return "start";
+  return message !== null && NEEDS_TICK.has(message) ? "tick" : "choose";
+}
+
 /** The message for a call dropped because the family changed the pedals answer while the check ran. */
 export function keptMessage(change: AnswerChange | null): UiKey {
   return change === "ticked" ? "photoCheckKeptTick" : "photoCheckKept";
@@ -78,10 +95,12 @@ interface Props {
    * that pick, so it is cleared rather than left saying something like "the answer above is now no".
    */
   picks: number;
+  /** Moves keyboard focus to the pedals box. False when the box isn't on the page. */
+  focusTick: () => boolean;
 }
 
 /** Optional whole-bike photo check. It loads nothing until tapped and only ever fills the pedals answer. */
-export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: Props) {
+export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, focusTick }: Props) {
   const id = useId();
   const [step, setStep] = useState<Step>("closed");
   const [progress, setProgress] = useState(0);
@@ -89,6 +108,14 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
   const [seenPicks, setSeenPicks] = useState(picks);
   if (picks !== seenPicks) {
     setSeenPicks(picks);
+    setMessage(null);
+  }
+  // A language switch draws the message again in the other language, and a screen reader would
+  // read it out long after it was true, like a tick instruction for a box already ticked. So the
+  // switch clears it, the same as the checker's read count.
+  const [seenLang, setSeenLang] = useState(lang);
+  if (lang !== seenLang) {
+    setSeenLang(lang);
     setMessage(null);
   }
   // False once this card leaves the page, for example when a new label is read.
@@ -106,14 +133,37 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
     latestCall.current = onCall;
   });
 
+  const panel = useRef<HTMLDivElement>(null);
+  const openButton = useRef<HTMLButtonElement>(null);
+  const startButton = useRef<HTMLButtonElement>(null);
+  const photoInput = useRef<HTMLInputElement>(null);
+  // Set when the family moves the check to another step, so focus moves once that step is drawn.
+  const moveFocus = useRef(false);
+  useEffect(() => {
+    if (!moveFocus.current) return;
+    moveFocus.current = false;
+    // A family that moved on to another part of the page while a photo was checked keeps their place.
+    const active = document.activeElement;
+    if (active && active !== document.body && !panel.current?.contains(active)) return;
+    const target = focusAfter(step, message);
+    if (target === "tick" && focusTick()) return;
+    const to = { open: openButton, start: startButton, choose: photoInput, tick: photoInput }[target];
+    to.current?.focus();
+  });
+
+  function go(next: Step) {
+    moveFocus.current = true;
+    setStep(next);
+  }
+
   async function accept() {
     setMessage(null);
     const { hasWebGpu } = await import("@/lib/photo/runPedalCheck");
     if (await hasWebGpu()) {
-      setStep("choose");
+      go("choose");
     } else {
       setMessage("photoCheckNoWebGpu");
-      setStep("closed");
+      go("closed");
     }
   }
 
@@ -136,18 +186,19 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
     } catch {
       if (onPage.current) setMessage("photoCheckFailed");
     } finally {
-      if (onPage.current) setStep("choose");
+      if (onPage.current) go("choose");
     }
   }
 
   const status = photoStatus(step, progress, message);
+  const working = step === "working";
 
   return (
-    <div className="rounded-lg bg-sunk p-3">
+    <div ref={panel} className="rounded-lg bg-sunk p-3">
       <div className="space-y-2">
         {step === "closed" ? (
           <>
-            <button type="button" className="btn btn-quiet" onClick={() => setStep("confirm")}>
+            <button ref={openButton} type="button" className="btn btn-quiet" onClick={() => go("confirm")}>
               {t(lang, "photoCheckOpen")}
             </button>
             <p className="text-sm text-muted">{t(lang, "photoCheckHelp")}</p>
@@ -159,31 +210,38 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
             <p className="text-sm">{t(lang, "photoCheckSize", { mb: PEDAL_MODEL_MB })}</p>
             <p className="text-sm text-muted">{t(lang, "photoCheckTested")}</p>
             <div className="flex flex-wrap gap-2">
-              <button type="button" className="btn" onClick={() => void accept()}>
+              <button ref={startButton} type="button" className="btn" onClick={() => void accept()}>
                 {t(lang, "photoCheckStart")}
               </button>
-              <button type="button" className="btn btn-quiet" onClick={() => setStep("closed")}>
+              <button type="button" className="btn btn-quiet" onClick={() => go("closed")}>
                 {t(lang, "photoCheckCancel")}
               </button>
             </div>
           </>
         ) : null}
 
-        {step === "choose" ? (
+        {/* The photo input stays on the page while a photo is checked, so keyboard focus stays on it.
+            It does nothing then: a tap or Enter opens no file picker and starts no second check. */}
+        {step === "choose" || working ? (
           <>
-            <label htmlFor={id} className="btn w-full cursor-pointer">
+            <label htmlFor={id} className="btn w-full cursor-pointer" data-busy={working ? "true" : undefined}>
               {t(lang, "photoCheckChoose")}
             </label>
             <input
+              ref={photoInput}
               id={id}
               type="file"
               accept="image/*"
               capture="environment"
               className="sr-only"
               aria-label={t(lang, "photoCheckChoose")}
+              aria-disabled={working ? true : undefined}
+              onClick={(e) => {
+                if (working) e.preventDefault();
+              }}
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) void handleFile(file);
+                if (file && !working) void handleFile(file);
                 e.target.value = "";
               }}
             />

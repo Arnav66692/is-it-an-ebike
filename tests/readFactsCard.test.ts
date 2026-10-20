@@ -197,8 +197,8 @@ describe("nothing carries a check over", () => {
     expect(source).toContain('const next = fromRead(factsFromExtraction(extraction, emptyFacts()), "text");');
     expect(source).toContain("setBike(next);");
     expect(source.match(/setBike\(emptyChecked\(\)\);/g)?.length).toBe(2);
-    expect(source).toContain("bottomLine(result, date, unconfirmed)");
-    expect(source).toContain("unconfirmedFields(bike.checks)");
+    // The bottom line itself is checked through the running page in confirmFifthReview.test.ts.
+    expect(source).toContain("summaryFor(result, date, bike.checks)");
     expect(source).not.toMatch(/(local|session)Storage\.setItem\((?!"lang")/);
     expect(source).not.toMatch(/indexedDB|sessionStorage/);
   });

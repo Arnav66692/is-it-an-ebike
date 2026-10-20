@@ -143,6 +143,18 @@ body {
   cursor: not-allowed;
 }
 
+/* A button-look label whose input does nothing for now, like the photo input while a photo is checked. */
+.btn[data-busy="true"] {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+/* A button-look label for a visually hidden input shows the input's keyboard focus. */
+.btn:has(+ input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .btn-quiet {
   background: transparent;
   color: var(--ink);

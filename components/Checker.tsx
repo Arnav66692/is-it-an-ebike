@@ -5,8 +5,8 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, unconfirmedFields, type CheckedFacts } from "@/lib/provenance";
-import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
+import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, type CheckedFacts } from "@/lib/provenance";
+import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
 import { formatDate, stateName, type Lang } from "@/lib/i18n/names";
@@ -153,8 +153,8 @@ export function Checker() {
   }, [stage, ageValid, age, stateCode, date, facts, places, otherPlaces]);
 
   // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
-  const unconfirmed = useMemo(() => unconfirmedFields(bike.checks), [bike.checks]);
-  const summary = useMemo(() => (result && date ? bottomLine(result, date, unconfirmed) : null), [result, date, unconfirmed]);
+  // Worked out on every draw from the checks on screen, so no list kept from an earlier draw can reach it.
+  const summary = summaryFor(result, date, bike.checks);
 
   const pending: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]

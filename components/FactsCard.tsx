@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type Ref } from "react";
+import { withThrottleAnswer } from "@/lib/checkerState";
 import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/parse";
 import { checkCounts, pedalCallNeedsTick, type FactChecks } from "@/lib/provenance";
 import type { BikeFacts, ClassNum, ReadField } from "@/lib/rules/types";
@@ -42,17 +43,23 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
   // the facts store it as unknown, the same as no answer.
   const [pedalsUnsure, setPedalsUnsure] = useState(false);
   const [throttleUnsure, setThrottleUnsure] = useState(false);
+  // The throttle speed a "No" answer cleared, put back when the answer moves off "No" again.
+  const [throttleSetAside, setThrottleSetAside] = useState<number | null>(null);
   const pedalsUi: Tri3 | null = triValue(facts.hasPedals) ?? (pedalsUnsure ? "unsure" : null);
   const throttleUi: Tri3 | null = triValue(facts.hasThrottle) ?? (throttleUnsure ? "unsure" : null);
   // A pedals answer the family picks, or ticks, while a photo check runs must not be replaced by the photo's call.
   const [pedalAnswers] = useState(answerGate);
   // Goes up with each pedals answer the family picks, so the photo check's message about the old answer is cleared.
   const [pedalPicks, setPedalPicks] = useState(0);
+  // The pedals box, so the photo check can move keyboard focus to it when its call needs a tick.
+  const pedalsBox = useRef<HTMLInputElement>(null);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
   const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
   // Ticking the pedals box is the family's own pedals answer, newer than a photo check still running.
   const confirm: OnConfirm = confirmThroughGate(pedalAnswers, onConfirm);
-  const ev = (key: ReadField) => <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={confirm} evidence={evidence[key]} />;
+  const ev = (key: ReadField, boxRef?: Ref<HTMLInputElement>) => (
+    <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={confirm} evidence={evidence[key]} boxRef={boxRef} />
+  );
   const counts = checkCounts(checks);
   const triOptions = [
     { value: "yes" as const, label: t(lang, "yes") },
@@ -91,7 +98,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
             set({ hasPedals: fromTri(v) });
           }}
         />
-        {ev("hasPedals")}
+        {ev("hasPedals", pedalsBox)}
         {/* tickAfter sees the facts on screen as the check started. Only a pedals pick or tick
             could change the pedals answer before the call lands, and either one drops the call. */}
         <PedalPhotoCheck
@@ -101,6 +108,11 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           picks={pedalPicks}
           onCall={(call) => {
             if (call !== "ask") onPedalCall(call);
+          }}
+          focusTick={() => {
+            const box = pedalsBox.current;
+            box?.focus();
+            return box !== null;
           }}
         />
       </div>
@@ -138,7 +150,9 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           value={throttleUi}
           onChange={(v) => {
             setThrottleUnsure(v === "unsure");
-            set({ hasThrottle: fromTri(v), throttleMph: v === "no" ? null : facts.throttleMph });
+            const next = withThrottleAnswer(facts, fromTri(v), throttleSetAside);
+            setThrottleSetAside(next.setAside);
+            onChange(next.facts);
           }}
         />
         {ev("hasThrottle")}

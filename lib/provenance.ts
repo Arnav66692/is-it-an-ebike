@@ -10,7 +10,8 @@
 // or a shared link starts with nothing checked. Kept apart from the page so tests can run it.
 
 import { applyPedalCall, type PedalCall } from "@/lib/photo/pedalRule";
-import { emptyFacts, READ_FIELDS, type BikeFacts, type ReadField } from "@/lib/rules/types";
+import { bottomLine, type BottomLine } from "@/lib/rules/bottomLine";
+import { emptyFacts, READ_FIELDS, type BikeFacts, type EngineResult, type ReadField } from "@/lib/rules/types";
 
 /** "text" for a product link, pasted text or a label photo. "photo" for the whole-bike pedal check. */
 export type FactSource = "text" | "photo";
@@ -240,6 +241,16 @@ export function pedalCallOn(seen: BikeFacts, call: PedalCall): CheckedUpdate {
 /** The read facts not yet checked, in the order the facts card shows them. */
 export function unconfirmedFields(checks: FactChecks): ReadField[] {
   return READ_FIELDS.filter((f) => checks[f]?.status === "unchecked");
+}
+
+/**
+ * The bottom line the page shows, or null before there is a result to sum up. Every read fact the
+ * family hasn't checked keeps it from a YES. The page works it out on every draw from the checks
+ * on screen, with nothing kept from an earlier draw, so a tick, an untick or a new read always
+ * reaches it.
+ */
+export function summaryFor(result: EngineResult | null, rideDate: string | null, checks: FactChecks): BottomLine | null {
+  return result && rideDate ? bottomLine(result, rideDate, unconfirmedFields(checks)) : null;
 }
 
 /** How many facts were read, and how many of those the family has checked. */

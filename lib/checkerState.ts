@@ -174,6 +174,24 @@ export function withFootPegs(facts: BikeFacts, value: "yes" | "no" | "unsure"): 
   return { ...facts, hasFootPegs: value === "yes", unsure: withoutUnsure(facts, "pegs_kit") };
 }
 
+/** The facts after a throttle answer, and the throttle speed a "No" answer set aside. */
+export interface ThrottleAnswer {
+  facts: BikeFacts;
+  setAside: number | null;
+}
+
+/**
+ * The facts after the throttle answer on the facts card. A bike with no throttle has no throttle
+ * speed, so "No" clears the speed and sets it aside. Any other answer puts it back. In a radio
+ * group the arrow keys pick each answer they pass, so moving through Yes, No and Not sure just to
+ * hear them must leave the speed as it was. A speed read from a link or photo is then as read
+ * again and still needs a tick (lib/provenance.ts), rather than counting as one the family set.
+ */
+export function withThrottleAnswer(facts: BikeFacts, answer: Tri, setAside: number | null): ThrottleAnswer {
+  if (answer === false) return { facts: { ...facts, hasThrottle: false, throttleMph: null }, setAside: facts.throttleMph ?? setAside };
+  return { facts: { ...facts, hasThrottle: answer, throttleMph: facts.throttleMph ?? setAside }, setAside: null };
+}
+
 /** The facts after a weight is typed on the facts card. A typed weight replaces a "not sure". */
 export function withWeight(facts: BikeFacts, lb: number | null): BikeFacts {
   return { ...facts, weightLb: lb, unsure: lb === null ? facts.unsure : withoutUnsure(facts, "weight") };
