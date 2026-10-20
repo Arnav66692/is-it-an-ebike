@@ -475,3 +475,37 @@ describe("the County park note names SDCC 41.127 as unsettled for e-bikes", () =
     expect(renderLine(note ?? { code: "" }, "es", "California")).toContain("No está resuelto");
   });
 });
+
+describe("California from Jan 1, 2027 follows the enacted SB 1167 text on pedal assist past 28 mph", () => {
+  const ca = (over: Partial<BikeFacts>, date: string) =>
+    evaluate({ state: "CA", riderAge: 30, rideDate: date, places: [], facts: classBike(3, { hasThrottle: false, assistMph: 28, ...over }) });
+
+  it("assist past 28 mph is not an e-bike from 2027, quoting 312.5(c)(3), and still can't confirm before then", () => {
+    const later = ca({ assistOver28: true }, "2027-01-02");
+    expect(later.state.status).toBe("not_ebike");
+    expect(later.state.reason.code).toBe("caution_assist_fast_mode");
+    expect(later.state.reason.source?.kind).toBe("statute");
+    expect(later.state.reason.source?.quote).toContain("(3) A vehicle with a motor capable of providing assistance when the vehicle reaches a speed exceeding 28 miles per hour.");
+    expect(renderLine(later.state.reason, "en", "California")).toBe("Pedal assist past 28 mph in any mode puts it outside California's e-bike definition.");
+    expect(renderLine(later.state.reason, "es", "California")).toContain("28 mph");
+    expect(bottomLine(later, "2027-01-02").kind).toBe("no_illegal");
+    const now = ca({ assistOver28: true }, DATE);
+    expect(now.state.status).toBe("cant_confirm");
+    expect(now.state.reason.code).toBe("fits_no_class_mode");
+  });
+
+  it("asks the fast-mode question while either answer is open, and a No to both is still allowed", () => {
+    const open = ca({ motorOver20: null, assistOver28: null }, "2027-01-02");
+    expect(open.state.questions).toEqual(["fast_mode"]);
+    expect(ca({}, "2027-01-02").state.status).toBe("yes");
+  });
+
+  it("quotes the table field it names, and the statute words it shows", () => {
+    const caution = (overlayJson as unknown as { supplemental_cautions: { state: string; valid_from?: string; source_field: string; source_quote: string; statute_quote?: string }[] }).supplemental_cautions.find(
+      (c) => c.state === "CA" && c.valid_from === "2027-01-01",
+    );
+    expect(caution?.statute_quote).toContain("on motor power alone");
+    expect(field("CA", caution?.source_field ?? "")).toContain(caution?.source_quote ?? "?");
+    expect(caution?.source_quote).toContain("assist past 28 mph");
+  });
+});

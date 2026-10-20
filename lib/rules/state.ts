@@ -106,6 +106,7 @@ export const CAUTION_TOPICS = [
   "weight",
   "watts_hp",
   "fast_mode",
+  "assist_fast_mode",
 ] as const;
 type CautionTopic = (typeof CAUTION_TOPICS)[number];
 
@@ -119,6 +120,8 @@ function topicOf(node: ConditionNode | null, caution: CompiledCaution): CautionT
   if (text.includes("needs_pedal_kit")) return "pedal_kit";
   if (text.includes("bike_weight_lb")) return "weight";
   if (text.includes("label_watts")) return "watts_hp";
+  // Only pedal assist past 28 mph, as in California from 2027. Mixed with a motor speed it stays fast_mode.
+  if (text.includes("assist_over_28") && !/motor_only|throttle|switchable/.test(text)) return "assist_fast_mode";
   return "fast_mode";
 }
 

@@ -109,6 +109,7 @@ const EN = {
     `${c.state} also caps the motor at 1 horsepower (about 745 W), so a label of 746 W or more can't be confirmed.`,
   caution_fast_mode: (_p, c) =>
     `A mode over 20 mph on the motor alone, or a setting that unlocks it, puts it outside ${c.state}'s e-bike definition.`,
+  caution_assist_fast_mode: (_p, c) => `Pedal assist past 28 mph in any mode puts it outside ${c.state}'s e-bike definition.`,
   caution_class_not_recognized: (p, c) =>
     `${c.state} doesn't recognize Class ${cls(p)} e-bikes, so the law treats this one as a motor vehicle.`,
   caution_class_unclear: (p, c) => `${c.state}'s law doesn't clearly cover a Class ${cls(p)} e-bike.`,
@@ -116,6 +117,7 @@ const EN = {
   unsure_wheel_size: (_p, c) => `We need the wheel size to confirm this in ${c.state}.`,
   unsure_trike: (_p, c) => `We need the number of wheels to confirm this in ${c.state}.`,
   unsure_fast_mode: (_p, c) => `We need to know about fast or unlocked modes to confirm this in ${c.state}.`,
+  unsure_assist_fast_mode: (_p, c) => `We need to know whether pedal assist can go past 28 mph to confirm this in ${c.state}.`,
   unsure_weight: (_p, c) => `We need to know whether it weighs over 100 pounds to confirm this in ${c.state}.`,
   unsure_foot_pegs: (_p, c) => `We need to know about foot pegs to confirm this in ${c.state}.`,
   unsure_pedal_kit: (_p, c) => `We need to know whether it needs a pedal kit to confirm this in ${c.state}.`,
@@ -305,6 +307,7 @@ const ES = {
     `${esSubj(c)} también limita el motor a 1 caballo de fuerza (unos 745 W), así que no se puede confirmar una etiqueta de 746 W o más.`,
   caution_fast_mode: (_p, c) =>
     `Un modo de más de 20 mph solo con el motor, o un ajuste que lo desbloquea, la deja fuera de la definición ${esOf(c)}.`,
+  caution_assist_fast_mode: (_p, c) => `La asistencia al pedalear de más de 28 mph en algún modo la deja fuera de la definición ${esOf(c)}.`,
   caution_class_not_recognized: (p, c) =>
     `${esSubj(c)} no reconoce las bicicletas eléctricas Clase ${cls(p)}, así que la ley la trata como un vehículo motorizado.`,
   caution_class_unclear: (p, c) => `La ley ${esOf(c)} no cubre con claridad una bicicleta eléctrica Clase ${cls(p)}.`,
@@ -312,6 +315,7 @@ const ES = {
   unsure_wheel_size: (_p, c) => `Necesitamos el tamaño de las ruedas para confirmarlo en ${esName(c)}.`,
   unsure_trike: (_p, c) => `Necesitamos saber cuántas ruedas tiene para confirmarlo en ${esName(c)}.`,
   unsure_fast_mode: (_p, c) => `Necesitamos saber si tiene modos rápidos o desbloqueados para confirmarlo en ${esName(c)}.`,
+  unsure_assist_fast_mode: (_p, c) => `Necesitamos saber si la asistencia al pedalear puede pasar de 28 mph para confirmarlo en ${esName(c)}.`,
   unsure_weight: (_p, c) => `Necesitamos saber si pesa más de 100 libras para confirmarlo en ${esName(c)}.`,
   unsure_foot_pegs: (_p, c) => `Necesitamos saber si tiene reposapiés para confirmarlo en ${esName(c)}.`,
   unsure_pedal_kit: (_p, c) => `Necesitamos saber si necesita un kit de pedales para confirmarlo en ${esName(c)}.`,

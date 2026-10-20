@@ -34,6 +34,7 @@ export const NUMERIC_FIELDS = [
 
 export const BOOLEAN_FIELDS = [
   "switchable_out_of_class",
+  "assist_over_28",
   "has_foot_pegs",
   "needs_pedal_kit",
 ] as const;
@@ -46,6 +47,7 @@ export const FIELD_QUESTION: Record<string, QuestionId | null> = {
   throttle_max_mph: "fast_mode",
   motor_only_max_mph: "fast_mode",
   switchable_out_of_class: "fast_mode",
+  assist_over_28: "fast_mode",
   bike_weight_lb: "weight",
   has_foot_pegs: "pegs_kit",
   needs_pedal_kit: "pegs_kit",

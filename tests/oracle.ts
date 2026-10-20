@@ -115,6 +115,7 @@ const FIELD_GROUP: Record<string, string> = {
   throttle_max_mph: "fast_mode",
   motor_only_max_mph: "fast_mode",
   switchable_out_of_class: "fast_mode",
+  assist_over_28: "fast_mode",
   bike_weight_lb: "weight",
   has_foot_pegs: "pegs_kit",
   needs_pedal_kit: "pegs_kit",
@@ -163,6 +164,7 @@ function fieldValues(f: OracleFacts): Record<string, number | boolean | undefine
     throttle_max_mph: fastKnown ? motor : undefined,
     motor_only_max_mph: fastKnown ? motor : undefined,
     switchable_out_of_class: fastKnown ? Boolean(f.motorOver20 || f.assistOver28) : undefined,
+    assist_over_28: f.assistOver28 ?? undefined,
     bike_weight_lb: f.weight ?? undefined,
     has_foot_pegs: f.pegs ?? undefined,
     needs_pedal_kit: f.kit ?? undefined,
@@ -194,7 +196,7 @@ function classOk(appliesTo: string, cls: number): boolean {
   return appliesTo === "all_ebikes" || appliesTo === `class_${cls}`;
 }
 
-const FAST_FIELDS = /\b(throttle_max_mph|motor_only_max_mph|switchable_out_of_class)\b/;
+const FAST_FIELDS = /\b(throttle_max_mph|motor_only_max_mph|switchable_out_of_class|assist_over_28)\b/;
 
 function cautionsOf(code: string): CautionRaw[] {
   return [...STATES[code].verdict_cautions, ...OVERLAY.supplemental_cautions.filter((c) => c.state === code)];

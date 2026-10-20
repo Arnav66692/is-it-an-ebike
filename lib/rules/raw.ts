@@ -157,6 +157,8 @@ export interface OverlayCaution extends RawCaution {
   source_url?: string;
   source_field: string;
   source_quote: string;
+  /** The statute's own words, when they were read. The card shows these instead of the table's. */
+  statute_quote?: string;
   note?: string;
 }
 

@@ -265,8 +265,10 @@ describe("California fast modes match what 312.5(d) says", () => {
     expect(result.state.status).toBe("cant_confirm");
     expect(result.state.reason.code).toBe("fits_no_class_mode");
     expect(kind).toBe("no_unconfirmed");
-    // The same answer after Jan 1, 2027, since the SB 1167 wording on assist was not read.
-    expect(fast({ assistOver28: true }, "2027-01-02").result.state.reason.code).toBe("fits_no_class_mode");
+    // From Jan 1, 2027 SB 1167's 312.5(c)(3) says so, as the fifth review read in the chaptered text.
+    const later = fast({ assistOver28: true }, "2027-01-02").result.state;
+    expect(later.status).toBe("not_ebike");
+    expect(later.reason.code).toBe("caution_assist_fast_mode");
   });
 
   it("the motor alone past 20 mph is not an e-bike, citing 312.5(d) now and SB 1167 from 2027", () => {
@@ -278,7 +280,7 @@ describe("California fast modes match what 312.5(d) says", () => {
     expect(now.kind).toBe("no_illegal");
     const later = fast({ motorOver20: true }, "2027-01-02");
     expect(later.result.state.status).toBe("not_ebike");
-    expect(later.result.state.reason.source?.citation).toBe("Cal. Veh. Code 312.5 as rewritten by SB 1167 (Stats. 2026, ch. 846)");
+    expect(later.result.state.reason.source?.citation).toBe("Cal. Veh. Code 312.5(c)(2), (3) as rewritten by SB 1167 (Stats. 2026, ch. 846)");
     expect(later.result.state.reason.source?.url).toContain("SB1167");
   });
 

@@ -97,7 +97,7 @@ export interface CompiledState {
   scheduled: OverlayScheduledChange[];
 }
 
-const FAST_MODE_FIELDS = new Set(["throttle_max_mph", "motor_only_max_mph", "switchable_out_of_class"]);
+const FAST_MODE_FIELDS = new Set(["throttle_max_mph", "motor_only_max_mph", "switchable_out_of_class", "assist_over_28"]);
 
 export function sourceOf(ref: RawRef, kind: Source["kind"] = "statute"): Source {
   return {
@@ -155,8 +155,11 @@ function compileState(raw: RawState): CompiledState {
       .map((c) =>
         compileCaution(
           c,
-          // The card names the provision the caution rests on, not only the definition's subsection.
-          { citation: c.citation ?? def.citation, url: c.source_url ?? def.source_url, quote: c.source_quote, kind: "rules_table" },
+          // The card names the provision the caution rests on, not only the definition's subsection,
+          // and quotes the statute when its words were read, otherwise the rules table.
+          c.statute_quote
+            ? { citation: c.citation ?? def.citation, url: c.source_url ?? def.source_url, quote: c.statute_quote, kind: "statute" }
+            : { citation: c.citation ?? def.citation, url: c.source_url ?? def.source_url, quote: c.source_quote, kind: "rules_table" },
           true,
           c.valid_from ?? null,
         ),

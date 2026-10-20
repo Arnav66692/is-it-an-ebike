@@ -31,16 +31,17 @@
       "state": "CA",
       "applies_to": "all_ebikes",
       "rider_under_age": null,
-      "condition": "motor_only_max_mph > 20",
+      "condition": "motor_only_max_mph > 20 or assist_over_28",
       "verdict": "not_an_ebike",
       "valid_from": "2027-01-01",
       "valid_until": null,
-      "reason": "From Jan 1, 2027, SB 1167 rewrites Cal. Veh. Code 312.5, and its list of vehicles that are not e-bikes includes one that goes over 20 mph on the motor alone.",
-      "citation": "Cal. Veh. Code 312.5 as rewritten by SB 1167 (Stats. 2026, ch. 846)",
+      "reason": "From Jan 1, 2027, SB 1167 rewrites Cal. Veh. Code 312.5. Its list of vehicles that are not e-bikes includes one that goes over 20 mph on the motor alone, and one whose motor still assists past 28 mph.",
+      "citation": "Cal. Veh. Code 312.5(c)(2), (3) as rewritten by SB 1167 (Stats. 2026, ch. 846)",
       "source_url": "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260SB1167",
       "source_field": "definition.notes",
-      "source_quote": "From Jan 1, 2027 SB 1167 rewrites 312.5 (adds 'e-bike' as a term and lists non-e-bikes: over 750 W, over 20 mph on motor alone",
-      "note": "Fourth review, Oct 19, 2026: the same notes list assist past 28 mph from 2027, but the enacted SB 1167 text could not be opened to check its wording (leginfo returned 403), so that case stays with the general fast-mode rule (can't confirm)."
+      "source_quote": "From Jan 1, 2027 SB 1167 rewrites 312.5 (adds 'e-bike' as a term and lists non-e-bikes: over 750 W, over 20 mph on motor alone, assist past 28 mph",
+      "statute_quote": "(2) A vehicle capable of attaining a speed greater than 20 miles per hour on motor power alone. (3) A vehicle with a motor capable of providing assistance when the vehicle reaches a speed exceeding 28 miles per hour.",
+      "note": "Fifth review, Oct 19, 2026: the chaptered text (Sep 30, 2026) was read in a browser on leginfo. SEC. 8 rewrites 312.5, and its subdivision (c) lists vehicles that 'are not electric bicycles under this code'. (c)(2) is a speed over 20 mph on motor power alone, and (c)(3) is assistance past 28 mph. SEC. 8 has no operative date of its own, so it takes effect Jan 1, 2027. (c)(4) also covers a vehicle the manufacturer intends to be modifiable that way, which the fast-mode questions already ask about (unlock codes, app settings, off-road modes). A text mention of an unlock mode alone is not used here, since it could be a legal Class 3 mode."
     },
     {
       "state": "MN",

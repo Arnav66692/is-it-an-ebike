@@ -97,6 +97,8 @@ export function factsEnv(f: BikeFacts): FactsEnv {
       bike_weight_lb: { kind: "num", iv: weightInterval(f) },
       label_watts: { kind: "num", iv: ratedWattsInterval(f) },
       switchable_out_of_class: { kind: "bool", v: switchableValue(f) },
+      /** The family's answer: can pedal assist go past 28 mph in any mode? */
+      assist_over_28: { kind: "bool", v: f.assistOver28 },
       has_foot_pegs: { kind: "bool", v: f.hasFootPegs },
       needs_pedal_kit: { kind: "bool", v: f.needsPedalKit },
     },
