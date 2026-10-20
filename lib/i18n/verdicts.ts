@@ -40,6 +40,12 @@ const esSubj = (c: Ctx): string => {
 const fastUnsure = (p: Params): "both" | "motor" | "assist" =>
   Number(p.motor) && Number(p.assist) ? "both" : Number(p.assist) && !Number(p.motor) ? "assist" : "motor";
 
+/** The state-record horizon sentence, shared by the state card's Watch out line and the bottom line's What's missing item. */
+const STATE_AFTER_CHECK_EN: Template = (p, c) =>
+  `These rules were last checked on ${formatDate(n(p.checked), c.lang)}. A new law could take effect before your ride date, so we can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`;
+const STATE_AFTER_CHECK_ES: Template = (p, c) =>
+  `Estas reglas se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}. Una ley nueva podría entrar en vigor antes de la fecha de tu viaje, así que solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`;
+
 /** State-law removal power for e-motos, shared by several San Diego notes (VC 22651.08). */
 const EMOTO_REMOVAL_EN =
   "police can remove an e-moto that can top 20 mph on the motor alone when the rider has no license for it (VC 22651.08).";
@@ -256,8 +262,8 @@ const EN = {
       ? "The class, tag, course, walk-on-campus, passenger-seat and e-moto rules come only from the district's web page. Only the helmet rule was found in a district regulation (AR 5142). No board policy or regulation was found for the others, and the Board has not voted on the class, tag and course rules."
       : "Only part of these rules was found in enacted text. The rest comes from an official web page.",
   bl_unverified_primary_not_found: () => "The enacted text behind these rules was not found. They come from an official page or a release.",
-  bl_state_after_check: (p, c) =>
-    `These rules were last checked on ${formatDate(n(p.checked), c.lang)}. A new law could take effect before your ride date, so we can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`,
+  bl_state_after_check: STATE_AFTER_CHECK_EN,
+  caution_state_after_check: STATE_AFTER_CHECK_EN,
 } satisfies Templates;
 
 /** Spanish must have a sentence for every English code, and no code English lacks. */
@@ -455,8 +461,8 @@ const ES = {
       ? "Las reglas de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen solo de la página web del distrito. Solo la regla del casco se encontró en un reglamento del distrito (AR 5142). No se encontró ninguna política ni reglamento de la junta para las demás, y la junta no ha votado sobre las reglas de clase, etiqueta y curso."
       : "Solo una parte de estas reglas se encontró en un texto vigente. El resto viene de una página web oficial.",
   bl_unverified_primary_not_found: () => "No se encontró el texto vigente de estas reglas. Vienen de una página o un comunicado oficial.",
-  bl_state_after_check: (p, c) =>
-    `Estas reglas se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}. Una ley nueva podría entrar en vigor antes de la fecha de tu viaje, así que solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`,
+  bl_state_after_check: STATE_AFTER_CHECK_ES,
+  caution_state_after_check: STATE_AFTER_CHECK_ES,
 } satisfies Record<keyof typeof EN, Template>;
 
 const CHANGES: Record<Lang, Record<string, string>> = {

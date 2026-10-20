@@ -23,6 +23,12 @@ export function isQuestionId(value: string): value is QuestionId {
 export const CAUTION_FAST_MODE_UNVERIFIED = "caution_fast_mode_unverified";
 
 /**
+ * The caution the state card shows when the ride date is past the state record's re-check
+ * horizon. It matches the bottom line's "stale" item, which names the same card.
+ */
+export const CAUTION_STATE_AFTER_CHECK = "caution_state_after_check";
+
+/**
  * Requirement codes that limit which streets an e-bike may use, like New York's 30 mph roads. A
  * YES with one of these can't say it covers every public street.
  */

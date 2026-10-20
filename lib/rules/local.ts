@@ -5,7 +5,7 @@ import sdJson from "@/data/rules/san_diego_local.json";
 import { addDays } from "./dates";
 import type { RawJurisdiction, RawLocalRule, RawSanDiego } from "./raw";
 import type { ClassOutcome, StateEvaluation } from "./state";
-import type { EngineInput, Line, PlaceId, Source, SourceKind, Status, Verdict } from "./types";
+import { CAUTION_STATE_AFTER_CHECK, type EngineInput, type Line, type PlaceId, type Source, type SourceKind, type Status, type Verdict } from "./types";
 
 const SD = sdJson as unknown as RawSanDiego;
 
@@ -400,7 +400,8 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
     status: outcome.status,
     reason: outcome.reason,
     requirements: outcome.requirements,
-    cautions: outcome.status === "yes" ? state.cautions : [],
+    // The state horizon line belongs to the state card, which the bottom line names for it.
+    cautions: outcome.status === "yes" ? state.cautions.filter((c) => c.code !== CAUTION_STATE_AFTER_CHECK) : [],
     notes,
     questions: outcome.status === "need_info" ? state.questions : [],
     classes: state.classes,

@@ -7,9 +7,11 @@ import { tabTap } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText, type TextSource } from "@/lib/extract/parse";
 import { t } from "@/lib/i18n/ui";
+import { renderLine } from "@/lib/i18n/verdicts";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
-import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
+import { emptyFacts, type BikeFacts, type Line, type PlaceId } from "@/lib/rules/types";
+import { classBike } from "./helpers";
 
 const DATE = "2026-10-20";
 
@@ -224,5 +226,31 @@ describe("tapping the input tab that is already open changes nothing", () => {
     expect(source).toContain("const tap = tabTap(tab, x.id);");
     expect(source).toContain("if (!tap.change) return;");
     expect(source).not.toMatch(/if \(x\.id === "type"\) onManual\(\)/);
+  });
+});
+
+describe("the state card says so when the ride is past its re-check horizon", () => {
+  it("a California ride on Nov 17, 2026 shows the horizon on the card the bottom line names", () => {
+    const date = "2026-11-17";
+    const result = evaluate({ state: "CA", riderAge: 30, rideDate: date, facts: classBike(1), places: ["city_of_san_diego"] });
+    const line = bottomLine(result, date);
+    expect(line.kind).toBe("no_unconfirmed");
+    const stale = line.missing.find((m) => m.kind === "stale");
+    expect(stale?.where).toEqual([{ scope: "state", id: "CA" }]);
+    const caution = result.state.cautions.find((c) => c.code === "caution_state_after_check");
+    expect(caution?.params).toEqual(stale?.line.params);
+    for (const lang of ["en", "es"] as const) {
+      expect(renderLine(caution as Line, lang, "California")).toBe(renderLine(stale?.line as Line, lang, "California"));
+    }
+    // The local card does not repeat it, since the bottom line names only the state card.
+    expect(result.local[0].cautions.map((c) => c.code)).not.toContain("caution_state_after_check");
+  });
+
+  it("is not shown inside the horizon, or on a card that already says no", () => {
+    const inside = evaluate({ state: "CA", riderAge: 30, rideDate: DATE, facts: classBike(1), places: [] });
+    expect(inside.state.cautions.map((c) => c.code)).not.toContain("caution_state_after_check");
+    const no = evaluate({ state: "CA", riderAge: 14, rideDate: "2026-11-17", facts: classBike(3), places: [] });
+    expect(no.state.status).toBe("no");
+    expect(no.state.cautions.map((c) => c.code)).not.toContain("caution_state_after_check");
   });
 });

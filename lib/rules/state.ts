@@ -11,11 +11,13 @@ import {
   type ConditionNode,
   type Env,
 } from "./condition";
+import { stateCheckedThrough } from "./bottomLine";
 import { getState, type AgeException, type CompiledCaution, type CompiledState } from "./compile";
 import { inWindow } from "./dates";
 import { factsEnv, ratedWattsInterval } from "./facts";
 import {
   CAUTION_FAST_MODE_UNVERIFIED,
+  CAUTION_STATE_AFTER_CHECK,
   CLASS_KEYS,
   type BikeFacts,
   type ClassNum,
@@ -498,6 +500,12 @@ export function evaluateState(input: EngineInput): StateEvaluation {
     }
     const cautions = [...outcome.cautions];
     if (cs.helmetStatus === "unknown") cautions.push(line("caution_helmet_unknown"));
+    // Past the record's re-check horizon the bottom line can't say yes, and names this card as the
+    // reason. The card says so too, so the two never disagree on screen.
+    const through = stateCheckedThrough(cs.lastChecked);
+    if (date > through && outcome.status !== "no" && outcome.status !== "not_ebike") {
+      cautions.push(line(CAUTION_STATE_AFTER_CHECK, { checked: cs.lastChecked, through }));
+    }
     if (outcome.status === "no" && outcome.reason.code === "no_any_class") {
       allNotes.unshift(...outcomes.map((o) => ({ ...o.reason, params: { ...o.reason.params, cls: o.cls } })));
     }
