@@ -150,6 +150,8 @@ const en = {
   flag_wheel_sizes_differ: "The text names different wheel sizes, maybe for other bikes on the page. None was used, so you may be asked for the wheel size.",
   flag_throttle_unclear: "The text says both that it has a throttle and that it has none. Pick the answer for this bike.",
   flag_several_weights: "The text gives more than one weight for the bike. None was used, so you may be asked about its weight.",
+  flag_mentions_trike: "The text mentions a trike or three wheels, maybe only in a title or a slogan. The number of wheels was left blank for you to fill in.",
+  flag_wheel_size_unclear: "The text names a wheel size, but maybe not for this bike's wheels. None was used, so you may be asked for the wheel size.",
   flag_other_products_skipped: "Text after a heading like \"You may also like\" was not read, because it describes other products.",
 };
 
@@ -303,6 +305,8 @@ const es: Record<UiKey, string> = {
   flag_wheel_sizes_differ: "El texto menciona ruedas de distintos tamaños, quizá de otras bicicletas de la página. No se usó ninguno, así que puede que te preguntemos el tamaño.",
   flag_throttle_unclear: "El texto dice que tiene acelerador y también que no tiene. Elige la respuesta para esta bicicleta.",
   flag_several_weights: "El texto da más de un peso para la bicicleta. No se usó ninguno, así que puede que te preguntemos cuánto pesa.",
+  flag_mentions_trike: "El texto menciona un triciclo o tres ruedas, quizá solo en un título o un lema. El número de ruedas quedó en blanco para que lo completes.",
+  flag_wheel_size_unclear: "El texto menciona un tamaño de rueda, pero quizá no el de las ruedas de esta bicicleta. No se usó ninguno, así que puede que te preguntemos el tamaño.",
   flag_other_products_skipped: "No se leyó el texto después de un título como \"You may also like\", porque describe otros productos.",
 };
 

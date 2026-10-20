@@ -363,34 +363,71 @@ function parseModesAndShape(text: string, out: Extraction, source: TextSource): 
     out.flags.push("sold_as_motorbike");
   }
 
+  // A trike word is shown to the family but never fills in the number of wheels. Store pages use
+  // it in titles, tags and slogans like "the bike that replaces the trike", and a wrong 3 can turn
+  // off a two-wheeler rule. Left blank, the number of wheels is asked wherever it matters.
   const head = source === "listing" ? text.slice(0, LISTING_HEAD) : text;
   const trike = firstMatch(head, /\b(tricycle|trike|three[- ]wheel(?:ed|er)?|3[- ]wheel(?:ed|er)?)\b/i);
   if (trike) {
-    out.facts.wheelCount = 3;
     push(out.evidence, "wheelCount", snippet(text, trike.index, trike[0].length));
+    out.flags.push("mentions_trike");
   }
 }
 
+/** Inch marks: straight and curly quotes, two apostrophes, the double prime, "inch" and "in". */
+const INCH = String.raw`(?:"|”|''|″|-?\s?inch(?:es)?\b|-?\s?in\b\.?)`;
+/** A wheel size in a sentence like this is about an upgrade, a kit or another model, not this bike. */
+const OTHER_WHEEL_CONTEXT =
+  /\b(upgrades?|kits?|fits?|compatible|accessor(?:y|ies)|sold separately|also (?:available|comes?|fits?)|available in|options?|optional|grows? with|swap|convert(?:s|ible)?|replacement|spare)\b/;
+/** Inch figures for other parts or sizes, which are never wheel sizes. */
+const NOT_A_WHEEL_BEFORE =
+  /\b(height|length|width|wide|clearance|reach|stack|standover|seat|saddle|handlebars?|stem|frame|display|screen|lcd|tft|cranks?)\b[^.]{0,12}$/;
+const NOT_A_WHEEL_AFTER = /^\s?(frame|seat|saddle|screen|display|lcd|tft|handlebars?|stem|cranks?|wide|long|tall|high|deep|step)/;
+
+/**
+ * Reads the wheel size. A size stated for this bike's wheels is "sure". A bare inch figure, or a
+ * size in a sentence about an upgrade kit or another model, is only "maybe". A maybe can never set
+ * the size, but when it differs from a sure size the listing is asked about instead of guessed.
+ */
 function parseWheels(text: string, out: Extraction, source: TextSource): void {
-  const sizes: number[] = [];
-  const add = (size: number, index: number, length: number) => {
+  const sure: number[] = [];
+  const maybe: number[] = [];
+  const add = (size: number, index: number, length: number, stated: boolean) => {
     if (size < 10 || size > 29) return;
-    sizes.push(size);
+    const { start, stop } = clauseAround(text, index, index + length);
+    const other = source === "listing" && OTHER_WHEEL_CONTEXT.test(slice(text, start, stop));
+    (stated && !other ? sure : maybe).push(size);
     push(out.evidence, "wheelSize", snippet(text, index, length));
   };
+  const each = (re: RegExp, stated: boolean, keep: (index: number, end: number) => boolean = () => true) => {
+    for (const m of text.matchAll(re)) {
+      if (m.index !== undefined && keep(m.index, m.index + m[0].length)) add(Number(m[1]), m.index, m[0].length, stated);
+    }
+  };
   // "20 x 4.0" or 26" x 2.25" tire sizes. The width is 1 to 5 inches, which skips "15x100mm"
-  // axles and "9/16 x 20 TPI" threads.
-  for (const m of text.matchAll(/(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?(?:"|”|'')?\s?x\s?[1-5](?:\.\d{1,3})?(?:"|”|'')?(?![\d.])/gi)) {
-    if (m.index !== undefined) add(Number(m[1]), m.index, m[0].length);
-  }
-  // "20-inch wheels", 16" tires.
-  for (const m of text.matchAll(/(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?(?:"|”|''|-?\s?inch(?:es)?)\s?(?:fat\s)?(?:tires?|tyres?|wheels?)\b/gi)) {
-    if (m.index !== undefined) add(Number(m[1]), m.index, m[0].length);
-  }
+  // axles and "9/16 x 20 TPI" threads. A period after the width can end the sentence.
+  each(new RegExp(String.raw`(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?${INCH}?\s?x\s?[1-5](?:\.\d{1,3})?(?:"|”|''|″)?(?!\d|\.\d)`, "gi"), true);
+  // "20-inch wheels", 16" tires, 12″ wheels.
+  each(new RegExp(String.raw`(?<![\/\d.])\b([12][0-9])(?:\.\d)?\s?${INCH}\s?(?:fat\s)?(?:tires?|tyres?|wheels?|rims?)\b`, "gi"), true);
+  // "Wheel size: 12 in", "Tires: 20 inch", "Wheel diameter 16".
+  each(new RegExp(String.raw`\b(?:wheels?|tires?|tyres?|rims?)(?:\s+(?:size|diameter))?\s*[:\-]?\s*([12][0-9])(?:\.\d)?\s?${INCH}`, "gi"), true);
+  each(/\b(?:wheel|tire|tyre|rim)\s+(?:size|diameter)\s*[:\-]?\s*([12][0-9])(?:\.\d)?(?!\d|\.\d|\s?(?:mm|cm|x\b))/gi, true);
+  // A bare 16" or 16-inch, which might be the wheels or might not.
+  each(
+    new RegExp(String.raw`(?<![\/\d.'])\b([12][0-9])(?:\.\d)?\s?${INCH}`, "gi"),
+    false,
+    (index, end) => !NOT_A_WHEEL_BEFORE.test(slice(text, index - 30, index)) && !NOT_A_WHEEL_AFTER.test(slice(text, end, end + 12)),
+  );
   const c700 = firstMatch(text, /\b700\s?c\b/i);
-  if (c700) add(28, c700.index, c700[0].length);
-  if (sizes.length === 0) return;
-  if (new Set(sizes).size > 1) {
+  if (c700) add(28, c700.index, c700[0].length, true);
+
+  const all = new Set([...sure, ...maybe]);
+  if (all.size === 0) return;
+  if (sure.length === 0) {
+    out.flags.push("wheel_size_unclear");
+    return;
+  }
+  if (all.size > 1) {
     // A store page can name other products' wheels, so mixed sizes in a listing are asked, not guessed.
     if (source === "listing") {
       out.flags.push("wheel_sizes_differ");
@@ -398,8 +435,8 @@ function parseWheels(text: string, out: Extraction, source: TextSource): void {
     }
     out.flags.push("several_wheel_sizes");
   }
-  out.facts.wheelFrontIn = Math.max(...sizes);
-  out.facts.wheelRearIn = Math.min(...sizes);
+  out.facts.wheelFrontIn = Math.max(...sure);
+  out.facts.wheelRearIn = Math.min(...sure);
 }
 
 /**

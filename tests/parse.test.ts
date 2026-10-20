@@ -126,10 +126,14 @@ describe("listings", () => {
     expect(e.facts.wheelFrontIn).toBe(20);
     expect(e.facts.wheelRearIn).toBe(20);
   });
-  it("only trusts trike words near the top of a listing, where the product is described", () => {
+  it("only notes trike words near the top of a listing, and never fills in the number of wheels", () => {
     const menu = "Shop all bikes. " + "x".repeat(500) + " Cargo Family Tricycle Folding";
     expect(parseSpecText(menu, "listing").facts.wheelCount).toBeUndefined();
-    expect(parseSpecText("Liberty Trike, a three-wheel e-bike", "listing").facts.wheelCount).toBe(3);
+    expect(parseSpecText(menu, "listing").flags).not.toContain("mentions_trike");
+    const trike = parseSpecText("Liberty Trike, a three-wheel e-bike", "listing");
+    expect(trike.facts.wheelCount).toBeUndefined();
+    expect(trike.flags).toContain("mentions_trike");
+    expect(trike.evidence.wheelCount?.[0].text).toContain("Trike");
   });
   it("returns nothing for empty input", () => {
     expect(parseSpecText("   ", "listing").facts).toEqual({});
@@ -298,5 +302,51 @@ describe("fourth review fixes: the bike's own weight", () => {
     expect(two.flags).toContain("several_weights");
     expect(two.evidence.weightLb?.length).toBe(2);
     expect(allEvidenceGrounded(two)).toBe(true);
+  });
+});
+
+describe("fourth review fixes: this bike's wheel size", () => {
+  it("reads common ways of stating the size", () => {
+    const cases: [string, number][] = [
+      ["Wheel size: 12 in", 12],
+      ["12″ wheels", 12],
+      ["Tires: 20 x 4.0.", 20],
+      ["Wheel size: 20. Class 2.", 20],
+      ["Tires: 26in x 2.25", 26],
+      ['17" frame, 26" wheels', 26],
+      ["Seat height: 25 inches. 20 x 4.0 tires", 20],
+      ["Fits riders 4'10\" to 5'6\". 20 x 4.0 tires", 20],
+    ];
+    for (const [text, size] of cases) {
+      const e = parseSpecText(text, "listing");
+      expect(e.facts.wheelFrontIn, text).toBe(size);
+      expect(e.facts.wheelRearIn, text).toBe(size);
+    }
+  });
+  it("never takes a size from an upgrade kit or a bare inch figure, and asks when it differs", () => {
+    const kit = parseSpecText(
+      "Zoomy 12 Kids E-Bike. Wheel size: 12 in. Class 1 pedal assist, no throttle. 250W rated. Grows with your child: the frame also fits our 16-inch wheels upgrade kit.",
+      "listing",
+    );
+    expect(kit.facts.wheelFrontIn).toBeUndefined();
+    expect(kit.flags).toContain("wheel_sizes_differ");
+    const onlyKit = parseSpecText("Class 1 kids e-bike. The frame also fits our 16-inch wheels upgrade kit.", "listing");
+    expect(onlyKit.facts.wheelFrontIn).toBeUndefined();
+    expect(onlyKit.flags).toContain("wheel_size_unclear");
+    const bare = parseSpecText('Kids 16" e-bike. Class 1.', "listing");
+    expect(bare.facts.wheelFrontIn).toBeUndefined();
+    expect(bare.flags).toContain("wheel_size_unclear");
+    const options = parseSpecText("Available in 20 or 24 inch wheels", "listing");
+    expect(options.facts.wheelFrontIn).toBeUndefined();
+    expect(allEvidenceGrounded(kit) && allEvidenceGrounded(bare)).toBe(true);
+  });
+  it("a trike slogan never makes a two-wheeler a trike", () => {
+    const e = parseSpecText(
+      "Zoomy 12 Kids E-Bike - the bike that replaces the trike\nClass 1 pedal assist e-bike for ages 5 to 8. No throttle. 250W rated motor. Top assisted speed 10 mph. Tires: 12 x 2.4 knobby.",
+      "listing",
+    );
+    expect(e.facts.wheelCount).toBeUndefined();
+    expect(e.facts.wheelFrontIn).toBe(12);
+    expect(e.flags).toContain("mentions_trike");
   });
 });

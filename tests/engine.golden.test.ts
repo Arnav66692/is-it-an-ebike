@@ -324,10 +324,15 @@ describe("second review fixes (Oct 19, 2026)", () => {
   });
 
   it("Montana, New Jersey and Rhode Island can't confirm an e-trike, since their definitions say two wheels", () => {
-    const trike = fromText("Class 1 electric trike. 500W rated motor. Pedal assist up to 20 mph. No throttle. 20 x 3.0 tires.");
-    expect(trike.wheelCount).toBe(3);
-    expect(trike.wheelFrontIn).toBe(20);
+    // The trike word never fills in the number of wheels (fourth review), so these states ask first.
+    const read = fromText("Class 1 electric trike. 500W rated motor. Pedal assist up to 20 mph. No throttle. 20 x 3.0 tires.");
+    expect(read.wheelCount).toBeNull();
+    expect(read.wheelFrontIn).toBe(20);
+    const trike = { ...read, wheelCount: 3 as const };
     for (const state of ["MT", "NJ", "RI", "AL"]) {
+      const ask = run(state, 30, read);
+      expect(ask.state.status, state).toBe("need_info");
+      expect(ask.state.questions, state).toContain("wheels");
       const r = run(state, 30, trike);
       expect(r.state.status, state).toBe("cant_confirm");
       expect(r.state.reason.code, state).toBe("caution_trike");

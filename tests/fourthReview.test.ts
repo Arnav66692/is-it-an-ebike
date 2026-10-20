@@ -93,3 +93,27 @@ describe("weights", () => {
     expect(kind).not.toBe("yes");
   });
 });
+
+describe("wheel sizes and trike words", () => {
+  it("Texas, age 8: a 12 in kids bike that fits a 16 in upgrade kit is asked about, never a YES", () => {
+    const text =
+      "Zoomy 12 Kids E-Bike. Wheel size: 12 in. Class 1 pedal assist, no throttle. 250W rated. Grows with your child: the frame also fits our 16-inch wheels upgrade kit.";
+    const { facts, result, kind } = flow(text, "TX", 8, { hasPedals: true });
+    expect(facts.wheelFrontIn).toBeNull();
+    expect(result.state.status).toBe("need_info");
+    expect(result.state.questions).toContain("wheels");
+    expect(kind).not.toBe("yes");
+    // The true 12 in answer gives the right result.
+    expect(flow(text, "TX", 8, { hasPedals: true, wheelFrontIn: 12, wheelRearIn: 12, wheelCount: 2 }).kind).toBe("no_illegal");
+  });
+  it("Arizona, age 7: 'replaces the trike' leaves the wheel count to the family, and a 12 in two-wheeler is not an e-bike", () => {
+    const text =
+      "Zoomy 12 Kids E-Bike - the bike that replaces the trike\nClass 1 pedal assist e-bike for ages 5 to 8. No throttle. 250W rated motor. Top assisted speed 10 mph. Tires: 12 x 2.4 knobby.";
+    const { facts, result, kind } = flow(text, "AZ", 7);
+    expect(facts.wheelCount).toBeNull();
+    expect(result.state.status).toBe("need_info");
+    expect(result.state.questions).toContain("wheels");
+    expect(kind).not.toBe("yes");
+    expect(flow(text, "AZ", 7, { wheelCount: 2 }).result.state.status).toBe("not_ebike");
+  });
+});
