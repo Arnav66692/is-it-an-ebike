@@ -294,19 +294,31 @@ function parseThrottle(text: string, out: Extraction): void {
   else if (yes.length > 0) out.facts.hasThrottle = true;
 }
 
+/**
+ * Text that says this bike has no pedals. "Includes pedals: No" is about what ships in the box,
+ * like "pedals not included", so it is left to the user instead.
+ */
 const PEDALS_NONE =
-  /\b(no pedals|without (?:any )?pedals|pedal-?less|pedalless|pedal[- ]free|pedals\s*[:\-]\s*(?:none|no)|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals)\b/i;
+  /\b(no pedals|without (?:any )?pedals|pedal-?less|pedalless|pedal[- ]free|(?<!\binclud(?:es|ed|ing)?\s)pedals\s*[:\-?]\s*(?:none|no)|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none))\b/i;
+
+/** Words after "pedals" that answer no, as in "Pedals: N/A", "Pedals? No" or "Pedals included: no". */
+const PEDALS_ANSWER_NO = /^\s*(?:included|installed|provided|attached)?\s*[:\-?(]\s*(?:no|none|n\/a)\b/;
+/** Words after "pedals" that leave it open, as in "Pedals (sold separately)" or "Pedals: Optional". */
+const PEDALS_MAYBE_SHIPPED =
+  /^\s*(?:included|installed)?\s*[:\-(]?\s*(?:are |is )?(?:not included|not installed|sold separately|available separately|optional|an option|extra|add-on)/;
 
 /**
  * True when this mention doesn't show bicycle pedals: "brake pedal", "no need to pedal", "no
- * pedal assist", "Pedals: N/A" or "pedals not included". Those leave the answer to the user.
+ * pedal assist", "Pedals: N/A", "pedals not included", "Pedals (sold separately)" or "optional
+ * pedals". Those leave the answer to the user.
  */
 function pedalNegated(text: string, index: number, end: number): boolean {
   const before = slice(text, index - 20, index);
-  const after = slice(text, end, end + 20);
+  const after = slice(text, end, end + 24);
   return (
-    /\b(brake|foot|no need to|without|no|not|non|never|zero|instead of|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/.test(before) ||
-    /^\s*(?:[:\-]\s*(?:no|none|n\/a)\b|[:\-]?\s*(?:are |is )?(?:not included|sold separately))/.test(after)
+    /\b(brake|foot|no need to|without|no|not|non|never|zero|instead of|optional|add-on|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/.test(before) ||
+    PEDALS_ANSWER_NO.test(after) ||
+    PEDALS_MAYBE_SHIPPED.test(after)
   );
 }
 

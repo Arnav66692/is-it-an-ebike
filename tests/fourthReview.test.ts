@@ -54,3 +54,22 @@ describe("a negated throttle after a speed", () => {
     expect(html).toContain('value="20"');
   });
 });
+
+describe("pedals in a FAQ or an options list", () => {
+  const base = "Class 2 electric bike. 500W rated motor. Thumb throttle up to 20 mph. 20 x 4.0 tires.";
+  it("'Does it have pedals? No.' is a no-pedal machine, never a YES", () => {
+    const { facts, result, kind } = flow(`${base} FAQ: Does it have pedals? No.`, "CA", 14, {}, ["encinitas"]);
+    expect(facts.hasPedals).toBe(false);
+    expect(result.state.status).toBe("not_ebike");
+    expect(kind).toBe("no_illegal");
+  });
+  it("'Pedals Included: No' and 'Pedals (sold separately)' leave pedals to the family, so no YES yet", () => {
+    for (const tail of ["Pedals Included: No", "Includes pedals: No", "Pedals (sold separately)", "Pedals: Optional"]) {
+      const { facts, result, kind } = flow(`${base} ${tail}`, "CA", 14, {}, ["encinitas"]);
+      expect(facts.hasPedals, tail).toBeNull();
+      expect(result.state.status, tail).toBe("cant_confirm");
+      expect(result.state.reason.code, tail).toBe("pedals_unknown");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+});

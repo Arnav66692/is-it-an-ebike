@@ -245,3 +245,29 @@ describe("fourth review fixes: a negated throttle after a speed", () => {
     expect(parseSpecText("No throttle. Pedal assist to 20 mph.", "listing").facts.assistMph).toBe(20);
   });
 });
+
+describe("fourth review fixes: pedals that may not be on the bike", () => {
+  it("leaves the answer open for pedals sold separately, optional or not included, in any phrasing", () => {
+    for (const text of [
+      "Pedals (sold separately)",
+      "Pedals: Optional",
+      "Optional pedals",
+      "Pedals - optional",
+      "Pedals Included: No",
+      "Includes pedals: No",
+      "Pedals included? No",
+    ]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBeUndefined();
+    }
+  });
+  it("reads a FAQ answer of no as no pedals", () => {
+    for (const text of ["FAQ: Does it have pedals? No.", "Does this bike have pedals? No", "Pedals? No."]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBe(false);
+    }
+  });
+  it("still reads plain pedal mentions and a yes", () => {
+    for (const text of ["Does it have pedals? Yes, with 7 speeds.", "Pedals: Yes", "Folding pedals", "Pedals (aluminum)", "Pedals included"]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBe(true);
+    }
+  });
+});
