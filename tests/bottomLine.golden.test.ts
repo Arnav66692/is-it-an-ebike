@@ -239,6 +239,20 @@ describe("bottom line, third review fixes (Oct 19, 2026)", () => {
     }
   });
 
+  it("an adult in the City of San Diego gets a YES that says to wear a helmet (SDMC 84.21(a) and (c))", () => {
+    const result = evaluate({ state: "CA", riderAge: 30, rideDate: TODAY_PT, facts: classBike(1), places: ["city_of_san_diego"] });
+    const city = result.local[0];
+    expect(city.status).toBe("yes");
+    expect(city.requirements.map((l) => l.code)).toEqual(["sd_helmet_all_riders"]);
+    expect(city.requirements[0].source?.citation).toContain("SDMC 84.21(a) and (c)");
+    const bl = bottomLine(result, TODAY_PT);
+    expect(bl.kind).toBe("yes");
+    expect(bl.requirements.map((l) => l.code)).toEqual(["sd_helmet_all_riders"]);
+    // Other places have no such rule, and a no still carries no requirements.
+    expect(check("CA", 30, classBike(1), ["encinitas"]).requirements).toEqual([]);
+    expect(check("CA", 11, classBike(2), ["city_of_san_diego"]).requirements).toEqual([]);
+  });
+
   it("a rule that says no still says no after the horizon", () => {
     expect(at14Class3("2029-12-31")).toBe("no_illegal");
   });

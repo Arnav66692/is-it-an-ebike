@@ -147,6 +147,8 @@ const EN = {
   sd_age_12: () => "SDMC 84.19 bans only riders under 12. A 12-year-old may ride Class 1 or 2.",
   sd_emoto: () =>
     `The City has no e-moto ordinance of its own. Under state law, ${EMOTO_REMOVAL_EN}`,
+  sd_helmet_all_riders: () =>
+    "Wear a properly fitted and fastened helmet at all times while riding, at any age. SDMC 84.21 applies to every e-bike rider and can be read to require one.",
   sd_passengers: () =>
     "Passengers only if the e-bike was designed and manufactured to carry more than one person and has a separate seat or saddle for each passenger.",
   sd_sidewalks: () =>
@@ -318,6 +320,8 @@ const ES = {
   sd_warning_period: (p, c) => `Solo advertencias hasta el ${formatDate(n(p.from), c.lang)}. Después empiezan las multas.`,
   sd_age_12: () => "La sección 84.19 del código municipal (SDMC) prohíbe solo a menores de 12 años. Alguien de 12 años puede usar una Clase 1 o 2.",
   sd_emoto: () => `La Ciudad no tiene una ordenanza propia sobre motos eléctricas. Según la ley estatal, ${EMOTO_REMOVAL_ES}`,
+  sd_helmet_all_riders: () =>
+    "Usa un casco bien ajustado y abrochado todo el tiempo que andes, a cualquier edad. La sección 84.21 del código municipal (SDMC) se aplica a todos los que manejan una bicicleta eléctrica y puede leerse como que lo exige.",
   sd_passengers: () =>
     "Pasajeros solo si la bicicleta eléctrica fue diseñada y fabricada para llevar a más de una persona y tiene un asiento o sillín aparte para cada pasajero.",
   sd_sidewalks: () =>

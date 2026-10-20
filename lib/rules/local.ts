@@ -97,6 +97,18 @@ function line(code: string, params?: Line["params"], rule?: RawLocalRule): Line 
   return { code, params, source: rule ? sourceOf(rule) : undefined, detail: null };
 }
 
+/**
+ * Rules every rider at this place must follow on a yes, whatever their age. Today that is the
+ * City of San Diego helmet rule, SDMC 84.21(a) and (c), which can be read to cover every operator.
+ */
+function placeRequirements(j: RawJurisdiction, date: string): Line[] {
+  const helmet = ruleNamed(j, "helmet_all_operators");
+  if (helmet && (helmet.effective_date === null || date >= helmet.effective_date)) {
+    return [line("sd_helmet_all_riders", undefined, helmet)];
+  }
+  return [];
+}
+
 interface LocalRuleResult {
   status: "pass" | "no" | "cant_confirm";
   reason: Line | null;
@@ -159,7 +171,7 @@ function localRule(place: PlaceId, j: RawJurisdiction, cls: number, age: number,
   if (power && classOneOrTwo && date < UNDER_12_RULE_ENDS && age < UNDER_12_AGE) {
     return { status: "cant_confirm", reason: line("local_under_12_unclear", { place, cls }, power), requirements: [] };
   }
-  return pass;
+  return { ...pass, requirements: placeRequirements(j, date) };
 }
 
 function localOutcome(place: PlaceId, j: RawJurisdiction, o: ClassOutcome, age: number, date: string): ClassOutcome {

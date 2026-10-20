@@ -123,14 +123,14 @@
       ],
       "helmet_rules": [
         {
-          "rule": "state_helmet_rules_apply",
+          "rule": "helmet_all_operators",
           "applies_to": ["all_ebikes"],
-          "citation": "SDMC 84.21(a) (O-22123 N.S.), Cal. Veh. Code 21212, 21213",
+          "citation": "SDMC 84.21(a) and (c) (O-22123 N.S.), Cal. Veh. Code 21212, 21213",
           "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
-          "quote": "All operators and passengers of electric bicycles shall comply with the helmet requirements in the California Vehicle Code, including sections 21212 and 21213. Helmets shall be properly fitted and fastened at all times while operating the electric bicycle.",
+          "quote": "All operators and passengers of electric bicycles shall comply with the helmet requirements in the California Vehicle Code, including sections 21212 and 21213. Helmets shall be properly fitted and fastened at all times while operating the electric bicycle. ... Section 84.21 applies to all electric bicycle operators.",
           "effective_date": "2026-08-13",
           "source_type": "ordinance_text",
-          "notes": "Incorporates state helmet law, under 18 on any e-bike and all ages on Class 3 (VC 21212(a), 21213(b)). Recital F says the Council intends to reinforce existing state requirements. The second sentence could be read as a helmet rule for every operator, though the natural reading only requires required helmets to be fitted and fastened. So the app never says adults may ride without a helmet in the City. Repealed Jan 1, 2029 with the rest of O-22123 unless the VC 21214.7 sunset is extended."
+          "notes": "84.21(a) incorporates state helmet law, under 18 on any e-bike and all ages on Class 3 (VC 21212(a), 21213(b)), and says helmets shall be properly fitted and fastened at all times while operating. 84.21(c) says the section applies to all electric bicycle operators. Recital F says the Council intends to reinforce existing state requirements, so one reading only requires required helmets to be fitted and fastened, but (c) supports a helmet rule for every operator. That question is open, so a City answer always lists a helmet for every rider, at any age (lib/rules/local.ts, sd_helmet_all_riders). Text read in the 8-2026 SDMC Ch. 8 Art. 4 PDF on Oct 19, 2026, matching O-22123 N.S. page 4. The section ends Jan 1, 2029 with the rest of O-22123 unless the VC 21214.7 sunset is extended. The app keeps the helmet line after that, since wearing one is never wrong."
         }
       ],
       "emoto_enforcement": [
