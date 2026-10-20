@@ -1,6 +1,6 @@
 # Is it an e-bike?
 
-A free phone page that checks one e-bike for one rider. Pick the state and the rider's age, then show it the bike's class label, paste the product link, or type the facts in. It answers in English or Spanish, with the law behind every line. In San Diego County it also checks the City of San Diego, Carlsbad, Encinitas, Solana Beach, Del Mar, unincorporated county areas and SDUHSD campuses.
+A free phone page that checks one e-bike for one rider. Pick the state and the rider's age, then show it the bike's class label, paste the product link, or type the facts in. It answers in English or Spanish, with the law behind every line. In San Diego County it also checks 18 cities (San Diego, Carlsbad, Chula Vista, Coronado, Del Mar, El Cajon, Encinitas, Escondido, Imperial Beach, La Mesa, Lemon Grove, National City, Oceanside, Poway, San Marcos, Santee, Solana Beach and Vista), unincorporated county areas and SDUHSD campuses.
 
 Built for Neighborhood Hacks 2026 (Oct 16 to 23, 2026).
 
@@ -72,7 +72,7 @@ npm run results
 
 | Path | What it is |
 |---|---|
-| `data/rules/` | The verified rules table: 50 states plus DC, and 7 San Diego records with their primary sources |
+| `data/rules/` | The verified rules table: 50 states plus DC, and 20 San Diego County records with their primary sources |
 | `data/overlay.json` | Dated rule changes, supervision exceptions and a few definition rules from the verified notes, each pointing back to its source line |
 | `lib/rules/` | The engine: conditions, facts, state rules, San Diego layer, and the bottom line |
 | `lib/extract/` | Text parser for labels and listings, and the listing fetcher |

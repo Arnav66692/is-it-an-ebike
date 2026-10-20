@@ -155,7 +155,7 @@ const en = {
   flyer: "Print a QR flyer",
   howTitle: "How it works",
   howBody:
-    "A fixed rules table makes every call. It covers all 50 states and Washington, DC, plus seven San Diego County places. The app only reads facts from the label or listing. It never guesses a class, and it says \"can't confirm\" when the facts can't support an answer. Facts it reads are marked, and the answer can't say YES until you check each one against the bike.",
+    "A fixed rules table makes every call. It covers all 50 states and Washington, DC, plus 20 San Diego County places. The app only reads facts from the label or listing. It never guesses a class, and it says \"can't confirm\" when the facts can't support an answer. Facts it reads are marked, and the answer can't say YES until you check each one against the bike.",
   privacyTitle: "Privacy",
   privacyBody: "No accounts. Label photos never leave your phone. Product links are fetched once and nothing is stored.",
   dataNote:
@@ -343,7 +343,7 @@ const es: Record<UiKey, string> = {
   flyer: "Imprimir un volante con código QR",
   howTitle: "Cómo funciona",
   howBody:
-    "Una tabla fija de reglas toma cada decisión. Cubre los 50 estados y el Distrito de Columbia, además de siete lugares del condado de San Diego. La app solo lee datos de la etiqueta o del anuncio. Nunca adivina una clase, y dice \"no se puede confirmar\" cuando los datos no alcanzan para responder. Los datos que lee quedan marcados, y la respuesta no puede decir SÍ hasta que compares cada uno con la bicicleta.",
+    "Una tabla fija de reglas toma cada decisión. Cubre los 50 estados y el Distrito de Columbia, además de 20 lugares del condado de San Diego. La app solo lee datos de la etiqueta o del anuncio. Nunca adivina una clase, y dice \"no se puede confirmar\" cuando los datos no alcanzan para responder. Los datos que lee quedan marcados, y la respuesta no puede decir SÍ hasta que compares cada uno con la bicicleta.",
   privacyTitle: "Privacidad",
   privacyBody: "Sin cuentas. Las fotos de la etiqueta nunca salen de tu teléfono. Los enlaces se abren una vez y no se guarda nada.",
   dataNote:

@@ -31,6 +31,10 @@ interface OcrResult {
   pass: boolean;
 }
 
+/** The San Diego County records and how each was checked, read from the rules table itself. */
+const sdRecords = (read<{ jurisdictions: { verification_level: string }[] }>("data/rules/san_diego_local.json")?.jurisdictions ?? []);
+const verifiedRecords = sdRecords.filter((j) => j.verification_level === "primary_verified").length;
+
 function commit(): string {
   try {
     return execSync("git rev-parse --short HEAD", { cwd: root }).toString().trim();
@@ -166,7 +170,7 @@ ${vitest ? `Full test suite: ${vitest.numPassedTests} of ${vitest.numTotalTests}
 
 Mutation check, done once by hand on Oct 17. Turning off the never-legal rule, or reading "less than 750 W" as "at most 750 W", each made the false-legal test fail. So the gate can catch real mistakes.
 
-**What this proves, and what it doesn't.** The tests prove the engine matches the rules table. They don't prove the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (\`data/rules/verification_report.md\`, \`data/rules/corrections.json\`). On Oct 19, 2026 an independent skeptic pass reread every San Diego record against enacted ordinance, code, board and statute text. Six records are \`primary_verified\`. SDUHSD is \`primary_partial\`, because its class, tag and course rules are only on the district's web page. Each record lists its primary sources in \`data/rules/san_diego_local.json\`. A Bike Coalition or police review of the table is still to do.
+**What this proves, and what it doesn't.** The tests prove the engine matches the rules table. They don't prove the table matches the law. The state table was checked against statute text on Oct 16, 2026 in two verifier rounds (\`data/rules/verification_report.md\`, \`data/rules/corrections.json\`). On Oct 19, 2026 an independent skeptic pass reread every San Diego record against enacted ordinance, code, board and statute text. On Oct 20, 2026 thirteen more cities were added (Chula Vista, Coronado, El Cajon, Escondido, Imperial Beach, La Mesa, Lemon Grove, National City, Oceanside, Poway, San Marcos, Santee and Vista), each read in enacted code or ordinance text and then reread by an independent second pass. ${verifiedRecords} of ${sdRecords.length} records are \`primary_verified\`. SDUHSD is \`primary_partial\`, because its class, tag and course rules are only on the district's web page. Each record lists its primary sources in \`data/rules/san_diego_local.json\`. A Bike Coalition or police review of the table is still to do.
 
 ## Bottom line
 
