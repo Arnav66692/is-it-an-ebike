@@ -92,6 +92,8 @@ const accuracy = {
     by_status: matrix.byStatus,
     false_legal: matrix.falseLegal.length,
     missed_yes: matrix.missedYes.length,
+    hedged: matrix.hedged.length,
+    answer_cards: matrix.answerCards,
   },
   bottom_line: {
     cases: bottom.cases,
@@ -110,6 +112,8 @@ const accuracy = {
     wrong_kind: bottom.wrongKind.length,
     missing_caveat: bottom.missingCaveat.length,
     rendered_cards: bottom.renderedCards,
+    hedged: bottom.hedged.length,
+    answer_cards: bottom.answerCards,
   },
   tests: vitest
     ? { total: vitest.numTotalTests, passed: vitest.numPassedTests, failed: vitest.numFailedTests }
@@ -153,14 +157,17 @@ An independent checker in \`tests/oracle.ts\` reads the raw JSON itself and list
 |---|---|
 | **False legal** (engine says yes, table gives a reason for no) | **${matrix.falseLegal.length}** |
 | Missed yes (engine refuses, table gives no reason to) | ${matrix.missedYes.length} |
+| Rendered place card whose answer is not a plain YES or NO, or leads with a hedge | ${matrix.hedged.length} |
 
-| Verdict | Cases | Share |
-|---|---|---|
-| Yes | ${s.yes.toLocaleString("en-US")} | ${pct(s.yes, matrix.cases)} |
-| No (rider not allowed) | ${s.no.toLocaleString("en-US")} | ${pct(s.no, matrix.cases)} |
-| Not an e-bike | ${s.not_ebike.toLocaleString("en-US")} | ${pct(s.not_ebike, matrix.cases)} |
-| Can't confirm | ${s.cant_confirm.toLocaleString("en-US")} | ${pct(s.cant_confirm, matrix.cases)} |
-| Follow-up question needed | ${s.need_info.toLocaleString("en-US")} | ${pct(s.need_info, matrix.cases)} |
+Every place card answers YES or NO. Only an allowed card is YES. A card that is not allowed, not an e-bike, can't be confirmed or still has a question open is NO, with a plain reason under it, like "We can't confirm it's legal in South Carolina." The engine decides exactly as before, only the words changed. The check renders ${matrix.answerCards.toLocaleString("en-US")} distinct place cards from these cases, each in English and Spanish, and fails any card whose headline is not YES or NO, whose mark or reason line doesn't match it, or that gives a hedge like "Can't confirm", "unsure" or "not sure" as the answer. The "Not sure" choice on a follow-up question is a question, not an answer, and it leads to NO.
+
+| Engine verdict | Shown as | Cases | Share |
+|---|---|---|---|
+| Allowed | YES | ${s.yes.toLocaleString("en-US")} | ${pct(s.yes, matrix.cases)} |
+| Rider not allowed | NO | ${s.no.toLocaleString("en-US")} | ${pct(s.no, matrix.cases)} |
+| Not an e-bike | NO | ${s.not_ebike.toLocaleString("en-US")} | ${pct(s.not_ebike, matrix.cases)} |
+| Can't confirm it's legal | NO | ${s.cant_confirm.toLocaleString("en-US")} | ${pct(s.cant_confirm, matrix.cases)} |
+| Follow-up question still open | NO until it is answered | ${s.need_info.toLocaleString("en-US")} | ${pct(s.need_info, matrix.cases)} |
 
 ${vitest ? `Full test suite: ${vitest.numPassedTests} of ${vitest.numTotalTests} tests passed.` : "Run `npm run results` to add the full test suite count."}
 
@@ -170,7 +177,7 @@ Mutation check, done once by hand on Oct 17. Turning off the never-legal rule, o
 
 ## Bottom line
 
-Under every answer the app shows one strict YES or NO for the whole ride (\`lib/rules/bottomLine.ts\`). YES needs every card allowed, every question answered, no "not sure" fast-mode answer, every record read in enacted text, a ride date no more than 30 days after the state rules were last checked, and every fact read from a link or photo checked by the family against the bike (\`lib/provenance.ts\`). It was checked on **${bottom.cases.toLocaleString("en-US")} generated rides**: the same states, classes, bikes, ages and dates as above, and in California every place alone, all places together and none, each with and without "Somewhere else". Each ride ran four ways, typed in, and read from a link or photo with no fact checked, with every fact ticked and then one changed and put back to the value read (each fact in turn), so it is unchecked again, and with every fact checked, so **${bottom.bottomLines.toLocaleString("en-US")} bottom lines** in all. Every gate below counts all of them. A separate checker in \`tests/oracle.ts\` lists every reason a case must not get a YES, and every rule that says a ride is definitely not allowed. The matrix works out which facts were read on its own, and counts every unchecked one as a reason against YES, whether or not a card used it. Its bikes hold every fact the app can mark as read, including a peak and an up-to watts figure given next to the rated watts. Every NO must name exactly the facts left unchecked, in one line. A NO, not confirmed names them first under What's missing. A NO, not allowed or not an e-bike stays word for word the same NO as with the facts typed in, and adds one line under Still to check that names them and says the answer could change once they are checked, since a NO can rest on a misread fact too, like pedals read as missing. The caveat line is read from the real rendered card, ${bottom.renderedCards} distinct cards in English and Spanish, and the line naming unchecked facts from ${bottom.factsCards} more, with the sentence screen readers hear.
+Under every answer the app shows one strict YES or NO for the whole ride (\`lib/rules/bottomLine.ts\`). YES needs every card allowed, every question answered, no "not sure" fast-mode answer, every record read in enacted text, a ride date no more than 30 days after the state rules were last checked, and every fact read from a link or photo checked by the family against the bike (\`lib/provenance.ts\`). It was checked on **${bottom.cases.toLocaleString("en-US")} generated rides**: the same states, classes, bikes, ages and dates as above, and in California every place alone, all places together and none, each with and without "Somewhere else". Each ride ran four ways, typed in, and read from a link or photo with no fact checked, with every fact ticked and then one changed and put back to the value read (each fact in turn), so it is unchecked again, and with every fact checked, so **${bottom.bottomLines.toLocaleString("en-US")} bottom lines** in all. Every gate below counts all of them. A separate checker in \`tests/oracle.ts\` lists every reason a case must not get a YES, and every rule that says a ride is definitely not allowed. The matrix works out which facts were read on its own, and counts every unchecked one as a reason against YES, whether or not a card used it. Its bikes hold every fact the app can mark as read, including a peak and an up-to watts figure given next to the rated watts. Every NO must name exactly the facts left unchecked, in one line. A NO, can't confirm names them first under What's missing. A NO, not allowed or not an e-bike stays word for word the same NO as with the facts typed in, and adds one line under Still to check that names them and says the answer could change once they are checked, since a NO can rest on a misread fact too, like pedals read as missing. The caveat line is read from the real rendered card, ${bottom.renderedCards} distinct cards in English and Spanish, and the line naming unchecked facts from ${bottom.factsCards} more, with the sentence screen readers hear. Every bottom line, and the sentence screen readers hear, says a plain YES or NO first, with a plain reason under it, like "We can't confirm it's legal in Texas." That is read from ${bottom.answerCards.toLocaleString("en-US")} distinct rendered bottom lines, each in English and Spanish, with their sentences.
 
 | Gate | Result |
 |---|---|
@@ -184,20 +191,21 @@ Under every answer the app shows one strict YES or NO for the whole ride (\`lib/
 | Any NO that doesn't name exactly the unchecked facts, in one line | ${bottom.factsNotNamed.length} |
 | NO, not allowed that changes when the facts are read, checked or not, instead of typed | ${bottom.illegalChanged.length} |
 | Rendered card or announcement missing, or repeating, the line that names unchecked facts | ${bottom.factsNotShown.length} |
+| Rendered bottom line or screen reader sentence whose answer is not a plain YES or NO, or leads with a hedge | ${bottom.hedged.length} |
 
 | Bottom line, facts typed in | Rides | Share |
 |---|---|---|
 | YES | ${bottom.byKind.yes.toLocaleString("en-US")} | ${pct(bottom.byKind.yes, bottom.cases)} |
 | NO, not allowed | ${bottom.byKind.no_illegal.toLocaleString("en-US")} | ${pct(bottom.byKind.no_illegal, bottom.cases)} |
-| NO, not confirmed | ${bottom.byKind.no_unconfirmed.toLocaleString("en-US")} | ${pct(bottom.byKind.no_unconfirmed, bottom.cases)} |
+| NO, can't confirm | ${bottom.byKind.no_unconfirmed.toLocaleString("en-US")} | ${pct(bottom.byKind.no_unconfirmed, bottom.cases)} |
 
-| How the facts came in | YES | NO, not allowed | NO, not confirmed |
+| How the facts came in | YES | NO, not allowed | NO, can't confirm |
 |---|---|---|---|
 ${READ_ROWS.map(([key, label]) => `| ${label} | ${bottom.byRead[key].yes.toLocaleString("en-US")} | ${bottom.byRead[key].no_illegal.toLocaleString("en-US")} | ${bottom.byRead[key].no_unconfirmed.toLocaleString("en-US")} |`).join("\n")}
 
 ${readNote}
 
-Mutation checks, done by hand on Oct 19. Ignoring unverified records, ignoring a "not sure" fast-mode answer, or dropping the unchecked-places line each made a bottom-line gate fail. After the review fixes, five more each made a gate fail: running the campus Class 3 rule when pedals are unknown (960 false NO, not allowed), deleting the caveat paragraph from the card (116 rendered cards wrong), letting Carlsbad's ban lapse with the state power (148 false YES), turning off the engine's unchecked-places flag (13 rendered cards wrong), and not counting "not an e-bike" as not allowed (60,600 false YES). After the second review, three more each made a gate fail: ignoring a stated throttle speed when the throttle answer is "not sure" (6,058 false legal cards, 6,674 false YES), dropping a stated top speed when an assist speed is also given (10,030 false legal cards, 11,038 false YES), and letting a San Diego place vouch for an under-12 rider past 30 days after its check (2,204 false legal cards, 4,408 false YES). After the third review, two more each made a gate fail: trusting a Class 1 or 3 label when the throttle answer is blank or "not sure" with no throttle speed (7,572 false legal cards, 1,682 false YES), and letting state law vouch for a ride more than 30 days after its check (198,114 false YES). After facts read from a link or photo had to be checked, five more each made a gate fail: a bottom line that ignores unchecked facts (100,836 YES with a fact unchecked), never marking a read weight as read (2,758 YES with a fact unchecked), counting only facts a card uses, tried by leaving out the weight (2,758 YES with a fact unchecked), naming only the first unchecked fact (425,786 answers naming the wrong facts), and a tick that never checks a fact (50,418 missed YES). A pedal photo call that keeps an old check made 3 unit tests fail. After the second review of the checks, comparing a wheel size edit only with the facts just before it, not with the sizes as read, made 5 unit tests fail. Once every NO had to name the unchecked facts, six more each made a gate fail on Oct 20: never adding the line to a NO, not allowed (358,828 answers naming the wrong facts), naming only the first unchecked fact (179,414), adding it to a NO, not confirmed as well, so the facts are named twice (851,572), dropping it from the rendered card (26 rendered cards wrong), leaving it out of the screen reader sentence (26 rendered cards wrong), and turning a NO, not allowed into NO, not confirmed while a fact is unchecked (358,828 answers changed). After the fourth review of the checks, four more each made unit tests fail on Oct 20: applying a pedal photo call to whatever bike is current (2 tests), deleting the line that keeps a follow-up answer the family's own (1 test), and swapping two boxes on the facts card, rated and peak watts (2 tests) or wheel count and foot pegs (2 tests).
+Mutation checks, done by hand on Oct 19. Ignoring unverified records, ignoring a "not sure" fast-mode answer, or dropping the unchecked-places line each made a bottom-line gate fail. After the review fixes, five more each made a gate fail: running the campus Class 3 rule when pedals are unknown (960 false NO, not allowed), deleting the caveat paragraph from the card (116 rendered cards wrong), letting Carlsbad's ban lapse with the state power (148 false YES), turning off the engine's unchecked-places flag (13 rendered cards wrong), and not counting "not an e-bike" as not allowed (60,600 false YES). After the second review, three more each made a gate fail: ignoring a stated throttle speed when the throttle answer is "not sure" (6,058 false legal cards, 6,674 false YES), dropping a stated top speed when an assist speed is also given (10,030 false legal cards, 11,038 false YES), and letting a San Diego place vouch for an under-12 rider past 30 days after its check (2,204 false legal cards, 4,408 false YES). After the third review, two more each made a gate fail: trusting a Class 1 or 3 label when the throttle answer is blank or "not sure" with no throttle speed (7,572 false legal cards, 1,682 false YES), and letting state law vouch for a ride more than 30 days after its check (198,114 false YES). After facts read from a link or photo had to be checked, five more each made a gate fail: a bottom line that ignores unchecked facts (100,836 YES with a fact unchecked), never marking a read weight as read (2,758 YES with a fact unchecked), counting only facts a card uses, tried by leaving out the weight (2,758 YES with a fact unchecked), naming only the first unchecked fact (425,786 answers naming the wrong facts), and a tick that never checks a fact (50,418 missed YES). A pedal photo call that keeps an old check made 3 unit tests fail. After the second review of the checks, comparing a wheel size edit only with the facts just before it, not with the sizes as read, made 5 unit tests fail. Once every NO had to name the unchecked facts, six more each made a gate fail on Oct 20: never adding the line to a NO, not allowed (358,828 answers naming the wrong facts), naming only the first unchecked fact (179,414), adding it to a NO, can't confirm as well, so the facts are named twice (851,572), dropping it from the rendered card (26 rendered cards wrong), leaving it out of the screen reader sentence (26 rendered cards wrong), and turning a NO, not allowed into NO, can't confirm while a fact is unchecked (358,828 answers changed). After the fourth review of the checks, four more each made unit tests fail on Oct 20: applying a pedal photo call to whatever bike is current (2 tests), deleting the line that keeps a follow-up answer the family's own (1 test), and swapping two boxes on the facts card, rated and peak watts (2 tests) or wheel count and foot pegs (2 tests). Once every answer had to be a plain YES or NO, two more each made a gate fail on Oct 20: putting the old "Can't confirm" label back on place cards that can't confirm (1,074 of 2,113 distinct rendered place cards wrong), and putting the old "Not confirmed." line back under the bottom line's NO (68 of 418 distinct rendered bottom lines wrong).
 
 ## Pilot (bars committed in PILOT.md before each run)
 
@@ -246,5 +254,5 @@ The five accuracy numbers on the frozen labeled set (zero false-legal calls, eve
 
 writeFileSync(join(root, "RESULTS.md"), md);
 process.stdout.write(
-  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact.\n`,
+  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact. ${matrix.hedged.length + bottom.hedged.length} rendered answers not a plain YES or NO.\n`,
 );
