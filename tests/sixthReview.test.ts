@@ -67,3 +67,39 @@ describe("a number split by a space is never read from its last group", () => {
     expect(t("es", "flag_number_split")).toContain("1 500 W");
   });
 });
+
+describe("a list of other products in the middle of a page never hides this bike's own spec table", () => {
+  const top = "Acme Commuter Class 1 Electric Bike. About this item. 500W motor with pedal assist only, no throttle. Max assist speed 20 mph. Alloy platform pedals.";
+  const carousel = "Frequently bought together. This item: Acme Commuter. Acme Bike Lock. Acme Helmet.";
+  const specs = "Product information. Wattage: 1000 watts. Thumb throttle: yes. Maximum speed: 28 mph.";
+
+  it("reads the spec table after 'Frequently bought together', so its throttle and 1000 W block a YES", () => {
+    const { extraction, kind } = flow(`${top}\n${carousel}\n${specs}`, "CA", 14, ["carlsbad"]);
+    expect(extraction.flags).toContain("other_products_skipped");
+    expect(extraction.flags).toContain("throttle_unclear");
+    expect(extraction.facts.wattsUpTo).toBe(1000);
+    expect(extraction.facts.topSpeedMph).toBe(28);
+    expect(kind).toBe("no_unconfirmed");
+    expect(Object.values(extraction.evidence).every((list) => (list ?? []).every((ev) => extraction.text.includes(ev.text)))).toBe(true);
+  });
+
+  it("gives the same facts as the page without the carousel", () => {
+    expect(flow(`${top}\n${carousel}\n${specs}`, "CA", 14).facts).toEqual(flow(`${top}\n${specs}`, "CA", 14).facts);
+  });
+
+  it("still skips the other products themselves, up to the next heading for this bike", () => {
+    const e = parseSpecText(`${top} ${carousel} Zoom Cruiser 1000W thumb throttle 28 mph. Specifications: Wheels 20 x 4.0`, "listing");
+    expect(e.facts.wattsUpTo).toBe(500);
+    expect(e.facts.hasThrottle).toBe(false);
+    expect(e.facts.topSpeedMph).toBeUndefined();
+    expect(e.facts.wheelFrontIn).toBe(20);
+    const tail = parseSpecText(`${top} Customers who viewed this item also viewed Zoom 1000W thumb throttle`, "listing");
+    expect(tail.facts.wattsUpTo).toBe(500);
+    expect(tail.facts.hasThrottle).toBe(false);
+  });
+
+  it("the flag no longer says everything after the heading was skipped", () => {
+    expect(t("en", "flag_other_products_skipped")).toContain("Reading starts again");
+    expect(t("es", "flag_other_products_skipped")).toContain("La lectura sigue");
+  });
+});

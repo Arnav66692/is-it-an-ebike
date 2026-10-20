@@ -66,6 +66,9 @@ function slice(text: string, from: number, to: number): string {
   return text.slice(Math.max(0, from), Math.min(text.length, to)).toLowerCase();
 }
 
+/** Two spaces: normalized text never has them, so they mark the edge of a blanked-out stretch. */
+const SKIPPED_EDGE = "  ";
+
 /** Keeps evidence short and readable, and always a true substring of the text. */
 function snippet(text: string, index: number, length: number): Evidence {
   let start = Math.max(0, index - 14);
@@ -73,6 +76,12 @@ function snippet(text: string, index: number, length: number): Evidence {
   // Widen to whole words so the card never shows "OTOR WATTAGE".
   while (start > 0 && start > index - 30 && /\S/.test(text[start - 1])) start -= 1;
   while (end < text.length && end < index + length + 30 && /\S/.test(text[end])) end += 1;
+  // Two spaces in a row only appear where text about other products was blanked out. Evidence
+  // never reaches across one, so it stays a true substring of the text that was read.
+  const gapBefore = text.lastIndexOf(SKIPPED_EDGE, index);
+  if (gapBefore >= start) start = gapBefore + SKIPPED_EDGE.length;
+  const gapAfter = text.indexOf(SKIPPED_EDGE, index + length);
+  if (gapAfter >= 0 && gapAfter < end) end = gapAfter;
   return { text: text.slice(start, end).trim(), index: start };
 }
 
@@ -605,19 +614,55 @@ export function normalizeText(raw: string): string {
     .trim();
 }
 
-/** Store pages list other products under headings like these. Nothing after one is about this bike. */
+/** Store pages list other products under headings like these. The text after one is about other products. */
 const OTHER_PRODUCTS =
   /\b(you (?:may|might|will|'ll) also like|related (?:products|items|bikes)|customers (?:also|who) (?:bought|viewed|liked)|people also (?:bought|viewed)|frequently bought together|similar (?:products|items)|recently viewed|compare (?:with )?similar|more from this collection|shop similar|recommended for you|recommended products)\b/i;
+/**
+ * Headings that start this bike's own details again. Store pages often put "Frequently bought
+ * together" between the top bullets and the bike's own spec table, and that table must be read.
+ */
+const OWN_DETAILS =
+  /\b(product information|product details|product description|product specifications|product overview|technical details|technical specifications|tech specs|specifications|specs|spec sheet|item details|additional information|about this item|from the manufacturer)\b/i;
+
+/**
+ * The listing with each stretch about other products blanked out. A stretch starts at a heading
+ * like "You may also like" and runs to the next heading for this bike's own details, or to the
+ * end. Blanking keeps every position, so evidence still points into the text. A period in the
+ * middle of the blank ends the clause before it.
+ */
+function withoutOtherProducts(text: string): { own: string; skipped: boolean } {
+  let own = text;
+  let from = 0;
+  let skipped = false;
+  for (;;) {
+    const other = OTHER_PRODUCTS.exec(own.slice(from));
+    if (!other) break;
+    skipped = true;
+    const start = from + other.index;
+    const afterHeading = start + other[0].length;
+    const resume = OWN_DETAILS.exec(own.slice(afterHeading));
+    const stop = resume ? afterHeading + resume.index : own.length;
+    own = own.slice(0, start) + blank(stop - start) + own.slice(stop);
+    if (!resume) break;
+    from = stop;
+  }
+  return { own, skipped };
+}
+
+/** Spaces with a period in the middle, the same length as the text it replaces. */
+function blank(length: number): string {
+  const half = Math.floor((length - 1) / 2);
+  return length < 5 ? " ".repeat(length) : `${" ".repeat(half)}.${" ".repeat(length - 1 - half)}`;
+}
 
 export function parseSpecText(raw: string, source: TextSource): Extraction {
   const text = normalizeText(raw);
   const out: Extraction = { text, facts: {}, evidence: {}, flags: [] };
   if (text.length === 0) return out;
-  // A listing's own specs come before its "You may also like" list. A watt figure or a wheel
-  // size from another product must never stand in for this bike's.
-  const other = source === "listing" ? OTHER_PRODUCTS.exec(text) : null;
-  const own = other ? text.slice(0, other.index) : text;
-  if (other) out.flags.push("other_products_skipped");
+  // A watt figure or a wheel size from another product must never stand in for this bike's, and
+  // this bike's own spec table must still be read when it comes after a list of other products.
+  const { own, skipped } = source === "listing" ? withoutOtherProducts(text) : { own: text, skipped: false };
+  if (skipped) out.flags.push("other_products_skipped");
   parseClasses(own, out);
   parseWatts(own, out, source);
   parseSpeeds(own, out);
