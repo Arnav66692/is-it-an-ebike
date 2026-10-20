@@ -1,6 +1,8 @@
 // Types for the place search: the compact index file in public/places/ and the entries the
 // search returns. scripts/build-places.ts writes the file and lib/places/parse.ts reads it.
 
+import type { NotCountyLand } from "./sanDiego";
+
 /** What kind of place an entry is. "community" is a Census CDP, an unincorporated community. */
 export type PlaceKind =
   | "state"
@@ -31,7 +33,7 @@ export interface PlaceEntry {
   counties: string[];
   /** The Census GEOID for a county, place or county subdivision. Null for a state or neighborhood. */
   geoid: string | null;
-  /** Position by population, 0 for the most people. Neighborhoods share the City of San Diego's. */
+  /** Position by population, 0 for the most people. States sort first with ranks below 0, and neighborhoods share the City of San Diego's. */
   rank: number;
   /** Normalized names the search matches, the display name first. */
   keys: string[];
@@ -65,6 +67,10 @@ export interface PlaceIndexFile {
   states: [string, string][];
   /** [county FIPS, county name], in FIPS order. */
   counties: [string, string][];
+  /** San Diego County communities the build measured as mostly base or reservation land. */
+  notCountyLand: NotCountyLand[];
+  /** Other names people type for an entry, by entry id, like "Louisville" for "Louisville/Jefferson County". */
+  aliases: Record<string, string[]>;
   rows: string[];
 }
 

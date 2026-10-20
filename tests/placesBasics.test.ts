@@ -6,6 +6,8 @@ import { CHECKED_CITIES, NOT_COUNTY_LAND, NOT_COUNTY_LAND_SHARE, SD_COUNTY_FIPS 
 import { neighborhoodId, SD_NEIGHBORHOODS, SD_NEIGHBORHOODS_SOURCE } from "@/lib/places/sdNeighborhoods";
 import { PLACE_IDS } from "@/lib/rules/local";
 import { readAcsPopulation, readTable } from "@/scripts/places/census";
+import { measureNotCountyLand } from "@/scripts/places/sdLand";
+import { containsPoint, featuresAt, type ShapeFeature } from "@/scripts/places/shapes";
 
 describe("normalizeName", () => {
   it("drops accents, punctuation and case", () => {
@@ -119,5 +121,52 @@ describe("the Census readers", () => {
 
   it("stops on a row with no number", () => {
     expect(() => readAcsPopulation("GEO_ID|B01003_E001\n0400000US06|n/a\n")).toThrow(/Bad ACS row/);
+  });
+});
+
+function square(x0: number, y0: number, x1: number, y1: number): [number, number][] {
+  return [
+    [x0, y0],
+    [x1, y0],
+    [x1, y1],
+    [x0, y1],
+    [x0, y0],
+  ];
+}
+
+function feature(props: Record<string, string>, ...rings: [number, number][][]): ShapeFeature {
+  const xs = rings.flat().map((p) => p[0]);
+  const ys = rings.flat().map((p) => p[1]);
+  return { props, rings, bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] };
+}
+
+describe("the shape tests the build uses", () => {
+  const ring = feature({ GEOID: "a" }, square(0, 0, 10, 10), square(4, 4, 6, 6));
+
+  it("counts a point inside the outer ring and outside the hole", () => {
+    expect(containsPoint(ring, 1, 1)).toBe(true);
+    expect(containsPoint(ring, 5, 5)).toBe(false);
+    expect(containsPoint(ring, 11, 5)).toBe(false);
+  });
+
+  it("finds the features at a point", () => {
+    const other = feature({ GEOID: "b" }, square(8, 8, 20, 20));
+    expect(featuresAt([ring, other], 9, 9).map((f) => f.props.GEOID)).toEqual(["a", "b"]);
+    expect(featuresAt([ring, other], 15, 15).map((f) => f.props.GEOID)).toEqual(["b"]);
+  });
+});
+
+describe("measuring base and reservation land", () => {
+  const cdps = [
+    feature({ GEOID: "0600001", NAME: "Mostly Base", NAMELSAD: "Mostly Base CDP" }, square(0, 0, 10, 10)),
+    feature({ GEOID: "0600002", NAME: "Some Reservation", NAMELSAD: "Some Reservation CDP" }, square(20, 0, 30, 10)),
+    feature({ GEOID: "0600003", NAME: "Elsewhere", NAMELSAD: "Elsewhere CDP" }, square(0, 0, 10, 10)),
+  ];
+  const bases = [feature({ FULLNAME: "Test Base" }, square(0, 0, 10, 8))];
+  const reservations = [feature({ NAMELSAD: "Test Reservation" }, square(20, 0, 24, 10))];
+
+  it("keeps a community more than half on a base, and drops one less than half on a reservation", () => {
+    const measured = measureNotCountyLand(cdps, bases, reservations, new Set(["0600001", "0600002"]));
+    expect(measured).toEqual([{ geoid: "0600001", name: "Mostly Base", reason: "military", share: 80, area: "Test Base" }]);
   });
 });
