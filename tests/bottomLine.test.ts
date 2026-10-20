@@ -139,7 +139,7 @@ describe("NO, illegal", () => {
   });
 });
 
-describe("NO, not confirmed", () => {
+describe("NO, can't confirm", () => {
   it("names a can't-confirm card and its reason", () => {
     const reason: Line = { code: "never_legal" };
     const bl = run(stateCard({ id: "SC", status: "cant_confirm", reason }), [], true);
@@ -206,7 +206,7 @@ describe("never turns uncertainty into YES", () => {
     ["enacted text not found", placeCard("encinitas", { level: "primary_not_found" })],
   ];
   for (const [name, gap] of gaps) {
-    it(`one ${name} card among verified yes cards gives NO, not confirmed`, () => {
+    it(`one ${name} card among verified yes cards gives NO, can't confirm`, () => {
       expect(run(stateCard(), [placeCard("del_mar"), gap, placeCard("carlsbad")]).kind).toBe("no_unconfirmed");
     });
   }

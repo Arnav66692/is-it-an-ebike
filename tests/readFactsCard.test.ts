@@ -52,7 +52,7 @@ describe("the words a family reads", () => {
     expect(whereLabel([], "en", "CA")).toBe("The facts I read");
     expect(whereLabel([], "es", "CA")).toBe("Los datos que leí");
     for (const lang of ["en", "es"] as const) {
-      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" }));
+      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" })).replace(/&#x27;/g, "'");
       expect(html).toContain(t(lang, "blFactsWhere"));
       expect(html).toContain(t(lang, "blFactsSub"));
       expect(html).toContain(READ_FIELD_NAMES[lang].ratedWatts);

@@ -3,7 +3,7 @@
 //
 // YES needs every card allowed, no question left open, every rule behind the cards read in
 // enacted text, and every fact read from a link or photo checked by the family against the bike.
-// Anything illegal is NO. Anything uncertain is NO, not confirmed, with the exact gap named.
+// Anything illegal is NO. Anything uncertain is NO, can't confirm, with the exact gap named.
 // Uncertainty never turns into a YES. Every NO names the read facts still unchecked, since a NO
 // can rest on a misread fact too, like pedals read as missing.
 
@@ -55,7 +55,7 @@ export interface BottomLine {
   /**
    * no_illegal: one line that names every read fact the family has not checked and says the answer
    * could change once they are checked. Null when none is left, and always null for the other kinds,
-   * since a NO, not confirmed names them first under missing and a YES never has one left.
+   * since a NO, can't confirm names them first under missing and a YES never has one left.
    */
   factsNote: Line | null;
   /** yes: everything the rider must still do, merged across cards with duplicates removed. */
@@ -196,7 +196,7 @@ function factsGap(unconfirmed: readonly ReadField[]): BottomLineGap[] {
  * unchecked fact can only hold an answer back from YES, never push it there. But the rule that
  * says no may rest on a misread fact, like pedals read as missing or a Class 3 read for a Class 1,
  * so the line names every unchecked fact and says the answer could change once they are checked.
- * Null for a YES, which can't have one left, and for a NO, not confirmed, which already names them
+ * Null for a YES, which can't have one left, and for a NO, can't confirm, which already names them
  * first in what's missing, so no card names them twice.
  */
 export function uncheckedFactsNote(kind: BottomLineKind, unconfirmed: readonly ReadField[]): Line | null {

@@ -358,7 +358,7 @@ describe("the SDUHSD record describes the Sep 10, 2026 BP 5142 revision, and the
     expect(bp?.number).toContain("not yet posted");
   });
 
-  it("keeps the campus at primary_partial, so a campus check is NO, not confirmed", () => {
+  it("keeps the campus at primary_partial, so a campus check is NO, can't confirm", () => {
     expect(sduhsd?.verification_level).toBe("primary_partial");
     const result = evaluate({ state: "CA", riderAge: 15, rideDate: DATE, facts: classBike(1), places: ["sduhsd_campuses"] });
     expect(result.local[0].status).toBe("yes");

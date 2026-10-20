@@ -9,7 +9,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
-import { announcement, BottomLineCard } from "@/components/BottomLineCard";
+import { announcement, BottomLineCard, subtitle } from "@/components/BottomLineCard";
+import { VerdictCard } from "@/components/VerdictCard";
 import { bottomLine, type BottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
@@ -23,10 +24,12 @@ import {
   type QuestionId,
   type ReadField,
   type Status,
+  type Verdict,
 } from "@/lib/rules/types";
 import { stateName } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
+import { announcementProblems, headlineProblems, hedgeProblems, visibleLines, type Answer } from "./answerWords";
 import {
   bottomLineBlockers,
   classesOf,
@@ -209,14 +212,59 @@ export interface MatrixSummary {
   byStatus: Record<Status, number>;
   falseLegal: MatrixCase[];
   missedYes: MatrixCase[];
+  /** A rendered place card whose answer is not a plain YES or NO, or that gives a hedge as the answer. */
+  hedged: MatrixCase[];
+  /** How many distinct rendered place cards were read for that check. */
+  answerCards: number;
+}
+
+/** Only an allowed card may read YES. Every other status reads NO. Worked out here, not taken from the card. */
+const answerFor = (allowed: boolean): Answer => (allowed ? "yes" : "no");
+
+/**
+ * Renders the real place card in both languages and lists every way its answer is not a plain YES
+ * or NO: the headline, its mark and the reason line under it, and any hedge label anywhere on it.
+ */
+function verdictAnswerProblems(v: Verdict, stateCode: string, showLocalNotice: boolean): string[] {
+  const expected = answerFor(v.status === "yes");
+  return (["en", "es"] as const).flatMap((lang) => {
+    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode, showLocalNotice }));
+    return [...headlineProblems(html, lang, expected), ...hedgeProblems(visibleLines(html))].map((p) => `${lang}: ${p}`);
+  });
+}
+
+/** The same for the bottom-line card and the sentence screen readers hear. */
+function bottomAnswerProblems(bl: BottomLine, stateCode: string): string[] {
+  const expected = answerFor(bl.kind === "yes");
+  return (["en", "es"] as const).flatMap((lang) => {
+    const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode }));
+    return [
+      ...headlineProblems(html, lang, expected),
+      ...hedgeProblems(visibleLines(html)),
+      ...announcementProblems(announcement(bl, lang), lang, expected, t(lang, "blTitle")),
+    ].map((p) => `${lang}: ${p}`);
+  });
 }
 
 export function runMatrix(): MatrixSummary {
   const byStatus: Record<Status, number> = { yes: 0, no: 0, not_ebike: 0, cant_confirm: 0, need_info: 0 };
   const falseLegal: MatrixCase[] = [];
   const missedYes: MatrixCase[] = [];
+  const hedged: MatrixCase[] = [];
+  const answerCards = new Set<string>();
   let stateCases = 0;
   let localCases = 0;
+
+  // The answer depends on the status and the place, and the rest of the card on its lines, so one
+  // rendered card per combination covers every case.
+  const readCard = (c: MatrixCase, v: Verdict, showLocalNotice: boolean) => {
+    const lines = [v.reason, ...v.requirements, ...v.cautions, ...v.notes].map((l) => l.code).join(",");
+    const key = `${c.state}|${v.id}|${v.status}|${lines}|${showLocalNotice}`;
+    if (answerCards.has(key)) return;
+    answerCards.add(key);
+    const problems = verdictAnswerProblems(v, c.state, showLocalNotice);
+    if (problems.length > 0) hedged.push({ ...c, blockers: problems });
+  };
 
   const check = (c: MatrixCase) => {
     byStatus[c.status] += 1;
@@ -235,15 +283,17 @@ export function runMatrix(): MatrixSummary {
           const base = { state, cls: bike.cls, age, date, variant: bike.name };
           stateCases += 1;
           check({ ...base, scope: "state", status: result.state.status, blockers });
+          readCard({ ...base, scope: "state", status: result.state.status, blockers: [] }, result.state, result.localNotice);
           for (const v of result.local) {
             localCases += 1;
             check({ ...base, scope: v.id, status: v.status, blockers: [...blockers, ...localBlockersAllClasses(v.id, bike.facts, age, date)] });
+            readCard({ ...base, scope: v.id, status: v.status, blockers: [] }, v, false);
           }
         }
       }
     }
   }
-  return { cases: stateCases + localCases, stateCases, localCases, byStatus, falseLegal, missedYes };
+  return { cases: stateCases + localCases, stateCases, localCases, byStatus, falseLegal, missedYes, hedged, answerCards: answerCards.size };
 }
 
 /** California place sets for the bottom line: none, each place alone, and all of them. */
@@ -359,7 +409,7 @@ export interface BottomLineSummary {
   uncheckedYes: BottomLineCase[];
   /**
    * Any NO that doesn't name exactly the unchecked read facts in one line, or a bottom line that
-   * names some when none are left. A NO, not confirmed names them under missing, and a NO, not
+   * names some when none are left. A NO, can't confirm names them under missing, and a NO, not
    * allowed in its own line that says the answer could change once they are checked.
    */
   factsNotNamed: BottomLineCase[];
@@ -383,6 +433,10 @@ export interface BottomLineSummary {
   missingCaveat: BottomLineCase[];
   /** How many distinct rendered cards were read for the caveat check. */
   renderedCards: number;
+  /** A rendered bottom line or announcement whose answer is not a plain YES or NO, or that gives a hedge as the answer. */
+  hedged: BottomLineCase[];
+  /** How many distinct rendered bottom lines were read for that check. */
+  answerCards: number;
 }
 
 /**
@@ -470,6 +524,8 @@ export function runBottomLineMatrix(): BottomLineSummary {
   const factsNotNamed: BottomLineCase[] = [];
   const illegalChanged: BottomLineCase[] = [];
   const factsNotShown: BottomLineCase[] = [];
+  const hedged: BottomLineCase[] = [];
+  const answerCards = new Set<string>();
   const rendered = new Set<string>();
   const factsRendered = new Set<string>();
   let cases = 0;
@@ -578,6 +634,15 @@ export function runBottomLineMatrix(): BottomLineSummary {
                   const problems = caveatProblems(bl, state, expectedCaveat(state, places, otherPlaces, bl.kind));
                   if (problems.length > 0) missingCaveat.push({ ...base, why: problems });
                 }
+
+                // The answer and the line under it depend on the kind and on the reason line, so
+                // one rendered card per pair in each place set covers every case.
+                const answerKey = `${key}|${bl.notEbikeOnly}|${bl.factsNote !== null}|${subtitle(bl, "en")}`;
+                if (!answerCards.has(answerKey)) {
+                  answerCards.add(answerKey);
+                  const problems = bottomAnswerProblems(bl, state);
+                  if (problems.length > 0) hedged.push({ ...base, why: problems });
+                }
               }
             }
           }
@@ -602,5 +667,7 @@ export function runBottomLineMatrix(): BottomLineSummary {
     illegalChanged,
     factsNotShown,
     factsCards: factsRendered.size,
+    hedged,
+    answerCards: answerCards.size,
   };
 }

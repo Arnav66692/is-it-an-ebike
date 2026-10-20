@@ -1,7 +1,7 @@
 // A NO can rest on a fact read from a link or photo that the family hasn't checked, like pedals
 // read as missing. The NO stays a NO, since it only ever errs toward NO, but the bottom line names
 // those facts in one line that says the answer could change once they are checked, in both
-// languages. A NO, not confirmed already names them first under What's missing, so it gets no
+// languages. A NO, can't confirm already names them first under What's missing, so it gets no
 // second line.
 
 import { createElement } from "react";
@@ -37,7 +37,7 @@ function render(bl: BottomLine, lang: Lang): string[] {
 }
 
 describe("uncheckedFactsNote", () => {
-  it("is null for a YES, and for a NO, not confirmed, which names the facts under What's missing", () => {
+  it("is null for a YES, and for a NO, can't confirm, which names the facts under What's missing", () => {
     expect(uncheckedFactsNote("yes", ["hasPedals"])).toBeNull();
     expect(uncheckedFactsNote("no_unconfirmed", ["hasPedals"])).toBeNull();
   });
@@ -85,7 +85,7 @@ describe("a NO, not allowed with read facts unchecked", () => {
     expect(bl.factsNote).toEqual({ code: "bl_no_unchecked_facts", params: { fields: "hasPedals" } });
   });
 
-  it("leaves a NO, not confirmed with its one facts item first under What's missing, and no second line", () => {
+  it("leaves a NO, can't confirm with its one facts item first under What's missing, and no second line", () => {
     const bl = line(15, classBike(1), ["sduhsd_campuses"], ["classes"]);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing[0]).toEqual({ kind: "facts", where: [], line: { code: "bl_unconfirmed_facts", params: { fields: "classes" } } });
@@ -169,7 +169,7 @@ describe("the bottom-line card", () => {
     for (const lang of ["en", "es"] as const) expect(render(checked, lang)).not.toContain(t(lang, "blToCheck"));
   });
 
-  it("never names the facts twice on a NO, not confirmed", () => {
+  it("never names the facts twice on a NO, can't confirm", () => {
     const bl = line(15, classBike(1), ["sduhsd_campuses"], ["classes"]);
     for (const lang of ["en", "es"] as const) {
       const text = render(bl, lang);

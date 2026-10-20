@@ -349,7 +349,7 @@ describe("the SDUHSD 'What's missing' line names every rule that rests only on t
     }
   });
 
-  it("keeps SDUHSD strict: a campus check is still NO, not confirmed", () => {
+  it("keeps SDUHSD strict: a campus check is still NO, can't confirm", () => {
     const result = evaluate({ state: "CA", riderAge: 15, rideDate: DATE, facts: classBike(1), places: ["sduhsd_campuses"] });
     expect(bottomLine(result, DATE).kind).toBe("no_unconfirmed");
   });

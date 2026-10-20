@@ -1,14 +1,21 @@
 // Golden bottom-line cases, run through the real engine and data on Oct 19, 2026 (Pacific Time).
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { announcement, BottomLineCard } from "@/components/BottomLineCard";
+import { VerdictCard } from "@/components/VerdictCard";
 import sdJson from "@/data/rules/san_diego_local.json";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { fromRead, unconfirmedFields, withConfirmed, withEdit, type CheckedFacts } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
-import { bottomLine } from "@/lib/rules/bottomLine";
+import { bottomLine, type BottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
+import type { Lang } from "@/lib/i18n/names";
+import { t } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
+import { shownAnswer } from "./answerWords";
 import { classBike } from "./helpers";
 
 const TODAY_PT = "2026-10-19";
@@ -39,7 +46,7 @@ describe("bottom line golden cases (California unless named, Oct 19, 2026)", () 
     expect(bl.uncheckedPlaces).toBe(false);
   });
 
-  it("the same rider in Encinitas is NO, not confirmed if the Encinitas record were not primary_verified", () => {
+  it("the same rider in Encinitas is NO, can't confirm if the Encinitas record were not primary_verified", () => {
     const result = evaluate({ state: "CA", riderAge: 11, rideDate: TODAY_PT, facts: classBike(2), places: ["encinitas"] });
     const partial = { ...result, local: result.local.map((v) => ({ ...v, level: "primary_partial" as const })) };
     const bl = bottomLine(partial, TODAY_PT);
@@ -61,7 +68,7 @@ describe("bottom line golden cases (California unless named, Oct 19, 2026)", () 
     expect(bl.blocked[0].where.map((w) => w.id)).toEqual(["CA", "city_of_san_diego", "encinitas"]);
   });
 
-  it("South Carolina is NO, not confirmed, and says city rules were not checked", () => {
+  it("South Carolina is NO, can't confirm, and says city rules were not checked", () => {
     const bl = check("SC", 30, classBike(1), []);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing[0]).toMatchObject({ kind: "cant_confirm", line: { code: "never_legal" } });
@@ -77,7 +84,7 @@ describe("bottom line golden cases (California unless named, Oct 19, 2026)", () 
 });
 
 describe("bottom line, more real cases", () => {
-  it("a Class 1 to an SDUHSD campus is NO, not confirmed, because the class, tag and course rules are only on the district page", () => {
+  it("a Class 1 to an SDUHSD campus is NO, can't confirm, because the class, tag and course rules are only on the district page", () => {
     const bl = check("CA", 15, classBike(1), ["sduhsd_campuses"]);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing).toEqual([
@@ -99,7 +106,7 @@ describe("bottom line, more real cases", () => {
     expect(bl.uncheckedPlaces).toBe(true);
   });
 
-  it("a fast-mode question left open is NO, not confirmed, and names the question", () => {
+  it("a fast-mode question left open is NO, can't confirm, and names the question", () => {
     const bl = check("CA", 30, classBike(2, { motorOver20: null, assistOver28: null, switchable: null }), ["encinitas"]);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing[0]).toMatchObject({ kind: "unanswered", line: { code: "bl_unanswered", params: { questions: "fast_mode" } } });
@@ -107,7 +114,7 @@ describe("bottom line, more real cases", () => {
     expect(renderLine(bl.missing[0].line, "es", "California")).toBe("Responde las preguntas de arriba sobre los modos rápidos.");
   });
 
-  it("a Texas fast-mode answer of not sure is NO, not confirmed, though the state card says yes", () => {
+  it("a Texas fast-mode answer of not sure is NO, can't confirm, though the state card says yes", () => {
     const result = evaluate({
       state: "TX",
       riderAge: 30,
@@ -136,7 +143,7 @@ describe("bottom line, more real cases", () => {
 });
 
 describe("bottom line, review fixes (Oct 19, 2026)", () => {
-  it("pedals left blank with a Class 1 label and an SDUHSD campus is NO, not confirmed, and names the pedals, not the Class 3 ban", () => {
+  it("pedals left blank with a Class 1 label and an SDUHSD campus is NO, can't confirm, and names the pedals, not the Class 3 ban", () => {
     const facts = { ...emptyFacts(), classes: [1 as const], ratedWatts: 500, hasThrottle: false, assistMph: 20 };
     const result = evaluate({ state: "CA", riderAge: 15, rideDate: TODAY_PT, facts, places: ["sduhsd_campuses"] });
     expect(result.state.reason.code).toBe("pedals_unknown");
@@ -149,7 +156,7 @@ describe("bottom line, review fixes (Oct 19, 2026)", () => {
     expect(bl.missing.flatMap((m) => m.line.code)).not.toContain("campus_class3");
   });
 
-  it("pedals answered not sure with the City and the campus is still NO, not confirmed", () => {
+  it("pedals answered not sure with the City and the campus is still NO, can't confirm", () => {
     const bl = check("CA", 15, classBike(1, { hasPedals: null }), ["city_of_san_diego", "sduhsd_campuses"]);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing[0].where.map((w) => w.id)).toEqual(["CA", "city_of_san_diego", "sduhsd_campuses"]);
@@ -161,13 +168,13 @@ describe("bottom line, review fixes (Oct 19, 2026)", () => {
     expect(bottomLine(result, TODAY_PT).kind).toBe("no_illegal");
   });
 
-  it("facts that disagree are NO, not confirmed everywhere, never a campus Class 3 ban", () => {
+  it("facts that disagree are NO, can't confirm everywhere, never a campus Class 3 ban", () => {
     const bl = check("CA", 15, classBike(2, { throttleMph: 28 }), ["sduhsd_campuses"]);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing[0].line.code).toBe("facts_conflict");
   });
 
-  it("Carlsbad's under-12 ban has no end date, so an 11-year-old there in 2029 is NO, not confirmed, never YES", () => {
+  it("Carlsbad's under-12 ban has no end date, so an 11-year-old there in 2029 is NO, can't confirm, never YES", () => {
     for (const cls of [1, 2] as const) {
       const result = evaluate({ state: "CA", riderAge: 11, rideDate: "2029-01-02", facts: classBike(cls), places: ["carlsbad"] });
       expect(result.local[0].status).toBe("cant_confirm");
@@ -176,7 +183,7 @@ describe("bottom line, review fixes (Oct 19, 2026)", () => {
     }
   });
 
-  it("the City of San Diego ban ends Jan 1, 2029 by its own terms, but that is past what the check vouches for, so the City alone is NO, not confirmed", () => {
+  it("the City of San Diego ban ends Jan 1, 2029 by its own terms, but that is past what the check vouches for, so the City alone is NO, can't confirm", () => {
     const result = evaluate({ state: "CA", riderAge: 11, rideDate: "2029-01-02", facts: classBike(2), places: ["city_of_san_diego"] });
     expect(result.local[0].status).toBe("cant_confirm");
     expect(result.local[0].reason.code).toBe("local_under_12_after_check");
@@ -204,7 +211,7 @@ describe("bottom line, review fixes (Oct 19, 2026)", () => {
     expect(bl.blocked[0].where.map((w) => w.id)).toEqual(["city_of_san_diego"]);
   });
 
-  it("an unknown class for a 15-year-old at the campus is NO, not confirmed, not a Class 3 ban", () => {
+  it("an unknown class for a 15-year-old at the campus is NO, can't confirm, not a Class 3 ban", () => {
     const bl = check("CA", 15, classBike(1, { classes: [], hasThrottle: false, assistMph: null }), ["sduhsd_campuses"]);
     expect(bl.kind).toBe("no_unconfirmed");
     expect(bl.missing[0].line.code).toBe("class_unknown");
@@ -316,5 +323,69 @@ describe("bottom line for a listing read from text, with facts not yet checked (
     expect(bl.kind).toBe("no_illegal");
     expect(bl.notEbikeOnly).toBe(true);
     expect(bl.factsNote).toEqual({ code: "bl_no_unchecked_facts", params: { fields: "hasPedals" } });
+  });
+});
+
+describe("what each golden bottom line says first, on the card and to a screen reader (Oct 20, 2026)", () => {
+  /** The kind, then the YES or NO, its mark and the line under it, and the sentence screen readers hear. */
+  const shown = (bl: BottomLine, state: string, lang: Lang = "en") => {
+    const card = shownAnswer(renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: state })));
+    // With no read facts left unchecked, the sentence is exactly the title, the answer and the line under it.
+    expect(announcement(bl, lang)).toBe(`${t(lang, "blTitle")}: ${card.word}. ${card.line}`);
+    return { kind: bl.kind, ...card };
+  };
+  const no = (kind: string, line: string) => ({ kind, word: "NO", mark: "✕", line });
+
+  it("an 11-year-old on a Class 2 is NO in the City of San Diego and YES in Encinitas", () => {
+    expect(shown(check("CA", 11, classBike(2), ["city_of_san_diego"]), "CA")).toEqual(no("no_illegal", "Not allowed. At least one rule we checked says no."));
+    expect(shown(check("CA", 11, classBike(2), ["encinitas"]), "CA")).toEqual({
+      kind: "yes",
+      word: "YES",
+      mark: "✓",
+      line: "Allowed in every place we checked, for this rider and this bike.",
+    });
+    expect(shown(check("CA", 11, classBike(2), ["encinitas"]), "CA", "es")).toEqual({
+      kind: "yes",
+      word: "SÍ",
+      mark: "✓",
+      line: "Permitida en todos los lugares que revisamos, para esta persona y esta bicicleta.",
+    });
+  });
+
+  it("South Carolina is NO and says we can't confirm it's legal in South Carolina, in both languages", () => {
+    const bl = check("SC", 30, classBike(1), []);
+    expect(shown(bl, "SC")).toEqual(no("no_unconfirmed", "We can't confirm it's legal in South Carolina."));
+    expect(shown(bl, "SC", "es")).toEqual(no("no_unconfirmed", "No podemos confirmar que sea legal en Carolina del Sur."));
+  });
+
+  it("a Class 1 to an SDUHSD campus is NO, naming the campus, though the district page allows it", () => {
+    const result = evaluate({ state: "CA", riderAge: 15, rideDate: TODAY_PT, facts: classBike(1), places: ["sduhsd_campuses"] });
+    expect(shown(bottomLine(result, TODAY_PT), "CA")).toEqual(no("no_unconfirmed", "We can't confirm it's legal on an SDUHSD campus."));
+    expect(shown(bottomLine(result, TODAY_PT), "CA", "es")).toEqual(no("no_unconfirmed", "No podemos confirmar que sea legal en una escuela de SDUHSD."));
+    // The campus card itself says what the district page says, so the engine's call is unchanged.
+    const campus = shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: result.local[0], lang: "en", stateCode: "CA" })));
+    expect(campus.word).toBe("YES");
+  });
+
+  it("no pedals is NO, not an e-bike, on the bottom line and on each place card", () => {
+    const result = evaluate({ state: "CA", riderAge: 30, rideDate: TODAY_PT, facts: classBike(2, { hasPedals: false }), places: ["city_of_san_diego", "encinitas"] });
+    expect(shown(bottomLine(result, TODAY_PT), "CA")).toEqual(
+      no("no_illegal", "Not an e-bike under the law we checked. E-bike rules don't cover it, and the rules for other vehicles are not checked here."),
+    );
+    for (const v of result.local) {
+      const card = shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang: "en", stateCode: "CA" })));
+      expect(card, v.id).toEqual({ word: "NO", mark: "✕", line: "Not an e-bike under California state law." });
+    }
+  });
+
+  it("a Texas fast-mode answer of not sure is NO, we can't confirm it's legal in Texas", () => {
+    const bl = check("TX", 30, classBike(1, { motorOver20: null, assistOver28: null, switchable: null, unsure: ["fast_mode"] }), []);
+    expect(shown(bl, "TX")).toEqual(no("no_unconfirmed", "We can't confirm it's legal in Texas."));
+  });
+
+  it("a question open on more than one card is NO in every place we checked", () => {
+    const bl = check("CA", 30, classBike(2, { motorOver20: null, assistOver28: null, switchable: null }), ["encinitas"]);
+    expect(shown(bl, "CA")).toEqual(no("no_unconfirmed", "We can't confirm it's legal in every place we checked."));
+    expect(shown(bl, "CA", "es")).toEqual(no("no_unconfirmed", "No podemos confirmar que sea legal en todos los lugares que revisamos."));
   });
 });

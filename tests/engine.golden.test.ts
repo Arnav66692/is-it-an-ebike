@@ -1,11 +1,16 @@
 // Hand-picked cases. Each one comes from a line in data/rules/ or the verification report.
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { VerdictCard } from "@/components/VerdictCard";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, type BikeFacts, type ClassNum } from "@/lib/rules/types";
+import type { Lang } from "@/lib/i18n/names";
+import { shownAnswer } from "./answerWords";
 import { classBike, codes, run, TODAY } from "./helpers";
 
 describe("never return legal (AK, KY, SC)", () => {
@@ -387,5 +392,66 @@ describe("third review fixes (Oct 19, 2026)", () => {
     expect(bottomLine(r, TODAY).requirements.map((l) => l.code)).toContain("req_speedometer_class3");
     expect(codes(run("CA", 16, classBike(1)).state.requirements)).not.toContain("req_speedometer_class3");
     expect(codes(run("CA", 16, classBike(1, { classes: [1, 3], assistMph: 28 })).state.requirements)).toContain("req_speedometer_class3");
+  });
+});
+
+describe("what each golden state card says first (Oct 20, 2026)", () => {
+  /** The engine's status, then the YES or NO, its mark and the line under it, as the card shows them. */
+  const shown = (state: string, age: number, facts: BikeFacts, lang: Lang = "en", date = TODAY) => {
+    const v = run(state, age, facts, date).state;
+    return { status: v.status, ...shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode: state }))) };
+  };
+  const no = (status: string, line: string) => ({ status, word: "NO", mark: "✕", line });
+
+  it("AK, KY and SC say NO and that we can't confirm it's legal there, in both languages", () => {
+    for (const [state, en, es] of [
+      ["AK", "Alaska", "Alaska"],
+      ["KY", "Kentucky", "Kentucky"],
+      ["SC", "South Carolina", "Carolina del Sur"],
+    ]) {
+      expect(shown(state, 30, classBike(1))).toEqual(no("cant_confirm", `We can't confirm it's legal in ${en}.`));
+      expect(shown(state, 30, classBike(1), "es")).toEqual(no("cant_confirm", `No podemos confirmar que sea legal en ${es}.`));
+    }
+  });
+
+  it("a 750 W bike is YES in California, with its reason, and NO in Texas, where we can't confirm it", () => {
+    expect(shown("CA", 30, classBike(2, { ratedWatts: 750 }))).toEqual({
+      status: "yes",
+      word: "YES",
+      mark: "✓",
+      line: "Class 2 e-bike. Allowed for a 30-year-old in California.",
+    });
+    expect(shown("CA", 30, classBike(2, { ratedWatts: 750 }), "es")).toEqual({
+      status: "yes",
+      word: "SÍ",
+      mark: "✓",
+      line: "Bicicleta eléctrica Clase 2. Permitida para alguien de 30 años en California.",
+    });
+    expect(shown("TX", 30, classBike(2, { ratedWatts: 750 }))).toEqual(no("cant_confirm", "We can't confirm it's legal in Texas."));
+  });
+
+  it("over the cap, a Vermont motor-assisted bicycle or a DC Class 3 is NO, not an e-bike under that law", () => {
+    expect(shown("TX", 30, classBike(2, { ratedWatts: 1000 }))).toEqual(no("not_ebike", "Not an e-bike under Texas state law."));
+    expect(shown("VT", 30, classBike(2, { ratedWatts: 750 }))).toEqual(no("not_ebike", "Not an e-bike under Vermont state law."));
+    expect(shown("VT", 30, classBike(2, { ratedWatts: 750 }), "es")).toEqual(
+      no("not_ebike", "No es una bicicleta eléctrica según la ley estatal de Vermont."),
+    );
+    expect(shown("DC", 30, classBike(3))).toEqual(no("not_ebike", "Not an e-bike under Washington, DC law."));
+    expect(shown("DC", 30, classBike(3), "es")).toEqual(no("not_ebike", "No es una bicicleta eléctrica según la ley del Distrito de Columbia."));
+  });
+
+  it("a fast-mode question still open is NO until it is answered, never a maybe", () => {
+    const open = classBike(2, { motorOver20: null, assistOver28: null, switchable: null });
+    expect(shown("CA", 30, open)).toEqual(no("need_info", "We can't confirm it's legal in California until you answer the questions above."));
+    expect(shown("CA", 30, open, "es")).toEqual(
+      no("need_info", "No podemos confirmar que sea legal en California hasta que respondas las preguntas de arriba."),
+    );
+  });
+
+  it("a rider too young is NO with the rule that says so, and an unknown class in DC keeps the Spanish article", () => {
+    expect(shown("CA", 14, classBike(3, { hasThrottle: null }))).toEqual(no("no", "Riders under 16 can't ride a Class 3 e-bike in California."));
+    const unknown = classBike(1, { classes: [], hasThrottle: null, throttleMph: null, assistMph: null });
+    expect(shown("DC", 30, unknown)).toEqual(no("cant_confirm", "We can't confirm it's legal in Washington, DC."));
+    expect(shown("DC", 30, unknown, "es")).toEqual(no("cant_confirm", "No podemos confirmar que sea legal en el Distrito de Columbia."));
   });
 });

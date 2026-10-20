@@ -105,10 +105,13 @@ describe("bottom-line card", () => {
     const en = render(bl, "en");
     expect(en).toContain("The local code bars riders under 12");
     expect(en).not.toMatch(/Nothing we checked says/);
-    expect(en).toContain("Not confirmed. We can't confirm it's allowed in every place we checked.");
+    // A NO, then a plain reason. Carlsbad and the state's 30-day check are both open, so it names every place.
+    expect(en).toContain("NO\nWe can't confirm it's legal in every place we checked.");
+    expect(en).not.toMatch(/Not confirmed/);
     const es = render(bl, "es");
     expect(es).not.toMatch(/Nada de lo que revisamos/);
-    expect(es).toContain("No confirmada. No podemos confirmar que esté permitida en todos los lugares que revisamos.");
+    expect(es).toContain("NO\nNo podemos confirmar que sea legal en todos los lugares que revisamos.");
+    expect(es).not.toMatch(/No confirmada/);
   });
 
   it("announces one short sentence instead, the headline and its subtitle", () => {

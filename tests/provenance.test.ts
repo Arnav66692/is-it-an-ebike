@@ -159,7 +159,7 @@ describe("the pedal photo check", () => {
 describe("the bottom-line gate", () => {
   const encinitas = (facts: BikeFacts) => evaluate({ state: "CA", riderAge: 11, rideDate: DAY, facts, places: ["encinitas"] });
 
-  it("turns a verified YES into NO, not confirmed, naming the facts in card order, first in the list", () => {
+  it("turns a verified YES into NO, can't confirm, naming the facts in card order, first in the list", () => {
     const result = encinitas(classBike(2));
     expect(bottomLine(result, DAY).kind).toBe("yes");
     const bl = bottomLine(result, DAY, ["weightLb", "classes", "classes"]);
@@ -198,7 +198,7 @@ describe("the bottom-line gate", () => {
 });
 
 describe("golden: a link-read Class 2 for an 11-year-old in Encinitas", () => {
-  it("is NO, not confirmed until every read fact is checked, then YES with a helmet", () => {
+  it("is NO, can't confirm until every read fact is checked, then YES with a helmet", () => {
     let bike = read(CLASS_2_LISTING);
     // The family answers the fast-mode follow-up. Those answers are theirs, not read.
     bike = withEdit(bike, { ...bike.facts, motorOver20: false, assistOver28: false });
@@ -225,7 +225,7 @@ describe("golden: a link-read Class 2 for an 11-year-old in Encinitas", () => {
     expect(answer("CA", 11, bike, ["encinitas"]).kind).toBe("yes");
   });
 
-  it("goes back to NO, not confirmed when the pedal photo check changes the pedals answer", () => {
+  it("goes back to NO, can't confirm when the pedal photo check changes the pedals answer", () => {
     let bike = read(CLASS_2_LISTING);
     // Not sure about the pedals, so the family picks "Not sure" and runs the photo check.
     bike = withEdit(bike, { ...bike.facts, hasPedals: null, motorOver20: false, assistOver28: false });

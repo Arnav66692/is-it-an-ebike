@@ -232,7 +232,7 @@ describe("second review fixes: how far ahead a local under-12 answer holds (Oct 
     }
   });
 
-  it("the City of San Diego after its ban's Jan 1, 2029 end is NO, not confirmed, not YES", () => {
+  it("the City of San Diego after its ban's Jan 1, 2029 end is NO, can't confirm, not YES", () => {
     const result = evaluate({ state: "CA", riderAge: 10, rideDate: "2029-06-01", facts: classBike(1), places: ["city_of_san_diego"] });
     expect(local(result, "city_of_san_diego").reason.code).toBe("local_under_12_after_check");
     expect(local(result, "city_of_san_diego").reason.source?.citation).toContain("84.19");

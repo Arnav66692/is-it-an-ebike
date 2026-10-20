@@ -32,6 +32,8 @@ export interface AccuracyText {
   blYes: string;
   blNoIllegal: string;
   blNoUnconfirmed: string;
+  /** Rendered cards and announcements whose answer is not a plain YES or NO. */
+  hedged: string;
   pilotTitle: string;
   pilotPedalLess: string;
   pilotPedalCall: string;
@@ -71,11 +73,11 @@ const en: AccuracyText = {
     `${cases} generated cases across all 50 states, DC and ${places} San Diego places. Each one is checked against an independent reading of the rules table.`,
   falseLegal: "False legal results",
   missedYes: "Refused when the table allows it",
-  statusYes: "Yes",
-  statusNo: "No, rider not allowed",
-  statusNotEbike: "Not an e-bike",
-  statusCantConfirm: "Can't confirm",
-  statusNeedInfo: "Asks a follow-up question",
+  statusYes: "YES",
+  statusNo: "NO, rider not allowed",
+  statusNotEbike: "NO, not an e-bike",
+  statusCantConfirm: "NO, can't confirm it's legal",
+  statusNeedInfo: "NO until a follow-up question is answered",
   testSuite: (passed, total) => `Test suite: ${passed} of ${total} tests passed.`,
   engineCaveat:
     "These tests prove the engine matches the rules table, not that the table matches the law. The table was checked against statute text on Oct 16, 2026. San Diego city and county rules were checked against enacted code and ordinance text on Oct 19, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come only from the district's web page.",
@@ -90,7 +92,8 @@ const en: AccuracyText = {
   blUncheckedYes: "YES while a fact read from a link or photo is unchecked",
   blYes: "YES",
   blNoIllegal: "NO, not allowed",
-  blNoUnconfirmed: "NO, not confirmed",
+  blNoUnconfirmed: "NO, can't confirm it's legal",
+  hedged: "Answer shown as anything but a plain YES or NO",
   pilotTitle: "Pilot, with bars set before the run",
   pilotPedalLess: "Pedal-less e-motos caught (12 photos)",
   pilotPedalCall: "Pedal call, need 11 of 12",
@@ -135,11 +138,11 @@ const es: AccuracyText = {
     `${cases} casos generados en los 50 estados, el Distrito de Columbia y ${places} lugares de San Diego. Cada uno se compara con una lectura independiente de la tabla de reglas.`,
   falseLegal: "Resultados legales falsos",
   missedYes: "Rechazados cuando la tabla lo permite",
-  statusYes: "Sí",
-  statusNo: "No, la persona no puede usarla",
-  statusNotEbike: "No es bicicleta eléctrica",
-  statusCantConfirm: "No se puede confirmar",
-  statusNeedInfo: "Hace una pregunta más",
+  statusYes: "SÍ",
+  statusNo: "NO, la persona no puede usarla",
+  statusNotEbike: "NO, no es una bicicleta eléctrica",
+  statusCantConfirm: "NO, no podemos confirmar que sea legal",
+  statusNeedInfo: "NO hasta responder una pregunta más",
   testSuite: (passed, total) => `Pruebas: pasaron ${passed} de ${total}.`,
   engineCaveat:
     "Estas pruebas demuestran que el motor coincide con la tabla de reglas, no que la tabla coincida con la ley. La tabla se revisó contra el texto de la ley el 16 de octubre de 2026. Las reglas de las ciudades y del condado de San Diego se revisaron contra el texto vigente de sus códigos y ordenanzas el 19 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen solo de la página web del distrito.",
@@ -154,7 +157,8 @@ const es: AccuracyText = {
   blUncheckedYes: "SÍ con un dato leído de un enlace o una foto sin revisar",
   blYes: "SÍ",
   blNoIllegal: "NO, no permitida",
-  blNoUnconfirmed: "NO, no confirmada",
+  blNoUnconfirmed: "NO, no podemos confirmar que sea legal",
+  hedged: "Respuesta que no es un SÍ o un NO claro",
   pilotTitle: "Piloto, con metas fijadas antes de la prueba",
   pilotPedalLess: "Motos eléctricas sin pedales detectadas (12 fotos)",
   pilotPedalCall: "Acierto en pedales, meta 11 de 12",

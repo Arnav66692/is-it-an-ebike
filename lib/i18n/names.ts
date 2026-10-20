@@ -72,6 +72,8 @@ interface PlaceNames {
   inline?: { en: string; es: string };
   /** In a list of places, when the standalone name starts with a capital that isn't a proper name. */
   list?: { en: string; es: string };
+  /** Where a ride happens, when "in" plus the inline name doesn't read right: "on an SDUHSD campus". */
+  where?: { en: string; es: string };
 }
 
 const PLACE_NAMES: Record<PlaceId, PlaceNames> = {
@@ -97,6 +99,7 @@ const PLACE_NAMES: Record<PlaceId, PlaceNames> = {
     es: "Una escuela de SDUHSD",
     inline: { en: "SDUHSD campus rules", es: "las reglas de las escuelas de SDUHSD" },
     list: { en: "an SDUHSD campus", es: "una escuela de SDUHSD" },
+    where: { en: "on an SDUHSD campus", es: "en una escuela de SDUHSD" },
     hint: { en: "Canyon Crest Academy, Torrey Pines and the other district schools", es: "Canyon Crest Academy, Torrey Pines y las demás escuelas del distrito" },
   },
 };
@@ -118,6 +121,29 @@ export function placeNameInList(id: string, lang: Lang): string {
   const p = PLACE_NAMES[id as PlaceId];
   if (!p) return id;
   return p.list ? p.list[lang] : p[lang];
+}
+
+/**
+ * Where a ride happens, to end a sentence like "We can't confirm it's legal in South Carolina."
+ * "in California", "in Washington, DC", "en el Distrito de Columbia".
+ */
+export function stateWhere(code: string, lang: Lang): string {
+  const name = stateName(code, lang);
+  if (lang === "en") return `in ${name}`;
+  return NOT_A_STATE.has(code) ? `en el ${name}` : `en ${name}`;
+}
+
+/** "in the City of San Diego", "on an SDUHSD campus", "en la Ciudad de San Diego". */
+export function placeWhere(id: string, lang: Lang): string {
+  const p = PLACE_NAMES[id as PlaceId];
+  if (!p) return lang === "es" ? `en ${id}` : `in ${id}`;
+  if (p.where) return p.where[lang];
+  return `${lang === "es" ? "en" : "in"} ${placeNameInline(id, lang)}`;
+}
+
+/** Where a card's answer holds: the state for a state card, the place for a local card. */
+export function cardWhere(scope: "state" | "local", id: string, lang: Lang): string {
+  return scope === "state" ? stateWhere(id, lang) : placeWhere(id, lang);
 }
 
 export function placeHint(id: PlaceId, lang: Lang): string {
