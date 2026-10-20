@@ -8,6 +8,7 @@ import { isUiKey, t } from "@/lib/i18n/ui";
 import { applyPedalCall } from "@/lib/photo/pedalRule";
 import { Card, Choice, Evidence, fromTri, NumberField, triValue } from "./controls";
 import { PedalPhotoCheck } from "./PedalPhotoCheck";
+import { ShapeFacts } from "./ShapeFacts";
 
 type Tri3 = "yes" | "no" | "unsure";
 
@@ -123,6 +124,8 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
           <NumberField label={t(lang, "topMph")} value={facts.topSpeedMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ topSpeedMph: v })} evidence={ev("topSpeedMph")} />
         ) : null}
       </div>
+
+      <ShapeFacts lang={lang} facts={facts} evidence={evidence} onChange={onChange} />
 
       {facts.switchable === true || evidence.switchable ? (
         <div>

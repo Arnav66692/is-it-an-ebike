@@ -123,6 +123,9 @@ export function withOneWheelSize(facts: BikeFacts): BikeFacts {
 /** Wheel sizes a family can type, in inches. Kids' bikes start near 12, and 700c is about 28. */
 export const WHEEL_MIN_IN = 6;
 export const WHEEL_MAX_IN = 30;
+/** Bike weights a family can type, in pounds, with the battery. */
+export const WEIGHT_MIN_LB = 10;
+export const WEIGHT_MAX_LB = 999;
 
 /**
  * The number a form field holds, or null when it is blank, not a number, or outside min to max.

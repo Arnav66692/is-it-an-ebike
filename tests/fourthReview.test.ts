@@ -16,6 +16,27 @@ import { classBike } from "./helpers";
 
 const DATE = "2026-10-20";
 
+/** The facts card's visible text, with each number box shown as [value]. */
+function factsCardText(text: string, lang: "en" | "es" = "en"): string {
+  const e = parseSpecText(text, "listing");
+  const html = renderToStaticMarkup(
+    createElement(FactsCard, {
+      lang,
+      facts: factsFromExtraction(e, emptyFacts()),
+      evidence: e.evidence,
+      flags: e.flags,
+      onChange: () => undefined,
+      onCheck: () => undefined,
+    }),
+  );
+  return html
+    .replace(/<input[^>]*type="number"[^>]*value="([^"]*)"[^>]*>/g, "[$1]")
+    .replace(/<input[^>]*type="radio"[^>]*>/g, (tag) => (tag.includes('checked=""') ? `(picked ${/value="([^"]*)"/.exec(tag)?.[1]})` : ""))
+    .replace(/<[^>]+>/g, "\n")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'");
+}
+
 function flow(text: string, state: string, age: number, over: Partial<BikeFacts> = {}, places: PlaceId[] = []) {
   const extraction = parseSpecText(text, "listing");
   const facts: BikeFacts = { ...factsFromExtraction(extraction, emptyFacts()), motorOver20: false, assistOver28: false, ...over };
@@ -153,5 +174,46 @@ describe("number fields take only numbers in range", () => {
       createElement(NumberField, { label: "Wheel size", value: 12, min: 6, max: 30, onChange: () => undefined, rangeError: "Enter a number from 6 to 30." }),
     );
     expect(ok).not.toContain("Enter a number");
+  });
+});
+
+describe("the facts card shows every wheel, wheel count and weight fact it read", () => {
+  const PA = "Hauler Cargo E-Bike. Class 1 pedal assist, no throttle. Motor: 500W rated. Battery: 48V 20Ah, battery weight: 12 lbs. Tires: 20 x 4.0 front and rear. Bike weight: 108 lbs. Payload capacity: 400 lbs.";
+  const TX = "Zoomy 12 Kids E-Bike. Wheel size: 12 in. Class 1 pedal assist, no throttle. 250W rated. Grows with your child: the frame also fits our 16-inch wheels upgrade kit.";
+  const AZ = "Zoomy 12 Kids E-Bike - the bike that replaces the trike\nClass 1 pedal assist e-bike for ages 5 to 8. No throttle. 250W rated motor. Top assisted speed 10 mph. Tires: 12 x 2.4 knobby.";
+
+  it("shows the weight it read, with the words it came from", () => {
+    const card = factsCardText(PA);
+    expect(card).toContain("Wheels and weight");
+    expect(card).toMatch(/Weight with the battery \(pounds\)\s+\[108\]/);
+    expect(card).toContain("Bike weight: 108 lbs.");
+    expect(card).toMatch(/Wheel size \(inches\)\s+\[20\]/);
+  });
+
+  it("shows the wheel sizes it found but did not use", () => {
+    const card = factsCardText(TX);
+    expect(card).toMatch(/Wheel size \(inches\)\s+\[\]/);
+    expect(card).toContain("Wheel size: 12 in.");
+    expect(card).toContain("The text names different wheel sizes");
+  });
+
+  it("shows the trike words it found and leaves the number of wheels for the family", () => {
+    const card = factsCardText(AZ);
+    expect(card).toContain("Number of wheels");
+    expect(card).not.toContain("(picked 3)");
+    expect(card).not.toContain("(picked 2)");
+    expect(card).toContain("replaces the trike");
+    expect(card).toContain("The text mentions a trike or three wheels");
+    expect(card).toMatch(/Wheel size \(inches\)\s+\[12\]/);
+    // A count the family picks shows as picked.
+    const picked = renderToStaticMarkup(
+      createElement(FactsCard, { lang: "en", facts: { ...emptyFacts(), wheelCount: 3 }, evidence: {}, flags: [], onChange: () => undefined, onCheck: () => undefined }),
+    );
+    expect(/<input[^>]*checked=""[^>]*value="3"/.test(picked) || /<input[^>]*value="3"[^>]*checked=""/.test(picked)).toBe(true);
+  });
+
+  it("is in Spanish too, and stays out of the way when nothing was read", () => {
+    expect(factsCardText(PA, "es")).toContain("Peso con la batería (libras)");
+    expect(factsCardText("Class 1. 250W rated. Pedal assist to 20 mph, no throttle.")).not.toContain("Wheels and weight");
   });
 });
