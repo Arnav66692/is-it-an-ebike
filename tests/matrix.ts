@@ -2,10 +2,11 @@
 // and switch date. Used by tests/engine.matrix.test.ts and scripts/engine-matrix.ts.
 
 import { evaluate } from "@/lib/rules";
+import { bottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
-import { emptyFacts, type BikeFacts, type QuestionId, type Status } from "@/lib/rules/types";
-import { localBlockers, stateBlockers, type OracleFacts } from "./oracle";
+import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type Status } from "@/lib/rules/types";
+import { bottomLineBlockers, localBlockers, stateBlockers, topVerifiedInData, type OracleFacts } from "./oracle";
 
 export const AGES = [7, 11, 12, 13, 14, 15, 16, 17, 18, 30];
 export const DATES = [
@@ -152,4 +153,96 @@ export function runMatrix(): MatrixSummary {
     }
   }
   return { cases: stateCases + localCases, stateCases, localCases, byStatus, falseLegal, missedYes };
+}
+
+/** California place sets for the bottom line: none, each place alone, and all of them. */
+export const PLACE_SETS: PlaceId[][] = [[], ...PLACE_IDS.map((p) => [p]), [...PLACE_IDS]];
+
+export interface BottomLineCase {
+  state: string;
+  cls: number;
+  age: number;
+  date: string;
+  variant: string;
+  places: string;
+  otherPlaces: boolean;
+  kind: BottomLineKind;
+  statuses: string[];
+  why: string[];
+}
+
+export interface BottomLineSummary {
+  cases: number;
+  byKind: Record<BottomLineKind, number>;
+  /** YES while the independent checker lists a reason against it. */
+  falseYes: BottomLineCase[];
+  /** Not YES while the independent checker lists no reason against it. */
+  missedYes: BottomLineCase[];
+  /** YES or NO of the wrong kind for the cards on the page. */
+  wrongKind: BottomLineCase[];
+  /** YES for a place we did not check, with no line saying so. */
+  missingCaveat: BottomLineCase[];
+}
+
+/**
+ * Every state, class, bike variant, age and date, and in California every place set with and
+ * without "Somewhere else". Each bottom line is checked three ways: against the independent
+ * checker, against the cards on the page, and for the unchecked-places caveat.
+ */
+export function runBottomLineMatrix(): BottomLineSummary {
+  const byKind: Record<BottomLineKind, number> = { yes: 0, no_illegal: 0, no_unconfirmed: 0 };
+  const falseYes: BottomLineCase[] = [];
+  const missedYes: BottomLineCase[] = [];
+  const wrongKind: BottomLineCase[] = [];
+  const missingCaveat: BottomLineCase[] = [];
+  let cases = 0;
+
+  for (const state of STATE_CODES) {
+    const placeSets = state === "CA" ? PLACE_SETS : [[]];
+    const otherOptions = state === "CA" ? [false, true] : [false];
+    for (const cls of [1, 2, 3] as const) {
+      for (const variant of VARIANTS) {
+        const of = oracleFacts(cls, variant);
+        const facts = engineFacts(of);
+        for (const age of AGES) {
+          for (const date of DATES) {
+            for (const places of placeSets) {
+              for (const otherPlaces of otherOptions) {
+                const result = evaluate({ state, riderAge: age, rideDate: date, facts, places, otherPlaces });
+                const bl = bottomLine(result, date);
+                const cards = [result.state, ...result.local];
+                const statuses = cards.map((v) => v.status);
+                const base = { state, cls, age, date, variant: variant.name, places: places.join("+") || "none", otherPlaces, kind: bl.kind, statuses };
+                cases += 1;
+                byKind[bl.kind] += 1;
+
+                const blockers = bottomLineBlockers(state, of, age, date, places);
+                if (bl.kind === "yes" && blockers.length > 0) falseYes.push({ ...base, why: blockers });
+                if (bl.kind !== "yes" && blockers.length === 0) missedYes.push({ ...base, why: [] });
+
+                const illegal = statuses.some((st) => st === "no" || st === "not_ebike");
+                const open = statuses.some((st) => st === "cant_confirm" || st === "need_info");
+                const unverified = cards.filter((v) => !topVerifiedInData(v.scope, v.id)).map((v) => v.id);
+                const unsure = cards.some((v) => v.cautions.some((c) => c.code === "caution_fast_mode_unverified"));
+                if (illegal && bl.kind !== "no_illegal") wrongKind.push({ ...base, why: ["a card is not allowed"] });
+                if (!illegal && bl.kind === "no_illegal") wrongKind.push({ ...base, why: ["no card is illegal"] });
+                if (bl.kind === "yes" && (open || unverified.length > 0 || unsure)) {
+                  wrongKind.push({ ...base, why: [open ? "open card" : "", unsure ? "not sure" : "", ...unverified].filter(Boolean) });
+                }
+                if (!illegal && !open && !unsure && unverified.length === 0 && bl.kind !== "yes") {
+                  wrongKind.push({ ...base, why: ["every card is a verified yes"] });
+                }
+
+                const townChecked = places.some((p) => p !== "sduhsd_campuses");
+                const needsCaveat = state !== "CA" || !townChecked || otherPlaces;
+                if (bl.kind === "yes" && needsCaveat && !bl.uncheckedPlaces) missingCaveat.push({ ...base, why: ["no unchecked-places line"] });
+                if (bl.kind === "yes" && !townChecked && bl.citiesChecked) missingCaveat.push({ ...base, why: ["claims a city was checked"] });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return { cases, byKind, falseYes, missedYes, wrongKind, missingCaveat };
 }

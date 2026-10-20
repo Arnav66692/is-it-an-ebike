@@ -2,9 +2,11 @@
 
 import { describe, expect, it } from "vitest";
 import { evaluate } from "@/lib/rules";
+import { bottomLine } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
 import { CHANGE_CODES, hasTemplate, renderLine } from "@/lib/i18n/verdicts";
+import { t, UI_KEYS } from "@/lib/i18n/ui";
 import { OVERLAY } from "@/lib/rules/compile";
 import type { Line } from "@/lib/rules/types";
 import { classBike } from "./helpers";
@@ -52,6 +54,11 @@ function collect(): Set<string> {
             for (const v of [r.state, ...r.local]) {
               add([v.reason, ...v.requirements, ...v.cautions, ...v.notes]);
             }
+            for (const places of state === "CA" ? [PLACE_IDS, PLACE_IDS.slice(0, 1)] : [[]]) {
+              const single = evaluate({ state, riderAge: age, rideDate: date, facts: classBike(cls, variant), places });
+              const bl = bottomLine(single, date);
+              add([...bl.blocked.map((b) => b.line), ...bl.missing.map((m) => m.line), ...bl.requirements]);
+            }
           }
         }
       }
@@ -89,11 +96,33 @@ describe("translations", () => {
     const samples = [...codes]
       .filter((c) => hasTemplate(c))
       .flatMap((code) => {
-        const line: Line = { code, params: { cls: 2, age: 14, minAge: 16, watts: 750, cap: 750, strict: 1, peak: 900, mph: 28, hp: 2, underAge: 18, place: "carlsbad", since: "2026-03-26", from: "2026-10-12", date: "2027-01-01", change: "ca_2027_01_01", verdict: "unclear" } };
+        const line: Line = { code, params: { cls: 2, age: 14, minAge: 16, watts: 750, cap: 750, strict: 1, peak: 900, mph: 28, hp: 2, underAge: 18, place: "carlsbad", since: "2026-03-26", from: "2026-10-12", date: "2027-01-01", change: "ca_2027_01_01", verdict: "unclear", questions: "fast_mode,wheels" } };
         return [renderLine(line, "en", "California"), renderLine(line, "es", "California")];
       });
     for (const s of samples) {
       expect(s, s).not.toMatch(/[—;]/);
+      expect(s, s).not.toMatch(/undefined|NaN|\{|\}/);
     }
+  });
+
+  it("covers the bottom-line sentences, and the YES headline reads SÍ in Spanish", () => {
+    for (const code of ["bl_unanswered", "bl_unsure_fast_mode", "bl_unverified_state", "bl_unverified_primary_partial", "bl_unverified_primary_not_found"]) {
+      expect(hasTemplate(code), code).toBe(true);
+      expect(codes.has(code) || code === "bl_unverified_state" || code === "bl_unverified_primary_not_found", code).toBe(true);
+    }
+    expect(t("en", "blYes")).toBe("YES");
+    expect(t("es", "blYes")).toBe("SÍ");
+    expect(t("en", "blNo")).toBe("NO");
+    expect(t("es", "blNo")).toBe("NO");
+  });
+
+  it("keeps every interface string in Arnav's style in both languages, and the legal-advice line on verdicts", () => {
+    for (const key of UI_KEYS) {
+      for (const lang of ["en", "es"] as const) {
+        const text = t(lang, key);
+        expect(text, `${lang}.${key}`).not.toMatch(/[—;]/);
+      }
+    }
+    expect(t("en", "notLegalAdvice")).toContain("General information, not legal advice.");
   });
 });

@@ -20,6 +20,7 @@ interface CautionRaw {
   valid_until: string | null;
 }
 interface StateRaw {
+  confidence: string;
   never_return_legal: boolean;
   definition: {
     requires_pedals: boolean | null;
@@ -43,9 +44,21 @@ const OVERLAY = overlayJson as unknown as {
   age_exceptions: { state: string; applies_to: string; min_age: number; from_age: number }[];
   scheduled_changes: { state: string; effective_date: string; effects: Effect[] }[];
 };
+interface SdRuleRaw {
+  rule: string;
+  min_age?: number | null;
+  effective_date: string | null;
+}
 const SD = sdJson as unknown as {
-  jurisdictions: { id: string; local_age_limits: { rule: string; min_age?: number | null; effective_date: string | null }[] }[];
+  jurisdictions: {
+    id: string;
+    verification_level: string;
+    local_age_limits: SdRuleRaw[];
+    campus_class_limits: SdRuleRaw[];
+  }[];
 };
+/** VC 21214.7, the under-12 power, is repealed on this date. */
+const UNDER_12_POWER_ENDS = "2029-01-01";
 
 export interface OracleFacts {
   cls: 1 | 2 | 3;
@@ -184,18 +197,45 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
   return reasons;
 }
 
-/** Extra San Diego reasons on top of the state reasons. */
+/** Extra San Diego reasons on top of the state reasons. Read from the raw San Diego records. */
 export function localBlockers(place: string, f: OracleFacts, age: number, date: string): string[] {
   const reasons: string[] = [];
-  if (place === "sduhsd_campuses" && f.cls === 3) reasons.push("campus_class_3");
-  if (place === "city_of_san_diego" || place === "carlsbad") {
-    const ban = SD.jurisdictions.find((j) => j.id === place)?.local_age_limits.find((r) => r.rule === "under_12_ban");
-    if (ban && ban.effective_date && (f.cls === 1 || f.cls === 2) && age < 12 && date >= ban.effective_date && date < "2029-01-01") {
-      reasons.push("local_under_12");
-    }
+  const j = SD.jurisdictions.find((x) => x.id === place);
+  if (!j) return [`unknown_place:${place}`];
+  const classOneOrTwo = f.cls === 1 || f.cls === 2;
+  if (place === "sduhsd_campuses" && f.cls === 3) {
+    const limit = j.campus_class_limits.find((r) => r.rule === "class_1_and_2_only_on_campus");
+    if (limit && (limit.effective_date === null || date >= limit.effective_date)) reasons.push("campus_class_3");
   }
-  if (place === "unincorporated_san_diego_county" && (f.cls === 1 || f.cls === 2) && age < 12 && date < "2029-01-01") {
-    reasons.push("county_under_12_unclear");
+  const ban = j.local_age_limits.find((r) => r.rule === "under_12_ban");
+  if (ban && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? 12) && date >= ban.effective_date && date < UNDER_12_POWER_ENDS) {
+    reasons.push("local_under_12");
+  }
+  const unclear = j.local_age_limits.some((r) => r.rule === "authority_exists_no_adoption_found");
+  if (unclear && classOneOrTwo && age < 12 && date < UNDER_12_POWER_ENDS) reasons.push("local_under_12_unclear");
+  return reasons;
+}
+
+/**
+ * Every reason the bottom line must not say YES. That is every card reason, plus a fast-mode
+ * answer left at "not sure", plus any record that was not read in enacted text.
+ */
+export function bottomLineBlockers(code: string, f: OracleFacts, age: number, date: string, places: string[]): string[] {
+  const reasons = [...stateBlockers(code, f, age, date)];
+  if (STATES[code].confidence !== "statute_verified") reasons.push("state_not_statute_verified");
+  if ((f.motorOver20 === null || f.assistOver28 === null) && !reasons.includes("fast_mode_unknown")) {
+    reasons.push("fast_mode_not_answered");
+  }
+  for (const place of places) {
+    reasons.push(...localBlockers(place, f, age, date).map((r) => `${place}:${r}`));
+    const level = SD.jurisdictions.find((x) => x.id === place)?.verification_level;
+    if (level !== "primary_verified") reasons.push(`${place}:not_primary_verified`);
   }
   return reasons;
+}
+
+/** True when the raw data says the record behind this card was read in enacted text. */
+export function topVerifiedInData(scope: "state" | "local", id: string): boolean {
+  if (scope === "state") return STATES[id].confidence === "statute_verified";
+  return SD.jurisdictions.find((x) => x.id === id)?.verification_level === "primary_verified";
 }
