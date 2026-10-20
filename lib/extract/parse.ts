@@ -344,13 +344,19 @@ const PEDALS_SHIPPED_BEFORE = String.raw`(?<!\b(?:includ(?:e|es|ed|ing)|comes? w
 /** Words after a "no" that make it about what ships: "none included", "No (sold separately)". */
 const PEDALS_SHIPPED_AFTER = String.raw`(?!\s*[(,]?\s*(?:included|incl\b|sold|available|in (?:the )?box|installed|attached|provided|shipped|optional|needed|required|necessary|extra|add-on))`;
 
+/** Shipping words before "without pedals": "Ships without pedals" is about the box, not the bike. */
+const SHIPPED_VERBS = String.raw`(?:comes?|came|coming|ships?|shipped|shipping|sold|sells|arrives?|arrived|delivered|supplied|packed|packaged|boxed|provided)`;
+const SHIPPED_BEFORE_WITHOUT = String.raw`(?<!\b${SHIPPED_VERBS}\s)`;
+/** The same for "Comes with no pedals". */
+const SHIPPED_WITH_BEFORE = String.raw`(?<!\b${SHIPPED_VERBS} with\s)`;
+
 /**
  * Text that says this bike has no pedals. Text about what ships in the box, like "Includes pedals:
  * No", "Comes with pedals: No", "Pedals: none included" or "Pedals: No (sold separately)", is left
  * to the user instead, like "pedals not included". So is "Do I need pedals? No".
  */
 const PEDALS_NONE = new RegExp(
-  String.raw`\b(no pedals${PEDALS_SHIPPED_AFTER}|without (?:any )?pedals${PEDALS_SHIPPED_AFTER}|pedal-?less|pedalless|pedal[- ]free|${PEDALS_SHIPPED_BEFORE}pedals\s*[:\-?]\s*(?:none|no)\b${PEDALS_SHIPPED_AFTER}|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none)\b${PEDALS_SHIPPED_AFTER})\b`,
+  String.raw`\b(${SHIPPED_WITH_BEFORE}no pedals${PEDALS_SHIPPED_AFTER}|${SHIPPED_BEFORE_WITHOUT}without (?:any )?pedals${PEDALS_SHIPPED_AFTER}|pedal-?less|pedalless|pedal[- ]free|${PEDALS_SHIPPED_BEFORE}pedals\s*[:\-?]\s*(?:none|no)\b${PEDALS_SHIPPED_AFTER}|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none)\b${PEDALS_SHIPPED_AFTER})\b`,
   "i",
 );
 
@@ -364,14 +370,36 @@ const PEDALS_ANSWER_DOUBT = /\b(?:no|not|none|nope|without|removed|taken off|sep
 
 /** Mentions that are not about bicycle pedals at all: "brake pedal", "foot pedal". */
 const PEDALS_OTHER_BEFORE = /\b(brake|foot|gas|clutch)\s*$/;
-/** Words before a pedal mention that say the pedals may be missing or not needed. */
+/**
+ * Words before a pedal mention that say the pedals may be missing or not needed. The text is read
+ * with "n't" spelled out, so "doesn't come with" reads as "does not come with".
+ */
 const PEDALS_DOUBT_BEFORE =
-  /\b(no need (?:to|for)|(?:won['’]?t|will not|don['’]?t|do not|doesn['’]?t|does not|never) need(?: any| the| to use(?: the)?)?|removed?(?: the| its| all)?|took off(?: the| its)?|taken off|without the|optional|add-on|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/;
+  /\b(?:no need (?:to|for)|(?:will not|wont|do not|dont|does not|doesnt|did not|didnt|never) need(?: any| the| to use(?: the)?)?|removed?(?: the| its| all)?|took off(?: the| its)?|taken off|without the|optional|add-on|not (?:have|has|include|includes|come with|comes with|ship with|ships with|arrive with|arrives with)(?: any| the| its)?|not (?:be |been )?(?:sold|shipped|supplied|provided|delivered|packed|boxed|included) with(?: any| the| its)?)\s*$/;
+/**
+ * Words before the word "pedals" itself that say they may be gone or not supplied: "missing
+ * pedals", "ships without pedals", "no longer has pedals", "Can I add pedals?". They are not
+ * used for "pedal assist", so "ride without pedal assist" still says nothing about the pedals.
+ */
+const PEDALS_ONLY_DOUBT_BEFORE =
+  /\b(?:without(?: any| the| its)?|missing(?: the| its| both| all)?|no longer (?:has|have|comes? with)(?: any| the| its)?|add(?:ing)?(?: on)?(?: the| some| any| optional)?)\s*$/;
 /** Words before a pedal-assist or sensor mention that say only the assist is missing: "no pedal assist". */
 const ASSIST_NEGATED_BEFORE = /\b(no|not|non|never|zero|without)\s*$/;
 /** Words after a pedal mention that say the pedals may be missing, removed or not needed. */
 const PEDALS_DOUBT_AFTER =
-  /^\s*(?:(?:have|has|had) been|were|was|are|is|got|get)?\s*(?:removed|taken off|stripped|not (?:required|needed|necessary|available|working|functional|operable|included|installed|attached)|unavailable|optional|an option|extra|add-on|sold separately|available separately|(?:included|installed|provided|attached)?\s*[:\-?(]\s*(?:no|none|n\/a|nope)\b|(?:included|installed)?\s*[:\-(]?\s*(?:are |is )?(?:not included|not installed|sold separately|available separately|optional|an option|extra|add-on))/;
+  /^\s*(?:(?:have|has|had) been|were|was|are|is|got|get)?\s*(?:removed|taken off|stripped|not (?:required|needed|necessary|available|working|functional|operable|included|installed|attached|provided|supplied|shipped|present|fitted|in (?:the )?box)|unavailable|optional|an option|extra|add[- ]?on|sold separately|available separately|(?:included|installed|provided|attached)?\s*[:\-?(]\s*(?:no|none|n\/a|nope)\b|(?:included|installed)?\s*[:\-(]?\s*(?:are |is )?(?:not included|not installed|sold separately|available separately|optional|an option|extra|add[- ]?on))/;
+/**
+ * Words after the word "pedals" itself that say they are gone, broken or not supplied: "Pedals
+ * off", "Pedals missing", "Pedals can be added", "Pedals sold as an accessory". Not used for
+ * "pedal assist", so "turn pedal assist off" still says nothing about the pedals.
+ */
+const PEDALS_ONLY_DOUBT_AFTER =
+  /^\s*(?:(?:have|has|had) been|were|was|are|is|got|get)?\s*(?:off\b(?![- ]?road)|missing|gone|deleted|broken|damaged|bent|cracked|not (?:on|for|with|part of|in) (?:this|the)\b|(?:can|could|may) be (?:added|installed|fitted|attached|purchased|bought|ordered)|(?:must|need to|have to) be (?:purchased|bought|ordered)|(?:sold|purchased|bought|available|offered|ordered)\s+(?:as\s+(?:an?\s+)?(?:accessory|accessories|add[- ]?on|option|extra|upgrade)|separately|on their own))/;
+
+/** Spells out "n't" so one pattern covers "doesn't", "does not" and "isn't". */
+function expandNegations(lower: string): string {
+  return lower.replace(/\bcan't\b/g, "cannot").replace(/\bwon't\b/g, "will not").replace(/n't\b/g, " not");
+}
 
 /** The words after a label, up to the end of its sentence or list item. */
 function answerAfter(text: string, from: number): string {
@@ -388,11 +416,13 @@ type PedalMention = "yes" | "skip" | "doubt";
  * them in doubt.
  */
 function pedalMention(text: string, index: number, end: number): PedalMention {
-  const before = slice(text, index - 24, index);
-  const after = slice(text, end, end + 40);
+  const before = expandNegations(slice(text, index - 30, index));
+  const after = expandNegations(slice(text, end, end + 40));
+  const pedalsWord = /^pedals$/i.test(text.slice(index, end));
   if (PEDALS_OTHER_BEFORE.test(before)) return "skip";
   if (PEDALS_DOUBT_BEFORE.test(before) || PEDALS_DOUBT_AFTER.test(after)) return "doubt";
-  if (ASSIST_NEGATED_BEFORE.test(before)) return /^pedals$/i.test(text.slice(index, end)) ? "doubt" : "skip";
+  if (pedalsWord && (PEDALS_ONLY_DOUBT_BEFORE.test(before) || PEDALS_ONLY_DOUBT_AFTER.test(after))) return "doubt";
+  if (ASSIST_NEGATED_BEFORE.test(before)) return pedalsWord ? "doubt" : "skip";
   return "yes";
 }
 
@@ -605,11 +635,12 @@ function parseWeight(text: string, out: Extraction): void {
   out.facts.weightLb = heaviest;
 }
 
-/** Normalizes spaces and dashes so patterns match, without changing word order. */
+/** Normalizes spaces, dashes and curly apostrophes so patterns match, without changing word order. */
 export function normalizeText(raw: string): string {
   return raw
     .replace(/[   ]/g, " ")
     .replace(/[‐‑‒—]/g, "-")
+    .replace(/[‘’]/g, "'")
     .replace(/\s+/g, " ")
     .trim();
 }

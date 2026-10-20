@@ -103,3 +103,47 @@ describe("a list of other products in the middle of a page never hides this bike
     expect(t("es", "flag_other_products_skipped")).toContain("La lectura sigue");
   });
 });
+
+describe("pedals that are gone, broken, add-on or not shipped are left to the family", () => {
+  const base = "Class 2 e-bike. 750W rated motor. Thumb throttle up to 20 mph. ";
+
+  it("reads 'n't' wordings, with a straight or curly apostrophe, as doubt, never as working pedals", () => {
+    for (const tail of ["Doesn't come with pedals.", "Doesn't include pedals.", "Didn't come with pedals.", "Doesn’t come with pedals.", "It isn't sold with pedals.", "Pedals aren't included."]) {
+      const { facts, extraction, kind } = flow(base + tail, "CA", 30, ["encinitas"]);
+      expect(facts.hasPedals, tail).toBeNull();
+      expect(extraction.flags, tail).toContain("pedals_unclear");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("reads add-on, sold-separately, missing, removed and broken wordings as doubt", () => {
+    const tails = [
+      "Pedals can be installed.", "Pedals can be added.", "Can I add pedals? Yes.", "Pedals sold as an accessory.", "Pedals purchased separately.",
+      "Pedals sold as an add on.", "Pedals not provided.", "Pedals are not provided.", "Pedals are missing.", "Missing pedals.", "Pedals missing.",
+      "Took the pedals off.", "Pedals off.", "Pedals deleted for a cleaner look.", "No longer has pedals.", "Pedals not on this model.", "Pedals broken.",
+    ];
+    for (const tail of tails) {
+      const { facts, kind } = flow(base + tail, "CA", 30, ["encinitas"]);
+      expect(facts.hasPedals, tail).toBeNull();
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("'ships without pedals' is about the box, so it is left to the family, not a definite no", () => {
+    for (const tail of ["Comes without pedals.", "Ships without pedals.", "Sold without pedals.", "Arrives without pedals.", "Shipped without pedals, crank arms installed.", "Comes with no pedals."]) {
+      const { facts, result, kind } = flow(base + tail, "CA", 30, ["encinitas"]);
+      expect(facts.hasPedals, tail).toBeNull();
+      expect(result.state.status, tail).toBe("cant_confirm");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("still reads clear text the same way", () => {
+    expect(flow(`${base}No pedals.`, "CA", 30).facts.hasPedals).toBe(false);
+    expect(flow(`${base}Doesn't have pedals.`, "CA", 30).facts.hasPedals).toBe(false);
+    expect(flow(`${base}Ride without pedals, it's an e-moto.`, "CA", 30).facts.hasPedals).toBe(false);
+    expect(flow(`${base}Alloy platform pedals.`, "CA", 30).kind).toBe("yes");
+    expect(flow(`${base}Turn pedal assist off to use the throttle. Alloy pedals.`, "CA", 30).facts.hasPedals).toBe(true);
+    expect(flow(`${base}Install the pedals and handlebar, then ride. Alloy pedals.`, "CA", 30).facts.hasPedals).toBe(true);
+  });
+});
