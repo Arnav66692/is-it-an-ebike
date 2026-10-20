@@ -345,3 +345,29 @@ describe("a NO that only says 'not an e-bike' doesn't claim a rule bars the ride
     expect(bottomLine(emoto, DATE).notEbikeOnly).toBe(false);
   });
 });
+
+describe("the campus card names every class a multi-class bike can run as", () => {
+  it("says Class 1/2 on the SDUHSD card, like the state card, not only Class 2", () => {
+    const facts = classBike(1, { classes: [1, 2], hasThrottle: true, throttleMph: 20 });
+    const result = evaluate({ state: "CA", riderAge: 14, rideDate: DATE, facts, places: ["sduhsd_campuses"] });
+    expect(renderLine(result.state.reason, "en", "California")).toContain("This bike can run as Class 1/2.");
+    const campus = result.local[0];
+    expect(campus.status).toBe("yes");
+    expect(renderLine(campus.reason, "en", "California")).toBe(
+      "This bike can run as Class 1/2. Each of those classes is allowed on SDUHSD campuses, after these steps.",
+    );
+    expect(renderLine(campus.reason, "es", "California")).toContain("Clase 1/2");
+    // SDUHSD stays NO, not confirmed: its class, tag and course rules come only from a web page.
+    expect(bottomLine(result, DATE).kind).toBe("no_unconfirmed");
+  });
+
+  it("keeps the steps for every class on a multi-class local yes", () => {
+    const facts = classBike(1, { classes: [1, 3], hasThrottle: false, assistMph: 28 });
+    const result = evaluate({ state: "CA", riderAge: 17, rideDate: DATE, facts, places: ["encinitas"] });
+    const local = result.local[0];
+    expect(result.state.requirements.map((l) => l.code)).toEqual(expect.arrayContaining(["req_helmet_under", "req_helmet_all_ages"]));
+    expect(local.status).toBe("yes");
+    const stateCodes = result.state.requirements.map((l) => l.code).sort();
+    expect(local.requirements.map((l) => l.code).sort()).toEqual(stateCodes);
+  });
+});

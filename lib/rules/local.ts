@@ -321,6 +321,16 @@ function placeNotes(
   return notes;
 }
 
+function dedupeLines(lines: Line[]): Line[] {
+  const seen = new Set<string>();
+  return lines.filter((l) => {
+    const key = `${l.code}|${JSON.stringify(l.params ?? {})}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function sourcesOf(lines: Line[], extra: Source[]): Source[] {
   const seen = new Set<string>();
   const out: Source[] = [];
@@ -361,7 +371,13 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
     if (se.classesKnown) {
       outcome = perClass.reduce((a, b) => (SEVERITY[b.status] > SEVERITY[a.status] ? b : a));
       if (outcome.status === "yes" && perClass.length > 1) {
-        outcome = { ...perClass[perClass.length - 1] };
+        // The bike can run as each class, so the line names them all and the steps for each are kept.
+        const top = perClass[perClass.length - 1];
+        outcome = {
+          ...top,
+          reason: { ...top.reason, params: { ...top.reason.params, multi: perClass.map((o) => o.cls).join("/") } },
+          requirements: dedupeLines(perClass.flatMap((o) => o.requirements)),
+        };
       }
     } else if (perClass.every((o) => o.status === "no" || o.status === "not_ebike")) {
       outcome = perClass.every((o) => o.status === "not_ebike")

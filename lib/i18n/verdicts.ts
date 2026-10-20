@@ -165,7 +165,10 @@ const EN = {
   local_under_12_after_check: (p, c) =>
     `This place's rules for riders under 12 were last checked on ${formatDate(n(p.checked), c.lang)}, and they can change before your ride date. We can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`,
   local_allowed: (p, c) => `Allowed in ${placeNameInline(n(p.place), c.lang)} for ${aAge(p.age)}.`,
-  campus_allowed: (p) => `Class ${cls(p)} e-bikes are allowed on SDUHSD campuses, after these steps.`,
+  campus_allowed: (p) =>
+    p.multi
+      ? `This bike can run as Class ${p.multi}. Each of those classes is allowed on SDUHSD campuses, after these steps.`
+      : `Class ${cls(p)} e-bikes are allowed on SDUHSD campuses, after these steps.`,
   campus_class3: () => "Only Class 1 and 2 e-bikes are allowed on SDUHSD campuses.",
   campus_no_emoto: () => "E-motos and other non-e-bikes aren't allowed on SDUHSD campuses.",
   sd_course_in_lieu: () =>
@@ -356,7 +359,10 @@ const ES = {
   local_under_12_after_check: (p, c) =>
     `Las reglas de este lugar para menores de 12 años se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}, y pueden cambiar antes de la fecha de tu viaje. Solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`,
   local_allowed: (p, c) => `Permitida en ${placeNameInline(n(p.place), c.lang)} para alguien de ${p.age} años.`,
-  campus_allowed: (p) => `Las bicicletas eléctricas Clase ${cls(p)} se permiten en las escuelas de SDUHSD, después de estos pasos.`,
+  campus_allowed: (p) =>
+    p.multi
+      ? `Esta bicicleta puede funcionar como Clase ${p.multi}. Cada una de esas clases se permite en las escuelas de SDUHSD, después de estos pasos.`
+      : `Las bicicletas eléctricas Clase ${cls(p)} se permiten en las escuelas de SDUHSD, después de estos pasos.`,
   campus_class3: () => "En las escuelas de SDUHSD solo se permiten bicicletas eléctricas Clase 1 y 2.",
   campus_no_emoto: () => "Las motos eléctricas y otros vehículos que no son bicicletas eléctricas no se permiten en las escuelas de SDUHSD.",
   sd_course_in_lieu: () =>
