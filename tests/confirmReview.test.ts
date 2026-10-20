@@ -20,14 +20,16 @@ import {
   unconfirmedFields,
   withConfirmed,
   withEdit,
+  wheelsLeftAsRead,
   withPedalCall,
   type CheckedFacts,
   type CheckedUpdate,
-  type FactCheck,
 } from "@/lib/provenance";
 import { bottomLine, evaluate } from "@/lib/rules";
 import { emptyFacts, READ_FIELDS, type PlaceId, type ReadField } from "@/lib/rules/types";
 import { t } from "@/lib/i18n/ui";
+import { brief } from "./helpers";
+import { typeErrors } from "./typeCheck";
 
 const DAY = "2026-10-19";
 const ROOT = join(__dirname, "..");
@@ -95,7 +97,7 @@ describe("an edit or tick made as a read lands is never applied to the new bike"
     const after = applyAll(bike, [(cur) => withPedalCall(cur, "no_pedals"), editOn(seen, withWeight(seen, 63))]);
     expect(after.facts.hasPedals).toBe(false);
     expect(after.facts.weightLb).toBe(62);
-    expect(after.checks.hasPedals).toEqual({ source: "photo", status: "unchecked" });
+    expect(brief(after.checks.hasPedals)).toEqual({ source: "photo", status: "unchecked" });
     expect(answer("CA", 11, after, ["encinitas"]).kind).not.toBe("yes");
     // Applied straight onto the new facts, the stale keystroke would bring the old pedals answer back.
     expect(withEdit(withPedalCall(bike, "no_pedals"), withWeight(seen, 63)).facts.hasPedals).toBe(true);
@@ -121,17 +123,17 @@ describe("an edit or tick made as a read lands is never applied to the new bike"
     const next = read(DIRT_BIKE);
     const after = applyAll(old, [() => next, confirmOn(old.facts, "classes", true)]);
     expect(after).toBe(next);
-    expect(after.checks.classes).toEqual({ source: "text", status: "unchecked" });
+    expect(brief(after.checks.classes)).toEqual({ source: "text", status: "unchecked" });
     const called = applyAll(old, [(cur) => withPedalCall(cur, "no_pedals"), confirmOn(old.facts, "hasPedals", true)]);
-    expect(called.checks.hasPedals).toEqual({ source: "photo", status: "unchecked" });
+    expect(brief(called.checks.hasPedals)).toEqual({ source: "photo", status: "unchecked" });
   });
 
   it("applies edits and ticks made on the facts on screen, including after a photo call that changed nothing", () => {
     const bike = read(CLASS_2);
-    expect(confirmOn(bike.facts, "classes", true)(bike).checks.classes).toEqual({ source: "text", status: "ticked" });
+    expect(brief(confirmOn(bike.facts, "classes", true)(bike).checks.classes)).toEqual({ source: "text", status: "ticked" });
     const typed = editOn(bike.facts, withWeight(bike.facts, 64))(bike);
     expect(typed.facts.weightLb).toBe(64);
-    expect(typed.checks.weightLb).toEqual({ source: "text", status: "theirs" });
+    expect(brief(typed.checks.weightLb)).toEqual({ source: "text", status: "theirs" });
     // A tick keeps the facts as they were, so a second tick from the same card still lands.
     const two = applyAll(bike, [confirmOn(bike.facts, "classes", true), confirmOn(bike.facts, "ratedWatts", true)]);
     expect(checkCounts(two.checks)).toEqual({ read: 8, confirmed: 2 });
@@ -193,15 +195,16 @@ describe("the pedals evidence after the photo check changes the answer", () => {
 });
 
 describe("a fact the family changed or answered is theirs", () => {
-  it("has no box to untick, so the read mark never comes back on their value", () => {
+  it("has no box to untick while it holds their value, and asks for the tick again once the read value is back", () => {
     const bike = read(CLASS_2);
     const cleared = withEdit(bike, withWeight(bike.facts, null));
-    expect(cleared.checks.weightLb).toEqual({ source: "text", status: "theirs" });
+    expect(brief(cleared.checks.weightLb)).toEqual({ source: "text", status: "theirs" });
     expect(withConfirmed(cleared, "weightLb", false)).toBe(cleared);
     expect(unconfirmedFields(withConfirmed(cleared, "weightLb", false).checks)).not.toContain("weightLb");
-    // Typing the read value back in keeps it theirs.
+    // Putting the read value back makes it read again, still to check (third review: a nudge away and back is no check).
     const back = withEdit(cleared, withWeight(cleared.facts, 62));
-    expect(back.checks.weightLb?.status).toBe("theirs");
+    expect(back.checks.weightLb?.status).toBe("unchecked");
+    expect(unconfirmedFields(back.checks)).toContain("weightLb");
   });
 
   it("shows a plain line instead of the box under a fact the family set", () => {
@@ -227,19 +230,20 @@ describe("a fact the family changed or answered is theirs", () => {
 
   it("counts a follow-up answer that matches the read value as the family's own", () => {
     let bike = read(UTAH_CLASS_1);
-    expect(bike.checks.hasFootPegs).toEqual({ source: "text", status: "unchecked" });
+    expect(brief(bike.checks.hasFootPegs)).toEqual({ source: "text", status: "unchecked" });
     bike = confirmAll(bike, unconfirmedFields(bike.checks).filter((f) => f !== "hasFootPegs"));
     bike = withEdit(bike, { ...bike.facts, motorOver20: false, assistOver28: false });
     // The "Foot pegs or a pedal kit?" follow-up, answered No, as FollowUps sends it.
     const next = { ...bike.facts, hasFootPegs: false, needsPedalKit: false };
     expect(withEdit(bike, next).checks.hasFootPegs?.status).toBe("unchecked");
     const answered = withEdit(bike, next, ["hasFootPegs"]);
-    expect(answered.checks.hasFootPegs).toEqual({ source: "text", status: "theirs" });
+    expect(brief(answered.checks.hasFootPegs)).toEqual({ source: "text", status: "theirs", answered: true });
     expect(answer("UT", 30, answered, []).kind).toBe("yes");
     const followUps = readFileSync(join(ROOT, "components", "FollowUps.tsx"), "utf8");
     expect(followUps).toMatch(/unsure: withUnsure\(facts, "pegs_kit", v === "unsure"\) \}, \[\s*"hasFootPegs",\s*\]\);/);
     expect(followUps).toContain('["weightLb"]');
-    expect(followUps).toContain('["wheelCount"]');
+    // The wheel count shows the read value as it is, so picking it is a plain edit (third review).
+    expect(followUps).not.toContain('["wheelCount"]');
   });
 });
 
@@ -250,7 +254,8 @@ describe("two different wheel sizes share one check", () => {
     const bike = read(LABEL, "label");
     expect([bike.facts.wheelFrontIn, bike.facts.wheelRearIn]).toEqual([24, 20]);
     const front = withEdit(bike, withWheelSize(bike.facts, 26, false));
-    expect(front.checks.wheelSize).toEqual({ source: "text", status: "unchecked", wheelsAsRead: ["rear"] });
+    expect(brief(front.checks.wheelSize)).toEqual({ source: "text", status: "unchecked" });
+    expect(front.checks.wheelSize && wheelsLeftAsRead(front.checks.wheelSize, front.facts)).toEqual(["rear"]);
     expect(unconfirmedFields(front.checks)).toContain("wheelSize");
     const rear = withEdit(bike, { ...bike.facts, wheelRearIn: 22 });
     expect(rear.checks.wheelSize?.status).toBe("unchecked");
@@ -310,13 +315,20 @@ describe("getting back to the facts", () => {
 });
 
 describe("the checks are type-checked", () => {
-  it("builds checks without Object.fromEntries, whose result is not type-checked", () => {
+  it("builds checks without Object.fromEntries, whose result is not type-checked (source check)", () => {
     const source = readFileSync(join(ROOT, "lib", "provenance.ts"), "utf8");
     expect(source).not.toContain("Object.fromEntries");
-    // @ts-expect-error a check's status is one of three words
-    const badStatus: FactCheck = { source: "text", status: "yes" };
-    // @ts-expect-error a check's source is text or photo
-    const badSource: FactCheck = { source: "ocr", status: "unchecked" };
-    expect([badStatus, badSource]).toHaveLength(2);
   });
+
+  it("makes the compiler reject a check with a status, source or field that doesn't exist", () => {
+    const head = 'import { emptyFacts } from "@/lib/rules/types";\nimport type { FactCheck, FactChecks } from "@/lib/provenance";\n';
+    expect(typeErrors(`${head}const ok: FactCheck = { source: "text", status: "ticked", asRead: emptyFacts() };\nexport { ok };`)).toEqual([]);
+    const bad: [string, RegExp][] = [
+      ['const a: FactCheck = { source: "text", status: "yes", asRead: emptyFacts() };', /CheckStatus/],
+      ['const b: FactCheck = { source: "ocr", status: "unchecked", asRead: emptyFacts() };', /FactSource/],
+      ['const c: FactCheck = { source: "text", status: "unchecked" };', /'asRead' is missing/],
+      ['const d: FactChecks = { motorOver20: { source: "text", status: "unchecked", asRead: emptyFacts() } };', /'motorOver20' does not exist/],
+    ];
+    for (const [line, error] of bad) expect(typeErrors(`${head}${line}\nexport {};`).join("\n"), line).toMatch(error);
+  }, 60_000);
 });

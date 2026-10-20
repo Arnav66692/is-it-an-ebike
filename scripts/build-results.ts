@@ -43,7 +43,7 @@ function commit(): string {
 const READ_ROWS: [ReadVariant, string][] = [
   ["typed", "Typed in"],
   ["read_none_checked", "Read, no fact checked"],
-  ["read_one_unchecked", "Read, one fact left unchecked"],
+  ["read_one_unchecked", "Read, one fact changed and put back"],
   ["read_all_checked", "Read, every fact checked"],
 ];
 
@@ -167,7 +167,7 @@ Mutation check, done once by hand on Oct 17. Turning off the never-legal rule, o
 
 ## Bottom line
 
-Under every answer the app shows one strict YES or NO for the whole ride (\`lib/rules/bottomLine.ts\`). YES needs every card allowed, every question answered, no "not sure" fast-mode answer, every record read in enacted text, a ride date no more than 30 days after the state rules were last checked, and every fact read from a link or photo checked by the family against the bike (\`lib/provenance.ts\`). It was checked on **${bottom.cases.toLocaleString("en-US")} generated rides**: the same states, classes, bikes, ages and dates as above, and in California every place alone, all places together and none, each with and without "Somewhere else". Each ride ran four ways, typed in, and read from a link or photo with no fact checked, with one fact left unchecked (each fact in turn), and with every fact checked, so **${bottom.bottomLines.toLocaleString("en-US")} bottom lines** in all. Every gate below counts all of them. A separate checker in \`tests/oracle.ts\` lists every reason a case must not get a YES, and every rule that says a ride is definitely not allowed. The matrix works out which facts were read on its own, and counts every unchecked one as a reason against YES, whether or not a card used it. The caveat line is read from the real rendered card, ${bottom.renderedCards} distinct cards in English and Spanish.
+Under every answer the app shows one strict YES or NO for the whole ride (\`lib/rules/bottomLine.ts\`). YES needs every card allowed, every question answered, no "not sure" fast-mode answer, every record read in enacted text, a ride date no more than 30 days after the state rules were last checked, and every fact read from a link or photo checked by the family against the bike (\`lib/provenance.ts\`). It was checked on **${bottom.cases.toLocaleString("en-US")} generated rides**: the same states, classes, bikes, ages and dates as above, and in California every place alone, all places together and none, each with and without "Somewhere else". Each ride ran four ways, typed in, and read from a link or photo with no fact checked, with every fact ticked and then one changed and put back to the value read (each fact in turn), so it is unchecked again, and with every fact checked, so **${bottom.bottomLines.toLocaleString("en-US")} bottom lines** in all. Every gate below counts all of them. A separate checker in \`tests/oracle.ts\` lists every reason a case must not get a YES, and every rule that says a ride is definitely not allowed. The matrix works out which facts were read on its own, and counts every unchecked one as a reason against YES, whether or not a card used it. The caveat line is read from the real rendered card, ${bottom.renderedCards} distinct cards in English and Spanish.
 
 | Gate | Result |
 |---|---|

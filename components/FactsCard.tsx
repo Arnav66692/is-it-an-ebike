@@ -6,7 +6,7 @@ import { checkCounts, pedalCallNeedsTick, type FactChecks } from "@/lib/provenan
 import type { BikeFacts, ClassNum, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
-import { answerGate, type PedalCall } from "@/lib/photo/pedalRule";
+import { answerGate, confirmThroughGate, type PedalCall } from "@/lib/photo/pedalRule";
 import { Card, Choice, fromTri, NumberField, triValue } from "./controls";
 import { PedalPhotoCheck } from "./PedalPhotoCheck";
 import { ReadNote, type OnConfirm } from "./ReadCheck";
@@ -41,17 +41,14 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
   const [throttleUnsure, setThrottleUnsure] = useState(false);
   const pedalsUi: Tri3 | null = triValue(facts.hasPedals) ?? (pedalsUnsure ? "unsure" : null);
   const throttleUi: Tri3 | null = triValue(facts.hasThrottle) ?? (throttleUnsure ? "unsure" : null);
-  // A pedals answer the family picks while a photo check runs must not be replaced by the photo's call.
+  // A pedals answer the family picks, or ticks, while a photo check runs must not be replaced by the photo's call.
   const [pedalAnswers] = useState(answerGate);
   // Goes up with each pedals answer the family picks, so the photo check's message about the old answer is cleared.
   const [pedalPicks, setPedalPicks] = useState(0);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
   const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
-  const confirm: OnConfirm = (field, confirmed) => {
-    // Ticking the pedals box is the family's own pedals answer, newer than a photo check still running.
-    if (field === "hasPedals") pedalAnswers.edited();
-    onConfirm(field, confirmed);
-  };
+  // Ticking the pedals box is the family's own pedals answer, newer than a photo check still running.
+  const confirm: OnConfirm = confirmThroughGate(pedalAnswers, onConfirm);
   const ev = (key: ReadField) => <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={confirm} evidence={evidence[key]} />;
   const counts = checkCounts(checks);
   const triOptions = [
@@ -85,7 +82,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           options={triOptions}
           value={pedalsUi}
           onChange={(v) => {
-            pedalAnswers.edited();
+            pedalAnswers.edited("picked");
             setPedalPicks((n) => n + 1);
             setPedalsUnsure(v === "unsure");
             set({ hasPedals: fromTri(v) });

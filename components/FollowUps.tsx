@@ -24,7 +24,9 @@ interface Props {
   facts: BikeFacts;
   /**
    * The family answered. `answered` names the read facts the answer covers, which count as theirs
-   * even when the answer matches what was read.
+   * even when the answer matches what was read. The wheel boxes and the wheel count show the facts
+   * as they are, the same as the facts card, so they name none. An arrow key that moves the wheel
+   * count away and back then leaves it as read, still to check.
    */
   onChange: (next: BikeFacts, answered?: readonly ReadField[]) => void;
 }
@@ -118,14 +120,14 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
               { value: "3", label: "3" },
             ]}
             value={facts.wheelCount === null ? null : (String(facts.wheelCount) as "2" | "3")}
-            onChange={(v) => onChange(withWheelCount(facts, v === "3" ? 3 : 2), ["wheelCount"])}
+            onChange={(v) => onChange(withWheelCount(facts, v === "3" ? 3 : 2))}
           />
           <button
             type="button"
             className="btn btn-quiet"
             aria-pressed={facts.unsure.includes("wheels")}
             onClick={() =>
-              onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) }, ["wheelSize", "wheelCount"])
+              onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) })
             }
           >
             {t(lang, "notSure")}

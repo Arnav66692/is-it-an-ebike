@@ -43,12 +43,17 @@ const en = {
   step3Help: "Fix anything that's wrong. Nothing is decided until you press Check.",
   readFrom: "Read from",
   readFromBefore: "Before the photo check, the text said",
-  readIntro: "Facts read from a link or photo are marked. Look at the bike and tick \"It matches the bike\" under each one, or fix it. The answer can't say YES until every one is checked.",
+  readIntro: "Facts read from a link or photo are marked. Look at the bike and tick \"It matches the bike\" under each one, or fix any that are wrong. The answer can't say YES until every one is checked.",
+  readAnnounceOne: "I read 1 fact. It is marked in \"Here's what I read\". Look at the bike, then tick \"It matches the bike\" under it, or fix it. The answer can't say YES until it is checked.",
+  readAnnounceMany: "I read {total} facts. They are marked in \"Here's what I read\". Look at the bike, then tick \"It matches the bike\" under each one, or fix any that are wrong. The answer can't say YES until every one is checked.",
   readMarkText: "Read from text, check it against the bike.",
-  readMarkPhoto: "Read from the photo check, check it against the bike.",
+  readMarkPhoto: "Read by the photo check. Compare it with the bike.",
+  readMarkChecked: "You checked this against the bike.",
   readMatches: "It matches the bike",
   readMatchesFor: "It matches the bike, {field}",
   readMatchesBoth: "It matches the bike, both wheel sizes",
+  readMatchesFront: "It matches the bike, front wheel size",
+  readMatchesRear: "It matches the bike, rear wheel size",
   readTheirs: "You set this yourself, so it counts as checked.",
   readCount: "Facts read from a link or photo, {done} of {total} checked against the bike.",
   pedals: "Working pedals?",
@@ -67,6 +72,7 @@ const en = {
   photoCheckNoPedalsTick: "The photo check says it has no pedals, so the answer above is now no. Look at the bike, then tick \"It matches the bike\" or change the answer.",
   photoCheckAsk: "Close call from the photo. Does it have pedals? Pick an answer above.",
   photoCheckKept: "You picked an answer while the photo was being checked, so your answer stays.",
+  photoCheckKeptTick: "You used the pedals box while the photo was being checked, so the pedals answer stays as it was.",
   photoCheckNoWebGpu: "This browser can't run the photo check, because it needs WebGPU. Answer the pedals question yourself.",
   photoCheckFailed: "The photo check didn't work. Try another photo, or answer the pedals question yourself.",
   yes: "Yes",
@@ -222,12 +228,17 @@ const es: Record<UiKey, string> = {
   step3Help: "Corrige lo que esté mal. No se decide nada hasta que presiones Revisar.",
   readFrom: "Leído de",
   readFromBefore: "Antes de la revisión de la foto, el texto decía",
-  readIntro: "Los datos leídos de un enlace o una foto están marcados. Mira la bicicleta y marca \"Coincide con la bicicleta\" debajo de cada uno, o corrígelo. La respuesta no puede decir SÍ hasta que revises todos.",
+  readIntro: "Los datos leídos de un enlace o una foto están marcados. Mira la bicicleta y marca \"Coincide con la bicicleta\" debajo de cada uno, o corrige los que estén mal. La respuesta no puede decir SÍ hasta que revises todos.",
+  readAnnounceOne: "Leí 1 dato. Está marcado en \"Esto es lo que leí\". Mira la bicicleta y marca \"Coincide con la bicicleta\" debajo de él, o corrígelo. La respuesta no puede decir SÍ hasta que lo revises.",
+  readAnnounceMany: "Leí {total} datos. Están marcados en \"Esto es lo que leí\". Mira la bicicleta y marca \"Coincide con la bicicleta\" debajo de cada uno, o corrige los que estén mal. La respuesta no puede decir SÍ hasta que revises todos.",
   readMarkText: "Leído del texto, compáralo con la bicicleta.",
-  readMarkPhoto: "Leído por la revisión de la foto, compáralo con la bicicleta.",
+  readMarkPhoto: "Leído por la revisión de la foto. Compáralo con la bicicleta.",
+  readMarkChecked: "Lo comparaste con la bicicleta.",
   readMatches: "Coincide con la bicicleta",
   readMatchesFor: "Coincide con la bicicleta, {field}",
   readMatchesBoth: "Coincide con la bicicleta, las dos medidas de rueda",
+  readMatchesFront: "Coincide con la bicicleta, medida de la rueda delantera",
+  readMatchesRear: "Coincide con la bicicleta, medida de la rueda trasera",
   readTheirs: "Este dato lo pusiste tú, así que cuenta como revisado.",
   readCount: "Datos leídos de un enlace o una foto, {done} de {total} comparados con la bicicleta.",
   pedals: "¿Tiene pedales que funcionan?",
@@ -246,6 +257,7 @@ const es: Record<UiKey, string> = {
   photoCheckNoPedalsTick: "La revisión de la foto dice que no tiene pedales, así que la respuesta de arriba ahora es no. Mira la bicicleta y marca \"Coincide con la bicicleta\" o cambia la respuesta.",
   photoCheckAsk: "La foto no es clara. ¿Tiene pedales? Elige una respuesta arriba.",
   photoCheckKept: "Elegiste una respuesta mientras se revisaba la foto, así que se queda tu respuesta.",
+  photoCheckKeptTick: "Usaste la casilla de los pedales mientras se revisaba la foto, así que la respuesta de los pedales se queda como estaba.",
   photoCheckNoWebGpu: "Este navegador no puede hacer la revisión de la foto, porque necesita WebGPU. Responde tú la pregunta de los pedales.",
   photoCheckFailed: "La revisión de la foto no funcionó. Prueba otra foto o responde tú la pregunta de los pedales.",
   yes: "Sí",
@@ -371,4 +383,14 @@ export const UI_KEYS = Object.keys(en) as UiKey[];
 
 export function isUiKey(key: string): key is UiKey {
   return key in en;
+}
+
+/**
+ * What a screen reader hears after a link, pasted text or label photo is read: how many facts
+ * were read, that each is marked, and that the answer can't say YES until they are checked.
+ * Empty when nothing was read, since the reader's own error already says so.
+ */
+export function readAnnouncement(lang: Lang, total: number): string {
+  if (total <= 0) return "";
+  return total === 1 ? t(lang, "readAnnounceOne") : t(lang, "readAnnounceMany", { total });
 }

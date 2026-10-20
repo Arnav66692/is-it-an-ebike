@@ -5,12 +5,12 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { confirmOn, editOn, emptyChecked, fromRead, unconfirmedFields, withPedalCall, type CheckedFacts } from "@/lib/provenance";
+import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, unconfirmedFields, withPedalCall, type CheckedFacts } from "@/lib/provenance";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
 import { formatDate, stateName, type Lang } from "@/lib/i18n/names";
-import { t } from "@/lib/i18n/ui";
+import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
 import { Card } from "./controls";
@@ -88,10 +88,22 @@ export function Checker() {
   const [starts, setStarts] = useState(0);
   // Only the newest label or link read may fill in the facts.
   const [readGate] = useState(requestGate);
+  // How many facts the last read gave, for the status line a screen reader hears. Null clears it.
+  const [readNote, setReadNote] = useState<number | null>(null);
+  // Set by a read that gave facts, so focus moves to the new facts card once it is on the page.
+  const focusFacts = useRef(false);
 
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  // After a read, keyboard and screen reader focus moves to the heading of the new facts card, so
+  // the family lands on the marked facts instead of staying on the button they pressed.
+  useEffect(() => {
+    if (!focusFacts.current) return;
+    focusFacts.current = false;
+    factsRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+  }, [round]);
 
   // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
   // comes back into view, so an old tab never answers for yesterday.
@@ -190,16 +202,25 @@ export function Checker() {
 
   function handleRead(extraction: Extraction) {
     // A new link, pasted text or label photo is a new bike. Every value it gives comes in not checked.
-    setBike(fromRead(factsFromExtraction(extraction, emptyFacts()), "text"));
+    const next = fromRead(factsFromExtraction(extraction, emptyFacts()), "text");
+    setBike(next);
     setEvidence(extraction.evidence);
     setFlags(extraction.flags);
     setStage("facts");
     setRound((r) => r + 1);
     scrollTo(factsRef);
+    // The status line lives here, outside the card, so it is already on the page when it changes
+    // and a screen reader reads it out. It is cleared first, so a second read with the same count
+    // is read out again.
+    const total = checkCounts(next.checks).read;
+    focusFacts.current = total > 0;
+    setReadNote(null);
+    if (total > 0) requestAnimationFrame(() => setReadNote(total));
   }
 
   function handleManual() {
     readGate.cancel();
+    setReadNote(null);
     setBike(emptyChecked());
     setEvidence({});
     setFlags([]);
@@ -336,6 +357,9 @@ export function Checker() {
 
       <BikeInput key={`input-${starts}`} lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
 
+      <p role="status" className="sr-only">
+        {readNote !== null ? readAnnouncement(lang, readNote) : ""}
+      </p>
       <div ref={factsRef} className="scroll-mt-4">
         {stage !== "input" ? (
           <FactsCard
@@ -384,6 +408,7 @@ export function Checker() {
                   setStage("input");
                   setStarts((n) => n + 1);
                   setBike(emptyChecked());
+                  setReadNote(null);
                   setEvidence({});
                   setFlags([]);
                   window.scrollTo({ top: 0, behavior: "smooth" });

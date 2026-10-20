@@ -52,7 +52,6 @@ interface NumberFieldProps {
   onChange: (value: number | null) => void;
   min?: number;
   max?: number;
-  step?: number;
   help?: string;
   evidence?: ReactNode;
   /** Shown when the typed number is outside min to max. The fact then stays unknown. */
@@ -63,8 +62,13 @@ interface NumberFieldProps {
  * A number box that passes on only a number from min to max. Anything else counts as unknown
  * and shows an error, so a typo or a millimeter size can't settle a rule. The typed text is kept,
  * so the family can see and fix it.
+ *
+ * It is a text box with a number keypad, not type="number". A number input changes its value on
+ * a mouse wheel turn, a trackpad swipe or an arrow key, and a screen reader's arrow keys can do
+ * it too. A change nobody typed must never stand in for a fact the family checked, so only typing
+ * changes the number here (the GOV.UK Design System gives the same advice for number inputs).
  */
-export function NumberField({ label, value, onChange, min, max, step = 1, help, evidence, rangeError }: NumberFieldProps) {
+export function NumberField({ label, value, onChange, min, max, help, evidence, rangeError }: NumberFieldProps) {
   const id = useId();
   const [text, setText] = useState(value === null ? "" : String(value));
   const [shown, setShown] = useState(value);
@@ -86,11 +90,10 @@ export function NumberField({ label, value, onChange, min, max, step = 1, help, 
       {help ? <p className="text-sm text-muted">{help}</p> : null}
       <input
         id={id}
-        type="number"
+        type="text"
         inputMode="decimal"
-        min={min}
-        max={max}
-        step={step}
+        autoComplete="off"
+        spellCheck={false}
         value={text}
         onChange={(e) => {
           const raw = e.target.value;

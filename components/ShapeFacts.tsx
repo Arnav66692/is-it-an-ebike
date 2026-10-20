@@ -17,7 +17,7 @@ import {
   withWheelSize,
 } from "@/lib/checkerState";
 import type { Evidence as Ev, FactKey } from "@/lib/extract/parse";
-import type { FactChecks } from "@/lib/provenance";
+import { wheelsLeftAsRead, type FactCheck, type FactChecks } from "@/lib/provenance";
 import type { BikeFacts, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
@@ -31,6 +31,16 @@ interface Props {
   evidence: Partial<Record<FactKey, Ev[]>>;
   onChange: (next: BikeFacts) => void;
   onConfirm: OnConfirm;
+}
+
+/**
+ * The words next to the wheel size box when the card shows Front and Rear boxes. They name the
+ * sizes the box still covers, so once the family changed one size the box no longer claims both.
+ */
+export function wheelMatchesKey(check: FactCheck | undefined, facts: BikeFacts): UiKey {
+  const left = check ? wheelsLeftAsRead(check, facts) : [];
+  if (left.length === 1) return left[0] === "front" ? "readMatchesFront" : "readMatchesRear";
+  return "readMatchesBoth";
 }
 
 /** True when the text gave any of these facts, or the facts already hold one. */
@@ -83,8 +93,8 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
           <>
             {wheelField(t(lang, "front"), facts.wheelFrontIn, (v) => onChange(withWheelSize(facts, v, false)), false)}
             {wheelField(t(lang, "rear"), facts.wheelRearIn, (v) => onChange({ ...facts, wheelRearIn: v }), false)}
-            {/* Both sizes share one check, so its words and its box sit under both boxes and say so. */}
-            <div className="space-y-1 sm:col-span-2">{ev("wheelSize", "readMatchesBoth")}</div>
+            {/* Both sizes share one check, so its words and its box sit under both boxes and say which sizes it covers. */}
+            <div className="space-y-1 sm:col-span-2">{ev("wheelSize", wheelMatchesKey(checks.wheelSize, facts))}</div>
           </>
         ) : (
           wheelField(t(lang, "wheelSizeIn"), facts.wheelFrontIn, (v) => onChange(withWheelSize(facts, v, true)), true)

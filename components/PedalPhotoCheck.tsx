@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
-import { callIfCurrent, PEDAL_MODEL_MB, type PedalCall } from "@/lib/photo/pedalRule";
+import { callIfCurrent, PEDAL_MODEL_MB, type AnswerChange, type AnswerWatch, type PedalCall } from "@/lib/photo/pedalRule";
 
 type Step = "closed" | "confirm" | "choose" | "working";
 
@@ -28,10 +28,34 @@ export function photoMessage(message: UiKey, tick: boolean): UiKey {
   return tick ? (TICK_KEY[message] ?? message) : message;
 }
 
+/** The message for a call dropped because the family changed the pedals answer while the check ran. */
+export function keptMessage(change: AnswerChange | null): UiKey {
+  return change === "ticked" ? "photoCheckKeptTick" : "photoCheckKept";
+}
+
+/**
+ * Runs one photo check and returns the message to show when it ends, or null once the card has
+ * left the page. The call fills the pedals answer only while the card is on the page and the
+ * family hasn't picked a pedals answer or used the pedals box since the check started. Otherwise
+ * the call is dropped and the message says why. The message is picked here, once, so a later
+ * tick never changes the words a screen reader already heard. A failed run throws.
+ */
+export async function photoCheckMessage(
+  run: () => Promise<{ call: PedalCall }>,
+  watch: AnswerWatch,
+  onPage: () => boolean,
+  onCall: (call: PedalCall) => void,
+  tickAfter: (call: PedalCall) => boolean,
+): Promise<UiKey | null> {
+  const call = await callIfCurrent(run, () => onPage() && watch.untouched(), onCall);
+  if (call !== null) return photoMessage(RESULT_KEY[call], tickAfter(call));
+  return onPage() ? keptMessage(watch.change()) : null;
+}
+
 interface Props {
   lang: Lang;
-  /** Called as a check starts. The check it returns turns false once the family picks a pedals answer. */
-  startCheck: () => () => boolean;
+  /** Called as a check starts. What it returns tracks the family's pedals answer while the check runs. */
+  startCheck: () => AnswerWatch;
   onCall: (call: PedalCall) => void;
   /** True when the pedals answer will still have to be ticked once this call is applied. */
   tickAfter: (call: PedalCall) => boolean;
@@ -77,17 +101,18 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks }: 
     setStep("working");
     setMessage(null);
     setProgress(0);
-    // The family's own pedals answer, picked while the check runs, is newer than the photo, so it wins.
-    const untouched = startCheck();
+    // The family's own pedals answer, given while the check runs, is newer than the photo, so it wins.
+    const watch = startCheck();
     try {
       const { runPedalCheck } = await import("@/lib/photo/runPedalCheck");
-      const call = await callIfCurrent(
+      const next = await photoCheckMessage(
         () => runPedalCheck(file, (p) => onPage.current && setProgress(p)),
-        () => onPage.current && untouched(),
+        watch,
+        () => onPage.current,
         onCall,
+        tickAfter,
       );
-      if (call !== null) setMessage(photoMessage(RESULT_KEY[call], tickAfter(call)));
-      else if (onPage.current) setMessage("photoCheckKept");
+      if (next !== null) setMessage(next);
     } catch {
       if (onPage.current) setMessage("photoCheckFailed");
     } finally {

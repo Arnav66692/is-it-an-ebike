@@ -41,7 +41,7 @@ function factsCardText(text: string, lang: "en" | "es" = "en"): string {
     }),
   );
   return html
-    .replace(/<input[^>]*type="number"[^>]*value="([^"]*)"[^>]*>/g, "[$1]")
+    .replace(/<input[^>]*inputMode="decimal"[^>]*value="([^"]*)"[^>]*>/g, "[$1]")
     .replace(/<input[^>]*type="radio"[^>]*>/g, (tag) => (tag.includes('checked=""') ? `(picked ${/value="([^"]*)"/.exec(tag)?.[1]})` : ""))
     .replace(/<[^>]+>/g, "\n")
     .replace(/&quot;/g, '"')

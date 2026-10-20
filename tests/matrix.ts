@@ -1,7 +1,8 @@
 // Builds the test matrix from the data: every state, class, age band, caution condition
 // and switch date. The bottom line also runs each case four ways: typed in, and read from a link
-// or photo with no fact checked, every fact checked, or one fact left unchecked. Used by
-// tests/engine.matrix.test.ts and scripts/build-results.ts.
+// or photo with no fact checked, every fact checked, or one fact left unchecked because it was
+// changed and put back after its tick. Used by tests/engine.matrix.test.ts and
+// scripts/build-results.ts.
 
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -260,6 +261,30 @@ export function readableFields(f: BikeFacts): ReadField[] {
   return READ_FIELDS.filter((k) => given[k]);
 }
 
+/**
+ * The facts with one read fact set to some other value, the way a stray arrow key, mouse wheel or
+ * second tap could change it. Worked out here on its own, field by field.
+ */
+export function nudged(f: BikeFacts, field: ReadField): BikeFacts {
+  const up = (n: number | null) => (n === null ? null : n + 1);
+  const flip = (v: boolean | null) => (v === null ? null : !v);
+  switch (field) {
+    case "classes":
+      return { ...f, classes: f.classes.includes(3) ? f.classes.filter((c) => c !== 3) : [...f.classes, 3] };
+    case "wheelSize":
+      return { ...f, wheelFrontIn: up(f.wheelFrontIn), wheelRearIn: up(f.wheelRearIn) };
+    case "wheelCount":
+      return { ...f, wheelCount: f.wheelCount === 3 ? 2 : 3 };
+    case "hasPedals":
+    case "hasThrottle":
+    case "hasFootPegs":
+    case "switchable":
+      return { ...f, [field]: flip(f[field]) };
+    default:
+      return { ...f, [field]: up(f[field]) };
+  }
+}
+
 interface ReadRun {
   variant: ReadVariant;
   /** What the checker would pass to the bottom line, from lib/provenance.ts. */
@@ -271,19 +296,22 @@ interface ReadRun {
 /**
  * The four ways one bike's facts can reach the bottom line, built with the same functions the
  * checker calls. Checking runs over readableFields, not over what lib/provenance.ts marked, so a
- * fact it failed to mark, or marked by mistake, shows up as a wrong answer.
+ * fact it failed to mark, or marked by mistake, shows up as a wrong answer. In the one-left run
+ * every fact is ticked, then one is changed and put back to the value read. Nobody looked at the
+ * bike for that value since, so it must count as unchecked again.
  */
 function readRuns(facts: BikeFacts): { fixed: ReadRun[]; oneLeft: ReadRun[] } {
   const fields = readableFields(facts);
   const read = fromRead(facts, "text");
-  const checkAllBut = (left: ReadField | null) => fields.filter((f) => f !== left).reduce((b, f) => withConfirmed(b, f, true), read);
+  const checked = fields.reduce((b, f) => withConfirmed(b, f, true), read);
+  const putBack = (f: ReadField) => withEdit(withEdit(checked, nudged(facts, f)), facts);
   return {
     fixed: [
       { variant: "typed", unconfirmed: unconfirmedFields(withEdit(emptyChecked(), facts).checks), expected: [] },
       { variant: "read_none_checked", unconfirmed: unconfirmedFields(read.checks), expected: fields },
-      { variant: "read_all_checked", unconfirmed: unconfirmedFields(checkAllBut(null).checks), expected: [] },
+      { variant: "read_all_checked", unconfirmed: unconfirmedFields(checked.checks), expected: [] },
     ],
-    oneLeft: fields.map((f) => ({ variant: "read_one_unchecked", unconfirmed: unconfirmedFields(checkAllBut(f).checks), expected: [f] })),
+    oneLeft: fields.map((f) => ({ variant: "read_one_unchecked", unconfirmed: unconfirmedFields(putBack(f).checks), expected: [f] })),
   };
 }
 
@@ -359,7 +387,8 @@ function caveatProblems(bl: BottomLine, state: string, expected: UiKey | null): 
 /**
  * Every state, bike, age and date, and in California every place set with and without
  * "Somewhere else". Each ride runs four ways: typed in, and read from a link or photo with no
- * fact checked, one fact left unchecked (each fact in turn), or every fact checked. Each bottom
+ * fact checked, one fact left unchecked (each fact in turn, ticked, changed and put back), or
+ * every fact checked. Each bottom
  * line is checked against the independent checker for YES and for "NO, not allowed", against the
  * cards on the page, for the unchecked facts it names, and for the caveat on the rendered card.
  */

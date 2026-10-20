@@ -328,6 +328,21 @@ body {
   font-weight: 600;
 }
 
+/* The same mark once the family ticked the box. It keeps its place and height. */
+.read-mark-done {
+  background: var(--sunk);
+  color: var(--ink);
+}
+
+/* The mark's two lines share one cell, so ticking never changes the mark's height. */
+.read-mark-words {
+  display: grid;
+}
+
+.read-mark-words > * {
+  grid-area: 1 / 1;
+}
+
 .read-mark-icon {
   display: inline-grid;
   place-items: center;

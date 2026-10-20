@@ -303,7 +303,7 @@ const EN = {
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
   bl_unconfirmed_facts: (p, c) =>
-    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? "under it" : "under each one"} in "Here's what I read" above, or fix it.`,
+    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under it in "Here's what I read" above, or fix it` : `under each one in "Here's what I read" above, or fix any that are wrong`}.`,
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({
@@ -504,7 +504,7 @@ const ES = {
     "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
   county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",
   bl_unconfirmed_facts: (p, c) =>
-    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? "debajo de ese dato" : "debajo de cada uno"} en "Esto es lo que leí", arriba, o corrige el dato.`,
+    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? `debajo de ese dato en "Esto es lo que leí", arriba, o corrige el dato` : `debajo de cada uno en "Esto es lo que leí", arriba, o corrige los que estén mal`}.`,
   bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({

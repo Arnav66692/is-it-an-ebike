@@ -2,10 +2,12 @@
 //
 // A fact read from a product link, pasted text, a label photo or the whole-bike pedal photo check
 // can be wrong, however careful the reader is. So it comes in "not checked", and stays that way
-// until the family ticks "It matches the bike", changes it or answers it themselves. The bottom
-// line can't say YES while any read fact is not checked (lib/rules/bottomLine.ts). A fact the
-// family typed or picked is theirs from the start. Nothing here is saved, so a reload or a shared
-// link starts with nothing checked. Kept apart from the page so tests can run it.
+// until the family ticks "It matches the bike", changes it or answers it in a follow-up question.
+// A value changed and then put back to the value that was read is as read again, still to check,
+// so a stray arrow key or mouse wheel that nudges a fact away and back never counts as checking
+// it. The bottom line can't say YES while any read fact is not checked (lib/rules/bottomLine.ts).
+// A fact the family typed or picked is theirs from the start. Nothing here is saved, so a reload
+// or a shared link starts with nothing checked. Kept apart from the page so tests can run it.
 
 import { applyPedalCall, type PedalCall } from "@/lib/photo/pedalRule";
 import { emptyFacts, READ_FIELDS, type BikeFacts, type ReadField } from "@/lib/rules/types";
@@ -14,9 +16,9 @@ import { emptyFacts, READ_FIELDS, type BikeFacts, type ReadField } from "@/lib/r
 export type FactSource = "text" | "photo";
 
 /**
- * "unchecked" until the family looks at the bike. "ticked" once they tick "It matches the bike".
- * "theirs" once they change the fact or answer it themselves, so the value is their own and
- * there is nothing left to tick. A fact stays theirs, even if they type the read value back in.
+ * "unchecked" while the fact holds the value that was read and the family hasn't ticked it.
+ * "ticked" once they tick "It matches the bike". "theirs" while the value is one they set, so
+ * there is nothing left to tick, or once they answered the fact in a follow-up question.
  */
 export type CheckStatus = "unchecked" | "ticked" | "theirs";
 
@@ -27,11 +29,15 @@ export interface FactCheck {
   source: FactSource;
   status: CheckStatus;
   /**
-   * Wheel size only: the read sizes the family hasn't changed yet. Two different sizes share one
-   * check, so it becomes theirs once they have changed every size that was read, both at once or
-   * one box at a time.
+   * The facts as this fact was read. A value equal to the one read here is as read, and needs a
+   * tick. For the wheel size, each wheel's read size is compared on its own.
    */
-  wheelsAsRead?: readonly Wheel[];
+  asRead: BikeFacts;
+  /**
+   * Set once the family answered the fact in a follow-up question that didn't already show the
+   * read value. Their answer stays theirs, even when it matches what was read.
+   */
+  answered?: true;
 }
 
 /** One entry per fact whose value was read. A fact the family typed has none, since it is already theirs. */
@@ -100,11 +106,7 @@ export function emptyChecked(): CheckedFacts {
  * every value comes in not checked, even one the family checked on the last bike.
  */
 export function fromRead(facts: BikeFacts, source: FactSource = "text"): CheckedFacts {
-  const checks = buildChecks((field) => {
-    if (!hasValue(facts, field)) return undefined;
-    if (field === "wheelSize") return { source, status: "unchecked", wheelsAsRead: wheelsHeld(facts) };
-    return { source, status: "unchecked" };
-  });
+  const checks = buildChecks((field) => (hasValue(facts, field) ? { source, status: "unchecked", asRead: facts } : undefined));
   return { facts, checks };
 }
 
@@ -114,44 +116,52 @@ function wheelIn(facts: BikeFacts, wheel: Wheel): number | null {
   return wheel === "front" ? facts.wheelFrontIn : facts.wheelRearIn;
 }
 
-/** The wheels whose size the facts hold. */
-function wheelsHeld(facts: BikeFacts): Wheel[] {
-  return WHEELS.filter((w) => wheelIn(facts, w) !== null);
+/**
+ * The wheels whose size is still the size that was read. Two different sizes share one check, so
+ * the check is the family's own only once no read size is left as read. Changing the front size
+ * alone leaves the rear size as read, still to check.
+ */
+export function wheelsLeftAsRead(check: FactCheck, facts: BikeFacts): Wheel[] {
+  return WHEELS.filter((w) => wheelIn(check.asRead, w) !== null && wheelIn(facts, w) === wheelIn(check.asRead, w));
 }
 
-function theirs(check: FactCheck): FactCheck {
-  return { source: check.source, status: "theirs" };
+/** True when the fact, or for the wheel size any one wheel, still holds the value that was read. */
+function stillAsRead(check: FactCheck, field: ReadField, facts: BikeFacts): boolean {
+  if (field === "wheelSize") return wheelsLeftAsRead(check, facts).length > 0;
+  return fieldValue(facts, field) === fieldValue(check.asRead, field);
 }
 
 /**
- * The wheel size check after an edit. A read size counts as changed once the family changes it,
- * and stays changed, so they can fix the Front box and then the Rear box. The check is theirs
- * once every read size has changed. Fixing the front size alone leaves the rear size as it was
- * read, still to be checked.
+ * True when the edit put a value back to the one read. For the wheel size, when a wheel the family
+ * had changed is back at its read size, since a tick given before then didn't cover that wheel.
  */
-function wheelEdit(check: FactCheck, before: BikeFacts, after: BikeFacts): FactCheck {
-  const held = check.wheelsAsRead ?? wheelsHeld(before);
-  if (held.length === 0) return fieldValue(before, "wheelSize") === fieldValue(after, "wheelSize") ? check : theirs(check);
-  const left = held.filter((w) => wheelIn(before, w) === wheelIn(after, w));
-  if (left.length === 0) return theirs(check);
-  return left.length === held.length && check.wheelsAsRead ? check : { ...check, wheelsAsRead: left };
+function putBack(check: FactCheck, field: ReadField, before: BikeFacts, after: BikeFacts): boolean {
+  if (field !== "wheelSize") return !stillAsRead(check, field, before);
+  const was = wheelsLeftAsRead(check, before);
+  return wheelsLeftAsRead(check, after).some((w) => !was.includes(w));
 }
 
-/** One read fact's check after an edit from `before` to `after`. */
+/**
+ * One read fact's check after an edit from `before` to `after`. A value the family set is theirs.
+ * A value put back to the one read is as read again, so it needs a tick, even if it was ticked
+ * before it was changed. A follow-up answer stays theirs.
+ */
 function editedCheck(check: FactCheck, field: ReadField, before: BikeFacts, after: BikeFacts, answered: boolean): FactCheck {
-  if (check.status === "theirs") return check;
-  if (answered) return theirs(check);
-  if (field === "wheelSize") return wheelEdit(check, before, after);
-  return fieldValue(before, field) === fieldValue(after, field) ? check : theirs(check);
+  if (answered) return check.status === "theirs" && check.answered ? check : { ...check, status: "theirs", answered: true };
+  if (check.answered) return check;
+  if (!stillAsRead(check, field, after)) return check.status === "theirs" ? check : { ...check, status: "theirs" };
+  if (check.status !== "unchecked" && (check.status === "theirs" || putBack(check, field, before, after))) return { ...check, status: "unchecked" };
+  return check;
 }
 
 /**
  * The family changed the facts by hand, on the facts card or in a follow-up question, starting
- * from `cur.facts`. Each read fact whose value they replaced is now theirs. That includes a fact
- * they cleared, which is also what a number box passes on midway through typing a new number,
- * like the "6" of "64", so the fact stays theirs instead of asking to be checked again. A fact in
- * `answered` is one they just answered, so it is theirs even if the answer matches what was read.
- * Facts they didn't touch keep their state.
+ * from `cur.facts`. Each read fact whose value now differs from the one read is theirs. That
+ * includes a fact they cleared, which is also what a number box passes on midway through typing
+ * a new number, like the "6" of "64". A read fact whose value is back at the one read is as read
+ * again and needs a tick, so a nudge away and back never checks it. A fact in `answered` is one
+ * they just answered in a follow-up question, so it is theirs even if the answer matches what
+ * was read. Facts they didn't touch keep their state.
  */
 export function withEdit(cur: CheckedFacts, next: BikeFacts, answered: readonly ReadField[] = []): CheckedFacts {
   const checks = buildChecks((field) => {
@@ -163,7 +173,7 @@ export function withEdit(cur: CheckedFacts, next: BikeFacts, answered: readonly 
 
 /**
  * The family ticked, or cleared, "It matches the bike" on one read fact. A fact that wasn't read
- * has nothing to check, and one that is already theirs has no box.
+ * has nothing to check, and one that holds a value they set has no box.
  */
 export function withConfirmed(cur: CheckedFacts, field: ReadField, confirmed: boolean): CheckedFacts {
   const check = cur.checks[field];
@@ -177,13 +187,15 @@ export function withConfirmed(cur: CheckedFacts, field: ReadField, confirmed: bo
  * The whole-bike photo check made a call. It only ever fills the pedals answer. When the call
  * changes that answer, the new answer came from the photo and is not checked, even if the family
  * checked the old one. A close call, or a call that matches the answer already there, changes
- * nothing. The page drops a call that lands after the family picked a pedals answer while the
- * check ran (answerGate in lib/photo/pedalRule.ts), so a call never replaces their answer.
+ * nothing. The page drops a call that lands after the family picked a pedals answer or used the
+ * pedals box while the check ran (answerGate in lib/photo/pedalRule.ts). An answer picked before
+ * the check started is replaced, since the family asked for the check, and the new answer then
+ * needs a tick.
  */
 export function withPedalCall(cur: CheckedFacts, call: PedalCall): CheckedFacts {
   const facts = applyPedalCall(cur.facts, call);
   if (facts.hasPedals === cur.facts.hasPedals) return cur;
-  return { facts, checks: withCheck(cur.checks, "hasPedals", { source: "photo", status: "unchecked" }) };
+  return { facts, checks: withCheck(cur.checks, "hasPedals", { source: "photo", status: "unchecked", asRead: facts }) };
 }
 
 /**

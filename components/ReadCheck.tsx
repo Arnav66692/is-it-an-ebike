@@ -26,7 +26,9 @@ interface CheckProps {
 
 /**
  * Nothing for a fact the family typed. A short line for a read fact they changed or answered,
- * since it is theirs now. For any other read fact, the mark while it is not checked, and the box.
+ * since it is theirs now. For any other read fact, the mark and the box. Ticking the box turns
+ * the mark into a "checked" line in the same place, at the same height, so the box never moves
+ * under the finger and a quick second tap still lands on it.
  */
 export function ReadCheck({ lang, field, check, onConfirm, matchesKey }: CheckProps) {
   const noteId = useId();
@@ -40,16 +42,20 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey }: CheckPr
   }
   const ticked = check.status === "ticked";
   const words = matchesKey ? t(lang, matchesKey) : t(lang, "readMatches");
+  const markText = t(lang, check.source === "photo" ? "readMarkPhoto" : "readMarkText");
   return (
     <div className="read-check space-y-1" data-confirmed={ticked ? "true" : "false"}>
-      {ticked ? null : (
-        <p id={noteId} className="read-mark">
-          <span aria-hidden="true" className="read-mark-icon">
-            !
-          </span>
-          <span>{t(lang, check.source === "photo" ? "readMarkPhoto" : "readMarkText")}</span>
-        </p>
-      )}
+      <p id={noteId} className={ticked ? "read-mark read-mark-done" : "read-mark"} data-read-mark={check.status}>
+        <span aria-hidden="true" className="read-mark-icon">
+          {ticked ? "\u2713" : "!"}
+        </span>
+        {/* Both lines share one grid cell, so the mark keeps the height of the longer one. Only
+            the line for the box's state is visible, and only it is read out. */}
+        <span className="read-mark-words">
+          <span className={ticked ? "invisible" : undefined}>{markText}</span>
+          <span className={ticked ? undefined : "invisible"}>{t(lang, "readMarkChecked")}</span>
+        </span>
+      </p>
       <label className="check">
         <input
           type="checkbox"

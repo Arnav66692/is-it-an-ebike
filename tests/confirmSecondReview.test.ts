@@ -7,7 +7,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { FactsCard } from "@/components/FactsCard";
-import { photoMessage } from "@/components/PedalPhotoCheck";
+import { photoCheckMessage, photoMessage } from "@/components/PedalPhotoCheck";
+import { answerGate, type PedalCall } from "@/lib/photo/pedalRule";
 import { ShapeFacts } from "@/components/ShapeFacts";
 import { numberInRange, twoWheelBoxes, WHEEL_MAX_IN, WHEEL_MIN_IN, withOneWheelSize, withWheelSize } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
@@ -29,6 +30,7 @@ import { bottomLine, evaluate } from "@/lib/rules";
 import { emptyFacts, READ_FIELDS, type BikeFacts, type PlaceId, type ReadField } from "@/lib/rules/types";
 import { renderLine } from "@/lib/i18n/verdicts";
 import { t } from "@/lib/i18n/ui";
+import { brief } from "./helpers";
 
 const DAY = "2026-10-19";
 const ROOT = join(__dirname, "..");
@@ -105,7 +107,7 @@ describe("typing both wheel sizes, one box at a time, counts as checked", () => 
     expect(bike.checks.wheelSize?.status).toBe("unchecked");
     bike = edit(bike, (f) => ({ ...f, wheelRearIn: 21 }));
     bike = edit(bike, (f) => ({ ...f, wheelRearIn: 22 }));
-    expect(bike.checks.wheelSize).toEqual({ source: "text", status: "theirs" });
+    expect(brief(bike.checks.wheelSize)).toEqual({ source: "text", status: "theirs" });
     expect(unconfirmedFields(bike.checks)).toEqual([]);
     const line = answer("CA", 30, bike, []);
     expect(line.kind).toBe("yes");
@@ -130,12 +132,16 @@ describe("typing both wheel sizes, one box at a time, counts as checked", () => 
     expect(bike.checks.wheelSize?.status).toBe("theirs");
   });
 
-  it("keeps a size the family changed as theirs, even if they type the read value back in", () => {
+  it("counts a size put back to the read size as read again, so it still needs the tick", () => {
     let bike = allButWheels();
     bike = edit(bike, (f) => withWheelSize(f, 26, false));
     bike = edit(bike, (f) => withWheelSize(f, 24, false));
     expect(bike.checks.wheelSize?.status).toBe("unchecked");
+    // The rear changed and the front is back at its read size, so the front is left to check.
     bike = edit(bike, (f) => ({ ...f, wheelRearIn: 16 }));
+    expect(bike.checks.wheelSize?.status).toBe("unchecked");
+    expect(answer("CA", 30, bike, []).kind).toBe("no_unconfirmed");
+    bike = edit(bike, (f) => withWheelSize(f, 26, false));
     expect(bike.checks.wheelSize?.status).toBe("theirs");
   });
 
@@ -227,17 +233,28 @@ describe("the pedal photo message is chosen when the call lands", () => {
     expect(photoMessage("photoCheckNoPedals", pedalCallNeedsTick(bike, "no_pedals"))).toBe("photoCheckNoPedalsTick");
   });
 
-  it("never re-renders the message from the box, and clears it when the family picks a pedals answer", () => {
+  it("picks the message once, as the call lands, so a later tick never changes the words", async () => {
+    const bike = read(CLASS_2, "listing");
+    const asked: PedalCall[] = [];
+    const tickAfter = (call: PedalCall) => {
+      asked.push(call);
+      return pedalCallNeedsTick(bike, call);
+    };
+    const message = await photoCheckMessage(async () => ({ call: "no_pedals" }), answerGate().start(), () => true, () => undefined, tickAfter);
+    expect(message).toBe("photoCheckNoPedalsTick");
+    expect(asked).toEqual(["no_pedals"]);
+  });
+
+  it("stores the message and clears it when the family picks a pedals answer (source check, the card needs a browser to run)", () => {
     const check = readFileSync(join(ROOT, "components", "PedalPhotoCheck.tsx"), "utf8");
-    expect(check).toContain("setMessage(photoMessage(RESULT_KEY[call], tickAfter(call)));");
+    expect(check).toContain("if (next !== null) setMessage(next);");
     expect(check).toContain("{t(lang, message)}");
-    expect(check).not.toContain("needsTick");
     expect(check).toContain("if (picks !== seenPicks) {");
     expect(check).toMatch(/setSeenPicks\(picks\);\s*setMessage\(null\);/);
     const card = readFileSync(join(ROOT, "components", "FactsCard.tsx"), "utf8");
     expect(card).toContain("tickAfter={(call) => pedalCallNeedsTick({ facts, checks }, call)}");
     expect(card).toContain("picks={pedalPicks}");
-    expect(card).toMatch(/pedalAnswers\.edited\(\);\s*setPedalPicks\(\(n\) => n \+ 1\);/);
+    expect(card).toMatch(/pedalAnswers\.edited\("picked"\);\s*setPedalPicks\(\(n\) => n \+ 1\);/);
   });
 
   it("would say the answer is now no after the family picked Yes, which the clear prevents", () => {

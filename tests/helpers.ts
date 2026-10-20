@@ -1,3 +1,4 @@
+import type { FactCheck } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
 import { emptyFacts, type BikeFacts, type ClassNum, type EngineResult, type PlaceId } from "@/lib/rules/types";
 
@@ -39,4 +40,13 @@ export function run(
 
 export function codes(lines: { code: string }[]): string[] {
   return lines.map((l) => l.code);
+}
+
+/**
+ * A check without the facts it was read from, so a test can compare where a fact came from and
+ * its state in one line. "answered" shows only when set.
+ */
+export function brief(check: FactCheck | undefined): Pick<FactCheck, "source" | "status" | "answered"> | undefined {
+  if (!check) return undefined;
+  return check.answered ? { source: check.source, status: check.status, answered: true } : { source: check.source, status: check.status };
 }

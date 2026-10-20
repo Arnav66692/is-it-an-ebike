@@ -20,7 +20,7 @@ import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
 import { emptyFacts, READ_FIELDS, type BikeFacts, type PlaceId, type ReadField } from "@/lib/rules/types";
 import { READ_FIELD_NAMES, readFieldList, renderLine } from "@/lib/i18n/verdicts";
-import { classBike } from "./helpers";
+import { brief, classBike } from "./helpers";
 
 const DAY = "2026-10-19";
 
@@ -47,9 +47,9 @@ describe("where each fact came from", () => {
     expect(unconfirmedFields(bike.checks)).toEqual(["hasPedals", "classes", "ratedWatts", "hasThrottle", "throttleMph", "assistMph", "wheelSize", "weightLb"]);
     for (const field of READ_FIELDS) {
       expect(bike.checks[field] !== undefined, field).toBe(hasValue(bike.facts, field));
-      // The wheel size check also lists the read sizes, so each can be changed one box at a time.
-      const sizes = field === "wheelSize" ? { wheelsAsRead: ["front", "rear"] } : {};
-      if (bike.checks[field]) expect(bike.checks[field]).toEqual({ source: "text", status: "unchecked", ...sizes });
+      if (bike.checks[field]) expect(brief(bike.checks[field])).toEqual({ source: "text", status: "unchecked" });
+      // Each check keeps the facts as read, so a value put back to the read one is as read again.
+      if (bike.checks[field]) expect(bike.checks[field]?.asRead).toBe(bike.facts);
     }
     expect(checkCounts(bike.checks)).toEqual({ read: 8, confirmed: 0 });
   });
@@ -73,10 +73,10 @@ describe("where each fact came from", () => {
   it("ticks one fact at a time, and can untick it", () => {
     const bike = read(CLASS_2_LISTING);
     const one = withConfirmed(bike, "classes", true);
-    expect(one.checks.classes).toEqual({ source: "text", status: "ticked" });
+    expect(brief(one.checks.classes)).toEqual({ source: "text", status: "ticked" });
     expect(unconfirmedFields(one.checks)).not.toContain("classes");
     expect(unconfirmedFields(one.checks)).toHaveLength(7);
-    expect(withConfirmed(one, "classes", false).checks.classes).toEqual({ source: "text", status: "unchecked" });
+    expect(brief(withConfirmed(one, "classes", false).checks.classes)).toEqual({ source: "text", status: "unchecked" });
     expect(one.facts).toBe(bike.facts);
   });
 
@@ -89,13 +89,13 @@ describe("where each fact came from", () => {
   it("counts a read fact the family changes as checked, and leaves the others alone", () => {
     const bike = read(CLASS_2_LISTING);
     const edited = withEdit(bike, { ...bike.facts, ratedWatts: 750 });
-    expect(edited.checks.ratedWatts).toEqual({ source: "text", status: "theirs" });
+    expect(brief(edited.checks.ratedWatts)).toEqual({ source: "text", status: "theirs" });
     expect(unconfirmedFields(edited.checks)).toEqual(["hasPedals", "classes", "hasThrottle", "throttleMph", "assistMph", "wheelSize", "weightLb"]);
   });
 
   it("counts a picked or typed wheel size, weight or pegs answer as the family's, the same as on the card", () => {
     const bike = read(`${CLASS_2_LISTING} Foot pegs: No.`);
-    expect(bike.checks.hasFootPegs).toEqual({ source: "text", status: "unchecked" });
+    expect(brief(bike.checks.hasFootPegs)).toEqual({ source: "text", status: "unchecked" });
     expect(withEdit(bike, withWheelSize(bike.facts, 24, true)).checks.wheelSize?.status).toBe("theirs");
     expect(withEdit(bike, withWeight(bike.facts, 70)).checks.weightLb?.status).toBe("theirs");
     expect(withEdit(bike, withFootPegs(bike.facts, "yes")).checks.hasFootPegs?.status).toBe("theirs");
@@ -105,9 +105,9 @@ describe("where each fact came from", () => {
     const bike = read(CLASS_2_LISTING);
     // Typing 64 over 62 passes through "6", which is out of range and so empty, then 64.
     const midway = withEdit(bike, withWeight(bike.facts, null));
-    expect(midway.checks.weightLb).toEqual({ source: "text", status: "theirs" });
+    expect(brief(midway.checks.weightLb)).toEqual({ source: "text", status: "theirs" });
     const typed = withEdit(midway, withWeight(midway.facts, 64));
-    expect(typed.checks.weightLb).toEqual({ source: "text", status: "theirs" });
+    expect(brief(typed.checks.weightLb)).toEqual({ source: "text", status: "theirs" });
     expect(typed.facts.weightLb).toBe(64);
     // A weight follow-up answer replaces a read weight the same way.
     const answered = withEdit(bike, { ...bike.facts, weightLb: null, weightOver100: false });
@@ -134,7 +134,7 @@ describe("the pedal photo check", () => {
     const typed = withEdit(emptyChecked(), { ...classBike(2), hasPedals: null });
     const called = withPedalCall(typed, "pedals");
     expect(called.facts.hasPedals).toBe(true);
-    expect(called.checks.hasPedals).toEqual({ source: "photo", status: "unchecked" });
+    expect(brief(called.checks.hasPedals)).toEqual({ source: "photo", status: "unchecked" });
     expect(unconfirmedFields(called.checks)).toEqual(["hasPedals"]);
     // It changes only the pedals answer.
     expect({ ...called.facts, hasPedals: null }).toEqual(typed.facts);
@@ -144,7 +144,7 @@ describe("the pedal photo check", () => {
     const checked = withConfirmed(read(CLASS_2_LISTING), "hasPedals", true);
     const called = withPedalCall(checked, "no_pedals");
     expect(called.facts.hasPedals).toBe(false);
-    expect(called.checks.hasPedals).toEqual({ source: "photo", status: "unchecked" });
+    expect(brief(called.checks.hasPedals)).toEqual({ source: "photo", status: "unchecked" });
   });
 
   it("keeps an answer the photo agrees with as it was, and a close call changes nothing", () => {
@@ -230,7 +230,7 @@ describe("golden: a link-read Class 2 for an 11-year-old in Encinitas", () => {
     // Not sure about the pedals, so the family picks "Not sure" and runs the photo check.
     bike = withEdit(bike, { ...bike.facts, hasPedals: null, motorOver20: false, assistOver28: false });
     bike = confirmAll(bike);
-    expect(bike.checks.hasPedals).toEqual({ source: "text", status: "theirs" });
+    expect(brief(bike.checks.hasPedals)).toEqual({ source: "text", status: "theirs" });
     expect(unconfirmedFields(bike.checks)).toEqual([]);
     expect(answer("CA", 11, bike, ["encinitas"]).kind).not.toBe("yes");
     bike = withPedalCall(bike, "pedals");
@@ -255,7 +255,7 @@ describe("the sentence for unchecked facts", () => {
       expect(text).not.toMatch(/[A-Z][a-z]+[A-Z]|_|[—;]|undefined/);
     }
     expect(renderLine({ code: "bl_unconfirmed_facts", params: { fields: "classes,weightLb" } }, "en", "California")).toBe(
-      'You haven\'t checked the class and the weight against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under each one in "Here\'s what I read" above, or fix it.',
+      'You haven\'t checked the class and the weight against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" under each one in "Here\'s what I read" above, or fix any that are wrong.',
     );
     expect(renderLine({ code: "bl_unconfirmed_facts", params: { fields: "classes,weightLb" } }, "es", "California")).toContain(
       "Todavía no comparaste con la bicicleta la clase y el peso.",

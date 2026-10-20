@@ -206,14 +206,18 @@ export const WHEEL_MAX_IN = 30;
 export const WEIGHT_MIN_LB = 10;
 export const WEIGHT_MAX_LB = 999;
 
+/** Plain digits with at most one decimal point, like 62, 27.5 or .5. */
+const PLAIN_NUMBER = /^(\d+\.?\d*|\.\d+)$/;
+
 /**
- * The number a form field holds, or null when it is blank, not a number, or outside min to max.
- * Null means unknown, so the question stays open. A wheel size of 57, read off a tire's
- * millimeter size like 57-203, must never count as 57 inches.
+ * The number a form field holds, or null when it is blank, not a plain number, or outside min to
+ * max. Null means unknown, so the question stays open. A wheel size of 57, read off a tire's
+ * millimeter size like 57-203, must never count as 57 inches. The number boxes are plain text
+ * boxes, so only digits and one decimal point count. "1e2" or "0x10" is not taken as 100 or 16.
  */
 export function numberInRange(raw: string, min?: number, max?: number): number | null {
   const text = raw.trim();
-  if (text === "") return null;
+  if (!PLAIN_NUMBER.test(text)) return null;
   const n = Number(text);
   if (!Number.isFinite(n)) return null;
   if (min !== undefined && n < min) return null;
