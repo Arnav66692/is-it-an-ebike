@@ -86,6 +86,8 @@ export interface OracleFacts {
   conflict?: boolean;
   /** The throttle answer is "not sure", but the text still states this throttle speed. */
   throttleUnsureMph?: number;
+  /** The throttle answer is blank or "not sure", and no throttle speed is stated. */
+  throttleUnknown?: boolean;
   /** A top speed whose mode the text doesn't say, given on top of the class's assist speed. */
   topSpeed?: number;
   watts: number;
@@ -211,6 +213,8 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
   if (classes.length === 0) reasons.push("class_unknown");
   const conflict = classConflict(f);
   if (conflict) reasons.push(conflict);
+  // Class 1 and 3 help only while the rider pedals, so only a clear "no throttle" fits those labels.
+  if (!conflict && f.throttleUnknown && classes.length > 0 && !classes.includes(2)) reasons.push("throttle_unknown");
   if (f.topSpeed !== undefined && f.topSpeed > 28) reasons.push("fits_no_class_speed");
   for (const cls of classes.length > 0 ? classes : ALL_CLASSES) reasons.push(...classBlockers(code, f, cls, age, date));
   return [...new Set(reasons)];

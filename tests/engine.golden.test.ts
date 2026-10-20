@@ -300,10 +300,10 @@ describe("second review fixes (Oct 19, 2026)", () => {
     expect(bottomLine(unsure, "2026-10-19").kind).toBe("no_unconfirmed");
   });
 
-  it("a 'not sure' throttle with no throttle speed leaves a Class 2 label alone", () => {
+  it("a 'not sure' throttle with a 20 mph throttle speed leaves a Class 2 label alone", () => {
+    expect(classBike(2).throttleMph).toBe(20);
     expect(run("CA", 30, classBike(2, { hasThrottle: null })).state.status).toBe("yes");
   });
-
   it("a stated 32 mph top speed counts even when the listing also gives a lower assist speed", () => {
     const both = fromText("Class 1 electric bike. 500W motor. Pedal assist up to 20 mph. No throttle. Top speed 32 mph.");
     expect(both.assistMph).toBe(20);
@@ -342,5 +342,34 @@ describe("second review fixes (Oct 19, 2026)", () => {
       expect(ask.state.questions, state).toContain("wheels");
       expect(run(state, 30, classBike(1)).state.status, state).toBe("yes");
     }
+  });
+});
+
+describe("third review fixes (Oct 19, 2026)", () => {
+  it("a blank or 'not sure' throttle with no throttle speed can't confirm a Class 1 or 3 label", () => {
+    // Label OCR gives a class, a speed and watts, but never says whether there is a throttle.
+    const label = factsFromExtraction(parseSpecText("CLASS 3 E-BIKE. MAX ASSISTED SPEED 28 MPH. 750W", "label"), emptyFacts());
+    expect(label.hasThrottle).toBeNull();
+    expect(label.throttleMph).toBeNull();
+    const facts = { ...label, hasPedals: true, motorOver20: false, assistOver28: false };
+    const open = evaluate({ state: "CA", riderAge: 16, rideDate: "2026-10-20", facts, places: [] });
+    expect(open.state.status).toBe("cant_confirm");
+    expect(open.state.reason).toMatchObject({ code: "throttle_unknown", params: { cls: 3 } });
+    expect(bottomLine(open, "2026-10-20").kind).toBe("no_unconfirmed");
+    // Answering the question settles it either way.
+    expect(run("CA", 16, { ...facts, hasThrottle: false }).state.status).toBe("yes");
+    expect(run("CA", 16, { ...facts, hasThrottle: true }).state.reason.code).toBe("class_conflict_throttle");
+    for (const state of ["CA", "TX", "NJ", "FL"]) {
+      const r = run(state, 30, classBike(1, { hasThrottle: null, throttleMph: null }));
+      expect(r.state.status, state).not.toBe("yes");
+    }
+  });
+
+  it("a blank throttle leaves a Class 2 label alone, and an age rule still says no", () => {
+    expect(run("CA", 30, classBike(2, { hasThrottle: null, throttleMph: null })).state.status).toBe("yes");
+    expect(run("CA", 30, classBike(1, { classes: [1, 2], hasThrottle: null, throttleMph: null })).state.status).toBe("yes");
+    const young = run("CA", 14, classBike(3, { hasThrottle: null }));
+    expect(young.state.status).toBe("no");
+    expect(young.state.reason.code).toBe("under_min_age");
   });
 });

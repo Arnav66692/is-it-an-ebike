@@ -69,7 +69,7 @@ type Shape = { name: string; cls: 1 | 2 | 3 } & Partial<OracleFacts>;
 /**
  * Bike shapes that are not one plain class: pedals unknown or missing, no class, more than
  * one class, facts that disagree, a throttle answered "not sure" with a throttle speed still
- * stated, and a top speed of unknown mode on top of the assist speed. Each runs on the standard bike, across every state,
+ * stated, a throttle left blank with no speed, and a top speed of unknown mode on top of the assist speed. Each runs on the standard bike, across every state,
  * age, date and place set.
  */
 export const SHAPES: Shape[] = [
@@ -84,6 +84,9 @@ export const SHAPES: Shape[] = [
   { name: "throttle_unsure_with_speed_class_1", cls: 1, throttleUnsureMph: 20 },
   { name: "throttle_unsure_with_speed_class_2", cls: 2, throttleUnsureMph: 20 },
   { name: "throttle_unsure_with_speed_class_3", cls: 3, throttleUnsureMph: 20 },
+  { name: "throttle_unanswered_class_1", cls: 1, throttleUnknown: true },
+  { name: "throttle_unanswered_class_2", cls: 2, throttleUnknown: true },
+  { name: "throttle_unanswered_class_3", cls: 3, throttleUnknown: true },
   { name: "top_speed_25_class_1", cls: 1, topSpeed: 25 },
   { name: "top_speed_32_class_1", cls: 1, topSpeed: 32 },
   { name: "top_speed_32_class_3", cls: 3, topSpeed: 32 },
@@ -96,6 +99,7 @@ function oracleFacts(cls: 1 | 2 | 3, v: Partial<OracleFacts>): OracleFacts {
     pedals: v.pedals,
     conflict: v.conflict,
     throttleUnsureMph: v.throttleUnsureMph,
+    throttleUnknown: v.throttleUnknown,
     topSpeed: v.topSpeed,
     watts: v.watts ?? 500,
     front: v.front === undefined ? 20 : v.front,
@@ -119,9 +123,10 @@ function engineFacts(o: OracleFacts): BikeFacts {
     classes,
     ratedWatts: o.watts,
     // "Not sure" about the throttle, with the throttle speed the text gave still filled in.
-    hasThrottle: o.throttleUnsureMph !== undefined ? null : throttle,
+    // A blank throttle answer leaves both the answer and its speed empty.
+    hasThrottle: o.throttleUnsureMph !== undefined || o.throttleUnknown ? null : throttle,
     // A stated 28 mph throttle against a "never over 20 on the motor" answer is a conflict.
-    throttleMph: o.conflict ? 28 : (o.throttleUnsureMph ?? (throttle ? 20 : null)),
+    throttleMph: o.conflict ? 28 : (o.throttleUnsureMph ?? (throttle && !o.throttleUnknown ? 20 : null)),
     assistMph: classes.length === 0 ? null : classes.includes(3) ? 28 : 20,
     topSpeedMph: o.topSpeed ?? null,
     motorOver20: o.motorOver20,

@@ -189,6 +189,15 @@ function throttleLikely(f: BikeFacts): boolean {
   return f.hasThrottle === true || (f.hasThrottle === null && f.throttleMph !== null);
 }
 
+/**
+ * True when the label names no Class 2 and the throttle answer is blank or "not sure". Class 1
+ * and 3 help only while the rider pedals, so a YES needs a clear "no throttle". A blank answer
+ * must never do better than a "yes", which is a class conflict.
+ */
+function throttleOpen(f: BikeFacts, classes: ClassNum[]): boolean {
+  return f.hasThrottle === null && classes.length > 0 && !classes.includes(2);
+}
+
 function evaluateDevice(
   cs: CompiledState,
   f: BikeFacts,
@@ -196,12 +205,13 @@ function evaluateDevice(
   cls: ClassNum,
   age: number,
   date: string,
+  noThrottleUnconfirmed: boolean,
 ): DeviceResult {
   // Definite "not an e-bike" answers win over "can't confirm", so they are checked first.
   const watts = checkWatts(cs, f, date);
   if (watts?.status === "not_ebike") return watts;
 
-  let unclear: Line | null = watts?.reason ?? null;
+  let unclear: Line | null = watts?.reason ?? (noThrottleUnconfirmed ? line("throttle_unknown", { cls }) : null);
   const questions = new Set<QuestionId>();
   const cautions: Line[] = [];
 
@@ -502,8 +512,9 @@ export function evaluateState(input: EngineInput): StateEvaluation {
   // When the class is unknown or contradicted, the bike could be any class, so check all three.
   const candidates: ClassNum[] = classesKnown ? classes : [1, 2, 3];
 
+  const noThrottleUnconfirmed = classesKnown && throttleOpen(f, classes);
   const outcomes = candidates.map((cls) => {
-    const dev = evaluateDevice(cs, f, fe.env, cls, age, date);
+    const dev = evaluateDevice(cs, f, fe.env, cls, age, date, noThrottleUnconfirmed);
     const rider = evaluateRider(cs, cls, age, date);
     if (!classesKnown && dev.status !== "not_ebike") {
       const unknown = device("cant_confirm", problem ?? line("class_unknown"), [], dev.cautions);
