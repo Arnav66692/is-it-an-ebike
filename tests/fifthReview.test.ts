@@ -15,6 +15,7 @@ import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
 import { formatDate } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
+import { answerGate, callIfCurrent, type PedalCall } from "@/lib/photo/pedalRule";
 import { renderLine } from "@/lib/i18n/verdicts";
 import { isIsoDate } from "@/lib/rules/dates";
 import { evaluate, validateInput } from "@/lib/rules";
@@ -578,5 +579,38 @@ describe("the follow-ups and the facts card always show the same answer", () => 
     const shapeSource = readFileSync(join(__dirname, "..", "components", "ShapeFacts.tsx"), "utf8");
     expect(shapeSource).not.toContain("useState");
     expect(shapeSource).toContain("withFootPegs(facts, v)");
+  });
+});
+
+describe("a pedals answer picked during the photo check wins over the photo", () => {
+  it("drops the photo's call when the family picked an answer while it ran", async () => {
+    const gate = answerGate();
+    const calls: PedalCall[] = [];
+    let finish: (v: { call: PedalCall }) => void = () => undefined;
+    const running = callIfCurrent(
+      () => new Promise<{ call: PedalCall }>((resolve) => (finish = resolve)),
+      gate.start(),
+      (c) => calls.push(c),
+    );
+    gate.edited();
+    finish({ call: "pedals" });
+    expect(await running).toBeNull();
+    expect(calls).toEqual([]);
+  });
+
+  it("still fills the answer when the family didn't touch it", async () => {
+    const gate = answerGate();
+    const calls: PedalCall[] = [];
+    expect(await callIfCurrent(async () => ({ call: "no_pedals" as const }), gate.start(), (c) => calls.push(c))).toBe("no_pedals");
+    expect(calls).toEqual(["no_pedals"]);
+  });
+
+  it("is wired into the facts card and the photo check, with a message in both languages", () => {
+    const card = readFileSync(join(__dirname, "..", "components", "FactsCard.tsx"), "utf8");
+    expect(card).toContain("pedalAnswers.edited();");
+    expect(card).toContain("startCheck={pedalAnswers.start}");
+    const check = readFileSync(join(__dirname, "..", "components", "PedalPhotoCheck.tsx"), "utf8");
+    expect(check).toContain("() => onPage.current && untouched()");
+    expect(t("es", "photoCheckKept")).not.toBe(t("en", "photoCheckKept"));
   });
 });

@@ -15,11 +15,13 @@ const RESULT_KEY: Record<PedalCall, UiKey> = {
 
 interface Props {
   lang: Lang;
+  /** Called as a check starts. The check it returns turns false once the family picks a pedals answer. */
+  startCheck: () => () => boolean;
   onCall: (call: PedalCall) => void;
 }
 
 /** Optional whole-bike photo check. It loads nothing until tapped and only ever fills the pedals answer. */
-export function PedalPhotoCheck({ lang, onCall }: Props) {
+export function PedalPhotoCheck({ lang, startCheck, onCall }: Props) {
   const id = useId();
   const [step, setStep] = useState<Step>("closed");
   const [progress, setProgress] = useState(0);
@@ -48,14 +50,17 @@ export function PedalPhotoCheck({ lang, onCall }: Props) {
     setStep("working");
     setMessage(null);
     setProgress(0);
+    // The family's own pedals answer, picked while the check runs, is newer than the photo, so it wins.
+    const untouched = startCheck();
     try {
       const { runPedalCheck } = await import("@/lib/photo/runPedalCheck");
       const call = await callIfCurrent(
         () => runPedalCheck(file, (p) => onPage.current && setProgress(p)),
-        () => onPage.current,
+        () => onPage.current && untouched(),
         onCall,
       );
       if (call !== null) setMessage(RESULT_KEY[call]);
+      else if (onPage.current) setMessage("photoCheckKept");
     } catch {
       if (onPage.current) setMessage("photoCheckFailed");
     } finally {

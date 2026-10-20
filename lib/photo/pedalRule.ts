@@ -63,6 +63,31 @@ export function applyPedalCall(facts: BikeFacts, call: PedalCall): BikeFacts {
   return { ...facts, hasPedals: call === "pedals" };
 }
 
+/** Tracks the family's own pedals answers, so a photo check never replaces one picked while it ran. */
+export interface AnswerGate {
+  /** Call each time the family picks a pedals answer. */
+  edited: () => void;
+  /** Call when a photo check starts. The check it returns stays true until the family picks an answer. */
+  start: () => () => boolean;
+}
+
+/**
+ * A photo check can take about 10 seconds. If the family picks a pedals answer in that time, their
+ * answer is newer than the photo, so it wins and the photo's call is dropped.
+ */
+export function answerGate(): AnswerGate {
+  let edits = 0;
+  return {
+    edited() {
+      edits += 1;
+    },
+    start() {
+      const at = edits;
+      return () => edits === at;
+    },
+  };
+}
+
 /**
  * Runs a photo check and passes its call on only if the card that asked for it is still on
  * screen. The check can take many seconds, and in that time the family can read a new label or

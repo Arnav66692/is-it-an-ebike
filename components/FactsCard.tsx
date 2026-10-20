@@ -5,7 +5,7 @@ import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/p
 import type { BikeFacts, ClassNum } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
-import { applyPedalCall } from "@/lib/photo/pedalRule";
+import { answerGate, applyPedalCall } from "@/lib/photo/pedalRule";
 import { Card, Choice, Evidence, fromTri, NumberField, triValue } from "./controls";
 import { PedalPhotoCheck } from "./PedalPhotoCheck";
 import { ShapeFacts } from "./ShapeFacts";
@@ -27,6 +27,8 @@ interface Props {
 export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: Props) {
   const [pedalsUi, setPedalsUi] = useState<Tri3 | null>(triValue(facts.hasPedals));
   const [throttleUi, setThrottleUi] = useState<Tri3 | null>(triValue(facts.hasThrottle));
+  // A pedals answer the family picks while a photo check runs must not be replaced by the photo's call.
+  const [pedalAnswers] = useState(answerGate);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
   const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
   const ev = (key: FactKey) => <Evidence label={t(lang, "readFrom")} texts={evidence[key]?.map((e) => e.text)} />;
@@ -60,6 +62,7 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
           options={triOptions}
           value={pedalsUi}
           onChange={(v) => {
+            pedalAnswers.edited();
             setPedalsUi(v);
             set({ hasPedals: fromTri(v) });
           }}
@@ -67,6 +70,7 @@ export function FactsCard({ lang, facts, evidence, flags, onChange, onCheck }: P
         {ev("hasPedals")}
         <PedalPhotoCheck
           lang={lang}
+          startCheck={pedalAnswers.start}
           onCall={(call) => {
             if (call === "ask") return;
             setPedalsUi(call === "pedals" ? "yes" : "no");
