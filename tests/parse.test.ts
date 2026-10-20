@@ -271,3 +271,32 @@ describe("fourth review fixes: pedals that may not be on the bike", () => {
     }
   });
 });
+
+describe("fourth review fixes: the bike's own weight", () => {
+  it("skips battery, motor, box and load weights", () => {
+    const cases: [string, number | undefined][] = [
+      ["Class 1 pedal assist, no throttle. Motor: 500W rated. Battery weight: 12 lbs. Tires: 20 x 4.0 front and rear. Bike weight: 108 lbs.", 108],
+      ["Battery: 48V 20Ah, battery weight: 12 lbs. Bike weight: 108 lbs. Payload capacity: 400 lbs.", 108],
+      ["Motor weight: 11 lbs. Weight: 62 lbs", 62],
+      ["The battery weighs 12 lbs. This 62 lb. e-bike rolls.", 62],
+      ["Shipping weight: 85 lbs. Net weight: 65 lbs.", 65],
+      ["Removable battery pack weight: 14 lbs. Weight 70 lbs", 70],
+      ["Max rider weight: 275 lbs", undefined],
+      ["Weight: 62 lbs. Max load 300 lbs.", 62],
+    ];
+    for (const [text, lb] of cases) expect(parseSpecText(text, "listing").facts.weightLb, text).toBe(lb);
+  });
+  it("never uses a weight without the battery", () => {
+    for (const text of ["Weight without battery: 95 lbs", "Weight: 95 lbs (without battery)"]) {
+      expect(parseSpecText(text, "listing").facts.weightLb, text).toBeUndefined();
+    }
+  });
+  it("reads one weight given in two units, but asks when the weights disagree", () => {
+    expect(parseSpecText("Weight: 27 kg (60 lbs)", "listing").facts.weightLb).toBe(60);
+    const two = parseSpecText("Weight: 62 lbs. Weight: 75 lbs.", "listing");
+    expect(two.facts.weightLb).toBeUndefined();
+    expect(two.flags).toContain("several_weights");
+    expect(two.evidence.weightLb?.length).toBe(2);
+    expect(allEvidenceGrounded(two)).toBe(true);
+  });
+});

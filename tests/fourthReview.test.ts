@@ -73,3 +73,23 @@ describe("pedals in a FAQ or an options list", () => {
     }
   });
 });
+
+describe("weights", () => {
+  it("a 108 lb cargo bike in Pennsylvania is over the 100 lb line, not 12 lb from its battery", () => {
+    const { facts, result, kind } = flow(
+      "Hauler Cargo E-Bike. Class 1 pedal assist, no throttle. Motor: 500W rated. Battery: 48V 20Ah, battery weight: 12 lbs. Tires: 20 x 4.0 front and rear. Bike weight: 108 lbs. Payload capacity: 400 lbs.",
+      "PA",
+      30,
+    );
+    expect(facts.weightLb).toBe(108);
+    expect(result.state.status).toBe("not_ebike");
+    expect(result.state.reason.code).toBe("caution_weight");
+    expect(kind).toBe("no_illegal");
+  });
+  it("two different weights leave the weight to the family in Pennsylvania", () => {
+    const { result, kind } = flow("Class 1 pedal assist, no throttle. 500W rated. Pedals. 20 x 4.0 tires. Weight: 62 lbs. Weight: 108 lbs.", "PA", 30);
+    expect(result.state.status).toBe("need_info");
+    expect(result.state.questions).toContain("weight");
+    expect(kind).not.toBe("yes");
+  });
+});

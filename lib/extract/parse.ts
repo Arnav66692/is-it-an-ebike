@@ -402,21 +402,60 @@ function parseWheels(text: string, out: Extraction, source: TextSource): void {
   out.facts.wheelRearIn = Math.min(...sizes);
 }
 
+/**
+ * A weight named for a part, the box or a load, not the whole bike: "battery weight",
+ * "shipping weight", "max rider weight".
+ */
+const PART_BEFORE_WEIGHT =
+  /\b(?:battery|batteries|pack|motor|frame|fork|package|packaging|packed|shipping|shipped|box|carton|gross|basket|rack|seat|wheels?|tires?|kit|charger|riders?|user|passengers?|load|payload|cargo|capacity|max|maximum)\s*$/;
+/** A bike weight without its battery understates what it weighs on the road. */
+const WITHOUT_BATTERY = /\b(?:without|w\/o|excl(?:uding|\.)?|minus|less|no)\s+(?:the\s+)?battery\b/;
+/** Two figures this close are one weight in two units, like "27 kg (60 lbs)". */
+const SAME_WEIGHT_LB = 1.5;
+
+/** True when the closest weight word before the number names a part, as in "battery weight: 12 lbs". */
+function weightIsForPart(text: string, index: number, clauseStart: number): boolean {
+  const before = slice(text, Math.max(clauseStart, index - 40), index);
+  let at = -1;
+  for (const m of before.matchAll(/\b(?:weight|weighs|weighing|wt)\b/g)) if (m.index !== undefined) at = m.index;
+  return at >= 0 && PART_BEFORE_WEIGHT.test(before.slice(0, at));
+}
+
+/**
+ * The bike's own weight. Figures for a part, the box, a payload or the bike without its battery
+ * are skipped. If the text still gives different weights, none is used, so the family is asked.
+ */
 function parseWeight(text: string, out: Extraction): void {
-  for (const m of text.matchAll(/(\d{2,3}(?:\.\d)?)\s?(lbs?|pounds|kg)\b\.?/gi)) {
+  const found: { lb: number; ev: Evidence }[] = [];
+  for (const m of text.matchAll(/(?<![\d.])(\d{2,3}(?:\.\d)?)\s?(lbs?|pounds|kg)\b\.?/gi)) {
     if (m.index === undefined) continue;
     const end = m.index + m[0].length;
-    const before = slice(text, m.index - 22, m.index);
-    const after = slice(text, end, end + 16);
-    const adjacent = slice(text, m.index - 12, m.index) + " " + slice(text, end, end + 12);
+    // Only words in the same sentence or list item describe this figure. A period after "lbs"
+    // ends the sentence unless a lowercase word follows, as in "this 180 lb. machine".
+    const sentenceEnd = m[0].endsWith(".") && !/^\s[a-z]/.test(text.slice(end, end + 2));
+    const { start, stop } = clauseAround(text, m.index, sentenceEnd ? end - 1 : end);
+    const from = (n: number) => Math.max(start, m.index - n);
+    const to = (n: number) => Math.min(stop, end + n);
+    const before = slice(text, from(22), m.index);
+    const after = slice(text, end, to(16));
+    const adjacent = slice(text, from(12), m.index) + " " + slice(text, end, to(12));
     if (/(payload|load|capacity|rider|carry|max|maximum|up to|supports?|rack|limit)/.test(adjacent)) continue;
-    if (!/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike|frame)/.test(after)) continue;
+    if (!/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike)/.test(after)) continue;
+    if (weightIsForPart(text, m.index, start)) continue;
+    if (WITHOUT_BATTERY.test(slice(text, from(30), to(30)))) continue;
     let lb = Number(m[1]);
     if (/kg/i.test(m[2])) lb = roundUpTenth(lb * KG_TO_LB);
-    out.facts.weightLb = lb;
-    push(out.evidence, "weightLb", snippet(text, m.index, m[0].length));
+    found.push({ lb, ev: snippet(text, m.index, m[0].length) });
+  }
+  if (found.length === 0) return;
+  for (const f of found) push(out.evidence, "weightLb", f.ev);
+  const values = found.map((f) => f.lb);
+  const heaviest = Math.max(...values);
+  if (heaviest - Math.min(...values) > SAME_WEIGHT_LB) {
+    out.flags.push("several_weights");
     return;
   }
+  out.facts.weightLb = heaviest;
 }
 
 /** Normalizes spaces and dashes so patterns match, without changing word order. */
