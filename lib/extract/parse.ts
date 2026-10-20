@@ -293,7 +293,7 @@ function pedalNegated(text: string, index: number, end: number): boolean {
   const after = slice(text, end, end + 20);
   return (
     /\b(brake|foot|no need to|without|no|not|non|never|zero|instead of|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/.test(before) ||
-    /^\s*(?:[:\-]\s*(?:no|none|n\/a)\b|(?:are |is )?(?:not included|sold separately))/.test(after)
+    /^\s*(?:[:\-]\s*(?:no|none|n\/a)\b|[:\-]?\s*(?:are |is )?(?:not included|sold separately))/.test(after)
   );
 }
 
@@ -405,7 +405,7 @@ export function normalizeText(raw: string): string {
 
 /** Store pages list other products under headings like these. Nothing after one is about this bike. */
 const OTHER_PRODUCTS =
-  /\b(you (?:may|might|will|'ll) also like|related (?:products|items|bikes)|customers (?:also|who) (?:bought|viewed|liked)|people also (?:bought|viewed)|frequently bought together|similar (?:products|items|bikes|e-?bikes)|recently viewed|compare (?:with )?similar|more from this collection|shop similar|recommended (?:for you|products|bikes|e-?bikes))\b/i;
+  /\b(you (?:may|might|will|'ll) also like|related (?:products|items|bikes)|customers (?:also|who) (?:bought|viewed|liked)|people also (?:bought|viewed)|frequently bought together|similar (?:products|items)|recently viewed|compare (?:with )?similar|more from this collection|shop similar|recommended for you|recommended products)\b/i;
 
 export function parseSpecText(raw: string, source: TextSource): Extraction {
   const text = normalizeText(raw);

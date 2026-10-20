@@ -152,6 +152,8 @@ describe("third review fixes (Oct 19, 2026)", () => {
       "Pedals: N/A",
       "Pedals not included.",
       "Pedals are sold separately.",
+      "Pedals: Not included",
+      "Pedals - sold separately",
     ]) {
       expect(parseSpecText(text, "listing").facts.hasPedals, text).toBeUndefined();
     }
@@ -188,6 +190,10 @@ describe("third review fixes (Oct 19, 2026)", () => {
     );
     expect(kids.facts.wheelFrontIn).toBe(12);
     expect(kids.facts.wheelRearIn).toBe(12);
+    // Marketing copy that compares the bike with others is still about this bike.
+    const compare = parseSpecText("Lighter than similar e-bikes. Class 1, 250W rated, pedal assist to 20 mph, no throttle.", "listing");
+    expect(compare.facts.classes).toEqual([1]);
+    expect(compare.flags).not.toContain("other_products_skipped");
   });
 
   it("reads tire widths with three decimals", () => {
