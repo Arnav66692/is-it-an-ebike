@@ -386,6 +386,20 @@ const EN = {
     "A passenger needs a seat installed by the bike's maker. No riding on handlebars or pegs (VMC 10.68.040(B)).",
   vista_parks: () =>
     "In Vista parks, ride a bike or e-bike only on paths and trails marked for it (VMC 12.08.010(O)).",
+  ib_pier: () =>
+    "No riding a bike, e-bike or any other vehicle on the Imperial Beach pier (IBMC 12.68.010).",
+  ib_beach: () =>
+    "Imperial Beach bars bringing or driving any vehicle, with a motor or without, onto the beach (IBMC 12.60.110). That likely covers e-bikes.",
+  ib_parks: () =>
+    "In Imperial Beach parks, including Dunes Park, Portwood Pier Plaza and the Tijuana Estuary Boardwalk, bikes may ride only in areas the Council has set aside, and never on walkways (IBMC 12.56.020, 12.56.050). Whether this covers e-bikes isn't settled, so walk the bike there.",
+  ib_sidewalks: () =>
+    "No riding a bicycle on sidewalks in a business district (IBMC 10.56.180). The code defines bicycle as human powered, so treat e-bikes the same to be safe.",
+  lg_pending: () =>
+    "On Sep 15, 2026 Lemon Grove's Mayor asked to put a possible e-bike ordinance on a future agenda. Check again before riding.",
+  lg_sidewalks: () =>
+    "No riding a bicycle on sidewalks in a business district (LGMC 10.44.010). Treat e-bikes the same to be safe.",
+  lg_parks: () =>
+    "Lemon Grove bars motor vehicles in parks except in their parking areas (LGMC 12.20.140). It isn't settled whether that covers e-bikes.",
   city_starting: (p, c) => `Starting ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.en[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} had no under-12 e-bike ban when checked on ${formatDate(n(p.date), c.lang)}, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
@@ -681,6 +695,20 @@ const ES = {
     "Un pasajero necesita un asiento instalado por el fabricante de la bicicleta. No se puede ir en el manubrio ni en los reposapiés (VMC 10.68.040(B)).",
   vista_parks: () =>
     "En los parques de Vista, anda en bicicleta o bicicleta eléctrica solo por caminos y senderos marcados para ello (VMC 12.08.010(O)).",
+  ib_pier: () =>
+    "No se puede andar en bicicleta, bicicleta eléctrica ni ningún otro vehículo en el muelle de Imperial Beach (IBMC 12.68.010).",
+  ib_beach: () =>
+    "Imperial Beach prohíbe llevar o manejar cualquier vehículo, con o sin motor, en la playa (IBMC 12.60.110). Eso probablemente incluye las bicicletas eléctricas.",
+  ib_parks: () =>
+    "En los parques de Imperial Beach, incluidos Dunes Park, Portwood Pier Plaza y el paseo del estuario de Tijuana, las bicicletas solo pueden andar en zonas que el Concejo haya destinado para ello, y nunca en andadores (IBMC 12.56.020, 12.56.050). No está resuelto si esto incluye bicicletas eléctricas, así que ahí llévala caminando.",
+  ib_sidewalks: () =>
+    "No se puede andar en bicicleta por aceras de zonas comerciales (IBMC 10.56.180). El código define bicicleta como de pedal, así que, por seguridad, trata igual a las bicicletas eléctricas.",
+  lg_pending: () =>
+    "El 15 de septiembre de 2026, el alcalde de Lemon Grove pidió llevar una posible ordenanza de bicicletas eléctricas a una agenda futura. Vuelve a revisar antes de salir.",
+  lg_sidewalks: () =>
+    "No se puede andar en bicicleta por aceras de zonas comerciales (LGMC 10.44.010). Por seguridad, trata igual a las bicicletas eléctricas.",
+  lg_parks: () =>
+    "Lemon Grove prohíbe vehículos de motor en los parques, salvo en sus estacionamientos (LGMC 12.20.140). No está resuelto si eso incluye bicicletas eléctricas.",
   city_starting: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.es[n(p.note)]?.(p, c) ?? ""}`,
   city_no_age_limit: (p, c) =>
     `${placeName(n(p.place), c.lang)} no tenía una prohibición para menores de 12 años cuando se revisó el ${formatDate(n(p.date), c.lang)}, pero la ley estatal le permite adoptar una (VC 21214.7(b)). Vuelve a revisar antes de salir.`,

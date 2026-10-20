@@ -1956,6 +1956,135 @@
       ]
     },
     {
+      "id": "imperial_beach",
+      "jurisdiction": "City of Imperial Beach",
+      "type": "city",
+      "covers": "All city streets, the beach, the public fishing pier and city parks.",
+      "verified": "statute_verified",
+      "verification_level": "primary_verified",
+      "checked_through": "2026-10-20",
+      "verified_note": "Read on Oct 20, 2026 in two independent passes. IBMC Ch. 10.04, 10.36, 10.56, 12.56, 12.60 and 12.68 on eCode360 (through Ord. No. 2026-1262, May 20, 2026, with only zoning laws pending). The code has no 'electric bicycle' text at all. The Council discussed e-bike rules on Jan 21 and Aug 19, 2026 and asked for more outreach before any ordinance, with no vote. Council agendas through Oct 21, 2026 have no e-bike ordinance, and no VC 21214.7(e) campaign was found. Imperial Beach is a general law city.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "Imperial Beach Mun. Code Ch. 10.56, 12.56",
+          "source_url": "https://ecode360.com/IM4939",
+          "quote": null,
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "No age provision anywhere in the code, read on Oct 20, 2026 in two passes. A search for 'electric bicycle' returns nothing in the code or in pending laws. No quote is recorded, because the finding is that the code text has no age rule. The Aug 19, 2026 staff report listed the VC 21214.7 pilot as one option, and the draft minutes show no vote: the Mayor asked for outreach and a possible workshop first, and one Councilmember had reservations about an age limit. No ordinance appears on the Sep 16, Oct 7 or Oct 21, 2026 agendas. VC 21214.7(e) requires a public information campaign of at least 30 calendar days before a ban, and none was found. Res. 2026-092 (Sep 16, 2026) funds a general pedestrian and bicycle safety program, not a campaign about an age limit."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=21212",
+          "quote": "A person under 18 years of age shall not operate a bicycle ... unless they are wearing a properly fitted and fastened bicycle helmet",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Imperial Beach helmet rule for bicycles beyond state law."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_removal",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+          "quote": "Being operated by an operator who is not licensed to operate the vehicle.",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Imperial Beach e-moto section. IBMC 12.60.110 bars any motor-propelled vehicle on the beach area."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "pier_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Imperial Beach Mun. Code 12.68.010(A)",
+          "source_url": "https://ecode360.com/42864551",
+          "quote": "To operate a bicycle, skateboard, roller skates or to ride a bicycle or other vehicle on the deck of the pier;",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "On the public fishing pier. 'Bicycle or other vehicle' covers an e-bike either way. Under 12.68.080 an officer may take the bicycle when the rider can't be identified."
+        },
+        {
+          "rule": "beach_vehicle_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Imperial Beach Mun. Code 12.60.110(A)",
+          "source_url": "https://ecode360.com/42864480",
+          "quote": "It is unlawful to bring or drive any motor-propelled or nonmotor-propelled vehicle, boat or airplane upon the beach area within the City.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. 2004-1015. 'Vehicle' is not defined in Ch. 12.60, but the rule covers vehicles with or without a motor, so it likely reaches e-bikes. Exceptions for emergency vehicles, motorized wheelchairs and boat launching."
+        },
+        {
+          "rule": "park_bicycle_rules",
+          "applies_to": ["all_ebikes"],
+          "citation": "Imperial Beach Mun. Code 12.56.020(P), (EE), 12.56.050(A)",
+          "source_url": "https://ecode360.com/42864356",
+          "quote": "It is unlawful for any person to ride a bicycle, skateboard, roller skates or inline skates within any public facility, public park or public playground except in areas specifically designated by resolution or ordinance of the City Council for riding bicycles, skateboards, roller skates, or inline skates.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "12.56.020(P) also bars riding a bicycle or any other vehicle on a pedestrian walk or designated bicycle path in a park unless the City Manager allows it, and (EE) bars operating a bicycle there outside the skate park rules. Public parks include Dunes Park, Veterans Park, Portwood Pier Plaza, the Sports Park and the Tijuana Estuary Boardwalk (12.56.010). Ch. 12.56 does not define bicycle, and the Aug 19, 2026 staff report lists making these rules apply expressly to e-bikes as a new option, so the city does not treat e-bike coverage as express today."
+        },
+        {
+          "rule": "business_sidewalk_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Imperial Beach Mun. Code 10.56.180, 10.56.010",
+          "source_url": "https://ecode360.com/42863889",
+          "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. 103 (1958). IBMC 10.56.010 defines bicycle for this chapter as propelled by human power, so whether it reaches e-bikes is doubtful. The app says to treat e-bikes the same to be safe. 10.56.020 still requires a city bicycle license, but city staff say state law no longer lets cities enforce bicycle licensing (AB 1909), so the app does not say a license is needed."
+        }
+      ],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Whether the park rules in IBMC 12.56 and the business-district sidewalk rule in 10.56.180 reach e-bikes.",
+        "Whether the Council will return to an e-bike ordinance after the outreach it asked for on Aug 19, 2026."
+      ],
+      "resolved_questions": [],
+      "primary_sources": [
+        {
+          "number": "eCode360 search for 'electric bicycle'",
+          "url": "https://ecode360.com/IM4939/search?query=%22electric%20bicycle%22",
+          "effective": null,
+          "quote": "All Results(0)"
+        },
+        {
+          "number": "Aug 19, 2026 staff report, item 15.c (staff report, not code)",
+          "url": "https://pub-imperialbeach.escribemeetings.com/filestream.ashx?DocumentId=5658",
+          "effective": null,
+          "quote": "does not currently provide for a specific chapter dedicated to e-bike regulations."
+        },
+        {
+          "number": "Draft minutes, Aug 19, 2026 (Sep 2, 2026 agenda attachment)",
+          "url": "https://pub-imperialbeach.escribemeetings.com/filestream.ashx?DocumentId=5702",
+          "effective": null,
+          "quote": "recommended additional community outreach and education, including a potential workshop"
+        },
+        {
+          "number": "IBMC 12.68.010",
+          "url": "https://ecode360.com/42864551",
+          "effective": null,
+          "quote": "It is unlawful for any person, firm or corporation to do or cause to be done any of the following acts upon the public fishing pier in the City:"
+        },
+        {
+          "number": "IBMC 12.56.020",
+          "url": "https://ecode360.com/42864356",
+          "effective": null,
+          "quote": "Drive or ride a bicycle, motorcycle, automobile, or any other vehicle on any pedestrian walk or a designated bicycle path, unless authorized by the City Manager or designee."
+        }
+      ]
+    },
+    {
       "id": "la_mesa",
       "jurisdiction": "City of La Mesa",
       "type": "city",
@@ -2095,6 +2224,115 @@
           "url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT9PARE",
           "effective": null,
           "quote": "To drive an automobile, motorcycle, or other self-driven vehicle, as defined in Section 9.04.040 of this title on any sidewalk, path, field, or turfed area in a city park"
+        }
+      ]
+    },
+    {
+      "id": "lemon_grove",
+      "jurisdiction": "City of Lemon Grove",
+      "type": "city",
+      "covers": "All city streets and city parks.",
+      "verified": "statute_verified",
+      "verification_level": "primary_verified",
+      "checked_through": "2026-10-20",
+      "verified_note": "Read on Oct 20, 2026 in two independent passes. LGMC Ch. 10.04, 10.44 and 12.20 on eCode360 (through Ord. No. 475, Sep 1, 2026, with no new laws pending), the ordinance list for Ords. 465 to 475, the Sep 1 and Sep 15, 2026 minutes, the Sep 15, Oct 6 and Oct 20, 2026 agendas and city news since Sep 1, 2026. The code has no e-bike section. On Sep 15, 2026 the Mayor asked to agendize a possible e-bike ordinance after the Governor acts on SB 1167, which was signed Sep 30, 2026. No ordinance or information campaign has started.",
+      "local_age_limits": [
+        {
+          "rule": "no_local_age_limit_found",
+          "applies_to": ["class_1", "class_2"],
+          "min_age": null,
+          "citation": "Lemon Grove Mun. Code Ch. 10.44, 12.20",
+          "source_url": "https://ecode360.com/44608601",
+          "quote": null,
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "No age provision anywhere in the code, read on Oct 20, 2026 in two passes. Searches for '21214', 'e-bike' and 'electric bicycle' return nothing. No quote is recorded, because the finding is that the code text has no age rule. On Sep 15, 2026 the Mayor asked staff to agendize 'a potential e-bike ordinance and speed-related regulations' after the Governor acted on SB 1167 (Ch. 846, Stats. 2026, approved Sep 30, 2026), so an item could come to the Nov 3 or Nov 17, 2026 meetings. VC 21214.7(e) requires a public information campaign of at least 30 calendar days before a ban is enacted, and none has started, so no ban can take effect before the app's 30-day horizon."
+        }
+      ],
+      "campus_class_limits": [],
+      "tag_and_course_requirements": [],
+      "helmet_rules": [
+        {
+          "rule": "helmet_under_18",
+          "applies_to": ["all_ebikes"],
+          "citation": "Cal. Veh. Code 21212(a)",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=21212",
+          "quote": "A person under 18 years of age shall not operate a bicycle ... unless they are wearing a properly fitted and fastened bicycle helmet",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Lemon Grove helmet rule for bicycles beyond state law. LGMC 12.20.360 covers skateboarders in the skate park only."
+        }
+      ],
+      "emoto_enforcement": [
+        {
+          "rule": "state_emoto_removal",
+          "applies_to": ["non_ebike_electric_two_and_three_wheelers"],
+          "citation": "Cal. Veh. Code 22651.08",
+          "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22651.08",
+          "quote": "Being operated by an operator who is not licensed to operate the vehicle.",
+          "effective_date": "2026-01-01",
+          "source_type": "statute",
+          "notes": "No Lemon Grove e-moto section. LGMC 12.20.140 bars motorcycles and other motor vehicles in parks except designated parking."
+        }
+      ],
+      "other_local_rules": [
+        {
+          "rule": "business_sidewalk_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Lemon Grove Mun. Code 10.44.010, 10.04.020",
+          "source_url": "https://ecode360.com/44608601",
+          "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Prior code § 72.230. Title 10 does not define bicycle. LGMC 10.04.020 brings in Vehicle Code definitions 'as now exist', and under the Vehicle Code an e-bike is a bicycle with pedals and a motor, so the rule plausibly reaches e-bikes. Interpretation, not settled."
+        },
+        {
+          "rule": "park_motor_vehicle_ban",
+          "applies_to": ["all_ebikes"],
+          "citation": "Lemon Grove Mun. Code 12.20.140",
+          "source_url": "https://ecode360.com/44609049",
+          "quote": "It is unlawful for any automobile, motorcycle or other motor vehicle to be in any park, excepting at such place or places as are provided for and designated as places for the parking of automobiles, motorcycles or other motor vehicles.",
+          "effective_date": null,
+          "source_type": "ordinance_text",
+          "notes": "Ord. 329 (2004). A park includes its buildings, parking lots, streets and sidewalks (12.20.030). 'Motor vehicle' is not defined in Ch. 12.20, and an e-bike is not a motor vehicle under the Vehicle Code, so whether this reaches e-bikes is unclear. A caution note only."
+        }
+      ],
+      "conflicts_with_statute": [],
+      "open_questions": [
+        "Whether the Council takes up an e-bike ordinance at its Nov 3 or Nov 17, 2026 meetings, now that SB 1167 is law.",
+        "Whether LGMC 12.20.140 (motor vehicles in parks) reaches e-bikes."
+      ],
+      "resolved_questions": [],
+      "primary_sources": [
+        {
+          "number": "Minutes, Sep 15, 2026 (approved Oct 6, 2026)",
+          "url": "https://events.lemongrove.ca.gov/council/Detail/2026-09-15-1800-Regular-City-Council-Meeting/0597f050-7c3d-4882-8d5e-b4dd012de074",
+          "effective": null,
+          "quote": "Mayor Snow requested that an item regarding a potential e-bike ordinance and speed-related regulations be agendized following action by the Governor on Senate Bill 1167 (Blakespear)."
+        },
+        {
+          "number": "LGMC Ch. 10.44",
+          "url": "https://ecode360.com/44608601",
+          "effective": null,
+          "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district."
+        },
+        {
+          "number": "LGMC 10.04.020 (Ord. 447)",
+          "url": "https://ecode360.com/44608329",
+          "effective": null,
+          "quote": "such definitions as now exist are incorporated in this title"
+        },
+        {
+          "number": "LGMC Ch. 12.20 (Ord. 329)",
+          "url": "https://ecode360.com/44609049",
+          "effective": null,
+          "quote": "It is unlawful for any automobile, motorcycle or other motor vehicle to be in any park"
+        },
+        {
+          "number": "SB 1167 status (Ch. 846, Stats. 2026)",
+          "url": "https://leginfo.legislature.ca.gov/faces/billStatusClient.xhtml?bill_id=202520260SB1167",
+          "effective": null,
+          "quote": "Approved by the Governor."
         }
       ]
     },

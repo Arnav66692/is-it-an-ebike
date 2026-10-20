@@ -19,7 +19,9 @@ export const PLACE_IDS: PlaceId[] = [
   "coronado",
   "el_cajon",
   "escondido",
+  "imperial_beach",
   "la_mesa",
+  "lemon_grove",
   "oceanside",
   "poway",
   "san_marcos",
@@ -374,6 +376,17 @@ interface CityNote {
  * never shows without its source. The age, warning and e-moto lines all cities share come first.
  */
 const CITY_NOTES: Partial<Record<PlaceId, CityNote[]>> = {
+  lemon_grove: [
+    { code: "lg_pending", rule: "no_local_age_limit_found", when: "ride" },
+    { code: "lg_sidewalks", rule: "business_sidewalk_ban", when: "ride" },
+    { code: "lg_parks", rule: "park_motor_vehicle_ban", when: "ride" },
+  ],
+  imperial_beach: [
+    { code: "ib_pier", rule: "pier_ban", when: "ride" },
+    { code: "ib_beach", rule: "beach_vehicle_ban", when: "ride" },
+    { code: "ib_parks", rule: "park_bicycle_rules", when: "ride" },
+    { code: "ib_sidewalks", rule: "business_sidewalk_ban", when: "ride" },
+  ],
   vista: [
     { code: "vista_sidewalks", rule: "sidewalk_ban", when: "ride" },
     { code: "vista_dismount", rule: "dismount_at_crosswalks", when: "ride" },
