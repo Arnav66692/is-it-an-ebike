@@ -367,3 +367,25 @@ describe("the SDUHSD record describes the Sep 10, 2026 BP 5142 revision, and the
     expect(line.missing.some((m) => m.line.code === "bl_unverified_primary_partial")).toBe(true);
   });
 });
+
+describe("the 30-day under-12 window rests on the VC 21214.7(e) campaign, which each no-ban record checked", () => {
+  const records = (sdJson as unknown as RawSanDiego).jurisdictions;
+  const noBan = ["encinitas", "solana_beach", "del_mar", "unincorporated_san_diego_county"];
+
+  it("every place that can vouch for an under-12 ride says a ban may come by ordinance or resolution, and that its news was read for a campaign", () => {
+    for (const id of noBan) {
+      const j = records.find((r) => r.id === id);
+      const rule = j?.local_age_limits.find((r) => r.rule === "no_local_age_limit_found");
+      expect(rule?.notes, id).toContain("ordinance or resolution");
+      expect(rule?.notes, id).toContain("VC 21214.7(e)");
+      expect(rule?.notes, id).toMatch(/Sixth review, Oct 19, 2026: .* read for such a campaign/);
+    }
+    expect(JSON.stringify(records)).not.toContain("A new ordinance needs two readings and normally takes effect 30 days after adoption");
+  });
+
+  it("the window itself is unchanged: an under-12 ride is vouched for through Nov 18, 2026 and not after", () => {
+    const at = (date: string) => evaluate({ state: "CA", riderAge: 10, rideDate: date, facts: classBike(1), places: ["solana_beach"] }).local[0];
+    expect(at("2026-11-18").status).toBe("yes");
+    expect(at("2026-11-19").reason.code).toBe("local_under_12_after_check");
+  });
+});

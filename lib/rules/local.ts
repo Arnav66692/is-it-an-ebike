@@ -27,10 +27,12 @@ const UNDER_12_RULE_ENDS =
 const UNDER_12_AGE = 12;
 
 /**
- * A new city or county ordinance normally takes effect 30 days after it is adopted, as the
- * Encinitas and County records note. So a record checked on its checked_through date covers
- * ride dates up to 30 days later. After that a new under-12 ban could be in force, or the state
- * could extend VC 21214.7 and keep a ban that was due to end, and we would not know.
+ * VC 21214.7(b) lets a city or the county ban riders under 12 "by ordinance or resolution", and a
+ * resolution can take effect the day it is adopted. What guarantees lead time is VC 21214.7(e): a
+ * public information campaign for at least 30 calendar days before either is enacted. Each no-ban
+ * record says its city or County news was read for such a campaign through checked_through, so no
+ * ban can be in force for 30 days after that. Past that a new under-12 ban could be in force, or
+ * the state could extend VC 21214.7 and keep a ban that was due to end, and we would not know.
  */
 const ORDINANCE_DELAY_DAYS = 30;
 
