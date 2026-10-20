@@ -774,7 +774,7 @@ textarea.field {
 @media (max-width: 639px) {
   html {
     /* Keeps a focused box clear of the sticky bar. */
-    scroll-padding-bottom: 8rem;
+    scroll-padding-bottom: 9.5rem;
   }
 
   .check-bar {
