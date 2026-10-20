@@ -38,6 +38,8 @@ export interface Extraction {
 }
 
 const KMH_TO_MPH = 0.621371;
+/** Speeds above this are not read. An e-moto's 70 or 110 mph must still be read, since it blocks a yes. */
+export const MAX_READ_MPH = 150;
 const KG_TO_LB = 2.20462;
 
 /**
@@ -226,12 +228,13 @@ function parseSpeeds(text: string, out: Extraction): void {
   const throttle: number[] = [];
   const assist: number[] = [];
   const top: number[] = [];
-  const re = /(\d{1,2}(?:\.\d)?)\s?(mph|miles per hour|km\/h|kmh|kph)\b/gi;
+  // The number must start at a word edge, so "120 km/h" is never read from its last two digits.
+  const re = /(?<![\d.])(\d{1,3}(?:\.\d)?)\s?(mph|miles per hour|km\/h|kmh|kph)\b/gi;
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
     let mph = Number(m[1]);
     if (/^k/i.test(m[2])) mph = roundUpTenth(mph * KMH_TO_MPH);
-    if (!Number.isFinite(mph) || mph < 3 || mph > 99) continue;
+    if (!Number.isFinite(mph) || mph < 3 || mph > MAX_READ_MPH) continue;
     const end = m.index + m[0].length;
     if (/\bwalk/.test(slice(text, m.index - 25, end + 10)) && mph <= 6) continue;
     const ev = snippet(text, m.index, m[0].length);

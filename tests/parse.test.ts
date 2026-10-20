@@ -216,3 +216,14 @@ describe("third review fixes (Oct 19, 2026)", () => {
     expect(parseSpecText("Class 3 bikes are fast", "listing").facts.classes).toEqual([3]);
   });
 });
+
+describe("fourth review fixes (Oct 19, 2026)", () => {
+  it("reads a three-digit speed whole, never from its last two digits", () => {
+    expect(parseSpecText("Class 2 e-bike, top speed 120 km/h", "listing").facts.topSpeedMph).toBe(74.6);
+    expect(parseSpecText("Class 2 e-bike, top speed 110 km/h", "listing").facts.topSpeedMph).toBe(68.4);
+    expect(parseSpecText("Top speed: 105 km/h, Class 3", "listing").facts.topSpeedMph).toBe(65.3);
+    expect(parseSpecText("Electric motorcycle, top speed 110 mph", "listing").facts.topSpeedMph).toBe(110);
+    expect(parseSpecText("Pedal assist up to 25 km/h", "listing").facts.assistMph).toBe(15.6);
+    expect(parseSpecText("Pedal assist to 20.5 mph", "listing").facts.assistMph).toBe(20.5);
+  });
+});
