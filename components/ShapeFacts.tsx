@@ -19,7 +19,7 @@ import type { Evidence as Ev, FactKey } from "@/lib/extract/parse";
 import type { FactChecks } from "@/lib/provenance";
 import type { BikeFacts, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
-import { t } from "@/lib/i18n/ui";
+import { t, type UiKey } from "@/lib/i18n/ui";
 import { Choice, NumberField, triValue } from "./controls";
 import { ReadNote, type OnConfirm } from "./ReadCheck";
 
@@ -51,7 +51,9 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
   // the same "not sure" the follow-up stores.
   const pegsUi = triValue(facts.hasFootPegs) ?? (facts.unsure.includes("pegs_kit") ? "unsure" : null);
 
-  const ev = (key: ReadField) => <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={onConfirm} evidence={evidence[key]} />;
+  const ev = (key: ReadField, matchesKey?: UiKey) => (
+    <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={onConfirm} evidence={evidence[key]} matchesKey={matchesKey} />
+  );
   const wheelError = t(lang, "rangeError", { min: WHEEL_MIN_IN, max: WHEEL_MAX_IN });
   const wheelField = (label: string, value: number | null, set: (v: number | null) => void, withEvidence: boolean) => (
     <NumberField
@@ -77,7 +79,9 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
         ) : (
           <>
             {wheelField(t(lang, "front"), facts.wheelFrontIn, (v) => onChange(withWheelSize(facts, v, false)), false)}
-            {wheelField(t(lang, "rear"), facts.wheelRearIn, (v) => onChange({ ...facts, wheelRearIn: v }), true)}
+            {wheelField(t(lang, "rear"), facts.wheelRearIn, (v) => onChange({ ...facts, wheelRearIn: v }), false)}
+            {/* Both sizes share one check, so its words and its box sit under both boxes and say so. */}
+            <div className="space-y-1 sm:col-span-2">{ev("wheelSize", "readMatchesBoth")}</div>
           </>
         )}
         <NumberField

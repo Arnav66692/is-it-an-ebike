@@ -5,10 +5,10 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { checkerToday, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, requestGate, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit, withPedalCall, type CheckedFacts } from "@/lib/provenance";
+import { confirmOn, editOn, emptyChecked, fromRead, unconfirmedFields, withPedalCall, type CheckedFacts } from "@/lib/provenance";
 import { bottomLine, evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
-import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId } from "@/lib/rules/types";
+import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
 import { formatDate, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { BikeInput } from "./BikeInput";
@@ -84,6 +84,8 @@ export function Checker() {
   const [stage, setStage] = useState<Stage>("input");
   const [round, setRound] = useState(0);
   const [asked, setAsked] = useState<AskedQuestions>({ round: -1, ids: [] });
+  // Goes up on Start over, so the bike input starts fresh on its first tab.
+  const [starts, setStarts] = useState(0);
   // Only the newest label or link read may fill in the facts.
   const [readGate] = useState(requestGate);
 
@@ -157,9 +159,33 @@ export function Checker() {
     requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
-  /** A change the family makes by hand. A read fact they change counts as checked. */
-  function editFacts(next: BikeFacts) {
-    setBike((cur) => withEdit(cur, next));
+  /**
+   * A change the family makes by hand. A read fact they change or answer counts as checked. The
+   * change was built from the facts on screen, so it is dropped if a link, label or photo call
+   * replaced them first (editOn in lib/provenance.ts).
+   */
+  function editFacts(next: BikeFacts, answered?: readonly ReadField[]) {
+    setBike(editOn(facts, next, answered));
+  }
+
+  /** A tick on a read fact, dropped the same way if the facts on screen were replaced first. */
+  function confirmFact(field: ReadField, confirmed: boolean) {
+    setBike(confirmOn(facts, field, confirmed));
+  }
+
+  /**
+   * Takes the family back to the facts card. Keyboard focus goes to the first read fact still to
+   * be ticked, or to the card's heading, so a screen reader user lands where the next step is.
+   */
+  function goToFacts() {
+    requestAnimationFrame(() => {
+      const card = factsRef.current;
+      if (!card) return;
+      const box = card.querySelector<HTMLInputElement>('input[data-read-check="unchecked"]');
+      const target = box ?? card.querySelector<HTMLElement>("h2");
+      (box ?? card).scrollIntoView({ behavior: "smooth", block: box ? "center" : "start" });
+      target?.focus({ preventScroll: true });
+    });
   }
 
   function handleRead(extraction: Extraction) {
@@ -308,7 +334,7 @@ export function Checker() {
         ) : null}
       </Card>
 
-      <BikeInput lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
+      <BikeInput key={`input-${starts}`} lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
 
       <div ref={factsRef} className="scroll-mt-4">
         {stage !== "input" ? (
@@ -320,7 +346,7 @@ export function Checker() {
             evidence={evidence}
             flags={flags}
             onChange={editFacts}
-            onConfirm={(field, yes) => setBike((cur) => withConfirmed(cur, field, yes))}
+            onConfirm={confirmFact}
             onPedalCall={(call) => setBike((cur) => withPedalCall(cur, call))}
             onCheck={handleCheck}
           />
@@ -347,7 +373,7 @@ export function Checker() {
         {result ? (
           <>
             <div className="no-print flex flex-wrap gap-3">
-              <button type="button" className="btn btn-quiet" onClick={() => scrollTo(factsRef)}>
+              <button type="button" className="btn btn-quiet" onClick={goToFacts}>
                 {t(lang, "editFacts")}
               </button>
               <button
@@ -356,6 +382,7 @@ export function Checker() {
                 onClick={() => {
                   readGate.cancel();
                   setStage("input");
+                  setStarts((n) => n + 1);
                   setBike(emptyChecked());
                   setEvidence({});
                   setFlags([]);

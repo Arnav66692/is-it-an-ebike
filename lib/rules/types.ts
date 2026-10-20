@@ -78,7 +78,7 @@ export interface BikeFacts {
   motorOver20: Tri;
   /** Follow-up answer. Can pedal assist go past 28 mph in any mode? */
   assistOver28: Tri;
-  /** The text mentions an unlock, off-road or race mode. */
+  /** It has an unlock, off-road or race mode, as the text says or the family ticks. */
   switchable: Tri;
   hasFootPegs: Tri;
   needsPedalKit: Tri;

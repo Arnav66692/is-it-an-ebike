@@ -11,7 +11,7 @@ import {
   withWheelCount,
   withWheelSize,
 } from "@/lib/checkerState";
-import type { BikeFacts, QuestionId } from "@/lib/rules/types";
+import type { BikeFacts, QuestionId, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { Card, Choice, NumberField, triValue } from "./controls";
@@ -22,7 +22,11 @@ interface Props {
   lang: Lang;
   questions: QuestionId[];
   facts: BikeFacts;
-  onChange: (next: BikeFacts) => void;
+  /**
+   * The family answered. `answered` names the read facts the answer covers, which count as theirs
+   * even when the answer matches what was read.
+   */
+  onChange: (next: BikeFacts, answered?: readonly ReadField[]) => void;
 }
 
 function withUnsure(f: BikeFacts, q: QuestionId, unsure: boolean): QuestionId[] {
@@ -114,13 +118,15 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
               { value: "3", label: "3" },
             ]}
             value={facts.wheelCount === null ? null : (String(facts.wheelCount) as "2" | "3")}
-            onChange={(v) => onChange(withWheelCount(facts, v === "3" ? 3 : 2))}
+            onChange={(v) => onChange(withWheelCount(facts, v === "3" ? 3 : 2), ["wheelCount"])}
           />
           <button
             type="button"
             className="btn btn-quiet"
             aria-pressed={facts.unsure.includes("wheels")}
-            onClick={() => onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) })}
+            onClick={() =>
+              onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) }, ["wheelSize", "wheelCount"])
+            }
           >
             {t(lang, "notSure")}
           </button>
@@ -151,12 +157,15 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           options={tri}
           value={weightShown(facts)}
           onChange={(v) => {
-            onChange({
-              ...facts,
-              weightLb: null,
-              weightOver100: v === "yes" ? true : v === "no" ? false : null,
-              unsure: withUnsure(facts, "weight", v === "unsure"),
-            });
+            onChange(
+              {
+                ...facts,
+                weightLb: null,
+                weightOver100: v === "yes" ? true : v === "no" ? false : null,
+                unsure: withUnsure(facts, "weight", v === "unsure"),
+              },
+              ["weightLb"],
+            );
           }}
         />
       ) : null}
@@ -168,7 +177,10 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           value={pegsKitShown(facts)}
           onChange={(v) => {
             const value = v === "yes" ? true : v === "no" ? false : null;
-            onChange({ ...facts, hasFootPegs: value, needsPedalKit: value === true ? null : value, unsure: withUnsure(facts, "pegs_kit", v === "unsure") });
+            // An answer here is the family's own foot pegs answer, even when it matches what was read.
+            onChange({ ...facts, hasFootPegs: value, needsPedalKit: value === true ? null : value, unsure: withUnsure(facts, "pegs_kit", v === "unsure") }, [
+              "hasFootPegs",
+            ]);
           }}
         />
       ) : null}

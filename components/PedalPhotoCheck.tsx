@@ -13,15 +13,28 @@ const RESULT_KEY: Record<PedalCall, UiKey> = {
   ask: "photoCheckAsk",
 };
 
+/** The same result, for when the pedals answer still has to be ticked before the answer can say YES. */
+const TICK_KEY: Partial<Record<UiKey, UiKey>> = {
+  photoCheckPedals: "photoCheckPedalsTick",
+  photoCheckNoPedals: "photoCheckNoPedalsTick",
+};
+
+/** The message to show. A right call still needs the family's tick, so the message says so while the box is empty. */
+export function photoMessage(message: UiKey, needsTick: boolean): UiKey {
+  return needsTick ? (TICK_KEY[message] ?? message) : message;
+}
+
 interface Props {
   lang: Lang;
   /** Called as a check starts. The check it returns turns false once the family picks a pedals answer. */
   startCheck: () => () => boolean;
   onCall: (call: PedalCall) => void;
+  /** True while the pedals answer is read and not yet checked against the bike. */
+  needsTick: boolean;
 }
 
 /** Optional whole-bike photo check. It loads nothing until tapped and only ever fills the pedals answer. */
-export function PedalPhotoCheck({ lang, startCheck, onCall }: Props) {
+export function PedalPhotoCheck({ lang, startCheck, onCall, needsTick }: Props) {
   const id = useId();
   const [step, setStep] = useState<Step>("closed");
   const [progress, setProgress] = useState(0);
@@ -130,7 +143,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall }: Props) {
 
       {message ? (
         <p role={isProblem ? "alert" : "status"} className="text-sm font-semibold">
-          {t(lang, message)}
+          {t(lang, photoMessage(message, needsTick))}
         </p>
       ) : null}
     </div>

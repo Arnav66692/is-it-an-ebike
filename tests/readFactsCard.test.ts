@@ -98,7 +98,22 @@ describe("the words a family reads", () => {
   });
 
   it("keeps the new interface text in Arnav's style", () => {
-    const keys = ["readIntro", "readMarkText", "readMarkPhoto", "readMatches", "readMatchesFor", "readCount", "blFactsSub", "blFactsWhere"] as const;
+    const keys = [
+      "readIntro",
+      "readMarkText",
+      "readMarkPhoto",
+      "readMatches",
+      "readMatchesFor",
+      "readMatchesBoth",
+      "readTheirs",
+      "readFromBefore",
+      "readCount",
+      "blFactsSub",
+      "blFactsWhere",
+      "photoCheckPedalsTick",
+      "photoCheckNoPedalsTick",
+      "unlock",
+    ] as const;
     for (const key of keys) {
       for (const lang of ["en", "es"] as const) expect(t(lang, key), `${lang}.${key}`).not.toMatch(/[—;:]/);
       expect(t("es", key), key).not.toBe(t("en", key));
@@ -107,7 +122,7 @@ describe("the words a family reads", () => {
 
   it("never replaces a pedals answer picked while the check ran, and a pedals tick counts as that answer", () => {
     const card = readFileSync(join(__dirname, "..", "components", "FactsCard.tsx"), "utf8");
-    expect(card).toContain("pedalAnswers.edited();\n            setPedalsUi(v);");
+    expect(card).toContain('pedalAnswers.edited();\n            setPedalsUnsure(v === "unsure");');
     expect(card).toContain('if (field === "hasPedals") pedalAnswers.edited();');
     expect(card).toContain("onPedalCall(call);");
     expect(card).not.toContain("applyPedalCall");

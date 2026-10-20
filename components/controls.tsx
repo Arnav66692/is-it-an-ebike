@@ -130,7 +130,8 @@ export function Evidence({ label, texts }: { label: string; texts?: string[] }) 
 export function Card({ title, step, children }: { title: string; step?: number; children: ReactNode }) {
   return (
     <section className="card space-y-4" aria-labelledby={`${title}-h`}>
-      <h2 id={`${title}-h`} className="flex items-center gap-2 text-lg font-bold">
+      {/* tabIndex -1 lets the page move keyboard focus to a card's heading without adding a tab stop. */}
+      <h2 id={`${title}-h`} tabIndex={-1} className="flex items-center gap-2 text-lg font-bold">
         {step ? (
           <span aria-hidden="true" className="step">
             {step}

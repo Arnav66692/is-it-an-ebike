@@ -34,8 +34,13 @@ interface Props {
 }
 
 export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onConfirm, onPedalCall, onCheck }: Props) {
-  const [pedalsUi, setPedalsUi] = useState<Tri3 | null>(triValue(facts.hasPedals));
-  const [throttleUi, setThrottleUi] = useState<Tri3 | null>(triValue(facts.hasThrottle));
+  // The answers shown are read from the facts every time, so the pedals answer always shows what
+  // the facts hold, even after the photo check fills it. Only a "not sure" pick is kept here, since
+  // the facts store it as unknown, the same as no answer.
+  const [pedalsUnsure, setPedalsUnsure] = useState(false);
+  const [throttleUnsure, setThrottleUnsure] = useState(false);
+  const pedalsUi: Tri3 | null = triValue(facts.hasPedals) ?? (pedalsUnsure ? "unsure" : null);
+  const throttleUi: Tri3 | null = triValue(facts.hasThrottle) ?? (throttleUnsure ? "unsure" : null);
   // A pedals answer the family picks while a photo check runs must not be replaced by the photo's call.
   const [pedalAnswers] = useState(answerGate);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
@@ -79,7 +84,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           value={pedalsUi}
           onChange={(v) => {
             pedalAnswers.edited();
-            setPedalsUi(v);
+            setPedalsUnsure(v === "unsure");
             set({ hasPedals: fromTri(v) });
           }}
         />
@@ -87,10 +92,9 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
         <PedalPhotoCheck
           lang={lang}
           startCheck={pedalAnswers.start}
+          needsTick={checks.hasPedals?.status === "unchecked"}
           onCall={(call) => {
-            if (call === "ask") return;
-            setPedalsUi(call === "pedals" ? "yes" : "no");
-            onPedalCall(call);
+            if (call !== "ask") onPedalCall(call);
           }}
         />
       </div>
@@ -127,7 +131,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           options={triOptions}
           value={throttleUi}
           onChange={(v) => {
-            setThrottleUi(v);
+            setThrottleUnsure(v === "unsure");
             set({ hasThrottle: fromTri(v), throttleMph: v === "no" ? null : facts.throttleMph });
           }}
         />
