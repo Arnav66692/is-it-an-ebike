@@ -549,7 +549,7 @@
     "effective_date": "2016-01-01",
     "applies_to": "class_3",
     "min_age": 16,
-    "exceptions": "Rule covers operating, not riding as a passenger. 21212.5 (AB 965, effective Jan 1, 2026) also bars selling a Class 3 to anyone under 16. No statewide minimum age for Class 1 or 2. Local pilot bans exist: see local_authority.",
+    "exceptions": "Rule covers operating, not riding as a passenger. 21212.5 (AB 965, effective Jan 1, 2026) also bars selling a Class 3 to anyone under 16. No statewide minimum age for Class 1 or 2. Cities and counties in the San Diego and Marin County pilots, and in San Mateo County from Jan 1, 2027, may set their own age limits.",
     "notes": null
    }
   ],
@@ -615,7 +615,7 @@
    "can_add_age_limits_or_bans": true,
    "can_ban_on_paths": null,
    "can_add_age_limits": null,
-   "details": "Local age limits exist only through named county pilots. (1) San Diego County cities and the County may ban under-12 riders from Class 1 and 2 (21214.7, AB 2234 (2024), amended by AB 1170 (2025), repealed Jan 1, 2029). (2) Marin County cities and the County may ban under-16 riders from Class 2 and may require helmets on Class 2 (21214.5, AB 1778, inoperative Jan 1, 2029). (3) From Jan 1, 2027, San Mateo County cities and the County may ban under-12 riders from Class 1 and 2 (21214.9, AB 2595, Stats. 2026, ch. 843, repealed Jan 1, 2031). All pilots: 60-day warning period, then a $25 infraction, cleared by a safety course, parent jointly liable. Outside these counties no local age-limit authority was found. Locals may also ban e-bikes on equestrian, hiking and recreational trails (21207.5(b)) and regulate operation and registration on pedestrian and bicycle facilities (21206). Per ideas_red_team.md (not re-verified here), the City of San Diego adopted the under-12 rule effective Aug 13, 2026 with citations from Oct 12, 2026, and Carlsbad also adopted it.",
+   "details": "Local age limits exist only through named county pilots. (1) San Diego County cities and the County may ban under-12 riders from Class 1 and 2 (21214.7, AB 2234 (2024), amended by AB 1170 (2025), repealed Jan 1, 2029). (2) Marin County cities and the County may ban under-16 riders from Class 2 and may require helmets on Class 2 (21214.5, AB 1778, inoperative Jan 1, 2029). (3) From Jan 1, 2027, San Mateo County cities and the County may ban under-12 riders from Class 1 and 2 (21214.9, AB 2595, Stats. 2026, ch. 843, repealed Jan 1, 2031). All pilots: 60-day warning period, then a $25 infraction, cleared by a safety course, parent jointly liable. Outside these counties no local age-limit authority was found. Locals may also ban e-bikes on equestrian, hiking and recreational trails (21207.5(b)) and regulate operation and registration on pedestrian and bicycle facilities (21206). The City of San Diego adopted the under-12 rule in O-22123 N.S. (SDMC 84.19 to 84.21), effective Aug 13, 2026, with citations from Oct 12, 2026, and Carlsbad adopted it in Ord. CS-509 (CMC 10.56.030(A)), effective Mar 26, 2026. Both were read in enacted text on Oct 19, 2026, and data/rules/san_diego_local.json holds those records.",
    "notes": null
   },
   "non_ebike_devices": {
@@ -656,7 +656,7 @@
   "open_questions": [
    "Moped and motor-driven cycle license class (M1 or M2), minimum age and insurance were not verified in statute. 12804.9 has multiple versions on leginfo.",
    "Whether a local ordinance outside the Marin, San Diego and San Mateo pilots may set any e-bike age limit. None found, and the Vehicle Code generally preempts local traffic rules.",
-   "City of San Diego and Carlsbad under-12 ordinances come from ideas_red_team.md (city release and city page) and were not re-verified here. Ordinance numbers are still unknown.",
+   "Resolved Oct 19, 2026: the City of San Diego under-12 ordinance is O-22123 N.S. (SDMC 84.19 to 84.21) and Carlsbad's is Ord. CS-509 (CMC 10.56.030(A)), both read in enacted text. See data/rules/san_diego_local.json.",
    "AB 1569 (2026, school e-bike curriculum by Mar 1, 2028) and SB 586 (2025, off-highway electric motorcycles) were not re-read in this pass.",
    "How the 'motor-driven cycle' and 'moped' FMVSS and VIN requirements from Jan 1, 2027 will treat imported e-motos that have no VIN. They appear to fit no road-legal class, so 23135 would bar them from public roads."
   ],
@@ -1949,7 +1949,7 @@
     "effective_date": "2018-01-01",
     "applies_to": "class_3",
     "min_age": 16,
-    "exceptions": "Under-16 passengers are allowed on Class 3 bikes designed for passengers. Until Dec 31, 2026 there is no state minimum for Class 1 or 2. From Jan 1, 2027 (P.A. 104-854), Class 1 and 2 riders must be 15 or older, and riders under 18 may carry only a sibling, stepsibling, child or stepchild. See pending_changes.",
+    "exceptions": "Under-16 passengers are allowed on Class 3 bikes designed for passengers. Until Dec 31, 2026 there is no state minimum for Class 1 or 2. From Jan 1, 2027 (P.A. 104-854), Class 1 and 2 riders must be 15 or older, and riders under 18 may carry only a sibling, stepsibling, child or stepchild.",
     "notes": null
    }
   ],
@@ -6059,7 +6059,7 @@
     "effective_date": "2024-05-01",
     "applies_to": "class_3",
     "min_age": 16,
-    "exceptions": "None stated. This subsection is dropped from the version that takes effect May 5, 2027 (see pending_changes).",
+    "exceptions": "None stated. This subsection is dropped from the version that takes effect May 5, 2027.",
     "notes": null
    },
    {
@@ -6193,7 +6193,7 @@
     "condition": "throttle_max_mph > 20 or has_foot_pegs or needs_pedal_kit",
     "verdict": "not_an_ebike",
     "valid_until": null,
-    "reason": "The definition excludes a bike with foot pegs at manufacture, one that needs a pedal kit, and a multi-mode throttle bike with any mode above 20 mph on motor power alone. A throttle that tops out at exactly 20 mph is the Class 2 gray zone (see the class_2 caution). A class label does not show these, so ask before returning legal."
+    "reason": "The definition excludes a bike with foot pegs at manufacture, one that needs a pedal kit, and a multi-mode throttle bike with any mode above 20 mph on motor power alone. A throttle that tops out at exactly 20 mph is the Class 2 gray zone, which has its own line for Class 2. A class label does not show these, so the app asks before it can say yes."
    }
   ],
   "normalization_notes": [],
@@ -6582,7 +6582,7 @@
     "condition": "motor_only_max_mph > 20 or switchable_out_of_class",
     "verdict": "not_an_ebike",
     "valid_until": null,
-    "reason": "Since June 11, 2026 the definition excludes any vehicle that can exceed 20 mph on its motor alone and any bike sold to be easily switched out of the class limits by a button, setting or app. A Class 2 or 3 label does not show this, so ask before returning legal."
+    "reason": "Since June 11, 2026 the definition excludes any vehicle that can exceed 20 mph on its motor alone and any bike sold to be easily switched out of the class limits by a button, setting or app. A Class 2 or 3 label does not show this, so the app asks before it can say yes."
    }
   ],
   "normalization_notes": [],

@@ -168,3 +168,44 @@ describe("the hand-built overlay", () => {
     }
   });
 });
+
+describe("third review fixes (Oct 19, 2026): text users can open on a card", () => {
+  const states = statesJson as unknown as Record<
+    string,
+    {
+      min_age: { exceptions: string | null }[] | null;
+      verdict_cautions: { reason: string | null }[];
+      never_return_legal_reason: string | null;
+    }
+  >;
+
+  it("never shows a raw field name or an instruction to the engine under Details", () => {
+    for (const [code, s] of Object.entries(states)) {
+      const texts = [
+        ...(s.min_age ?? []).map((r) => r.exceptions),
+        ...s.verdict_cautions.map((c) => c.reason),
+        s.never_return_legal_reason,
+      ].filter((x): x is string => typeof x === "string");
+      for (const text of texts) {
+        expect(text, code).not.toMatch(/\b[a-z]+_[a-z_]+\b/);
+        expect(text, code).not.toMatch(/returning legal|\bsee pending|\bsee local_/i);
+      }
+    }
+  });
+
+  it("names the City of San Diego and Carlsbad ordinances in the California record, not as unverified", () => {
+    const ca = statesJson as unknown as { CA: { local_authority: { details: string }; open_questions: string[] } };
+    expect(ca.CA.local_authority.details).toContain("O-22123 N.S.");
+    expect(ca.CA.local_authority.details).toContain("CS-509");
+    expect(JSON.stringify(ca.CA)).not.toContain("not re-verified here");
+  });
+
+  it("never quotes a code publisher's currency line as ordinance text", () => {
+    for (const place of SD.jurisdictions) {
+      for (const r of rulesOf(place)) {
+        if (r.source_type !== "ordinance_text" || !r.quote) continue;
+        expect(r.quote, `${place.id}.${r.rule}`).not.toMatch(/current through|codified through/i);
+      }
+    }
+  });
+});
