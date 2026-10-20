@@ -20,12 +20,25 @@ interface BottomLineResults {
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <tr className="border-t border-line">
-      <th scope="row" className="py-2 pr-3 text-left font-normal">
+    <tr>
+      <th scope="row" className={`text-left ${strong ? "font-semibold" : "font-normal"}`}>
         {label}
       </th>
-      <td className={`py-2 text-right ${strong ? "text-lg font-bold" : ""}`}>{value}</td>
+      <td className={strong ? "text-lg font-bold" : undefined}>{value}</td>
     </tr>
+  );
+}
+
+/** One of the safety gates, as a tile. Green at 0, red above it. */
+function Gate({ label, value, fmt }: { label: string; value: number; fmt: (n: number) => string }) {
+  return (
+    <div className="stat" data-pass={value === 0 ? "true" : "false"}>
+      <span className="stat-value">
+        <span aria-hidden="true">{value === 0 ? "✓ " : "✕ "}</span>
+        {fmt(value)}
+      </span>
+      <span className="stat-label">{label}</span>
+    </div>
   );
 }
 
@@ -48,19 +61,30 @@ export function AccuracyView({ lang }: { lang: Lang }) {
   const updated = new Date(accuracy.generated_at).toLocaleDateString(locale, { timeZone: "America/Los_Angeles" });
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 space-y-5 px-4 py-6" lang={lang}>
-      <Link href={lang === "es" ? "/?lang=es" : "/"} className="text-sm underline">
-        {text.back}
-      </Link>
-      <h1 className="text-2xl font-extrabold">{text.title}</h1>
-      <p>
-        {text.introBefore} <code>RESULTS.md</code> {text.introAfter(updated)}
-      </p>
+    <main className="page flex-1" lang={lang}>
+      <nav className="no-print">
+        <Link href={lang === "es" ? "/?lang=es" : "/"} className="link-btn inline-flex items-center gap-2">
+          <span aria-hidden="true">&larr;</span>
+          {text.back}
+        </Link>
+      </nav>
+      <header className="app-head">
+        <h1 className="app-title">{text.title}</h1>
+        <p className="tagline">
+          {text.introBefore} <code className="quote">RESULTS.md</code> {text.introAfter(updated)}
+        </p>
+      </header>
 
-      <section className="card space-y-3">
-        <h2 className="text-lg font-bold">{text.engineTitle}</h2>
-        <p className="text-sm text-muted">{text.engineCases(fmt(e.cases), e.san_diego_places)}</p>
-        <table className="w-full text-sm">
+      <div className="stats">
+        <Gate label={text.falseLegal} value={e.false_legal} fmt={fmt} />
+        {bl ? <Gate label={text.blFalseYes} value={bl.false_yes} fmt={fmt} /> : null}
+        {bl?.unchecked_yes !== undefined ? <Gate label={text.blUncheckedYes} value={bl.unchecked_yes} fmt={fmt} /> : null}
+      </div>
+
+      <section className="card space-y-4">
+        <h2 className="card-title">{text.engineTitle}</h2>
+        <p className="help">{text.engineCases(fmt(e.cases), e.san_diego_places)}</p>
+        <table className="table">
           <tbody>
             <Row label={text.falseLegal} value={fmt(e.false_legal)} strong />
             <Row label={text.missedYes} value={fmt(e.missed_yes)} />
@@ -72,15 +96,15 @@ export function AccuracyView({ lang }: { lang: Lang }) {
             <Row label={text.statusNeedInfo} value={`${fmt(e.by_status.need_info)} (${share(e.by_status.need_info)})`} />
           </tbody>
         </table>
-        {accuracy.tests ? <p className="text-sm">{text.testSuite(accuracy.tests.passed, accuracy.tests.total)}</p> : null}
-        <p className="text-sm text-muted">{text.engineCaveat}</p>
+        {accuracy.tests ? <p>{text.testSuite(accuracy.tests.passed, accuracy.tests.total)}</p> : null}
+        <p className="meta">{text.engineCaveat}</p>
       </section>
 
       {bl ? (
-        <section className="card space-y-3">
-          <h2 className="text-lg font-bold">{text.blTitle}</h2>
-          <p className="text-sm text-muted">{text.blCases(fmt(bl.cases), fmt(bl.bottom_lines ?? bl.cases))}</p>
-          <table className="w-full text-sm">
+        <section className="card space-y-4">
+          <h2 className="card-title">{text.blTitle}</h2>
+          <p className="help">{text.blCases(fmt(bl.cases), fmt(bl.bottom_lines ?? bl.cases))}</p>
+          <table className="table">
             <tbody>
               <Row label={text.blFalseYes} value={fmt(bl.false_yes)} strong />
               {bl.unchecked_yes !== undefined ? <Row label={text.blUncheckedYes} value={fmt(bl.unchecked_yes)} strong /> : null}
@@ -97,9 +121,9 @@ export function AccuracyView({ lang }: { lang: Lang }) {
         </section>
       ) : null}
 
-      <section className="card space-y-3">
-        <h2 className="text-lg font-bold">{text.pilotTitle}</h2>
-        <table className="w-full text-sm">
+      <section className="card space-y-4">
+        <h2 className="card-title">{text.pilotTitle}</h2>
+        <table className="table">
           <tbody>
             {clip ? <Row label={text.pilotPedalLess} value={verdict(clip.pedal_less_all_caught)} /> : null}
             {clip ? <Row label={text.pilotPedalCall} value={verdict(clip.pedal_call_overall)} /> : null}
@@ -108,14 +132,14 @@ export function AccuracyView({ lang }: { lang: Lang }) {
             <Row label={text.pilotLabels} value={accuracy.pilot.labels ? text.seeResults : text.pending} />
           </tbody>
         </table>
-        <p className="text-sm">{text.pilotBody}</p>
+        <p className="help">{text.pilotBody}</p>
       </section>
 
       {v2 ? (
-        <section className="card space-y-3">
-          <h2 className="text-lg font-bold">{text.v2Title}</h2>
-          <p className="text-sm text-muted">{text.v2Intro}</p>
-          <table className="w-full text-sm">
+        <section className="card space-y-4">
+          <h2 className="card-title">{text.v2Title}</h2>
+          <p className="help">{text.v2Intro}</p>
+          <table className="table">
             <tbody>
               <Row label={text.noPedalMachines} value={verdict(v2.bars.no_pedal_machines)} />
               <Row label={text.pedalCall22} value={verdict(v2.bars.pedal_call_overall)} />
@@ -124,15 +148,15 @@ export function AccuracyView({ lang }: { lang: Lang }) {
               <Row label={text.realWorld} value={of(v2.breakdown.real_world.right, v2.breakdown.real_world.of)} />
             </tbody>
           </table>
-          <p className="text-sm">{v2.pass ? text.v2Pass : v3?.pass ? text.v2FailThenV3 : text.v2Fail}</p>
+          <p className="help">{v2.pass ? text.v2Pass : v3?.pass ? text.v2FailThenV3 : text.v2Fail}</p>
         </section>
       ) : null}
 
       {v3 ? (
-        <section className="card space-y-3">
-          <h2 className="text-lg font-bold">{text.v3Title}</h2>
-          <p className="text-sm text-muted">{text.v3Intro}</p>
-          <table className="w-full text-sm">
+        <section className="card space-y-4">
+          <h2 className="card-title">{text.v3Title}</h2>
+          <p className="help">{text.v3Intro}</p>
+          <table className="table">
             <tbody>
               <Row label={text.noPedalMachines} value={verdict(v3.bars.no_pedal_machines)} />
               <Row label={text.pedalCall22} value={verdict(v3.bars.pedal_call_overall)} />
@@ -141,7 +165,7 @@ export function AccuracyView({ lang }: { lang: Lang }) {
               <Row label={text.realWorld} value={of(v3.breakdown.real_world.right, v3.breakdown.real_world.of)} />
             </tbody>
           </table>
-          <p className="text-sm">{v3.pass ? text.v3Pass : text.v3Fail}</p>
+          <p className="help">{v3.pass ? text.v3Pass : text.v3Fail}</p>
         </section>
       ) : null}
     </main>

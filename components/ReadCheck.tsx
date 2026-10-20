@@ -37,7 +37,7 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef }:
   if (!check) return null;
   if (check.status === "theirs") {
     return (
-      <p className="read-check text-sm text-muted" data-read-check="theirs">
+      <p className="read-theirs" data-read-check="theirs">
         {t(lang, "readTheirs")}
       </p>
     );
@@ -46,7 +46,7 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef }:
   const words = matchesKey ? t(lang, matchesKey) : t(lang, "readMatches");
   const markText = t(lang, check.source === "photo" ? "readMarkPhoto" : "readMarkText");
   return (
-    <div className="read-check space-y-1" data-confirmed={ticked ? "true" : "false"}>
+    <div className="read-check" data-confirmed={ticked ? "true" : "false"}>
       <p id={noteId} className={ticked ? "read-mark read-mark-done" : "read-mark"} data-read-mark={check.status}>
         <span aria-hidden="true" className="read-mark-icon">
           {ticked ? "\u2713" : "!"}

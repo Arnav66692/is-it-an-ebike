@@ -1,44 +1,61 @@
 @import "tailwindcss";
 
+/*
+ * One calm look for the whole app: soft cards on a light gray page, one blue accent, green for
+ * YES and red for NO, always with an icon and the word. Every text pair meets WCAG AA contrast,
+ * in the light theme and in the dark one. tests/contrast.test.ts measures each pair from this file.
+ */
 :root {
-  --bg: #f6f5f0;
+  --bg: #f4f5f7;
   --card: #ffffff;
-  --ink: #1b1b18;
-  --muted: #55554e;
-  --line: #dddcd3;
-  --sunk: #efeee7;
-  --accent: #1d4ed8;
+  --ink: #14171f;
+  --muted: #555e6e;
+  --line: #e4e7ec;
+  /* Borders of fields and boxes, at least 3 to 1 against the card. */
+  --field-line: #8a93a2;
+  --sunk: #eef0f3;
+  --accent: #2251cc;
+  --accent-hover: #1b43ab;
   --accent-ink: #ffffff;
-  --yes: #126b37;
-  --yes-bg: #e6f4ea;
-  --no: #a8201a;
+  --accent-soft: #e9effc;
+  --yes: #13753a;
+  --yes-bg: #e3f3e8;
+  --no: #b3261e;
   --no-bg: #fbe9e7;
   --maybe: #7a4f00;
   --maybe-bg: #fff3d1;
-  --ask: #1d4ed8;
-  --ask-bg: #e7eeff;
-  --focus: #1d4ed8;
+  --focus: #2251cc;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.04), 0 6px 20px rgb(16 24 40 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(16 24 40 / 0.06), 0 16px 40px rgb(16 24 40 / 0.14);
+  --card-edge: transparent;
+  --radius: 1.25rem;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #121211;
-    --card: #1c1c1a;
-    --ink: #f1f0ea;
-    --muted: #b6b5ad;
-    --line: #34342f;
-    --sunk: #262623;
+    --bg: #0e1116;
+    --card: #171b22;
+    --ink: #edf0f5;
+    --muted: #a5adbb;
+    --line: #2a303a;
+    --field-line: #6b7484;
+    --sunk: #222730;
     --accent: #8fb0ff;
+    --accent-hover: #a9c1ff;
     --accent-ink: #0b1430;
-    --yes: #7fd69a;
+    --accent-soft: #1c2847;
+    --yes: #6fd394;
     --yes-bg: #10301c;
-    --no: #ff9b91;
-    --no-bg: #3a1513;
+    --no: #ff9a90;
+    --no-bg: #3b1714;
     --maybe: #ffd27a;
     --maybe-bg: #3a2c0b;
-    --ask: #9db8ff;
-    --ask-bg: #172449;
-    --focus: #9db8ff;
+    --focus: #a9c1ff;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-lift: 0 16px 40px rgb(0 0 0 / 0.5);
+    --card-edge: #262b34;
+    color-scheme: dark;
   }
 }
 
@@ -62,7 +79,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 :focus-visible {
@@ -70,76 +88,280 @@ body {
   outline-offset: 2px;
 }
 
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* ---------- Page frame ---------- */
+
+.page {
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+@media (min-width: 640px) {
+  .page {
+    padding: 3rem 1.5rem 4rem;
+  }
+}
+
+.page > * + * {
+  margin-top: 1.25rem;
+}
+
+.app-head {
+  display: grid;
+  gap: 0.35rem;
+  padding-bottom: 0.75rem;
+}
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.app-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 640px) {
+  .app-title {
+    font-size: 2rem;
+  }
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 1.0625rem;
+}
+
+.lang-btn {
+  flex: none;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--card-edge);
+  font-weight: 600;
+}
+
+.lang-btn:hover {
+  color: var(--accent);
+}
+
+/* ---------- Cards and steps ---------- */
+
 .card {
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 1rem;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 1.75rem;
+  }
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .step {
   display: inline-grid;
   place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
   border-radius: 999px;
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* A step still to come: a quiet outline with its number, so the four steps show from the start. */
+.card-later {
+  background: transparent;
+  box-shadow: none;
+  border: 1.5px dashed color-mix(in srgb, var(--field-line) 50%, transparent);
+}
+
+.card-later .step {
+  background: var(--sunk);
+  color: var(--muted);
+}
+
+.card-later .card-title {
+  color: var(--muted);
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.section-label {
+  padding-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- Text ---------- */
+
+.field-label {
+  display: block;
+  font-weight: 600;
+}
+
+.help {
+  color: var(--muted);
+}
+
+.meta {
+  color: var(--muted);
   font-size: 0.875rem;
 }
 
+/* A status line the family should see, like a start over in another state. */
+.note {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.85rem;
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+
+.alert {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.85rem;
+  background: var(--no-bg);
+  color: var(--no);
+  font-weight: 600;
+}
+
+/* ---------- Fields ---------- */
+
 .field {
-  min-height: 2.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  min-height: 3rem;
+  border: 1px solid var(--field-line);
+  border-radius: 0.75rem;
   background: var(--card);
   color: var(--ink);
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   font-size: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.choice {
-  position: relative;
-  cursor: pointer;
-}
-
-.choice span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
-  font-weight: 500;
-}
-
-.choice input:checked + span {
-  background: var(--ink);
+.field:hover {
   border-color: var(--ink);
-  color: var(--bg);
 }
 
-.choice input:focus-visible + span {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
+.field:focus-visible {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 1px var(--focus), 0 0 0 5px var(--accent-soft);
 }
+
+.field[aria-invalid="true"] {
+  border-color: var(--no);
+}
+
+.field::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+select.field {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 1.25rem) 52%, calc(100% - 0.9rem) 52%;
+  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+}
+
+textarea.field {
+  line-height: 1.5;
+}
+
+.field-error {
+  color: var(--no);
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 2.75rem;
-  padding: 0.6rem 1.25rem;
-  border-radius: 0.7rem;
+  min-height: 3rem;
+  padding: 0.6rem 1.35rem;
+  border-radius: 0.8rem;
   font-weight: 600;
   background: var(--accent);
   color: var(--accent-ink);
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -156,9 +378,57 @@ body {
 }
 
 .btn-quiet {
-  background: transparent;
+  background: var(--card);
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 1px solid var(--field-line);
+}
+
+.btn-quiet:hover:not(:disabled) {
+  background: var(--sunk);
+}
+
+.link-btn {
+  min-height: 2.75rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---------- Choices ---------- */
+
+.choice {
+  position: relative;
+  cursor: pointer;
+}
+
+.choice span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--field-line);
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 500;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.choice:hover span {
+  border-color: var(--ink);
+}
+
+.choice input:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.choice input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .check {
@@ -166,208 +436,51 @@ body {
   gap: 0.75rem;
   align-items: flex-start;
   min-height: 2.75rem;
-  padding: 0.5rem 0;
+  padding: 0.55rem 0;
+  cursor: pointer;
 }
 
 .check input {
   /* Never shrink when a long label or hint wraps onto a second line. */
   flex: none;
-  width: 1.35rem;
-  height: 1.35rem;
-  margin-top: 0.15rem;
-  accent-color: var(--ink);
+  width: 1.375rem;
+  height: 1.375rem;
+  margin-top: 0.1rem;
+  accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.25rem;
-  padding: 0.25rem;
-  border-radius: 0.8rem;
+  padding: 0.3rem;
+  border-radius: 0.95rem;
   background: var(--sunk);
 }
 
 .tabs button {
   min-height: 2.75rem;
-  border-radius: 0.6rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 0.7rem;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
   color: var(--muted);
+}
+
+.tabs button:hover {
+  color: var(--ink);
 }
 
 .tabs button[aria-selected="true"] {
   background: var(--card);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+  box-shadow: 0 1px 3px rgb(16 24 40 / 0.12);
 }
 
-.verdict {
-  border-left: 6px solid var(--line);
-}
+/* ---------- Place search ---------- */
 
-/* Every answer is YES or NO. Not allowed, not an e-bike, can't confirm and questions still open are all NO. */
-.verdict[data-answer="yes"] {
-  border-left-color: var(--yes);
-}
-.verdict[data-answer="no"] {
-  border-left-color: var(--no);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.badge[data-answer="yes"] {
-  background: var(--yes-bg);
-  color: var(--yes);
-}
-.badge[data-answer="no"] {
-  background: var(--no-bg);
-  color: var(--no);
-}
-
-.bottom-line {
-  border-width: 3px;
-  border-color: var(--line);
-}
-.bottom-line[data-kind="yes"] {
-  border-color: var(--yes);
-}
-.bottom-line[data-kind="no_illegal"],
-.bottom-line[data-kind="no_unconfirmed"] {
-  border-color: var(--no);
-}
-
-.bl-head {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 2.75rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0.02em;
-}
-
-.bl-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  flex: none;
-  border-radius: 999px;
-  font-size: 1.9rem;
-}
-.bottom-line[data-kind="yes"] .bl-mark {
-  background: var(--yes-bg);
-  color: var(--yes);
-}
-.bottom-line[data-kind="no_illegal"] .bl-mark,
-.bottom-line[data-kind="no_unconfirmed"] .bl-mark {
-  background: var(--no-bg);
-  color: var(--no);
-}
-
-.bl-item {
-  border-left: 3px solid var(--line);
-  padding-left: 0.75rem;
-}
-
-.bar {
-  height: 0.5rem;
-  border-radius: 999px;
-  background: var(--sunk);
-  overflow: hidden;
-}
-
-.bar > div {
-  height: 100%;
-  background: var(--accent);
-  transition: width 0.2s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bar > div {
-    transition: none;
-  }
-}
-
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  body {
-    background: #fff;
-    color: #000;
-  }
-}
-
-/* A fact read from a link or photo that the family has not checked against the bike yet. */
-.read-mark {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-  padding: 0.45rem 0.7rem;
-  border-radius: 0.6rem;
-  background: var(--maybe-bg);
-  color: var(--maybe);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-/* The same mark once the family ticked the box. It keeps its place and height. */
-.read-mark-done {
-  background: var(--sunk);
-  color: var(--ink);
-}
-
-/* The mark's two lines share one cell, so ticking never changes the mark's height. */
-.read-mark-words {
-  display: grid;
-}
-
-.read-mark-words > * {
-  grid-area: 1 / 1;
-}
-
-.read-mark-icon {
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: 1.2rem;
-  height: 1.2rem;
-  margin-top: 0.05rem;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
-/* Labels and help text for a form field. */
-.field-label {
-  display: block;
-  font-weight: 600;
-}
-
-.help {
-  color: var(--muted);
-}
-
-/* A status line the family should see, like a start over in another state. */
-.note {
-  padding: 0.6rem 0.85rem;
-  border-radius: 0.75rem;
-  background: var(--sunk);
-  font-weight: 600;
-}
-
-/* The place search: a combobox with a list of results under it. */
 .combo {
   position: relative;
 }
@@ -378,7 +491,7 @@ body {
 
 .combo-icon {
   position: absolute;
-  left: 0.85rem;
+  left: 0.9rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--muted);
@@ -387,8 +500,9 @@ body {
 
 .combo-input {
   width: 100%;
-  min-height: 3rem;
-  padding-left: 2.6rem;
+  min-height: 3.25rem;
+  padding-left: 2.75rem;
+  font-size: 1.0625rem;
 }
 
 .combo-list {
@@ -396,14 +510,14 @@ body {
   z-index: 20;
   left: 0;
   right: 0;
-  top: calc(100% + 0.35rem);
+  top: calc(100% + 0.4rem);
   max-height: min(24rem, 60vh);
   overflow-y: auto;
   padding: 0.35rem;
   border: 1px solid var(--line);
-  border-radius: 0.9rem;
+  border-radius: 1rem;
   background: var(--card);
-  box-shadow: 0 12px 32px rgb(16 24 40 / 0.14);
+  box-shadow: var(--shadow-lift);
 }
 
 .combo-list[hidden] {
@@ -414,8 +528,8 @@ body {
   display: grid;
   gap: 0.1rem;
   min-height: 2.75rem;
-  padding: 0.55rem 0.75rem;
-  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.7rem;
   cursor: pointer;
 }
 
@@ -439,8 +553,8 @@ body {
 
 .combo-checked {
   justify-self: start;
-  margin-top: 0.15rem;
-  padding: 0.05rem 0.5rem;
+  margin-top: 0.2rem;
+  padding: 0.05rem 0.55rem;
   border-radius: 999px;
   background: var(--yes-bg);
   color: var(--yes);
@@ -448,7 +562,6 @@ body {
   font-weight: 600;
 }
 
-/* The places picked, as chips with a remove button. */
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -458,12 +571,12 @@ body {
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.15rem;
   min-height: 2.75rem;
   max-width: 100%;
-  padding: 0.25rem 0.25rem 0.25rem 0.85rem;
+  padding: 0.3rem 0.2rem 0.3rem 0.9rem;
   border-radius: 1rem;
-  background: var(--sunk);
+  background: var(--accent-soft);
 }
 
 .chip-text {
@@ -492,6 +605,553 @@ body {
 }
 
 .chip-remove:hover {
-  background: var(--line);
+  background: var(--card);
+  color: var(--no);
+}
+
+/* ---------- Facts list ---------- */
+
+.facts {
+  border-top: 1px solid var(--line);
+}
+
+/* One fact: its label, its value, the words it was read from and its box. */
+.fact {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.fact > * + * {
+  margin-top: 0.6rem;
+}
+
+.fact-grid {
+  display: grid;
+  gap: 1.1rem;
+}
+
+@media (min-width: 640px) {
+  .fact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.fact-grid > .fact {
+  border-bottom: 0;
+  padding: 0;
+}
+
+.fact-group {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.flags {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.85rem 1rem 0.85rem 2rem;
+  border-radius: 0.9rem;
+  background: var(--sunk);
+  list-style: disc;
+}
+
+/* The words a fact was read from, as a quote. */
+.quote {
+  display: inline;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.4rem;
+  background: var(--sunk);
   color: var(--ink);
+  font-style: normal;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A read fact's mark and its "It matches the bike" box, in one soft panel. */
+.read-check {
+  padding: 0.5rem 0.85rem 0.25rem;
+  border-radius: 0.9rem;
+  background: var(--maybe-bg);
+}
+
+.read-check[data-confirmed="true"] {
+  background: var(--yes-bg);
+}
+
+.read-check .check {
+  padding: 0.35rem 0;
+  font-weight: 600;
+}
+
+/* A fact read from a link or photo that the family has not checked against the bike yet. */
+.read-mark {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  color: var(--maybe);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* The same mark once the family ticked the box. It keeps its place and height. */
+.read-mark-done {
+  color: var(--yes);
+}
+
+/* The mark's two lines share one cell, so ticking never changes the mark's height. */
+.read-mark-words {
+  display: grid;
+}
+
+.read-mark-words > * {
+  grid-area: 1 / 1;
+}
+
+.read-mark-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.1rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.read-theirs {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.bar {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--sunk);
+  overflow: hidden;
+}
+
+.bar > div {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.bar[data-done="true"] > div {
+  background: var(--yes);
+}
+
+/* The Check button and the count of checked facts. On a phone it stays at the bottom of the
+   screen while the facts card is in view, and settles at the card's end. */
+.check-bar {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1.1rem;
+}
+
+.check-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-weight: 600;
+}
+
+@media (max-width: 639px) {
+  html {
+    /* Keeps a focused box clear of the sticky bar. */
+    scroll-padding-bottom: 8rem;
+  }
+
+  .check-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    margin: 0 -1.25rem -1.25rem;
+    padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--card);
+    box-shadow: 0 -8px 24px rgb(16 24 40 / 0.08);
+  }
+}
+
+/* The optional pedal photo check. */
+.panel {
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background: var(--sunk);
+}
+
+.panel .btn-quiet {
+  background: var(--card);
+}
+
+/* ---------- Follow-up questions ---------- */
+
+.question {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+
+.question > legend {
+  padding: 0 0.35rem;
+  font-weight: 700;
+}
+
+/* ---------- The answer ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: none;
+  padding: 0.25rem 0.75rem 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.badge[data-answer="yes"] {
+  background: var(--yes-bg);
+  color: var(--yes);
+}
+
+.badge[data-answer="no"] {
+  background: var(--no-bg);
+  color: var(--no);
+}
+
+.bottom-line {
+  padding: 0;
+  overflow: clip;
+}
+
+.bl-top {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.5rem 1.25rem;
+  background: var(--sunk);
+}
+
+@media (min-width: 640px) {
+  .bl-top {
+    padding: 2rem 1.75rem;
+  }
+}
+
+.bottom-line[data-kind="yes"] .bl-top {
+  background: var(--yes-bg);
+}
+
+.bottom-line[data-kind="no_illegal"] .bl-top,
+.bottom-line[data-kind="no_unconfirmed"] .bl-top {
+  background: var(--no-bg);
+}
+
+.bl-body {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .bl-body {
+    padding: 1.5rem 1.75rem 1.75rem;
+  }
+}
+
+.bl-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.bl-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: none;
+  border-radius: 999px;
+  font-size: 1.85rem;
+}
+
+.bottom-line[data-kind="yes"] .bl-head {
+  color: var(--yes);
+}
+
+.bottom-line[data-kind="no_illegal"] .bl-head,
+.bottom-line[data-kind="no_unconfirmed"] .bl-head {
+  color: var(--no);
+}
+
+.bottom-line[data-kind="yes"] .bl-mark {
+  background: var(--yes);
+  color: var(--card);
+}
+
+.bottom-line[data-kind="no_illegal"] .bl-mark,
+.bottom-line[data-kind="no_unconfirmed"] .bl-mark {
+  background: var(--no);
+  color: var(--card);
+}
+
+.bl-reason {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.bl-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.bl-item {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.8rem;
+  background: var(--sunk);
+}
+
+.bl-foot {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+/* One place's answer, compact. Its rules, sources and dates open on tap. */
+.place {
+  position: relative;
+  padding: 1.1rem 1.25rem 1.1rem 1.5rem;
+}
+
+.place::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  bottom: 1rem;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--line);
+}
+
+.place[data-answer="yes"]::before {
+  background: var(--yes);
+}
+
+.place[data-answer="no"]::before {
+  background: var(--no);
+}
+
+.place-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.place-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* Folded detail: a summary with a turning arrow, at least 44 px tall. */
+.more > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.more > summary::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: 0 0.15rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.more[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.more-body {
+  display: grid;
+  gap: 1rem;
+  padding: 0.25rem 0 0.25rem;
+}
+
+.line-details > summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* ---------- Footer ---------- */
+
+.site-foot {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+.foot-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- Accuracy page ---------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.stat {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: var(--yes-bg);
+}
+
+.stat[data-pass="false"] {
+  background: var(--no-bg);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.table tr:first-child th,
+.table tr:first-child td {
+  border-top: 0;
+}
+
+.table td {
+  padding-left: 1rem;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- QR flyer ---------- */
+
+.flyer {
+  display: grid;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.qr-frame {
+  justify-self: center;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.url-pill {
+  justify-self: center;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Motion and print ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before {
+    transition: none !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  :root {
+    --bg: #ffffff;
+    --card: #ffffff;
+    --ink: #000000;
+    --muted: #333333;
+    --shadow: none;
+    --card-edge: #cccccc;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .check-bar {
+    position: static;
+    box-shadow: none;
+  }
 }

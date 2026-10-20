@@ -24,9 +24,9 @@ export function Choice<T extends string>({ legend, help, options, value, onChang
   const name = useId();
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-semibold">{legend}</legend>
-      {help ? <p className="text-sm text-muted">{help}</p> : null}
-      <div className="flex flex-wrap gap-2">
+      <legend className="field-label">{legend}</legend>
+      {help ? <p className="help">{help}</p> : null}
+      <div className="flex flex-wrap gap-2 pt-1">
         {options.map((o) => (
           <label key={o.value} className="choice">
             <input
@@ -83,11 +83,11 @@ export function NumberField({ label, value, onChange, min, max, help, evidence, 
   const showError = invalid && (left || overMax);
   const errorId = `${id}-range`;
   return (
-    <div className="space-y-1">
-      <label htmlFor={id} className="block text-sm font-semibold">
+    <div className="space-y-2">
+      <label htmlFor={id} className="field-label">
         {label}
       </label>
-      {help ? <p className="text-sm text-muted">{help}</p> : null}
+      {help ? <p className="help">{help}</p> : null}
       <input
         id={id}
         type="text"
@@ -105,10 +105,10 @@ export function NumberField({ label, value, onChange, min, max, help, evidence, 
         onBlur={() => setLeft(true)}
         aria-invalid={showError}
         aria-describedby={showError && rangeError ? errorId : undefined}
-        className="field w-36"
+        className="field w-40 max-w-full"
       />
       {showError && rangeError ? (
-        <p id={errorId} role="alert" className="text-sm font-semibold">
+        <p id={errorId} role="alert" className="field-error">
           {rangeError}
         </p>
       ) : null}
@@ -120,11 +120,13 @@ export function NumberField({ label, value, onChange, min, max, help, evidence, 
 export function Evidence({ label, texts }: { label: string; texts?: string[] }) {
   if (!texts || texts.length === 0) return null;
   return (
-    <p className="text-xs text-muted">
-      {label}: {texts.slice(0, 2).map((t, i) => (
-        <q key={i} className="mx-1 rounded bg-sunk px-1 py-0.5 font-mono not-italic">
-          {t}
-        </q>
+    <p className="meta">
+      {label}:{" "}
+      {texts.slice(0, 2).map((t, i) => (
+        <span key={i}>
+          {i > 0 ? " " : null}
+          <q className="quote">{t}</q>
+        </span>
       ))}
     </p>
   );
@@ -132,12 +134,12 @@ export function Evidence({ label, texts }: { label: string; texts?: string[] }) 
 
 export function Card({ title, step, children }: { title: string; step?: number; children: ReactNode }) {
   // An id from useId, not from the title. aria-labelledby is a list split on spaces, so a title
-  // like "Here's what I read" would point at ids that don't exist and leave the region unnamed.
+  // like "Check the facts" would point at ids that don't exist and leave the region unnamed.
   const headingId = useId();
   return (
-    <section className="card space-y-4" aria-labelledby={headingId}>
+    <section className="card space-y-5" aria-labelledby={headingId}>
       {/* tabIndex -1 lets the page move keyboard focus to a card's heading without adding a tab stop. */}
-      <h2 id={headingId} tabIndex={-1} className="flex items-center gap-2 text-lg font-bold">
+      <h2 id={headingId} tabIndex={-1} className="card-title">
         {step ? (
           <span aria-hidden="true" className="step">
             {step}
@@ -160,4 +162,23 @@ export function fromTri(v: "yes" | "no" | "unsure"): boolean | null {
   if (v === "yes") return true;
   if (v === "no") return false;
   return null;
+}
+
+/**
+ * A step that comes later, shown as a quiet outline with its number, so the four steps show
+ * from the start. It holds only a short line about what fills it.
+ */
+export function LaterStep({ title, step, hint }: { title: string; step: number; hint: string }) {
+  const headingId = useId();
+  return (
+    <section className="card card-later space-y-1" aria-labelledby={headingId}>
+      <h2 id={headingId} className="card-title">
+        <span aria-hidden="true" className="step">
+          {step}
+        </span>
+        {title}
+      </h2>
+      <p className="help pl-11">{hint}</p>
+    </section>
+  );
 }

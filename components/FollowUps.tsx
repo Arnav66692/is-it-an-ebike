@@ -71,12 +71,12 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
 
   return (
     <Card title={t(lang, "questionsTitle")}>
-      <p className="text-sm text-muted">{t(lang, "questionsHelp")}</p>
+      <p className="help">{t(lang, "questionsHelp")}</p>
 
       {questions.includes("wheels") ? (
-        <fieldset className="space-y-3 rounded-xl border border-line p-3">
-          <legend className="px-1 font-semibold">{t(lang, "qWheels")}</legend>
-          <p className="text-sm text-muted">{t(lang, "qWheelsHelp")}</p>
+        <fieldset className="question">
+          <legend>{t(lang, "qWheels")}</legend>
+          <p className="help">{t(lang, "qWheelsHelp")}</p>
           <div className="flex flex-wrap gap-4">
             <NumberField
               label={sameSize ? t(lang, "qWheels") : t(lang, "front")}
@@ -124,7 +124,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           />
           <button
             type="button"
-            className="btn btn-quiet"
+            className="btn btn-quiet justify-self-start"
             aria-pressed={facts.unsure.includes("wheels")}
             onClick={() =>
               onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) })
@@ -136,8 +136,8 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
       ) : null}
 
       {questions.includes("fast_mode") ? (
-        <fieldset className="space-y-3 rounded-xl border border-line p-3">
-          <legend className="px-1 font-semibold">{t(lang, "qFast")}</legend>
+        <fieldset className="question">
+          <legend>{t(lang, "qFast")}</legend>
           <Choice
             legend={t(lang, "qFastMotor")}
             options={tri}

@@ -71,8 +71,8 @@ function LabelReader({ lang, onRead, gate }: ReaderProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <p>{t(lang, "labelHelp")}</p>
+    <div className="space-y-4">
+      <p className="help">{t(lang, "labelHelp")}</p>
       <label htmlFor={id} className="btn w-full cursor-pointer">
         {t(lang, "choosePhoto")}
       </label>
@@ -90,18 +90,18 @@ function LabelReader({ lang, onRead, gate }: ReaderProps) {
       />
       {progress !== null ? (
         <div role="status" aria-live="polite" className="space-y-1">
-          <p className="text-sm">{t(lang, "reading")}</p>
+          <p className="meta">{t(lang, "reading")}</p>
           <div className="bar">
             <div style={{ width: `${Math.round(progress * 100)}%` }} />
           </div>
         </div>
       ) : null}
       {error ? (
-        <p role="alert" className="text-sm font-semibold">
+        <p role="alert" className="field-error">
           {t(lang, error)}
         </p>
       ) : null}
-      <p className="text-sm text-muted">{t(lang, "labelPrivacy")}</p>
+      <p className="meta">{t(lang, "labelPrivacy")}</p>
     </div>
   );
 }
@@ -144,7 +144,7 @@ function LinkReader({ lang, onRead, gate }: ReaderProps) {
 
   return (
     <div className="space-y-3">
-      <label htmlFor={urlId} className="block font-semibold">
+      <label htmlFor={urlId} className="field-label">
         {t(lang, "linkHelp")}
       </label>
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -162,13 +162,13 @@ function LinkReader({ lang, onRead, gate }: ReaderProps) {
           {busy ? t(lang, "fetching") : t(lang, "fetch")}
         </button>
       </div>
-      <p className="text-sm text-muted">{t(lang, "linkPrivacy")}</p>
+      <p className="meta">{t(lang, "linkPrivacy")}</p>
       {error ? (
-        <p role="alert" className="text-sm font-semibold">
+        <p role="alert" className="field-error">
           {t(lang, error)}
         </p>
       ) : null}
-      <label htmlFor={textId} className="block pt-2 font-semibold">
+      <label htmlFor={textId} className="field-label border-t border-line pt-4">
         {t(lang, "pasteLabel")}
       </label>
       <textarea id={textId} rows={4} value={paste} onChange={(e) => setPaste(e.target.value)} className="field w-full" />
@@ -219,10 +219,10 @@ export function BikeInput({ lang, onRead, onManual, gate }: Props) {
           </button>
         ))}
       </div>
-      <div role="tabpanel">
+      <div role="tabpanel" className="pt-1">
         {tab === "label" ? <LabelReader lang={lang} onRead={onRead} gate={gate} /> : null}
         {tab === "link" ? <LinkReader lang={lang} onRead={onRead} gate={gate} /> : null}
-        {tab === "type" ? <p className="text-sm text-muted">{t(lang, "step3Help")}</p> : null}
+        {tab === "type" ? <p className="help">{t(lang, "step3Help")}</p> : null}
       </div>
     </Card>
   );

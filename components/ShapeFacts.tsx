@@ -85,10 +85,10 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
   const showPegs = facts.hasFootPegs !== null || facts.unsure.includes("pegs_kit") || Boolean(evidence.hasFootPegs);
 
   return (
-    <fieldset className="space-y-3">
-      <legend className="text-sm font-semibold">{t(lang, "shapeTitle")}</legend>
-      <p className="text-sm text-muted">{t(lang, "shapeHelp")}</p>
-      <div className="grid gap-4 sm:grid-cols-2">
+    <fieldset className="fact-group space-y-4">
+      <legend className="field-label pt-5 text-lg">{t(lang, "shapeTitle")}</legend>
+      <p className="help">{t(lang, "shapeHelp")}</p>
+      <div className="fact-grid">
         {split ? (
           <>
             {wheelField(t(lang, "front"), facts.wheelFrontIn, (v) => onChange(withWheelSize(facts, v, false)), false)}
@@ -109,7 +109,7 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
           evidence={ev("weightLb")}
         />
       </div>
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Choice
           legend={t(lang, "wheelCount")}
           options={[
@@ -122,7 +122,7 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
         {ev("wheelCount")}
       </div>
       {showPegs ? (
-        <div className="space-y-1">
+        <div className="space-y-2">
           <Choice
             legend={t(lang, "footPegs")}
             options={[

@@ -238,8 +238,8 @@ describe("a follow-up answer stays the family's own after later edits", () => {
  * the unlock box's name. "front" is the Front box, which has no box of its own to tick.
  */
 function controls(lang: Lang, split: boolean): [ReadField | "front", string][] {
-  const label = (key: Parameters<typeof t>[1]) => `class="block text-sm font-semibold">${t(lang, key)}</label>`;
-  const legend = (key: Parameters<typeof t>[1]) => `<legend class="text-sm font-semibold">${t(lang, key)}</legend>`;
+  const label = (key: Parameters<typeof t>[1]) => `class="field-label">${t(lang, key)}</label>`;
+  const legend = (key: Parameters<typeof t>[1]) => `<legend class="field-label">${t(lang, key)}</legend>`;
   return [
     ["hasPedals", legend("pedals")],
     ["classes", legend("classLabel")],

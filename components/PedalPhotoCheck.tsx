@@ -200,21 +200,21 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
   const working = step === "working";
 
   return (
-    <div ref={panel} className="rounded-lg bg-sunk p-3">
+    <div ref={panel} className="panel">
       <div className="space-y-2">
         {step === "closed" ? (
           <>
             <button ref={openButton} type="button" className="btn btn-quiet" onClick={() => go("confirm")}>
               {t(lang, "photoCheckOpen")}
             </button>
-            <p className="text-sm text-muted">{t(lang, "photoCheckHelp")}</p>
+            <p className="meta">{t(lang, "photoCheckHelp")}</p>
           </>
         ) : null}
 
         {step === "confirm" ? (
           <>
-            <p className="text-sm">{t(lang, "photoCheckSize", { mb: PEDAL_MODEL_MB })}</p>
-            <p className="text-sm text-muted">{t(lang, "photoCheckTested")}</p>
+            <p>{t(lang, "photoCheckSize", { mb: PEDAL_MODEL_MB })}</p>
+            <p className="meta">{t(lang, "photoCheckTested")}</p>
             <div className="flex flex-wrap gap-2">
               <button ref={startButton} type="button" className="btn" onClick={() => void accept()}>
                 {t(lang, "photoCheckStart")}
@@ -255,7 +255,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
         ) : null}
 
         {message && isProblem(message) ? (
-          <p role="alert" className="text-sm font-semibold">
+          <p role="alert" className="field-error">
             {t(lang, message)}
           </p>
         ) : null}
@@ -264,7 +264,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
       {/* Always on the page, empty until there is something to say, so a screen reader reads out
           each change: the working words, then the result. A line put on the page already holding
           its words is often not read out. */}
-      <p role="status" className={step === "working" ? "text-sm" : "text-sm font-semibold"}>
+      <p role="status" className={step === "working" ? "mt-2" : "mt-2 font-semibold"}>
         {status ? t(lang, status) : ""}
       </p>
       {step === "working" && progress < 1 ? (

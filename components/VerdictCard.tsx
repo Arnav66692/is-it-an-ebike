@@ -55,8 +55,8 @@ function LineItem({ line, lang, state }: { line: Line; lang: Lang; state: string
     <li>
       {renderLine(line, lang, state)}
       {line.detail ? (
-        <details className="mt-1 text-sm text-muted">
-          <summary className="cursor-pointer">{t(lang, "details")}</summary>
+        <details className="line-details meta">
+          <summary>{t(lang, "details")}</summary>
           <p lang="en" className="mt-1">
             {line.detail}
           </p>
@@ -93,9 +93,9 @@ function Section({ title, lines, lang, state }: { title: string; lines: Line[]; 
   const shown = uniqueRendered(lines, lang, state);
   if (shown.length === 0) return null;
   return (
-    <div className="space-y-1">
-      <h4 className="text-sm font-semibold uppercase tracking-wide text-muted">{title}</h4>
-      <ul className="list-disc space-y-1 pl-5">
+    <div className="space-y-2">
+      <h4 className="eyebrow text-muted">{title}</h4>
+      <ul className="list-disc space-y-2 pl-5">
         {shown.map((l, i) => (
           <LineItem key={`${l.code}-${i}`} line={l} lang={lang} state={state} />
         ))}
@@ -125,50 +125,57 @@ export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props
   const reason = renderLine(verdict.reason, lang, state);
 
   return (
-    <article className="card verdict space-y-4" data-status={verdict.status} data-answer={answer} aria-label={title}>
-      <header className="space-y-2">
-        <h3 className="text-base font-bold">{title}</h3>
+    <article className="card place space-y-2" data-status={verdict.status} data-answer={answer} aria-label={title}>
+      <header className="place-head">
+        <h3 className="place-title">{title}</h3>
         <p className="badge" data-status={verdict.status} data-answer={answer}>
           <span aria-hidden="true">{answer === "yes" ? "✓" : "✕"}</span>
           <span>{t(lang, answer === "yes" ? "blYes" : "blNo")}</span>
         </p>
-        <p className="text-lg font-semibold leading-snug" data-answer-line="">
-          {lead ?? reason}
-        </p>
-        {lead ? <p>{reason}</p> : null}
-        {verdict.reason.detail ? (
-          <details className="text-sm text-muted">
-            <summary className="cursor-pointer">{t(lang, "details")}</summary>
-            <p lang="en" className="mt-1">
-              {verdict.reason.detail}
-            </p>
-          </details>
-        ) : null}
       </header>
+      <p className="font-semibold leading-snug" data-answer-line="">
+        {lead ?? reason}
+      </p>
+      {lead ? <p>{reason}</p> : null}
 
-      <Section title={t(lang, "needs")} lines={verdict.requirements} lang={lang} state={state} />
-      <Section title={t(lang, "watchOut")} lines={verdict.cautions} lang={lang} state={state} />
-      <Section title={t(lang, "alsoKnow")} lines={verdict.notes} lang={lang} state={state} />
+      {/* Everything else about this place opens on tap: the rules, the notes, the sources and the dates. */}
+      <details className="more">
+        <summary>{t(lang, "cardMore")}</summary>
+        <div className="more-body">
+          {verdict.reason.detail ? (
+            <details className="line-details meta">
+              <summary>{t(lang, "details")}</summary>
+              <p lang="en" className="mt-1">
+                {verdict.reason.detail}
+              </p>
+            </details>
+          ) : null}
 
-      {showLocalNotice ? <p className="text-sm">{t(lang, "localStricter")}</p> : null}
+          <Section title={t(lang, "needs")} lines={verdict.requirements} lang={lang} state={state} />
+          <Section title={t(lang, "watchOut")} lines={verdict.cautions} lang={lang} state={state} />
+          <Section title={t(lang, "alsoKnow")} lines={verdict.notes} lang={lang} state={state} />
 
-      {verdict.sources.length > 0 ? (
-        <details className="text-sm">
-          <summary className="cursor-pointer font-semibold">{t(lang, "sources")}</summary>
-          <ul className="mt-2 space-y-1">
-            {verdict.sources.map((s, i) => (
-              <SourceItem key={`${s.citation}-${i}`} source={s} lang={lang} />
-            ))}
-          </ul>
-        </details>
-      ) : null}
+          {showLocalNotice ? <p>{t(lang, "localStricter")}</p> : null}
 
-      <footer className="space-y-1 border-t border-line pt-3 text-xs text-muted">
-        <p>
-          {verified} {t(lang, "lastChecked", { date: formatDate(verdict.lastChecked, lang) })}
-        </p>
-        <p>{t(lang, "notLegalAdvice")}</p>
-      </footer>
+          {verdict.sources.length > 0 ? (
+            <div className="space-y-2">
+              <h4 className="eyebrow text-muted">{t(lang, "sources")}</h4>
+              <ul className="space-y-2 text-[0.95rem]">
+                {verdict.sources.map((s, i) => (
+                  <SourceItem key={`${s.citation}-${i}`} source={s} lang={lang} />
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          <footer className="meta space-y-1 border-t border-line pt-3">
+            <p>
+              {verified} {t(lang, "lastChecked", { date: formatDate(verdict.lastChecked, lang) })}
+            </p>
+            <p>{t(lang, "notLegalAdvice")}</p>
+          </footer>
+        </div>
+      </details>
     </article>
   );
 }

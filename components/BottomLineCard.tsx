@@ -119,12 +119,12 @@ function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
   const shown = mergeRendered(items, lang, state);
   if (shown.length === 0) return null;
   return (
-    <div className="space-y-1">
-      <h4 className="text-sm font-semibold uppercase tracking-wide text-muted">{title}</h4>
-      <ul className="space-y-2">
+    <div className="space-y-2">
+      <h4 className="eyebrow text-muted">{title}</h4>
+      <ul className="bl-list">
         {shown.map((item, i) => (
           <li key={`${item.line.code}-${i}`} className="bl-item">
-            <span className="block text-sm font-semibold">{whereLabel(item.where, lang, stateCode)}</span>
+            <span className="block text-[0.9rem] font-semibold text-muted">{whereLabel(item.where, lang, stateCode)}</span>
             <span className="block">{renderLine(item.line, lang, state)}</span>
           </li>
         ))}
@@ -161,9 +161,9 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
   const toCheck: BottomLineItem[] = line.factsNote ? [{ where: [], line: line.factsNote }] : [];
 
   return (
-    <section className="card bottom-line space-y-4" data-kind={line.kind} aria-labelledby={headingId}>
-      <header className="space-y-2">
-        <h3 id={headingId} className="text-sm font-semibold uppercase tracking-wide text-muted">
+    <section className="card bottom-line" data-kind={line.kind} aria-labelledby={headingId}>
+      <header className="bl-top">
+        <h3 id={headingId} className="eyebrow">
           {t(lang, "blTitle")}
         </h3>
         <p className="bl-head" data-answer={yes ? "yes" : "no"}>
@@ -172,39 +172,41 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
           </span>
           <span>{yes ? t(lang, "blYes") : t(lang, "blNo")}</span>
         </p>
-        <p className="text-lg font-semibold leading-snug" data-answer-line="">
+        <p className="bl-reason" data-answer-line="">
           {subtitle(line, lang)}
         </p>
-        <p className="text-sm">
+        <p>
           {t(lang, "blRideDate", { date: formatDate(line.rideDate, lang) })} {coversSentence(line, lang, stateCode)}
         </p>
+        {unchecked && line.kind !== "no_illegal" ? (
+          <p className="font-semibold" data-unchecked="">
+            {unchecked}
+          </p>
+        ) : null}
       </header>
 
-      <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
-      <ItemList title={t(lang, "blToCheck")} items={toCheck} lang={lang} state={state} stateCode={stateCode} />
-      <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
+      <div className="bl-body">
+        <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
+        <ItemList title={t(lang, "blToCheck")} items={toCheck} lang={lang} state={state} stateCode={stateCode} />
+        <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
 
-      {yes && line.requirements.length > 0 ? (
-        <div className="space-y-1">
-          <h4 className="text-sm font-semibold uppercase tracking-wide text-muted">{t(lang, "blMustDo")}</h4>
-          <ul className="list-disc space-y-1 pl-5">
-            {line.requirements.map((l, i) => (
-              <li key={`${l.code}-${i}`}>{renderLine(l, lang, state)}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+        {yes && line.requirements.length > 0 ? (
+          <div className="space-y-2">
+            <h4 className="eyebrow text-muted">{t(lang, "blMustDo")}</h4>
+            <ul className="list-disc space-y-1 pl-5">
+              {line.requirements.map((l, i) => (
+                <li key={`${l.code}-${i}`}>{renderLine(l, lang, state)}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
-      {yes ? <p className="text-sm">{t(lang, line.roadLimit ? "blStreetsLimited" : "blStreets")}</p> : null}
-      {unchecked && line.kind !== "no_illegal" ? (
-        <p className="text-sm font-semibold" data-unchecked="">
-          {unchecked}
-        </p>
-      ) : null}
+        {yes ? <p>{t(lang, line.roadLimit ? "blStreetsLimited" : "blStreets")}</p> : null}
 
-      <footer className="border-t border-line pt-3 text-xs text-muted">
-        <p>{t(lang, "notLegalAdvice")}</p>
-      </footer>
+        <footer className="bl-foot meta">
+          <p>{t(lang, "notLegalAdvice")}</p>
+        </footer>
+      </div>
     </section>
   );
 }

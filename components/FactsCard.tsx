@@ -73,12 +73,14 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
     set({ classes: next as ClassNum[] });
   };
 
+  const allChecked = counts.read > 0 && counts.confirmed === counts.read;
+
   return (
     <Card title={t(lang, "step3")} step={3}>
-      <p className="text-sm text-muted">{t(lang, "step3Help")}</p>
-      {counts.read > 0 ? <p className="read-mark">{t(lang, "readIntro")}</p> : null}
+      <p className="help">{t(lang, "step3Help")}</p>
+      {counts.read > 0 ? <p className="read-mark rounded-2xl bg-[var(--maybe-bg)] p-3">{t(lang, "readIntro")}</p> : null}
       {flags.length > 0 ? (
-        <ul className="list-disc space-y-1 rounded-lg bg-sunk p-3 pl-7 text-sm">
+        <ul className="flags">
           {[...new Set(flags)].map((f) => {
             const key = `flag_${f}`;
             return isUiKey(key) ? <li key={f}>{t(lang, key)}</li> : null;
@@ -86,108 +88,134 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
         </ul>
       ) : null}
 
-      <div className="space-y-1">
-        <Choice
-          legend={t(lang, "pedals")}
-          options={triOptions}
-          value={pedalsUi}
-          onChange={(v) => {
-            pedalAnswers.edited("picked");
-            setPedalPicks((n) => n + 1);
-            setPedalsUnsure(v === "unsure");
-            set({ hasPedals: fromTri(v) });
-          }}
-        />
-        {ev("hasPedals", pedalsBox)}
-        {/* tickAfter sees the facts on screen as the check started. Only a pedals pick or tick
-            could change the pedals answer before the call lands, and either one drops the call. */}
-        <PedalPhotoCheck
-          lang={lang}
-          startCheck={pedalAnswers.start}
-          tickAfter={(call) => pedalCallNeedsTick({ facts, checks }, call)}
-          picks={pedalPicks}
-          onCall={(call) => {
-            if (call !== "ask") onPedalCall(call);
-          }}
-          focusTick={() => {
-            const box = pedalsBox.current;
-            box?.focus();
-            return box !== null;
-          }}
-        />
-      </div>
+      <div className="facts">
+        <div className="fact">
+          <Choice
+            legend={t(lang, "pedals")}
+            options={triOptions}
+            value={pedalsUi}
+            onChange={(v) => {
+              pedalAnswers.edited("picked");
+              setPedalPicks((n) => n + 1);
+              setPedalsUnsure(v === "unsure");
+              set({ hasPedals: fromTri(v) });
+            }}
+          />
+          {ev("hasPedals", pedalsBox)}
+          {/* tickAfter sees the facts on screen as the check started. Only a pedals pick or tick
+              could change the pedals answer before the call lands, and either one drops the call. */}
+          <PedalPhotoCheck
+            lang={lang}
+            startCheck={pedalAnswers.start}
+            tickAfter={(call) => pedalCallNeedsTick({ facts, checks }, call)}
+            picks={pedalPicks}
+            onCall={(call) => {
+              if (call !== "ask") onPedalCall(call);
+            }}
+            focusTick={() => {
+              const box = pedalsBox.current;
+              box?.focus();
+              return box !== null;
+            }}
+          />
+        </div>
 
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-semibold">{t(lang, "classLabel")}</legend>
-        <p className="text-sm text-muted">{t(lang, "classHelp")}</p>
-        <div className="flex flex-wrap gap-2">
-          {([1, 2, 3] as ClassNum[]).map((c) => (
-            <label key={c} className="choice">
-              <input type="checkbox" className="sr-only" aria-label={`${lang === "es" ? "Clase" : "Class"} ${c}`} checked={facts.classes.includes(c)} onChange={() => toggleClass(c)} />
-              <span>{`${lang === "es" ? "Clase" : "Class"} ${c}`}</span>
+        <fieldset className="fact space-y-2">
+          <legend className="field-label">{t(lang, "classLabel")}</legend>
+          <p className="help">{t(lang, "classHelp")}</p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {([1, 2, 3] as ClassNum[]).map((c) => (
+              <label key={c} className="choice">
+                <input type="checkbox" className="sr-only" aria-label={`${lang === "es" ? "Clase" : "Class"} ${c}`} checked={facts.classes.includes(c)} onChange={() => toggleClass(c)} />
+                <span>{`${lang === "es" ? "Clase" : "Class"} ${c}`}</span>
+              </label>
+            ))}
+            <label className="choice">
+              <input type="checkbox" className="sr-only" aria-label={t(lang, "classNone")} checked={facts.classes.length === 0} onChange={() => set({ classes: [] })} />
+              <span>{t(lang, "classNone")}</span>
             </label>
-          ))}
-          <label className="choice">
-            <input type="checkbox" className="sr-only" aria-label={t(lang, "classNone")} checked={facts.classes.length === 0} onChange={() => set({ classes: [] })} />
-            <span>{t(lang, "classNone")}</span>
-          </label>
+          </div>
+          {ev("classes")}
+        </fieldset>
+
+        <div className="fact-group fact-grid">
+          <div className="fact">
+            <NumberField label={t(lang, "ratedWatts")} value={facts.ratedWatts} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ ratedWatts: v })} evidence={ev("ratedWatts")} />
+          </div>
+          <div className="fact">
+            <NumberField label={t(lang, "peakWatts")} value={facts.peakWatts} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ peakWatts: v })} evidence={ev("peakWatts")} />
+          </div>
+          {facts.wattsUpTo !== null || evidence.wattsUpTo ? (
+            <div className="fact">
+              <NumberField label={t(lang, "upToWatts")} value={facts.wattsUpTo} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ wattsUpTo: v })} evidence={ev("wattsUpTo")} />
+            </div>
+          ) : null}
         </div>
-        {ev("classes")}
-      </fieldset>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <NumberField label={t(lang, "ratedWatts")} value={facts.ratedWatts} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ ratedWatts: v })} evidence={ev("ratedWatts")} />
-        <NumberField label={t(lang, "peakWatts")} value={facts.peakWatts} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ peakWatts: v })} evidence={ev("peakWatts")} />
-        {facts.wattsUpTo !== null || evidence.wattsUpTo ? (
-          <NumberField label={t(lang, "upToWatts")} value={facts.wattsUpTo} min={0} max={MAX_WATTS} rangeError={rangeError(0, MAX_WATTS)} onChange={(v) => set({ wattsUpTo: v })} evidence={ev("wattsUpTo")} />
-        ) : null}
-      </div>
-
-      <div className="space-y-1">
-        <Choice
-          legend={t(lang, "throttle")}
-          options={triOptions}
-          value={throttleUi}
-          onChange={(v) => {
-            setThrottleUnsure(v === "unsure");
-            const next = withThrottleAnswer(facts, fromTri(v), throttleSetAside);
-            setThrottleSetAside(next.setAside);
-            onChange(next.facts);
-          }}
-        />
-        {ev("hasThrottle")}
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* A throttle speed read from the text stays visible even with "no throttle", so a stray one can be cleared. */}
-        {facts.hasThrottle !== false || facts.throttleMph !== null ? (
-          <NumberField label={t(lang, "throttleMph")} value={facts.throttleMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ throttleMph: v })} evidence={ev("throttleMph")} />
-        ) : null}
-        <NumberField label={t(lang, "assistMph")} value={facts.assistMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ assistMph: v })} evidence={ev("assistMph")} />
-        {facts.topSpeedMph !== null || evidence.topSpeedMph ? (
-          <NumberField label={t(lang, "topMph")} value={facts.topSpeedMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ topSpeedMph: v })} evidence={ev("topSpeedMph")} />
-        ) : null}
-      </div>
-
-      <ShapeFacts lang={lang} facts={facts} checks={checks} evidence={evidence} onChange={onChange} onConfirm={confirm} />
-
-      {facts.switchable === true || evidence.switchable ? (
-        <div>
-          <label className="check">
-            <input type="checkbox" aria-label={t(lang, "unlock")} checked={facts.switchable === true} onChange={(e) => set({ switchable: e.target.checked ? true : null })} />
-            <span>{t(lang, "unlock")}</span>
-          </label>
-          {ev("switchable")}
+        <div className="fact">
+          <Choice
+            legend={t(lang, "throttle")}
+            options={triOptions}
+            value={throttleUi}
+            onChange={(v) => {
+              setThrottleUnsure(v === "unsure");
+              const next = withThrottleAnswer(facts, fromTri(v), throttleSetAside);
+              setThrottleSetAside(next.setAside);
+              onChange(next.facts);
+            }}
+          />
+          {ev("hasThrottle")}
         </div>
-      ) : null}
+
+        <div className="fact-group fact-grid">
+          {/* A throttle speed read from the text stays visible even with "no throttle", so a stray one can be cleared. */}
+          {facts.hasThrottle !== false || facts.throttleMph !== null ? (
+            <div className="fact">
+              <NumberField label={t(lang, "throttleMph")} value={facts.throttleMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ throttleMph: v })} evidence={ev("throttleMph")} />
+            </div>
+          ) : null}
+          <div className="fact">
+            <NumberField label={t(lang, "assistMph")} value={facts.assistMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ assistMph: v })} evidence={ev("assistMph")} />
+          </div>
+          {facts.topSpeedMph !== null || evidence.topSpeedMph ? (
+            <div className="fact">
+              <NumberField label={t(lang, "topMph")} value={facts.topSpeedMph} min={0} max={MAX_READ_MPH} rangeError={rangeError(0, MAX_READ_MPH)} onChange={(v) => set({ topSpeedMph: v })} evidence={ev("topSpeedMph")} />
+            </div>
+          ) : null}
+        </div>
+
+        <ShapeFacts lang={lang} facts={facts} checks={checks} evidence={evidence} onChange={onChange} onConfirm={confirm} />
+
+        {facts.switchable === true || evidence.switchable ? (
+          <div className="fact">
+            <label className="check">
+              <input type="checkbox" aria-label={t(lang, "unlock")} checked={facts.switchable === true} onChange={(e) => set({ switchable: e.target.checked ? true : null })} />
+              <span>{t(lang, "unlock")}</span>
+            </label>
+            {ev("switchable")}
+          </div>
+        ) : null}
+      </div>
 
       {/* The count's status line is always on the page, empty until a fact is read, so a screen
-          reader hears it change when the photo check fills in the pedals on a bike typed in. */}
-      <div>
-        <p role="status" className={counts.read > 0 ? "mb-4 text-sm font-semibold" : "text-sm font-semibold"}>
+          reader hears it change when the photo check fills in the pedals on a bike typed in. The
+          short count and the bar show the same numbers to the eye. */}
+      <div className="check-bar no-print">
+        {counts.read > 0 ? (
+          <div className="space-y-2" aria-hidden="true">
+            <p className="check-count">
+              <span>{t(lang, "readCountShort", { done: counts.confirmed, total: counts.read })}</span>
+              {allChecked ? <span className="text-[var(--yes)]">✓ {t(lang, "readCountDone")}</span> : null}
+            </p>
+            <div className="bar" data-done={allChecked ? "true" : "false"}>
+              <div style={{ width: `${Math.round((100 * counts.confirmed) / counts.read)}%` }} />
+            </div>
+          </div>
+        ) : null}
+        <p role="status" className="sr-only">
           {counts.read > 0 ? t(lang, "readCount", { done: counts.confirmed, total: counts.read }) : ""}
         </p>
-        <button type="button" className="btn w-full sm:w-auto" onClick={onCheck}>
+        <button type="button" className="btn w-full" onClick={onCheck}>
           {t(lang, "check")}
         </button>
       </div>

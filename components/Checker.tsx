@@ -16,7 +16,7 @@ import { addPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from 
 import type { PlaceEntry } from "@/lib/places/types";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
-import { Card } from "./controls";
+import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
 import { PlaceSearch } from "./PlaceSearch";
@@ -314,15 +314,18 @@ export function Checker() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-5 px-4 py-6">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{t(lang, "appName")}</h1>
-          <p className="text-muted">{t(lang, "tagline")}</p>
+    <div className="page">
+      <header className="app-head">
+        <div className="app-bar">
+          <span className="brand-mark" aria-hidden="true">
+            <BikeIcon />
+          </span>
+          <button type="button" className="lang-btn" onClick={switchLang} aria-label={t(lang, "switchLangLabel")} lang={lang === "en" ? "es" : "en"}>
+            {t(lang, "switchLang")}
+          </button>
         </div>
-        <button type="button" className="btn btn-quiet shrink-0" onClick={switchLang} aria-label={t(lang, "switchLangLabel")} lang={lang === "en" ? "es" : "en"}>
-          {t(lang, "switchLang")}
-        </button>
+        <h1 className="app-title">{t(lang, "appName")}</h1>
+        <p className="tagline">{t(lang, "tagline")}</p>
       </header>
 
       <Card title={t(lang, "step1")} step={1}>
@@ -358,7 +361,7 @@ export function Checker() {
           </fieldset>
         ) : null}
 
-        <div className="space-y-1">
+        <div className="space-y-2">
           <label htmlFor={stateId} className="field-label">
             {t(lang, "state")}
           </label>
@@ -374,75 +377,76 @@ export function Checker() {
           </select>
         </div>
 
-        <div className="space-y-1">
-          <label htmlFor={ageId} className="block text-sm font-semibold">
-            {t(lang, "age")}
-          </label>
-          <input
-            id={ageId}
-            ref={ageRef}
-            type="number"
-            inputMode="numeric"
-            min={MIN_AGE_INPUT}
-            max={MAX_AGE_INPUT}
-            value={ageText}
-            onChange={(e) => setAgeText(e.target.value)}
-            aria-invalid={ageError && !ageValid}
-            aria-describedby={ageError && !ageValid ? `${ageId}-err` : undefined}
-            className="field w-28"
-          />
-          {ageError && !ageValid ? (
-            <p id={`${ageId}-err`} role="alert" className="text-sm font-semibold">
-              {t(lang, "ageError")}
-            </p>
-          ) : null}
-        </div>
+        <div className="grid gap-5 border-t border-line pt-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label htmlFor={ageId} className="field-label">
+              {t(lang, "age")}
+            </label>
+            <input
+              id={ageId}
+              ref={ageRef}
+              type="number"
+              inputMode="numeric"
+              min={MIN_AGE_INPUT}
+              max={MAX_AGE_INPUT}
+              value={ageText}
+              onChange={(e) => setAgeText(e.target.value)}
+              aria-invalid={ageError && !ageValid}
+              aria-describedby={ageError && !ageValid ? `${ageId}-err` : undefined}
+              className="field w-32"
+            />
+            {ageError && !ageValid ? (
+              <p id={`${ageId}-err`} role="alert" className="field-error">
+                {t(lang, "ageError")}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-semibold">{t(lang, "date")}</p>
-          {pickDate ? (
-            <div className="space-y-1">
-              <label htmlFor={dateId} className="sr-only">
-                {t(lang, "date")}
-              </label>
-              <input
-                id={dateId}
-                ref={dateRef}
-                type="date"
-                min={today}
-                max={LAST_RIDE_DATE}
-                value={dateText}
-                onChange={(e) => setDateText(e.target.value || today)}
-                aria-invalid={date === null}
-                aria-describedby={date === null ? `${dateId}-err` : undefined}
-                className="field"
-              />
-              {date === null ? (
-                <p id={`${dateId}-err`} role="alert" className="text-sm font-semibold">
-                  {t(lang, "dateError", { last: formatDate(LAST_RIDE_DATE, lang) })}
-                </p>
-              ) : null}
-              <p className="text-sm text-muted">{t(lang, "dateHelp")}</p>
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-3">
-              <span>
-                {t(lang, "dateToday")}, {formatDate(today, lang)}
-              </span>
-              <button
-                type="button"
-                className="text-sm underline"
-                onClick={() => {
-                  setDateText(today);
-                  setPickDate(true);
-                }}
-              >
-                {t(lang, "dateOther")}
-              </button>
-            </div>
-          )}
+          <div className="space-y-2">
+            <p className="field-label">{t(lang, "date")}</p>
+            {pickDate ? (
+              <div className="space-y-2">
+                <label htmlFor={dateId} className="sr-only">
+                  {t(lang, "date")}
+                </label>
+                <input
+                  id={dateId}
+                  ref={dateRef}
+                  type="date"
+                  min={today}
+                  max={LAST_RIDE_DATE}
+                  value={dateText}
+                  onChange={(e) => setDateText(e.target.value || today)}
+                  aria-invalid={date === null}
+                  aria-describedby={date === null ? `${dateId}-err` : undefined}
+                  className="field w-full"
+                />
+                {date === null ? (
+                  <p id={`${dateId}-err`} role="alert" className="field-error">
+                    {t(lang, "dateError", { last: formatDate(LAST_RIDE_DATE, lang) })}
+                  </p>
+                ) : null}
+                <p className="meta">{t(lang, "dateHelp")}</p>
+              </div>
+            ) : (
+              <div className="flex min-h-12 flex-wrap items-center gap-x-3">
+                <span>
+                  {t(lang, "dateToday")}, {formatDate(today, lang)}
+                </span>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => {
+                    setDateText(today);
+                    setPickDate(true);
+                  }}
+                >
+                  {t(lang, "dateOther")}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-
       </Card>
 
       <BikeInput key={`input-${starts}`} lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
@@ -464,73 +468,89 @@ export function Checker() {
             onPedalCall={(call) => setBike(pedalCallOn(facts, call))}
             onCheck={handleCheck}
           />
-        ) : null}
+        ) : (
+          <LaterStep title={t(lang, "step3")} step={3} hint={t(lang, "stepLater3")} />
+        )}
       </div>
 
       <div ref={resultsRef} className="scroll-mt-4 space-y-4">
         {result ? (
           <>
+            <h2 className="step-head">
+              <span aria-hidden="true" className="step">
+                4
+              </span>
+              {t(lang, "results")}
+            </h2>
             <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />
-            <h2 className="text-xl font-bold">{t(lang, "results")}</h2>
+            {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null}
+            <p className="section-label">{t(lang, "byPlace")}</p>
             <VerdictCard verdict={result.state} lang={lang} stateCode={stateCode} showLocalNotice={result.localNotice} />
             {result.local.map((v) => (
               <VerdictCard key={v.id} verdict={v} lang={lang} stateCode={stateCode} />
             ))}
           </>
-        ) : null}
-        {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null}
+        ) : (
+          <LaterStep title={t(lang, "results")} step={4} hint={t(lang, "stepLater4")} />
+        )}
         {/* Always in the page. Screen readers hear one short sentence when the answer appears or
             changes, not the whole card on every edit. */}
         <p role="status" className="sr-only">
           {summary ? announcement(summary, lang) : ""}
         </p>
         {result ? (
-          <>
-            <div className="no-print flex flex-wrap gap-3">
-              <button type="button" className="btn btn-quiet" onClick={goToFacts}>
-                {t(lang, "editFacts")}
-              </button>
-              <button
-                type="button"
-                className="btn btn-quiet"
-                onClick={() => {
-                  readGate.cancel();
-                  setStage("input");
-                  setStarts((n) => n + 1);
-                  setBike(emptyChecked());
-                  setReadNote(null);
-                  setEvidence({});
-                  setFlags([]);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-              >
-                {t(lang, "startOver")}
-              </button>
-            </div>
-          </>
+          <div className="actions no-print">
+            <button type="button" className="btn btn-quiet" onClick={goToFacts}>
+              {t(lang, "editFacts")}
+            </button>
+            <button
+              type="button"
+              className="btn btn-quiet"
+              onClick={() => {
+                readGate.cancel();
+                setStage("input");
+                setStarts((n) => n + 1);
+                setBike(emptyChecked());
+                setReadNote(null);
+                setEvidence({});
+                setFlags([]);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              {t(lang, "startOver")}
+            </button>
+          </div>
         ) : null}
       </div>
 
-      <footer className="space-y-4 border-t border-line pt-6 text-sm">
-        <section className="space-y-1">
-          <h2 className="font-bold">{t(lang, "howTitle")}</h2>
-          <p>{t(lang, "howBody")}</p>
-        </section>
-        <section className="space-y-1">
-          <h2 className="font-bold">{t(lang, "privacyTitle")}</h2>
-          <p>{t(lang, "privacyBody")}</p>
-        </section>
-        <nav className="no-print flex flex-wrap gap-x-5 gap-y-2">
-          <Link href={lang === "es" ? "/accuracy/es" : "/accuracy"} className="underline">
-            {t(lang, "accuracy")}
-          </Link>
-          <Link href={`/qr?lang=${lang}`} className="underline">
-            {t(lang, "flyer")}
-          </Link>
+      <footer className="site-foot">
+        <details className="more">
+          <summary>{t(lang, "howTitle")}</summary>
+          <p className="pb-2">{t(lang, "howBody")}</p>
+        </details>
+        <details className="more">
+          <summary>{t(lang, "privacyTitle")}</summary>
+          <p className="pb-2">{t(lang, "privacyBody")}</p>
+        </details>
+        <nav className="foot-links no-print">
+          <Link href={lang === "es" ? "/accuracy/es" : "/accuracy"}>{t(lang, "accuracy")}</Link>
+          <Link href={`/qr?lang=${lang}`}>{t(lang, "flyer")}</Link>
         </nav>
-        <p className="text-muted">{t(lang, "dataNote")}</p>
-        <p className="text-muted">{t(lang, "notLegalAdvice")}</p>
+        <p className="meta">{t(lang, "dataNote")}</p>
+        <p className="meta">{t(lang, "notLegalAdvice")}</p>
       </footer>
     </div>
+  );
+}
+
+/** A simple bike, drawn with lines, for the app's mark. */
+function BikeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5.5" cy="16.5" r="3.5" />
+      <circle cx="18.5" cy="16.5" r="3.5" />
+      <path d="M5.5 16.5L9 9h6l3.5 7.5M9 9l3.5 7.5L15 9M8 6h3M15 9l-1-3h2.5" />
+      <path d="M12.6 3.5l-1.2 2.4h2l-1.2 2.4" />
+    </svg>
   );
 }
