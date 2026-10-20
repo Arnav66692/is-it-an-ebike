@@ -2,11 +2,14 @@
 // must agree, and end dates that must be a decision per place.
 
 import { describe, expect, it } from "vitest";
+import overlayJson from "@/data/overlay.json";
+import statesJson from "@/data/rules/all_states.normalized.json";
 import sdJson from "@/data/rules/san_diego_local.json";
 import { isUiKey } from "@/lib/i18n/ui";
 
 interface Rule {
   rule: string;
+  citations_from_source_type?: string;
   citation: string;
   source_url: string;
   quote: string | null;
@@ -106,5 +109,53 @@ describe("record facts the review corrected", () => {
     expect(r.notes).not.toMatch(/adds VC 23135/);
     expect(r.notes).toContain("amends VC 23135");
     expect(r.amended_by?.source_url).toContain("SB1167");
+  });
+});
+
+describe("record facts the second review corrected (Oct 19, 2026)", () => {
+  it("dates the SDUHSD walk and passenger rule to the first school day, like the class rule, not the tag grace period", () => {
+    const walk = find("sduhsd_campuses", "walk_bikes_on_campus_and_factory_passenger_seat");
+    expect(walk.effective_date).toBe(find("sduhsd_campuses", "class_1_and_2_only_on_campus").effective_date);
+    expect(walk.effective_date).toBe("2026-08-11");
+    expect(find("sduhsd_campuses", "district_tag_required").effective_date).toBe("2026-08-28");
+  });
+
+  it("says CS-509 left Carlsbad's sidewalk wording unchanged, as the packet redline shows", () => {
+    const notes = find("carlsbad", "sidewalk_ban").notes ?? "";
+    expect(notes).not.toContain("current wording since Mar 26, 2026");
+    expect(notes).toContain("left this wording unchanged");
+  });
+
+  it("labels Carlsbad's warning-period source as the staff report it is", () => {
+    const ban = find("carlsbad", "under_12_ban");
+    expect(ban.citations_from_citation).toContain("staff report");
+    expect(ban.citations_from_source_type).toBe("staff_report");
+  });
+
+  it("puts the Encinitas age quote on page 3 of the Aug 19, 2026 agenda report", () => {
+    const notes = find("encinitas", "no_local_age_limit_found").notes ?? "";
+    expect(notes).toContain("page 3 of the Aug 19, 2026 agenda report");
+    expect(notes).not.toContain("page 2");
+  });
+});
+
+describe("the hand-built overlay", () => {
+  const states = statesJson as unknown as Record<string, Record<string, unknown>>;
+  const overlay = overlayJson as unknown as {
+    supplemental_cautions: { state: string; condition: string; source_field: string; source_quote: string }[];
+  };
+
+  it("quotes every supplemental caution word for word from the field it names", () => {
+    for (const c of overlay.supplemental_cautions) {
+      const value = c.source_field.split(".").reduce<unknown>((v, k) => (v as Record<string, unknown>)[k], states[c.state]);
+      expect(String(value), `${c.state} ${c.condition}`).toContain(c.source_quote);
+    }
+  });
+
+  it("has a three-wheeler caution in every state whose definition says two wheels", () => {
+    for (const state of ["AL", "MT", "NJ", "RI"]) {
+      expect(overlay.supplemental_cautions.some((c) => c.state === state && /wheel_count == 3/.test(c.condition)) ||
+        (states[state].verdict_cautions as { condition: string | null }[]).some((c) => /wheel_count == 3/.test(c.condition ?? "")), state).toBe(true);
+    }
   });
 });

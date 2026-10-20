@@ -322,7 +322,7 @@
           "citations_from": "2026-05-26",
           "citations_from_citation": "Carlsbad staff report, Feb 10, 2026, packet p. 341",
           "citations_from_source_url": "https://www.carlsbadca.gov/home/showpublisheddocument/25363/639058922376966881#page=341",
-          "citations_from_source_type": "official_page",
+          "citations_from_source_type": "staff_report",
           "source_type": "ordinance_text",
           "notes": "Adopted under VC 21214.7(b) by Ord. CS-509 (adopted Feb 24, 2026, effective Mar 26, 2026). Warnings for the first 60 days under VC 21214.7(c)(1)(A). The Feb 10, 2026 staff report says the warning period ends May 25, 2026, so citations can start May 26. No end date. Unlike SDMC 84.19, the enacted CMC 10.56.030(A) has no sunset clause, and CS-509 says only that it takes effect thirty days after adoption (Feb 24, 2026 packet p. 258). Whether the ban still applies after VC 21214.7 is repealed on Jan 1, 2029 is unsettled, so from that date the app says it can't confirm, never yes. Covers Class 1 and 2 only. Class 3 is already 16+ under state law. By its text the section also bars under-12 passengers (see under_12_passenger_ban)."
         }
@@ -394,7 +394,7 @@
           "quote": "No person shall operate or ride a regulated mobility device upon any sidewalk, in any public drainage facility, culvert, ditch, channel, or any other public athletic/sports court, or gymnasium in the city.",
           "effective_date": null,
           "source_type": "ordinance_text",
-          "notes": "In force before Ord. CS-509, with the current wording since Mar 26, 2026. Covers every e-bike class and pedal bikes. CMC 10.32.030 (Ord. 3005) separately bars vehicles, including bicycles, from any sidewalk area. CMC 11.32.070 makes the seawall sidewalk between Tamarack Ave and Pine St pedestrians only."
+          "notes": "In force before Ord. CS-509, which left this wording unchanged (black text in the Feb 10, 2026 packet p. 350 redline). Covers every e-bike class and pedal bikes. CMC 10.32.030 (Ord. 3005) separately bars vehicles, including bicycles, from any sidewalk area. CMC 11.32.070 makes the seawall sidewalk between Tamarack Ave and Pine St pedestrians only."
         },
         {
           "rule": "under_12_passenger_ban",
@@ -593,7 +593,7 @@
           "quote": "Amending the EMC to require e-bike riders to be 12 years old would make Encinitas consistent with those cities.",
           "effective_date": null,
           "source_type": "staff_report",
-          "notes": "No age provision in EMC Ch. 14.56 (https://ecode360.com/44479706) or anywhere else in the code read on Oct 19, 2026. The quote is a staff proposal on page 2 of the Aug 19, 2026 agenda report, not code text. Council discussed a minimum age of 12 on Aug 19, 2026 (Item 12C). Per the minutes, staff will return with proposed code amendments at a future meeting. No ordinance was introduced or adopted through the Oct 21, 2026 agenda. A new ordinance needs two readings and normally takes effect 30 days after adoption."
+          "notes": "No age provision in EMC Ch. 14.56 (https://ecode360.com/44479706) or anywhere else in the code read on Oct 19, 2026. The quote is a staff proposal on page 3 of the Aug 19, 2026 agenda report (footer 'Item #12C Page 3 of 14'), not code text. Council discussed a minimum age of 12 on Aug 19, 2026 (Item 12C). Per the minutes, staff will return with proposed code amendments at a future meeting. No ordinance was introduced or adopted through the Oct 21, 2026 agenda. A new ordinance needs two readings and normally takes effect 30 days after adoption."
         }
       ],
       "campus_class_limits": [],
@@ -1543,9 +1543,9 @@
           "citation": "SDUHSD Bike Safety page",
           "source_url": "https://www.sduhsd.net/Parents--Students/Student-Resources/Bike-Safety/index.html",
           "quote": "Passengers are permitted to ride only on bikes with a factory-installed passenger seat and must wear a properly secured bike helmet.",
-          "effective_date": "2026-08-28",
+          "effective_date": "2026-08-11",
           "source_type": "official_page",
-          "notes": "Bikes must also be walked on school grounds, and campus charging is not allowed. No adopted BP or AR covers walking, passengers or charging. The walking rule appears only in the staff summary of the CSBA regulation update, and a revised AR 5142 may add it later."
+          "notes": "Dated to the first school day (Aug 11, 2026), like class_1_and_2_only_on_campus. The page's only dated sentence gives a grace period until Aug 28, 2026, and it covers only training and tags. Bikes must also be walked on school grounds, and campus charging is not allowed. No adopted BP or AR covers walking, passengers or charging. The walking rule appears only in the staff summary of the CSBA regulation update, and a revised AR 5142 may add it later."
         }
       ],
       "conflicts_with_statute": [],
