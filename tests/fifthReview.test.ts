@@ -4,11 +4,25 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkerToday, DATA_CHECKED_ON, rideDateFor, rideDateIn } from "@/lib/checkerState";
+import { factsFromExtraction } from "@/lib/extract/merge";
+import { parseSpecText } from "@/lib/extract/parse";
 import { formatDate } from "@/lib/i18n/names";
+import { isUiKey, t } from "@/lib/i18n/ui";
 import { isIsoDate } from "@/lib/rules/dates";
 import { evaluate, validateInput } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
+import { emptyFacts, type BikeFacts, type PlaceId } from "@/lib/rules/types";
 import { classBike } from "./helpers";
+
+const DATE = "2026-10-20";
+
+/** Listing text through the parser and the engine to the bottom line, with No and No to the fast-mode questions. */
+function flow(text: string, state: string, age: number, places: PlaceId[] = [], over: Partial<BikeFacts> = {}) {
+  const extraction = parseSpecText(text, "listing");
+  const facts: BikeFacts = { ...factsFromExtraction(extraction, emptyFacts()), motorOver20: false, assistOver28: false, ...over };
+  const result = evaluate({ state, riderAge: age, rideDate: DATE, facts, places });
+  return { extraction, facts, result, kind: bottomLine(result, DATE).kind };
+}
 
 describe("a date that doesn't exist is not a date", () => {
   it("refuses Nov 31 and Feb 30, so the engine and the bottom line can't disagree on the day", () => {
@@ -47,5 +61,82 @@ describe("a device clock that runs behind can't reach a ride date before the rul
     const source = readFileSync(join(__dirname, "..", "components", "Checker.tsx"), "utf8");
     expect(source.match(/checkerToday\(localToday\(\)\)/g)?.length).toBe(3);
     expect(source).not.toMatch(/[^(]localToday\(\)[,;]/);
+  });
+});
+
+describe("pedals that may be gone or may not ship are never read as working pedals", () => {
+  it("a used bike with its pedals removed is asked about, never a California YES", () => {
+    const { facts, extraction, result, kind } = flow(
+      "Super73 S2 for sale, pedals removed and foot pegs installed. Class 2, 750W rated, throttle 20 mph.",
+      "CA",
+      14,
+      ["encinitas"],
+    );
+    expect(facts.hasPedals).toBeNull();
+    expect(extraction.flags).toContain("pedals_unclear");
+    expect(extraction.evidence.hasPedals?.[0].text).toContain("pedals removed");
+    expect(result.state.reason.code).toBe("pedals_unknown");
+    expect(kind).not.toBe("yes");
+  });
+
+  it("leaves every doubtful pedal answer blank, whatever else the text says", () => {
+    for (const tail of [
+      "Pedals removed.",
+      "We removed the pedals.",
+      "Pedals: removed",
+      "Pedals have been taken off.",
+      "Pedals: N.A.",
+      "Pedals: —",
+      "Pedals: -",
+      "Pedals: ✗",
+      "Pedals: X",
+      "Pedals? Nope",
+      "No need for pedals.",
+      "You won't need pedals.",
+      "Pedals not required.",
+      "Pedal assist not available.",
+      "Pedals: Yes (sold separately)",
+      "Pedals not included. 5 levels of pedal assist.",
+    ]) {
+      const text = `Model X. Class: 2. Motor: 500W rated. Throttle: thumb throttle, 20 mph. ${tail}`;
+      const { facts, kind } = flow(text, "CA", 30, ["encinitas"]);
+      expect(facts.hasPedals, tail).toBeNull();
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("still reads a clear yes after Pedals: and plain pedal mentions", () => {
+    for (const text of ["Pedals: Aluminum alloy platform", "Pedals: Yes", "Pedals (aluminum)", 'Pedals: 9/16"', "Folding pedals", "5 levels of pedal assist", "Brake pedals: hydraulic. Pedal assist 5 levels"]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBe(true);
+    }
+  });
+
+  it("every flag the parser can raise has a sentence in English and Spanish", () => {
+    const source = readFileSync(join(__dirname, "..", "lib", "extract", "parse.ts"), "utf8");
+    const flags = [...source.matchAll(/flags\.push\("([a-z_]+)"\)/g)].map((m) => m[1]);
+    expect(flags).toContain("pedals_unclear");
+    for (const flag of flags) {
+      const key = `flag_${flag}`;
+      expect(isUiKey(key), key).toBe(true);
+      if (isUiKey(key)) expect(t("es", key), key).not.toBe(t("en", key));
+    }
+  });
+});
+
+describe("a 'Pedals: No' about what ships is left to the family, not read as a machine with no pedals", () => {
+  it("gives no NO, not allowed for pedals that may only be missing from the box", () => {
+    const base = "Class 2 electric bike. 500W rated motor. Thumb throttle up to 20 mph. 20 x 4.0 tires.";
+    for (const tail of ["Comes with pedals: No", "Pedals: none included", "Ships with pedals: No", "Pedals: No (sold separately)", "Includes pedals: No", "Pedals included: No", "No pedals included in the box."]) {
+      const { facts, result, kind } = flow(`${base} ${tail}`, "CA", 14, ["encinitas"]);
+      expect(facts.hasPedals, tail).toBeNull();
+      expect(result.state.status, tail).toBe("cant_confirm");
+      expect(kind, tail).toBe("no_unconfirmed");
+    }
+  });
+
+  it("still reads a plain no as no pedals", () => {
+    for (const text of ["Pedals: No", "Pedals? No.", "Does it have pedals? No.", "Electric dirt bike with foot pegs and no pedals."]) {
+      expect(parseSpecText(text, "listing").facts.hasPedals, text).toBe(false);
+    }
   });
 });

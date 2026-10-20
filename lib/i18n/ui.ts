@@ -159,6 +159,7 @@ const en = {
   flag_mentions_trike: "The text mentions a trike or three wheels, maybe only in a title or a slogan. The number of wheels was left blank for you to fill in.",
   flag_wheel_size_unclear: "The text names a wheel size, but maybe not for this bike's wheels. None was used, so you may be asked for the wheel size.",
   flag_other_products_skipped: "Text after a heading like \"You may also like\" was not read, because it describes other products.",
+  flag_pedals_unclear: "The text says something about the pedals that may mean this bike has none, like removed, optional or not included. Look at the bike and pick the answer.",
 };
 
 export type UiKey = keyof typeof en;
@@ -320,6 +321,7 @@ const es: Record<UiKey, string> = {
   flag_mentions_trike: "El texto menciona un triciclo o tres ruedas, quizá solo en un título o un lema. El número de ruedas quedó en blanco para que lo completes.",
   flag_wheel_size_unclear: "El texto menciona un tamaño de rueda, pero quizá no el de las ruedas de esta bicicleta. No se usó ninguno, así que puede que te preguntemos el tamaño.",
   flag_other_products_skipped: "No se leyó el texto después de un título como \"You may also like\", porque describe otros productos.",
+  flag_pedals_unclear: "El texto dice algo sobre los pedales que podría significar que esta bicicleta no los tiene, como quitados, opcionales o no incluidos. Mira la bicicleta y elige la respuesta.",
 };
 
 const UI: Record<Lang, Record<UiKey, string>> = { en, es };

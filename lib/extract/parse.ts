@@ -294,34 +294,69 @@ function parseThrottle(text: string, out: Extraction): void {
   else if (yes.length > 0) out.facts.hasThrottle = true;
 }
 
-/**
- * Text that says this bike has no pedals. "Includes pedals: No" is about what ships in the box,
- * like "pedals not included", so it is left to the user instead.
- */
-const PEDALS_NONE =
-  /\b(no pedals|without (?:any )?pedals|pedal-?less|pedalless|pedal[- ]free|(?<!\binclud(?:e|es|ed|ing)\s)pedals\s*[:\-?]\s*(?:none|no)|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none))\b/i;
-
-/** Words after "pedals" that answer no, as in "Pedals: N/A", "Pedals? No" or "Pedals included: no". */
-const PEDALS_ANSWER_NO = /^\s*(?:included|installed|provided|attached)?\s*[:\-?(]\s*(?:no|none|n\/a)\b/;
-/** Words after "pedals" that leave it open, as in "Pedals (sold separately)" or "Pedals: Optional". */
-const PEDALS_MAYBE_SHIPPED =
-  /^\s*(?:included|installed)?\s*[:\-(]?\s*(?:are |is )?(?:not included|not installed|sold separately|available separately|optional|an option|extra|add-on)/;
+/** Words before "pedals" that make a "Pedals: No" about what ships, or about needing to pedal. */
+const PEDALS_SHIPPED_BEFORE = String.raw`(?<!\b(?:includ(?:e|es|ed|ing)|comes? with|came with|ships? with|shipped with|supplied with|delivered with|need|needs|required?|requires)\s)`;
+/** Words after a "no" that make it about what ships: "none included", "No (sold separately)". */
+const PEDALS_SHIPPED_AFTER = String.raw`(?!\s*[(,]?\s*(?:included|incl\b|sold|available|in (?:the )?box|installed|attached|provided|shipped|optional|needed|required|necessary|extra|add-on))`;
 
 /**
- * True when this mention doesn't show bicycle pedals: "brake pedal", "no need to pedal", "no
- * pedal assist", "Pedals: N/A", "pedals not included", "Pedals (sold separately)" or "optional
- * pedals". Those leave the answer to the user.
+ * Text that says this bike has no pedals. Text about what ships in the box, like "Includes pedals:
+ * No", "Comes with pedals: No", "Pedals: none included" or "Pedals: No (sold separately)", is left
+ * to the user instead, like "pedals not included". So is "Do I need pedals? No".
  */
-function pedalNegated(text: string, index: number, end: number): boolean {
-  const before = slice(text, index - 20, index);
-  const after = slice(text, end, end + 24);
-  return (
-    /\b(brake|foot|no need to|without|no|not|non|never|zero|instead of|optional|add-on|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/.test(before) ||
-    PEDALS_ANSWER_NO.test(after) ||
-    PEDALS_MAYBE_SHIPPED.test(after)
-  );
+const PEDALS_NONE = new RegExp(
+  String.raw`\b(no pedals${PEDALS_SHIPPED_AFTER}|without (?:any )?pedals${PEDALS_SHIPPED_AFTER}|pedal-?less|pedalless|pedal[- ]free|${PEDALS_SHIPPED_BEFORE}pedals\s*[:\-?]\s*(?:none|no)\b${PEDALS_SHIPPED_AFTER}|(?:does|do|did)(?: not|n't) have (?:any )?pedals|has no pedals|instead of pedals|(?:does|do) (?:it|this(?: bike| model| e-?bike)?|the bike) have (?:any )?pedals\s*\?\s*(?:no|none)\b${PEDALS_SHIPPED_AFTER})\b`,
+  "i",
+);
+
+/** "Pedals:", "Pedals?", "Pedals (" or "Pedals - ", where the words after are an answer. */
+const PEDALS_LABEL = /\bpedals(?:\s+type)?\s*(?:[:?(]|\s-\s)/gi;
+/** An answer after "Pedals:" that clearly means the bike has them. Anything else leaves it open. */
+const PEDALS_ANSWER_YES =
+  /^\s*(?:yes|yep|yeah|y\b|✓|✔|☑|included|standard|installed|attached|provided|equipped|alloy|alu\b|aluminum|aluminium|platform|flat|nylon|plastic|resin|composite|steel|metal|magnesium|folding|foldable|clipless|spd\b|caged?\b|wellgo|\d+\s?\/\s?\d+)/i;
+/** Words that make an answer doubtful even after a yes: "Yes (sold separately)", "Alloy, not included". */
+const PEDALS_ANSWER_DOUBT = /\b(?:no|not|none|nope|without|removed|taken off|separately|optional|extra|add-on|n\/a|na)\b/i;
+
+/** Mentions that are not about bicycle pedals at all: "brake pedal", "foot pedal". */
+const PEDALS_OTHER_BEFORE = /\b(brake|foot|gas|clutch)\s*$/;
+/** Words before a pedal mention that say the pedals may be missing or not needed. */
+const PEDALS_DOUBT_BEFORE =
+  /\b(no need (?:to|for)|(?:won['’]?t|will not|don['’]?t|do not|doesn['’]?t|does not|never) need(?: any| the| to use(?: the)?)?|removed?(?: the| its| all)?|took off(?: the| its)?|taken off|without the|optional|add-on|(?:not|n't) (?:have|include|come with)(?: any)?)\s*$/;
+/** Words before a pedal-assist or sensor mention that say only the assist is missing: "no pedal assist". */
+const ASSIST_NEGATED_BEFORE = /\b(no|not|non|never|zero|without)\s*$/;
+/** Words after a pedal mention that say the pedals may be missing, removed or not needed. */
+const PEDALS_DOUBT_AFTER =
+  /^\s*(?:(?:have|has|had) been|were|was|are|is|got|get)?\s*(?:removed|taken off|stripped|not (?:required|needed|necessary|available|working|functional|operable|included|installed|attached)|unavailable|optional|an option|extra|add-on|sold separately|available separately|(?:included|installed|provided|attached)?\s*[:\-?(]\s*(?:no|none|n\/a|nope)\b|(?:included|installed)?\s*[:\-(]?\s*(?:are |is )?(?:not included|not installed|sold separately|available separately|optional|an option|extra|add-on))/;
+
+/** The words after a label, up to the end of its sentence or list item. */
+function answerAfter(text: string, from: number): string {
+  const rest = text.slice(from, from + 40);
+  const stop = rest.search(/[.;|•!\n](?=\s|$)/);
+  return stop >= 0 ? rest.slice(0, stop) : rest;
 }
 
+type PedalMention = "yes" | "skip" | "doubt";
+
+/**
+ * What one pedal mention says. "Brake pedal" and "no pedal assist" say nothing about the bike's
+ * pedals. "Pedals removed", "optional pedals", "no need for pedals" and "Pedals not included" put
+ * them in doubt.
+ */
+function pedalMention(text: string, index: number, end: number): PedalMention {
+  const before = slice(text, index - 24, index);
+  const after = slice(text, end, end + 40);
+  if (PEDALS_OTHER_BEFORE.test(before)) return "skip";
+  if (PEDALS_DOUBT_BEFORE.test(before) || PEDALS_DOUBT_AFTER.test(after)) return "doubt";
+  if (ASSIST_NEGATED_BEFORE.test(before)) return /^pedals$/i.test(text.slice(index, end)) ? "doubt" : "skip";
+  return "yes";
+}
+
+/**
+ * Sets the pedals fact only when the text is clear. A "no pedals" text is a no. Any text that puts
+ * the pedals in doubt, like "pedals removed", "Pedals: N.A." or "Pedals: -", leaves the answer to
+ * the user, even when another line mentions pedal assist, since a bike without working pedals is
+ * not an e-bike and a wrong yes could pass it.
+ */
 function parsePedals(text: string, out: Extraction): void {
   const none = firstMatch(text, PEDALS_NONE);
   if (none) {
@@ -329,13 +364,29 @@ function parsePedals(text: string, out: Extraction): void {
     push(out.evidence, "hasPedals", snippet(text, none.index, none[0].length));
     return;
   }
+  const yes: Evidence[] = [];
+  const doubt: Evidence[] = [];
+  for (const m of text.matchAll(PEDALS_LABEL)) {
+    if (m.index === undefined || PEDALS_OTHER_BEFORE.test(slice(text, m.index - 12, m.index))) continue;
+    const answer = answerAfter(text, m.index + m[0].length);
+    const clear = PEDALS_ANSWER_YES.test(answer) && !PEDALS_ANSWER_DOUBT.test(answer);
+    (clear ? yes : doubt).push(snippet(text, m.index, m[0].length + answer.length));
+  }
   const re = /\b(pedal[- ]assist(?:ance)?|pedals|pas level|cadence sensor|torque sensor|crankset|cranks)\b/gi;
   for (const m of text.matchAll(re)) {
     if (m.index === undefined) continue;
-    if (pedalNegated(text, m.index, m.index + m[0].length)) continue;
-    out.facts.hasPedals = true;
-    push(out.evidence, "hasPedals", snippet(text, m.index, m[0].length));
+    const kind = pedalMention(text, m.index, m.index + m[0].length);
+    if (kind === "doubt") doubt.push(snippet(text, m.index, m[0].length));
+    else if (kind === "yes") yes.push(snippet(text, m.index, m[0].length));
+  }
+  if (doubt.length > 0) {
+    for (const ev of doubt) push(out.evidence, "hasPedals", ev);
+    out.flags.push("pedals_unclear");
     return;
+  }
+  if (yes.length > 0) {
+    out.facts.hasPedals = true;
+    push(out.evidence, "hasPedals", yes[0]);
   }
 }
 
