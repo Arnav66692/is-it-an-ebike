@@ -361,7 +361,8 @@ describe("the put-back rule runs only code that can run", () => {
     );
     expect(errors).toHaveLength(1);
     expect(errors[0]).toContain('"wheelSize"');
-  });
+    // The compiler builds the whole project's types, which can take more than 5 seconds on a busy machine.
+  }, 60_000);
 
   it("puts a wheel back only when a wheel the family changed is at its read size again", () => {
     const bike = read(TWO_SIZES, "label");
