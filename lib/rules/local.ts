@@ -4,7 +4,7 @@
 import sdJson from "@/data/rules/san_diego_local.json";
 import { addDays } from "./dates";
 import type { RawJurisdiction, RawLocalRule, RawSanDiego } from "./raw";
-import type { ClassOutcome, StateEvaluation } from "./state";
+import { sharedOutcome, type ClassOutcome, type StateEvaluation } from "./state";
 import { CAUTION_STATE_AFTER_CHECK, type EngineInput, type Line, type PlaceId, type Source, type SourceKind, type Status, type Verdict } from "./types";
 
 const SD = sdJson as unknown as RawSanDiego;
@@ -381,9 +381,10 @@ export function evaluateLocal(place: PlaceId, se: StateEvaluation, input: Engine
         };
       }
     } else if (perClass.every((o) => o.status === "no" || o.status === "not_ebike")) {
+      // Every class barred for the same reason, like the campus e-moto rule, names that reason.
       outcome = perClass.every((o) => o.status === "not_ebike")
         ? perClass[0]
-        : { cls: 3, status: "no", reason: line("no_any_class"), requirements: [], cautions: [], questions: [] };
+        : (sharedOutcome(perClass) ?? { cls: 3, status: "no", reason: line("no_any_class"), requirements: [], cautions: [], questions: [] });
     } else {
       outcome = { cls: 3, status: state.status === "need_info" ? "need_info" : "cant_confirm", reason: state.reason, requirements: [], cautions: [], questions: state.questions };
     }

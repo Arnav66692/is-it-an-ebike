@@ -498,6 +498,21 @@ export function renderLine(line: Line, lang: Lang, state: string): string {
   return template(line.params ?? {}, { state, lang });
 }
 
+/**
+ * The lines with repeats left out. Two lines that render to the same sentence, with the same
+ * Details text, are shown once, even when their codes or numbers differ in ways the sentence
+ * doesn't show, like the class of a note that is the same for every class.
+ */
+export function uniqueRendered(lines: Line[], lang: Lang, state: string): Line[] {
+  const seen = new Set<string>();
+  return lines.filter((l) => {
+    const key = `${renderLine(l, lang, state)}\n${l.detail ?? ""}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function hasTemplate(code: string): boolean {
   return code in EN && code in ES;
 }

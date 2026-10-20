@@ -2,15 +2,18 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { VerdictCard } from "@/components/VerdictCard";
 import { tabTap } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText, type TextSource } from "@/lib/extract/parse";
 import { t } from "@/lib/i18n/ui";
-import { renderLine } from "@/lib/i18n/verdicts";
+import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
-import { emptyFacts, type BikeFacts, type Line, type PlaceId } from "@/lib/rules/types";
+import { emptyFacts, type BikeFacts, type Line, type PlaceId, type Verdict } from "@/lib/rules/types";
 import { classBike } from "./helpers";
 
 const DATE = "2026-10-20";
@@ -252,5 +255,47 @@ describe("the state card says so when the ride is past its re-check horizon", ()
     const no = evaluate({ state: "CA", riderAge: 14, rideDate: "2026-11-17", facts: classBike(3), places: [] });
     expect(no.state.status).toBe("no");
     expect(no.state.cautions.map((c) => c.code)).not.toContain("caution_state_after_check");
+  });
+});
+
+describe("a class-unknown NO says each sentence once and names a shared reason", () => {
+  const unknownClass = (over: Partial<BikeFacts> = {}): BikeFacts => ({
+    ...emptyFacts(), hasPedals: true, ratedWatts: 500, hasThrottle: false, motorOver20: false, assistOver28: false, ...over,
+  });
+  const cardText = (verdict: Verdict, lang: "en" | "es", stateCode: string) =>
+    renderToStaticMarkup(createElement(VerdictCard, { verdict, lang, stateCode })).replace(/<[^>]+>/g, "\n");
+  const count = (haystack: string, needle: string) => haystack.split(needle).length - 1;
+
+  it("Oregon at 13 names its license rule once, as the headline", () => {
+    const result = evaluate({ state: "OR", riderAge: 13, rideDate: DATE, facts: unknownClass(), places: [] });
+    expect(result.state.status).toBe("no");
+    expect(result.state.reason.code).toBe("under_min_age_license");
+    const text = cardText(result.state, "en", "OR").replace(/&#x27;/g, "'");
+    expect(count(text, "need a driver's license or permit")).toBe(1);
+    expect(text).not.toContain("whatever its class");
+  });
+
+  it("the City of San Diego card shows the under-12 ban once for an 11-year-old, in both languages", () => {
+    const result = evaluate({ state: "CA", riderAge: 11, rideDate: DATE, facts: unknownClass(), places: ["city_of_san_diego", "carlsbad"] });
+    for (const card of result.local) {
+      expect(count(cardText(card, "en", "CA").replace(/&#x27;/g, "'"), "Riders under 12 can't ride Class 1 or 2")).toBe(1);
+      expect(count(cardText(card, "es", "CA"), "los menores de 12 años no pueden usar")).toBe(1);
+    }
+  });
+
+  it("an SDUHSD campus names the e-moto rule once, not a rider problem, for a 30-year-old on a 1000 W bike", () => {
+    const result = evaluate({ state: "CA", riderAge: 30, rideDate: DATE, facts: unknownClass({ ratedWatts: 1000 }), places: ["sduhsd_campuses"] });
+    const campus = result.local[0];
+    expect(campus.reason.code).toBe("campus_no_emoto");
+    expect(count(cardText(campus, "en", "CA").replace(/&#x27;/g, "'"), "E-motos and other non-e-bikes aren't allowed")).toBe(1);
+    const why = bottomLine(result, DATE).blocked.find((b) => b.where.some((w) => w.id === "sduhsd_campuses"));
+    expect(why?.line.code).toBe("campus_no_emoto");
+  });
+
+  it("drops repeats only when the sentence and its Details are the same", () => {
+    const a: Line = { code: "local_under_12", params: { since: "2026-08-13", cls: 1 }, detail: null };
+    const b: Line = { code: "local_under_12", params: { since: "2026-08-13", cls: 2 }, detail: null };
+    const c: Line = { code: "local_under_12", params: { since: "2026-03-26", cls: 1 }, detail: null };
+    expect(uniqueRendered([a, b, c], "en", "California")).toEqual([a, c]);
   });
 });

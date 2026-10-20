@@ -3,7 +3,7 @@
 import type { Line, Source, Verdict } from "@/lib/rules/types";
 import { citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
-import { renderLine, STATUS_LABEL } from "@/lib/i18n/verdicts";
+import { renderLine, STATUS_LABEL, uniqueRendered } from "@/lib/i18n/verdicts";
 
 const STATUS_MARK: Record<Verdict["status"], string> = {
   yes: "✓",
@@ -63,12 +63,13 @@ function SourceItem({ source, lang }: { source: Source; lang: Lang }) {
 }
 
 function Section({ title, lines, lang, state }: { title: string; lines: Line[]; lang: Lang; state: string }) {
-  if (lines.length === 0) return null;
+  const shown = uniqueRendered(lines, lang, state);
+  if (shown.length === 0) return null;
   return (
     <div className="space-y-1">
       <h4 className="text-sm font-semibold uppercase tracking-wide text-muted">{title}</h4>
       <ul className="list-disc space-y-1 pl-5">
-        {lines.map((l, i) => (
+        {shown.map((l, i) => (
           <LineItem key={`${l.code}-${i}`} line={l} lang={lang} state={state} />
         ))}
       </ul>

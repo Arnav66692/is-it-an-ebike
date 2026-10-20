@@ -453,9 +453,23 @@ function worst(outcomes: ClassOutcome[]): ClassOutcome {
   return outcomes.reduce((a, b) => (SEVERITY[b.status] > SEVERITY[a.status] ? b : a));
 }
 
+/**
+ * The one outcome every class shares, when each class is barred for the same reason, like
+ * Oregon's license rule for riders under 16. The card then names that reason once, instead of
+ * "whatever its class" and the same sentence for each class.
+ */
+export function sharedOutcome(outcomes: ClassOutcome[]): ClassOutcome | null {
+  if (outcomes.length === 0) return null;
+  const key = (o: ClassOutcome) => `${o.status}|${o.reason.code}|${JSON.stringify(o.reason.params ?? {})}|${o.reason.detail ?? ""}`;
+  const first = key(outcomes[0]);
+  return outcomes.every((o) => key(o) === first) ? outcomes[0] : null;
+}
+
 function aggregateUnknownClass(outcomes: ClassOutcome[], problem: Line): ClassOutcome {
   const blocked = outcomes.every((o) => o.status === "no" || o.status === "not_ebike");
   if (outcomes.every((o) => o.status === "not_ebike")) return outcomes[0];
+  const shared = blocked ? sharedOutcome(outcomes) : null;
+  if (shared) return shared;
   if (blocked) {
     return {
       cls: 3,
