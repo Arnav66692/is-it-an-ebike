@@ -57,6 +57,12 @@ const PAIRS: [string, string, number][] = [
   ["focus", "bg", UI],
   // The open input tab's ring and text against the tab track and the tab itself.
   ["accent", "sunk", UI],
+  // The open list of places, raised above the cards, and its highlighted row.
+  ["ink", "raised", TEXT],
+  ["muted", "raised", TEXT],
+  ["ink", "raised-hover", TEXT],
+  ["muted", "raised-hover", TEXT],
+  ["accent", "raised-hover", UI],
 ];
 
 describe("the page colors meet WCAG AA contrast", () => {

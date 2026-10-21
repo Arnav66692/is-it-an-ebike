@@ -287,13 +287,13 @@ describe("search", () => {
   }, 30_000);
 
   it("picks on Enter only a place the typed name can only mean", () => {
-    expect(enterChoice(searchResults(INDEX, "Encinitas"))).toBe(0);
-    expect(enterChoice(searchResults(INDEX, "Boston"))).toBeNull();
-    expect(enterChoice(searchResults(INDEX, "Bostonia"))).toBe(0);
-    expect(enterChoice(searchResults(INDEX, "Carmel Valley"))).toBe(0);
-    expect(enterChoice(searchResults(INDEX, "Hillcrest"))).toBeNull();
-    expect(enterChoice(searchResults(INDEX, "Bost"))).toBeNull();
-    expect(enterChoice([])).toBeNull();
+    expect(enterChoice(searchResults(INDEX, "Encinitas"), "CA")).toBe(0);
+    expect(enterChoice(searchResults(INDEX, "Boston"), "MA")).toBeNull();
+    expect(enterChoice(searchResults(INDEX, "Bostonia"), "CA")).toBe(0);
+    expect(enterChoice(searchResults(INDEX, "Carmel Valley"), "CA")).toBe(0);
+    expect(enterChoice(searchResults(INDEX, "Hillcrest"), "CA")).toBeNull();
+    expect(enterChoice(searchResults(INDEX, "Bost"), "CA")).toBeNull();
+    expect(enterChoice([], "CA")).toBeNull();
   });
 
   it("never matches the middle of a name with a query that starts with a joining word, like Del Sur", () => {
@@ -349,8 +349,8 @@ describe("labels", () => {
   });
 
   it("read in Spanish", () => {
-    expect(placeLabel(INDEX, entry("n-carmel-valley"), "es").text).toBe("Carmel Valley, Ciudad de San Diego, San Diego County, CA");
-    expect(placeLabel(INDEX, entry("p-4805000"), "es").where).toBe("Travis County y 3 condados más");
+    expect(placeLabel(INDEX, entry("n-carmel-valley"), "es").text).toBe("Carmel Valley, Ciudad de San Diego, condado de San Diego, CA");
+    expect(placeLabel(INDEX, entry("p-4805000"), "es").where).toBe("condado de Travis y 3 condados más");
     expect(placeLabel(INDEX, entry("s-NY"), "es").text).toBe("Nueva York");
   });
 

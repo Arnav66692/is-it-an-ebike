@@ -133,6 +133,13 @@ export function stateWhere(code: string, lang: Lang): string {
   return NOT_A_STATE.has(code) ? `en el ${name}` : `en ${name}`;
 }
 
+/** "of California", "de California", "del Distrito de Columbia". */
+export function stateOf(code: string, lang: Lang): string {
+  const name = stateName(code, lang);
+  if (lang === "en") return `of ${name}`;
+  return NOT_A_STATE.has(code) ? `del ${name}` : `de ${name}`;
+}
+
 /** "in the City of San Diego", "on an SDUHSD campus", "en la Ciudad de San Diego". */
 export function placeWhere(id: string, lang: Lang): string {
   const p = PLACE_NAMES[id as PlaceId];

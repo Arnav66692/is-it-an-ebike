@@ -11,7 +11,8 @@ export const SD_NEIGHBORHOODS_SOURCE = {
     "Each name is a community planning area the City lists on this page, with the last part of the page's own link as its id " +
     "(Downtown links to /planning/community/profiles/downtown, the others to /planning/community-plans/<id>). " +
     "A community plan covers City land only. The existing place hint for the City of San Diego (Carmel Valley, " +
-    "Pacific Highlands Ranch) is on the list. Names joined by a slash or a hyphen on the page are also findable by each part.",
+    "Pacific Highlands Ranch) is on the list. Names joined by a slash or a hyphen on the page are also findable by each part. " +
+    "Clairemont, Golden Hill and San Pasqual are the short names the City Council district pages (/citycouncil/cd2, cd3 and cd5/communities) give these areas.",
 } as const;
 
 export interface SdNeighborhood {
@@ -62,7 +63,7 @@ export const SD_NEIGHBORHOODS: readonly SdNeighborhood[] = [
   { slug: "rancho-encantada", name: "Rancho Encantada" },
   { slug: "rancho-penasquitos", name: "Rancho Penasquitos" },
   { slug: "sabre-springs", name: "Sabre Springs" },
-  { slug: "san-pasqual-valley", name: "San Pasqual Valley" },
+  { slug: "san-pasqual-valley", name: "San Pasqual Valley", alsoKnownAs: ["San Pasqual"] },
   { slug: "san-ysidro", name: "San Ysidro" },
   { slug: "scripps-miramar-ranch", name: "Scripps Miramar Ranch" },
   { slug: "serra-mesa", name: "Serra Mesa" },
@@ -149,6 +150,8 @@ export const SD_CITY_NEIGHBORHOODS: readonly SdCityNeighborhood[] = [
   { slug: "redwood-village", name: "Redwood Village", source: COUNCIL(9) },
   { slug: "rolando-park", name: "Rolando Park", source: COUNCIL(9) },
   { slug: "rolando-village", name: "Rolando Village", source: COUNCIL(9) },
+  // The Mira Mesa plan page says Mira Mesa joined the City in 1958, in an annexation that included Del Mar Heights.
+  { slug: "del-mar-heights", name: "Del Mar Heights", source: PLAN("mira-mesa") },
   { slug: "ocean-beach-highlands", name: "Ocean Beach Highlands", source: PLAN("peninsula") },
   { slug: "point-loma-highlands", name: "Point Loma Highlands", source: PLAN("peninsula") },
   { slug: "loma-alta", name: "Loma Alta", source: PLAN("peninsula") },

@@ -35,9 +35,11 @@ export interface ComboKeyResult {
 /**
  * What a key does in the search box, following the ARIA 1.2 combobox pattern. Down and Up open
  * the list and move the highlight, wrapping at the ends. Enter picks the highlighted place. With
- * none highlighted, it picks `enterPick`, the one place the typed name can only mean
- * (enterChoice in lib/places/search.ts), or else highlights the first place, so a place the family
- * hasn't seen is never picked for them. Escape closes the list, and on a closed list clears the box.
+ * none highlighted, it picks `enterPick`, the one place the typed name can only mean in the
+ * answer's state (enterChoice in lib/places/search.ts), or else highlights the first place, so a
+ * place the family hasn't seen is never picked for them. On a closed list with text in the box,
+ * Enter (a phone keyboard's Search key) opens the list again and picks nothing. Escape closes the
+ * list, and on a closed list clears the box.
  */
 export function comboKey(state: ComboState, key: string, count: number, hasText: boolean, enterPick: number | null = null): ComboKeyResult {
   const none = { pick: null, clear: false, handled: true };
@@ -49,7 +51,8 @@ export function comboKey(state: ComboState, key: string, count: number, hasText:
       if (count === 0) return { next: { open: true, active: -1 }, ...none };
       return { next: { open: true, active: state.open && state.active > 0 ? state.active - 1 : count - 1 }, ...none };
     case "Enter":
-      if (!state.open || count === 0) return { next: state, pick: null, clear: false, handled: false };
+      if (count === 0) return { next: state, pick: null, clear: false, handled: false };
+      if (!state.open) return hasText ? { next: { open: true, active: -1 }, ...none } : { next: state, pick: null, clear: false, handled: false };
       if (state.active >= 0 && state.active < count) return { next: CLOSED, pick: state.active, clear: false, handled: true };
       if (enterPick !== null && enterPick >= 0 && enterPick < count) return { next: CLOSED, pick: enterPick, clear: false, handled: true };
       return { next: { open: true, active: 0 }, ...none };
@@ -105,6 +108,8 @@ export interface ChipPick {
 
 interface Props {
   lang: Lang;
+  /** The state the answer uses now. Enter on its own only picks a place in this state. */
+  state: string;
   /** The places picked so far, labeled in the page's language. */
   picks: ChipPick[];
   onPick: (entry: PlaceEntry, labels: PickLabels) => void;
@@ -122,12 +127,40 @@ function SearchIcon() {
   );
 }
 
-export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPlaceIndex }: Props) {
+/**
+ * For this long after a place is picked or removed, a tap on a chip's remove button does nothing.
+ * A new chip can land right under the finger that picked it, and a quick second tap must not remove it.
+ */
+export const CHIP_GUARD_MS = 450;
+
+/** True when a remove tap comes too soon after the last pick or removal to be meant for the chip now there. */
+export function tooSoonToRemove(now: number, lastChange: number): boolean {
+  return now - lastChange < CHIP_GUARD_MS;
+}
+
+/**
+ * Where focus goes after a chip is removed: the remove button of the chip that took its place, or
+ * of the one before it. With no chip left, a keyboard or mouse goes back to the search box, and a
+ * touch goes to the box's label, so a phone doesn't open its keyboard over half the screen.
+ */
+export function focusAfterRemove(at: number, left: number, touch: boolean): { chip: number } | "input" | "label" {
+  if (left > 0) return { chip: Math.min(at, left - 1) };
+  return touch ? "label" : "input";
+}
+
+export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = loadPlaceIndex }: Props) {
   const inputId = useId();
   const helpId = useId();
   const listId = useId();
   const input = useRef<HTMLInputElement>(null);
   const list = useRef<HTMLUListElement>(null);
+  const label = useRef<HTMLLabelElement>(null);
+  const chips = useRef<HTMLUListElement>(null);
+  // When the last pick or removal happened, and how the last remove button was pressed.
+  const lastChange = useRef(0);
+  const pointer = useRef<string | null>(null);
+  // Set by a removal, so focus moves once the chips are drawn again.
+  const refocus = useRef<{ at: number; touch: boolean } | null>(null);
   const [query, setQuery] = useState("");
   const [combo, setCombo] = useState<ComboState>(CLOSED);
   const [index, setIndex] = useState<PlaceIndex | null>(null);
@@ -159,6 +192,17 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPla
   // shown too, so a family who mistypes sees why no list opened.
   const statusShown = statusVisible(query, loading || (index === null && !failed), failed, results.length);
 
+  // After a chip is removed, focus moves to the chip that took its place, or back to the search.
+  useEffect(() => {
+    const want = refocus.current;
+    if (!want) return;
+    refocus.current = null;
+    const target = focusAfterRemove(want.at, picks.length, want.touch);
+    if (target === "input") input.current?.focus();
+    else if (target === "label") label.current?.focus();
+    else chips.current?.querySelectorAll?.<HTMLButtonElement>(".chip-remove")[target.chip]?.focus();
+  }, [picks.length]);
+
   // The highlighted place stays in view as the arrow keys move through a list that scrolls.
   useEffect(() => {
     if (!expanded || combo.active < 0) return;
@@ -170,15 +214,22 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPla
     const entry = results[i];
     if (!entry || !index) return;
     onPick(entry, pickLabels(index, entry));
+    lastChange.current = Date.now();
     setQuery("");
     setCombo(CLOSED);
     input.current?.focus();
   }
 
+  /** Opens the list again for the text still in the box, when it was closed by a tap elsewhere. */
+  function reopen() {
+    if (!combo.open && query.trim() !== "") setCombo({ open: true, active: -1 });
+  }
+
   return (
     <div className="space-y-3">
       <div className="space-y-1">
-        <label htmlFor={inputId} className="field-label">
+        {/* tabIndex -1 lets focus land here after the last chip is removed by touch, with no keyboard popping up. */}
+        <label ref={label} htmlFor={inputId} className="field-label" tabIndex={-1}>
           {t(lang, "whereLabel")}
         </label>
         <p id={helpId} className="help">
@@ -205,14 +256,18 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPla
             placeholder={t(lang, "wherePlaceholder")}
             value={query}
             className="field combo-input"
-            onFocus={ensureIndex}
+            onFocus={() => {
+              ensureIndex();
+              reopen();
+            }}
+            onClick={reopen}
             onChange={(e) => {
               ensureIndex();
               setQuery(e.target.value);
               setCombo({ open: true, active: -1 });
             }}
             onKeyDown={(e) => {
-              const r = comboKey(combo, e.key, results.length, query !== "", enterChoice(found));
+              const r = comboKey(combo, e.key, results.length, query !== "", enterChoice(found, state));
               if (r.handled) e.preventDefault();
               if (r.pick !== null) {
                 pick(r.pick);
@@ -255,8 +310,9 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPla
         {status}
       </p>
       {picks.length > 0 ? (
-        <ul className="chips" aria-label={t(lang, "wherePicked")}>
-          {picks.map((p) => (
+        // role="list" keeps the list and its name for VoiceOver, which drops them from a list styled with no bullets.
+        <ul ref={chips} className="chips" role="list" aria-label={t(lang, "wherePicked")}>
+          {picks.map((p, i) => (
             <li key={p.id} className="chip">
               <span className="chip-text">
                 <span className="chip-name">{p.label.name}</span>
@@ -267,9 +323,17 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPla
                 className="chip-remove"
                 aria-label={t(lang, "whereRemove", { place: p.label.text })}
                 title={t(lang, "whereRemove", { place: p.label.text })}
+                onPointerDown={(e) => {
+                  pointer.current = e.pointerType;
+                }}
                 onClick={() => {
+                  const touch = pointer.current === "touch" || pointer.current === "pen";
+                  pointer.current = null;
+                  const now = Date.now();
+                  if (tooSoonToRemove(now, lastChange.current)) return;
+                  lastChange.current = now;
+                  refocus.current = { at: i, touch };
                   onRemove(p.id);
-                  input.current?.focus();
                 }}
               >
                 <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">

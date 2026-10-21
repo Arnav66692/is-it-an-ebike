@@ -74,8 +74,9 @@ describe("the combobox keys follow the ARIA 1.2 pattern", () => {
     // More than one place could be meant, so Enter highlights the first one and picks nothing yet.
     expect(comboKey({ open: true, active: -1 }, "Enter", 3, true, null)).toMatchObject({ pick: null, next: { open: true, active: 0 }, handled: true });
     expect(comboKey({ open: true, active: -1 }, "Enter", 3, true)).toMatchObject({ pick: null, next: { open: true, active: 0 } });
-    // A closed list or no results leave Enter alone.
-    expect(comboKey(CLOSED, "Enter", 3, true)).toMatchObject({ pick: null, handled: false });
+    // A closed list with text opens again and picks nothing. No text, or no results, leave Enter alone.
+    expect(comboKey(CLOSED, "Enter", 3, true)).toMatchObject({ pick: null, next: { open: true, active: -1 }, handled: true });
+    expect(comboKey(CLOSED, "Enter", 3, false)).toMatchObject({ pick: null, handled: false });
     expect(comboKey({ open: true, active: -1 }, "Enter", 0, true)).toMatchObject({ pick: null, handled: false });
   });
 
@@ -105,7 +106,7 @@ describe("the search box on the page", () => {
   function box(lang: Lang = "en") {
     const onPick = vi.fn();
     const onRemove = vi.fn();
-    const props = { lang, picks: [] as { id: string; label: ReturnType<typeof placeLabel>; detail: string }[], onPick, onRemove, loadIndex: () => Promise.resolve(INDEX) };
+    const props = { lang, state: "CA", picks: [] as { id: string; label: ReturnType<typeof placeLabel>; detail: string }[], onPick, onRemove, loadIndex: () => Promise.resolve(INDEX) };
     const m = mount(PlaceSearch, props);
     const input = () => one(m.tree(), (e) => e.type === "input" && e.props.role === "combobox", "combobox");
     const options = () => elements(m.tree()).filter((e) => e.props.role === "option");
@@ -181,6 +182,7 @@ describe("the search box on the page", () => {
     let fail = true;
     const m = mount(PlaceSearch, {
       lang: "en" as Lang,
+      state: "CA",
       picks: [],
       onPick: () => {},
       onRemove: () => {},
@@ -203,12 +205,12 @@ describe("the search box on the page", () => {
       const label = placeLabel(INDEX, carmel, lang);
       const onRemove = vi.fn();
       const html = renderToStaticMarkup(
-        createElement(PlaceSearch, { lang, picks: [{ id: carmel.id, label, detail: resultDetail(carmel, label, lang) }], onPick: () => {}, onRemove, loadIndex: () => Promise.resolve(INDEX) }),
+        createElement(PlaceSearch, { lang, state: "CA", picks: [{ id: carmel.id, label, detail: resultDetail(carmel, label, lang) }], onPick: () => {}, onRemove, loadIndex: () => Promise.resolve(INDEX) }),
       );
       expect(html).toContain(`aria-label="${t(lang, "whereRemove", { place: label.text })}"`);
       expect(html).toContain(`aria-label="${t(lang, "wherePicked")}"`);
       expect(html).toContain(placeName("city_of_san_diego", lang));
-      expect(html).toContain(`${t(lang, "kind_neighborhood")}, ${placeName("city_of_san_diego", lang)}, San Diego County, CA`);
+      expect(html).toContain(`${t(lang, "kind_neighborhood")}, ${placeName("city_of_san_diego", lang)}, ${lang === "es" ? "condado de San Diego" : "San Diego County"}, CA`);
     }
   });
 
@@ -217,7 +219,7 @@ describe("the search box on the page", () => {
     const encinitas = linkedPick("encinitas");
     if (!encinitas) throw new Error("no Encinitas");
     expect(resultDetail(encinitas, placeLabel(INDEX, encinitas, "en"), "en")).toBe("City, San Diego County, CA");
-    expect(resultDetail(encinitas, placeLabel(INDEX, encinitas, "es"), "es")).toBe("Ciudad, San Diego County, CA");
+    expect(resultDetail(encinitas, placeLabel(INDEX, encinitas, "es"), "es")).toBe("Ciudad, condado de San Diego, CA");
   });
 });
 
@@ -359,7 +361,7 @@ describe("the page, for an 11-year-old on a Class 2", () => {
     const p = page();
     p.pick(entry("p-0622678"));
     p.m.act(() => call(one(p.m.tree(), (e) => e.type === "select", "state picker"), "onChange", { target: { value: "OR" } }));
-    expect(p.note()).toBe(`Now using ${stateName("OR", "en")} law. The places in California were removed, since one answer covers one state.`);
+    expect(p.note()).toBe(`Now using ${stateName("OR", "en")} state law. The places in California were removed, since one answer covers one state.`);
     expect(p.search().props.picks).toEqual([]);
     expect(p.bottom().props.stateCode).toBe("OR");
   });

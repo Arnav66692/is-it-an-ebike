@@ -9,7 +9,7 @@ import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, su
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
-import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
+import { formatDate, placeHint, placeName, stateLaw, stateName, stateOf, stateWhere, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { linkedWhere, pickLabels, SD_COUNTY_NAMES, type PickLabels } from "@/lib/places/linked";
 import { addPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
@@ -67,12 +67,19 @@ export interface WhereNote {
   campusRemoved?: boolean;
 }
 
+/**
+ * The status line's words. States are named the way the answers name them, so Spanish says
+ * "en el Distrito de Columbia" and "la ley del Distrito de Columbia", with the article.
+ */
 export function whereNoteText(note: WhereNote | null, lang: Lang): string {
   if (!note) return "";
+  const from = note.from ?? "";
+  const to = note.to ?? "";
   const main = t(lang, note.key, {
     place: note.place?.[lang].text ?? "",
-    from: stateName(note.from ?? "", lang),
-    to: stateName(note.to ?? "", lang),
+    inTo: stateWhere(to, lang),
+    placesFrom: lang === "es" ? stateOf(from, lang) : stateWhere(from, lang),
+    lawTo: stateLaw(to, lang, "inline"),
   });
   return note.campusRemoved ? `${main} ${t(lang, "whereCampusRemoved")}` : main;
 }
@@ -391,6 +398,7 @@ export function Checker() {
       <Card title={t(lang, "step1")} step={1}>
         <PlaceSearch
           lang={lang}
+          state={stateCode}
           picks={where.picks.map((p) => {
             const label = (labels[p.id] ?? pickLabels(SD_COUNTY_NAMES, p))[lang];
             return { id: p.id, label, detail: resultDetail(p, label, lang) };

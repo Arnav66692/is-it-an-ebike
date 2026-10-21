@@ -60,7 +60,7 @@ describe("the place search shows why no list opened", () => {
 
   it("says no places match on the page for a typo, in both languages", async () => {
     for (const lang of ["en", "es"] as const) {
-      const m = mount(PlaceSearch, { lang: lang as Lang, picks: [], onPick: () => {}, onRemove: () => {}, loadIndex: () => Promise.resolve(INDEX) });
+      const m = mount(PlaceSearch, { lang: lang as Lang, state: "CA", picks: [], onPick: () => {}, onRemove: () => {}, loadIndex: () => Promise.resolve(INDEX) });
       const input = () => one(m.tree(), (e) => e.type === "input" && e.props.role === "combobox", "combobox");
       m.act(() => call(input(), "onFocus"));
       await m.settle();
@@ -128,8 +128,8 @@ describe("the place notes", () => {
     expect(whereNoteShown({ key: "whereAlready", place: sd })).toBe(false);
     const moved = { key: "whereAddedNewState" as const, place: sd, to: "TX", campusRemoved: true };
     expect(whereNoteShown(moved)).toBe(true);
-    expect(whereNoteText(moved, "en")).toBe(`Added ${sd.en.text}. The answer now uses Texas law. The SDUHSD campus was removed, since it is in California.`);
-    expect(whereNoteText(moved, "es")).toBe(`Se agregó ${sd.es.text}. La respuesta ahora usa la ley de Texas. Se quitó la escuela de SDUHSD, porque está en California.`);
+    expect(whereNoteText(moved, "en")).toBe(`Added ${sd.en.text}. The answer now uses Texas state law. The SDUHSD campus was removed, since it is in California.`);
+    expect(whereNoteText(moved, "es")).toBe(`Se agregó ${sd.es.text}. La respuesta ahora usa la ley estatal de Texas. Se quitó la escuela de SDUHSD, porque está en California.`);
   });
 });
 
@@ -227,14 +227,14 @@ describe("the page", () => {
     expect(campus()).toBeUndefined();
     expect(p.note().props.className).toBe("note");
     expect(textOf(p.note())).toContain("The SDUHSD campus was removed, since it is in California.");
-    expect(textOf(p.note())).toContain("The answer now uses Texas law.");
+    expect(textOf(p.note())).toContain("The answer now uses Texas state law.");
   });
 
   it("says so too when the state picker moves the ride with only the campus ticked", () => {
     const p = page("?lang=en&state=CA&place=sduhsd_campuses");
     p.m.act(() => call(one(p.m.tree(), (e) => e.type === "select", "state picker"), "onChange", { target: { value: "OR" } }));
     expect(p.note().props.className).toBe("note");
-    expect(textOf(p.note())).toBe("Now using Oregon law. The SDUHSD campus was removed, since it is in California.");
+    expect(textOf(p.note())).toBe("Now using Oregon state law. The SDUHSD campus was removed, since it is in California.");
   });
 
   it("asks open questions before the answer, then leads with the answer once they are answered", () => {
