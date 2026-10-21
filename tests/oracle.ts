@@ -235,6 +235,8 @@ export function stateBlockers(code: string, f: OracleFacts, age: number, date: s
   if (conflict) reasons.push(conflict);
   // Class 1 and 3 help only while the rider pedals, so only a clear "no throttle" fits those labels.
   if (!conflict && f.throttleUnknown && classes.length > 0 && !classes.includes(2)) reasons.push("throttle_unknown");
+  // A label naming Class 3 next to a throttle: nothing says the throttle is off in the Class 3 mode.
+  if (!conflict && classes.includes(3) && hasThrottle(f) && !f.throttleUnknown) reasons.push("class3_throttle_unclear");
   if (f.topSpeed !== undefined && f.topSpeed > 28) reasons.push("fits_no_class_speed");
   for (const cls of classes.length > 0 ? classes : ALL_CLASSES) reasons.push(...classBlockers(code, f, cls, age, date));
   return [...new Set(reasons)];

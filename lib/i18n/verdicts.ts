@@ -150,6 +150,8 @@ const EN = {
   class_conflict_throttle: (p) => `A Class ${cls(p)} e-bike only helps while you pedal. A throttle means it fits no single class.`,
   class_conflict_speed: (p) => `A Class ${cls(p)} label and a ${p.mph} mph speed don't match.`,
   throttle_unknown: (p) => `We need to know whether it has a throttle. A Class ${cls(p)} e-bike only helps while you pedal.`,
+  class3_throttle_unclear: () =>
+    "A Class 3 e-bike only helps while you pedal. Nothing shows the throttle turns off in the Class 3 mode, so that mode fits no single class.",
   fits_no_class_speed: (p) => `${p.mph} mph is faster than any e-bike class allows. Class 3 tops out at 28 mph.`,
   fits_no_class_mode: () =>
     "It can go past 20 mph on the motor alone, or past 28 mph with pedaling, in some mode. That fits no e-bike class.",
@@ -462,6 +464,8 @@ const ES = {
   class_conflict_throttle: (p) => `Una bicicleta Clase ${cls(p)} solo ayuda mientras pedaleas. Un acelerador significa que no cabe en una sola clase.`,
   class_conflict_speed: (p) => `Una etiqueta Clase ${cls(p)} y una velocidad de ${p.mph} mph no coinciden.`,
   throttle_unknown: (p) => `Necesitamos saber si tiene acelerador. Una bicicleta Clase ${cls(p)} solo ayuda mientras pedaleas.`,
+  class3_throttle_unclear: () =>
+    "Una bicicleta Clase 3 solo ayuda mientras pedaleas. Nada muestra que el acelerador se apague en el modo Clase 3, así que ese modo no cabe en una sola clase.",
   fits_no_class_speed: (p) => `${p.mph} mph es más rápido de lo que permite cualquier clase. La Clase 3 llega a 28 mph como máximo.`,
   fits_no_class_mode: () =>
     "En algún modo puede pasar de 20 mph solo con el motor, o de 28 mph pedaleando. Eso no cabe en ninguna clase de bicicleta eléctrica.",
