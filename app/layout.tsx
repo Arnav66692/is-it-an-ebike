@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { PAGE_LANG_SCRIPT } from "@/lib/pageLang";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,7 +30,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    // The script sets lang before the first paint, so the server's "en" can differ from the page's. React leaves it.
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        {/* Our own fixed code, no user input: it sets the page's language (lib/pageLang.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: PAGE_LANG_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );

@@ -184,6 +184,33 @@ a:hover {
   color: var(--accent);
 }
 
+/* ---------- Loading frame ---------- */
+
+/* The frame shown while the page's script loads has its words in both languages. <html lang> is
+   set before the first paint (lib/pageLang.ts), so only the page's own language shows. */
+html[lang="es"] .sk-en,
+html:not([lang="es"]) .sk-es {
+  display: none;
+}
+
+.sk-pill {
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+}
+
+.sk-field {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  color: var(--muted);
+}
+
+/* The bike step's three tabs, as their track. */
+.sk-tabs {
+  min-height: calc(2.75rem + 0.6rem);
+}
+
 /* ---------- Cards and steps ---------- */
 
 .card {

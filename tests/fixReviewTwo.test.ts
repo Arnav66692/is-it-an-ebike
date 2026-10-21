@@ -18,6 +18,7 @@ import { FactsCard } from "@/components/FactsCard";
 import { cardAnswer, VerdictCard } from "@/components/VerdictCard";
 import { CLOSED, comboKey, focusAfterRemove, PlaceSearch, resultDetail, tooSoonToRemove } from "@/components/PlaceSearch";
 import { placeName, type Lang } from "@/lib/i18n/names";
+import { t } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
 import { pickLabels } from "@/lib/places/linked";
 import { parsePlaceIndex } from "@/lib/places/parse";
@@ -352,5 +353,60 @@ describe("the accuracy page counts only cards that say YES as YES", () => {
     }
     expect(yes[0][1]).toMatch(new RegExp(`^${shown.yes.yes.toLocaleString("en-US")} `));
     expect(shown.yes.yes + shown.yes.no).toBe(accuracy.engine.by_status.yes);
+  });
+});
+
+describe("the first paint has the page's frame, in the page's language", () => {
+  it("picks the language the page itself will use", async () => {
+    const { pageLang } = await import("@/lib/pageLang");
+    expect(pageLang("/accuracy/es", "", null, "en-US")).toBe("es");
+    expect(pageLang("/accuracy", "", "es", "es-US")).toBe("en");
+    expect(pageLang("/", "?lang=es", "en", "en-US")).toBe("es");
+    expect(pageLang("/", "", "es", "en-US")).toBe("es");
+    expect(pageLang("/", "", null, "es-MX")).toBe("es");
+    expect(pageLang("/", "", null, "en-US")).toBe("en");
+    // The flyer follows ?lang= only, like flyerLang.
+    expect(pageLang("/qr", "", "es", "es-US")).toBe("en");
+    expect(pageLang("/qr", "?lang=es", null, "en-US")).toBe("es");
+  });
+
+  it("sets <html lang> from an inline script, even with storage blocked", async () => {
+    const { PAGE_LANG_SCRIPT } = await import("@/lib/pageLang");
+    const run = (path: string, search: string, storage: () => string | null, browser: string) => {
+      const documentElement = { lang: "en" };
+      const window = { localStorage: { getItem: storage } };
+      new Function("window", "document", "location", "navigator", PAGE_LANG_SCRIPT)(window, { documentElement }, { pathname: path, search }, { language: browser });
+      return documentElement.lang;
+    };
+    expect(run("/accuracy/es", "", () => null, "en-US")).toBe("es");
+    expect(run("/", "", () => "es", "en-US")).toBe("es");
+    expect(
+      run(
+        "/",
+        "",
+        () => {
+          throw new Error("blocked");
+        },
+        "es-US",
+      ),
+    ).toBe("es");
+    const layout = readFileSync(join(ROOT, "app", "layout.tsx"), "utf8");
+    expect(layout).toContain("PAGE_LANG_SCRIPT");
+    expect(layout).toContain("suppressHydrationWarning");
+  });
+
+  it("draws the bar, the title, the tagline and the steps while the checker loads, in both languages", async () => {
+    const { CheckerSkeleton, FlyerSkeleton } = await import("@/components/Skeletons");
+    const html = renderToStaticMarkup(createElement(CheckerSkeleton));
+    for (const cls of ["app-bar", "brand-mark", "lang-btn", "app-title", "tagline", "card-title"]) expect(html, cls).toContain(`class="${cls}`);
+    for (const lang of ["en", "es"] as const) {
+      expect(html).toContain(`<span class="sk-${lang}" lang="${lang}">${t(lang, "appName")}</span>`);
+      expect(html).toContain(t(lang, "step1"));
+      expect(html).toContain(t(lang, "whereLabel"));
+    }
+    expect(CSS).toMatch(/html\[lang="es"\] \.sk-en,\s*html:not\(\[lang="es"\]\) \.sk-es \{\s*display: none;/);
+    const flyer = renderToStaticMarkup(createElement(FlyerSkeleton));
+    expect(flyer).toContain("Scan to check one bike for one rider");
+    expect(readFileSync(join(ROOT, "components", "ClientOnly.tsx"), "utf8")).not.toContain('<p className="page app-title">');
   });
 });
