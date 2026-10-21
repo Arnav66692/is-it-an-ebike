@@ -67,9 +67,12 @@ describe("the combobox keys follow the ARIA 1.2 pattern", () => {
     expect(comboKey({ open: true, active: 0 }, "ArrowDown", 3, true).handled).toBe(true);
   });
 
-  it("picks the highlighted place on Enter, or the first when none is highlighted", () => {
+  it("picks the highlighted place on Enter, or with none highlighted, only the one place the name can mean", () => {
     expect(comboKey({ open: true, active: 1 }, "Enter", 3, true)).toMatchObject({ pick: 1, next: CLOSED, handled: true });
-    expect(comboKey({ open: true, active: -1 }, "Enter", 3, true)).toMatchObject({ pick: 0, handled: true });
+    expect(comboKey({ open: true, active: -1 }, "Enter", 3, true, 2)).toMatchObject({ pick: 2, next: CLOSED, handled: true });
+    // More than one place could be meant, so Enter highlights the first one and picks nothing yet.
+    expect(comboKey({ open: true, active: -1 }, "Enter", 3, true, null)).toMatchObject({ pick: null, next: { open: true, active: 0 }, handled: true });
+    expect(comboKey({ open: true, active: -1 }, "Enter", 3, true)).toMatchObject({ pick: null, next: { open: true, active: 0 } });
     // A closed list or no results leave Enter alone.
     expect(comboKey(CLOSED, "Enter", 3, true)).toMatchObject({ pick: null, handled: false });
     expect(comboKey({ open: true, active: -1 }, "Enter", 0, true)).toMatchObject({ pick: null, handled: false });
@@ -151,6 +154,26 @@ describe("the search box on the page", () => {
     expect(b.input().props.value).toBe("Carmel Valley");
     b.m.act(() => call(b.input(), "onKeyDown", key("Escape")));
     expect(b.input().props.value).toBe("");
+  });
+
+  it("on Enter with nothing highlighted, never picks a San Diego place for a big city's name, like Boston", async () => {
+    const b = box();
+    b.m.act(() => call(b.input(), "onFocus"));
+    await b.m.settle();
+    b.m.act(() => call(b.input(), "onChange", { target: { value: "Boston" } }));
+    expect(textOf(b.options()[0])).toContain("Suffolk County");
+    b.m.act(() => call(b.input(), "onKeyDown", key("Enter")));
+    // Several places are named Boston, so the first is highlighted for the family to see, not picked.
+    expect(b.onPick).not.toHaveBeenCalled();
+    expect(b.input().props["aria-activedescendant"]).toBe(b.options()[0].props.id);
+    b.m.act(() => call(b.input(), "onKeyDown", key("Enter")));
+    const [picked] = b.onPick.mock.calls[0] as [PlaceEntry];
+    expect(placeLabel(INDEX, picked, "en").text).toBe("Boston, Suffolk County, MA");
+
+    b.m.act(() => call(b.input(), "onChange", { target: { value: "Encinitas" } }));
+    b.m.act(() => call(b.input(), "onKeyDown", key("Enter")));
+    const [encinitas] = b.onPick.mock.calls[1] as [PlaceEntry];
+    expect(encinitas.id).toBe("p-0622678");
   });
 
   it("says the list didn't load, and tries again on the next use", async () => {

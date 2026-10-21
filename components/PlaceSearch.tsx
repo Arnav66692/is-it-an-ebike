@@ -11,7 +11,7 @@ import { isUiKey, t } from "@/lib/i18n/ui";
 import { pickLabels, type PickLabels } from "@/lib/places/linked";
 import { loadPlaceIndex } from "@/lib/places/load";
 import { resolvePlace } from "@/lib/places/resolve";
-import { placeLabel, searchPlaces, type PlaceLabel } from "@/lib/places/search";
+import { enterChoice, placeLabel, searchResults, type PlaceLabel } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndex } from "@/lib/places/types";
 
 /** Where the list's highlight is. -1 means no option is highlighted. */
@@ -34,10 +34,12 @@ export interface ComboKeyResult {
 
 /**
  * What a key does in the search box, following the ARIA 1.2 combobox pattern. Down and Up open
- * the list and move the highlight, wrapping at the ends. Enter picks the highlighted place, or the
- * first one when none is highlighted. Escape closes the list, and on a closed list clears the box.
+ * the list and move the highlight, wrapping at the ends. Enter picks the highlighted place. With
+ * none highlighted, it picks `enterPick`, the one place the typed name can only mean
+ * (enterChoice in lib/places/search.ts), or else highlights the first place, so a place the family
+ * hasn't seen is never picked for them. Escape closes the list, and on a closed list clears the box.
  */
-export function comboKey(state: ComboState, key: string, count: number, hasText: boolean): ComboKeyResult {
+export function comboKey(state: ComboState, key: string, count: number, hasText: boolean, enterPick: number | null = null): ComboKeyResult {
   const none = { pick: null, clear: false, handled: true };
   switch (key) {
     case "ArrowDown":
@@ -48,7 +50,9 @@ export function comboKey(state: ComboState, key: string, count: number, hasText:
       return { next: { open: true, active: state.open && state.active > 0 ? state.active - 1 : count - 1 }, ...none };
     case "Enter":
       if (!state.open || count === 0) return { next: state, pick: null, clear: false, handled: false };
-      return { next: CLOSED, pick: state.active >= 0 && state.active < count ? state.active : 0, clear: false, handled: true };
+      if (state.active >= 0 && state.active < count) return { next: CLOSED, pick: state.active, clear: false, handled: true };
+      if (enterPick !== null && enterPick >= 0 && enterPick < count) return { next: CLOSED, pick: enterPick, clear: false, handled: true };
+      return { next: { open: true, active: 0 }, ...none };
     case "Escape":
       if (state.open) return { next: CLOSED, ...none };
       return { next: CLOSED, pick: null, clear: hasText, handled: hasText };
@@ -143,7 +147,8 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
       });
   }
 
-  const results = useMemo(() => (index && query.trim() !== "" ? searchPlaces(index, query) : []), [index, query]);
+  const found = useMemo(() => (index && query.trim() !== "" ? searchResults(index, query) : []), [index, query]);
+  const results = found.map((r) => r.entry);
   const expanded = combo.open && results.length > 0;
   const optionId = (i: number) => `${listId}-o${i}`;
   const status = comboStatus(lang, query, loading || (index === null && !failed), failed, results.length);
@@ -201,7 +206,7 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
               setCombo({ open: true, active: -1 });
             }}
             onKeyDown={(e) => {
-              const r = comboKey(combo, e.key, results.length, query !== "");
+              const r = comboKey(combo, e.key, results.length, query !== "", enterChoice(found));
               if (r.handled) e.preventDefault();
               if (r.pick !== null) {
                 pick(r.pick);

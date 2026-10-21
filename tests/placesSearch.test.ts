@@ -6,12 +6,13 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { stateName } from "@/lib/i18n/names";
 import { loadPlaceIndex, PLACE_INDEX_URL, resetPlaceIndex } from "@/lib/places/load";
+import { normalizeName } from "@/lib/places/normalize";
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { addPick, engineWhere, inSanDiegoCounty, NO_PICKS, pickIds, picksFromIds, removePick } from "@/lib/places/picks";
 import { entryIdForRecord, resolvePlace } from "@/lib/places/resolve";
 import { CHECKED_CITIES, NOT_COUNTY_LAND, SD_COUNTY_FIPS } from "@/lib/places/sanDiego";
-import { placeLabel, searchPlaces } from "@/lib/places/search";
-import { SD_NEIGHBORHOODS } from "@/lib/places/sdNeighborhoods";
+import { enterChoice, placeLabel, searchPlaces, searchResults } from "@/lib/places/search";
+import { SD_CITY_NEIGHBORHOODS, SD_NEIGHBORHOODS } from "@/lib/places/sdNeighborhoods";
 import type { PlaceEntry, PlaceIndexFile } from "@/lib/places/types";
 import { emptyFacts, evaluate, PLACE_IDS, STATE_CODES } from "@/lib/rules";
 
@@ -148,7 +149,36 @@ describe("what a pick maps to", () => {
   });
 
   it("maps every City of San Diego neighborhood to the City record", () => {
-    for (const n of SD_NEIGHBORHOODS) expect(resolvePlace(entry(`n-${n.slug}`)).localRecord).toBe("city_of_san_diego");
+    for (const n of [...SD_NEIGHBORHOODS, ...SD_CITY_NEIGHBORHOODS]) expect(resolvePlace(entry(`n-${n.slug}`)).localRecord).toBe("city_of_san_diego");
+  });
+
+  it("finds the City of San Diego by the neighborhood names families use", () => {
+    for (const name of ["Hillcrest", "University City", "Point Loma", "Scripps Ranch", "Downtown San Diego", "Del Sur", "North Park", "Mission Hills", "Little Italy"]) {
+      const top = first(name);
+      expect(resolvePlace(top).localRecord, name).toBe("city_of_san_diego");
+      expect(label(top), name).toMatch(/, City of San Diego, San Diego County, CA$/);
+    }
+    // The place elsewhere with the same name is right under it, with its own county and state.
+    expect(searchPlaces(INDEX, "University City").map(label)).toContain("University City, St. Louis County, MO");
+    expect(searchPlaces(INDEX, "Hillcrest").map(label)).toContain("Hillcrest, Kern County, CA");
+  });
+
+  it("takes each everyday neighborhood name from a City of San Diego page, and leaves out names big places elsewhere use", () => {
+    const planning = new Set(SD_NEIGHBORHOODS.flatMap((n) => [n.name, ...(n.alsoKnownAs ?? [])].map(normalizeName)));
+    const slugs = [...SD_NEIGHBORHOODS, ...SD_CITY_NEIGHBORHOODS].map((n) => n.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    const LOCAL_GOVERNMENTS = new Set(["city", "town", "village", "borough", "municipality", "township", "plantation"]);
+    for (const n of SD_CITY_NEIGHBORHOODS) {
+      expect(n.source, n.name).toMatch(/^https:\/\/www\.sandiego\.gov\//);
+      const key = normalizeName(n.name);
+      expect(planning.has(key), n.name).toBe(false);
+      const others = INDEX.entries.filter((e) => e.source !== "neighborhood" && e.keys.includes(key));
+      for (const e of others) {
+        expect(e.counties.includes(SD_COUNTY_FIPS) && e.state === "CA", `${n.name}: ${label(e)}`).toBe(false);
+        expect(LOCAL_GOVERNMENTS.has(e.kind) && e.rank < 2500, `${n.name}: ${label(e)}`).toBe(false);
+        expect(e.state === "CA" && e.kind === "city", `${n.name}: ${label(e)}`).toBe(false);
+      }
+    }
   });
 });
 
@@ -227,8 +257,51 @@ describe("search", () => {
     expect(first("Del Mar").id).toBe("p-0618506");
     expect(first("Encinitas").id).toBe("p-0622678");
     const carmel = searchPlaces(INDEX, "Carmel").map((e) => e.id);
-    expect(carmel.slice(0, 2).sort()).toEqual(["n-carmel-mountain-ranch", "n-carmel-valley"]);
+    // Every place named exactly Carmel first, then the San Diego places that start that way.
+    expect(carmel[0]).toBe(only(named("Carmel", "IN")).id);
     expect(carmel.indexOf("n-carmel-valley")).toBeLessThan(carmel.indexOf(only(named("Carmel Valley Village", "CA")).id));
+    expect(carmel.indexOf("n-carmel-mountain-ranch")).toBeLessThan(carmel.indexOf(only(named("Carmel Valley Village", "CA")).id));
+  });
+
+  it("lists a big place named exactly what was typed before a San Diego place that only starts that way", () => {
+    expect(label(first("Boston"))).toBe("Boston, Suffolk County, MA");
+    expect(label(first("Kearny"))).toBe("Kearny, Hudson County, NJ");
+    expect(first("Paradise").state).not.toBe("CA");
+    expect(first("Spring").state).toBe("TX");
+    expect(first("Golden").kind).not.toBe("neighborhood");
+    // The San Diego place is still in the list, below the exact names.
+    expect(searchPlaces(INDEX, "Kearny").map((e) => e.id)).toContain("n-kearny-mesa");
+  });
+
+  it("never puts a place that only starts with a typed name, a state or a San Diego place, above a place with exactly that name", () => {
+    // The 800 biggest names, typed in full. The first result is always named exactly that.
+    const seen = new Set<string>();
+    const wrong: string[] = [];
+    for (const e of [...INDEX.entries].filter((x) => x.kind !== "state").sort((a, b) => a.rank - b.rank).slice(0, 800)) {
+      if (seen.has(e.name)) continue;
+      seen.add(e.name);
+      const [top] = searchResults(INDEX, e.name);
+      if (top && !top.exact) wrong.push(`${e.name} -> ${label(top.entry)}`);
+    }
+    expect(wrong.slice(0, 5)).toEqual([]);
+  }, 30_000);
+
+  it("picks on Enter only a place the typed name can only mean", () => {
+    expect(enterChoice(searchResults(INDEX, "Encinitas"))).toBe(0);
+    expect(enterChoice(searchResults(INDEX, "Boston"))).toBeNull();
+    expect(enterChoice(searchResults(INDEX, "Bostonia"))).toBe(0);
+    expect(enterChoice(searchResults(INDEX, "Carmel Valley"))).toBe(0);
+    expect(enterChoice(searchResults(INDEX, "Hillcrest"))).toBeNull();
+    expect(enterChoice(searchResults(INDEX, "Bost"))).toBeNull();
+    expect(enterChoice([])).toBeNull();
+  });
+
+  it("never matches the middle of a name with a query that starts with a joining word, like Del Sur", () => {
+    expect(searchPlaces(INDEX, "Del Sur").map((e) => e.id)).toEqual(["n-del-sur"]);
+    expect(searchPlaces(INDEX, "del norte").some((e) => e.kind === "state")).toBe(false);
+    // A word inside a name still matches without one.
+    expect(searchPlaces(INDEX, "Dakota").map((e) => e.id)).toEqual(expect.arrayContaining(["s-ND", "s-SD"]));
+    expect(first("Carolina del Sur").id).toBe("s-SC");
   });
 
   it("puts bigger places first among the rest", () => {

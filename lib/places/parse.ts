@@ -5,7 +5,7 @@ import { stateName } from "@/lib/i18n/names";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { normalizeName } from "./normalize";
 import { SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
-import { neighborhoodId, SD_NEIGHBORHOODS } from "./sdNeighborhoods";
+import { neighborhoodId, SD_CITY_NEIGHBORHOODS, SD_NEIGHBORHOODS } from "./sdNeighborhoods";
 import { KIND_LETTERS, type PlaceEntry, type PlaceIndex, type PlaceIndexFile } from "./types";
 
 /** The City of San Diego's Census place GEOID. Its neighborhoods share its rank. */
@@ -59,7 +59,7 @@ function rowEntry(row: string, rank: number, file: PlaceIndexFile, fipsToState: 
 }
 
 function neighborhoodEntries(rank: number): PlaceEntry[] {
-  return SD_NEIGHBORHOODS.map((n) => ({
+  return [...SD_NEIGHBORHOODS, ...SD_CITY_NEIGHBORHOODS].map((n) => ({
     id: neighborhoodId(n.slug),
     name: n.name,
     kind: "neighborhood",

@@ -1,6 +1,7 @@
 // The search behind "Where do they ride?". It matches the start of a name or of any word in it,
-// puts states first, then places with a checked San Diego record, then bigger places, and
-// labels every result with its county and state so two places with one name can't be confused.
+// puts states first, then exact names before names that only start that way, with a checked San
+// Diego record first within each, then bigger places. It labels every result with its county and
+// state so two places with one name can't be confused.
 
 import { placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { normalizeName, queryVariants } from "./normalize";
@@ -28,14 +29,25 @@ interface Form {
   county: string | null;
 }
 
+/**
+ * Small joining words. A query that starts with one, like "Del Sur", is the start of a name of its
+ * own, so it never matches in the middle of another name, like the "del sur" in "Carolina del Sur".
+ */
+const JOINING_WORDS = new Set(["de", "del", "la", "las", "los", "el", "of", "the", "and", "y"]);
+
+function startsWithJoiningWord(q: string): boolean {
+  return JOINING_WORDS.has(q.split(" ")[0]);
+}
+
 function matchTier(entry: PlaceEntry, variants: string[], allowCode: boolean): Tier | null {
   let best: Tier | null = null;
   for (const q of variants) {
     if (allowCode && entry.kind === "state" && q === entry.state.toLowerCase()) return EXACT;
+    const inWords = q.length >= WORD_MATCH_MIN && !startsWithJoiningWord(q);
     for (const key of entry.keys) {
       if (key === q) return EXACT;
       if (key.startsWith(q)) best = PREFIX;
-      else if (best === null && q.length >= WORD_MATCH_MIN && key.includes(` ${q}`)) best = WORD;
+      else if (best === null && inWords && key.includes(` ${q}`)) best = WORD;
     }
   }
   return best;
@@ -92,15 +104,15 @@ function inCounty(index: PlaceIndex, entry: PlaceEntry, county: string): boolean
 }
 
 /**
- * The order groups. States that match the start of their name come first, then places with a
- * checked San Diego record, then other exact names, other name starts, and words inside names.
- * Within a group an exact name comes before a name that only starts that way.
+ * The order groups. Every exact name comes first, then every name that only starts that way, then
+ * words inside names. In each, a state comes first, then places with a checked San Diego record,
+ * then the rest. So "Texas" lists the state first and "Cal" lists California first, but "Boston"
+ * lists Boston, Massachusetts before Bostonia in San Diego County, "Kent" lists Kent, Washington
+ * before Kentucky, and "Carmel" lists every place named Carmel before Carmel Valley.
  */
 function groupOf(entry: PlaceEntry, tier: Tier): number {
-  if (tier === WORD) return isChecked(entry) ? 4 : 5;
-  if (entry.kind === "state") return 0;
-  if (isChecked(entry)) return 1;
-  return tier === EXACT ? 2 : 3;
+  const within = entry.kind === "state" ? 0 : isChecked(entry) ? 1 : 2;
+  return 3 * tier + within;
 }
 
 const checkedCache = new WeakMap<PlaceEntry, boolean>();
@@ -114,8 +126,30 @@ function isChecked(entry: PlaceEntry): boolean {
   return checked;
 }
 
+/** One search result, and whether its name is exactly what the family typed. */
+export interface SearchResult {
+  entry: PlaceEntry;
+  exact: boolean;
+}
+
 /** The places that match what the family typed, best first, with no two results labeled the same. */
 export function searchPlaces(index: PlaceIndex, text: string, limit: number = DEFAULT_RESULTS): PlaceEntry[] {
+  return searchResults(index, text, limit).map((r) => r.entry);
+}
+
+/**
+ * The place Enter picks when no result is highlighted: the only result, or the only one whose name
+ * is exactly what was typed. Null when more than one could be meant, like "Hillcrest" or "Carmel",
+ * so Enter highlights the first result and a place is never picked without being seen.
+ */
+export function enterChoice(results: readonly SearchResult[]): number | null {
+  if (results.length === 1) return 0;
+  const exact = results.flatMap((r, i) => (r.exact ? [i] : []));
+  return exact.length === 1 ? exact[0] : null;
+}
+
+/** The same as searchPlaces, with whether each name is an exact match. */
+export function searchResults(index: PlaceIndex, text: string, limit: number = DEFAULT_RESULTS): SearchResult[] {
   const forms = formsOf(index, text);
   if (forms.length === 0 || limit <= 0) return [];
   const best = new Map<string, { entry: PlaceEntry; group: number; tier: Tier }>();
@@ -135,12 +169,12 @@ export function searchPlaces(index: PlaceIndex, text: string, limit: number = DE
       a.group - b.group || a.tier - b.tier || a.entry.rank - b.entry.rank || a.entry.name.localeCompare(b.entry.name) || a.entry.id.localeCompare(b.entry.id),
   );
   const labels = new Set<string>();
-  const out: PlaceEntry[] = [];
-  for (const { entry } of ordered) {
+  const out: SearchResult[] = [];
+  for (const { entry, tier } of ordered) {
     const label = placeLabel(index, entry, "en").text;
     if (labels.has(label)) continue;
     labels.add(label);
-    out.push(entry);
+    out.push({ entry, exact: tier === EXACT });
     if (out.length === limit) break;
   }
   return out;

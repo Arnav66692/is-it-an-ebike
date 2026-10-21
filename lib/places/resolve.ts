@@ -4,13 +4,13 @@
 
 import type { PlaceId } from "@/lib/rules/types";
 import { CHECKED_CITIES, NOT_COUNTY_LAND, SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
-import { neighborhoodId, SD_NEIGHBORHOODS } from "./sdNeighborhoods";
+import { neighborhoodId, SD_CITY_NEIGHBORHOODS, SD_NEIGHBORHOODS } from "./sdNeighborhoods";
 import type { PlaceEntry } from "./types";
 
 /**
  * Why a place got the record it did.
  * checked_city: one of the five cities with its own checked record.
- * sd_neighborhood: a City of San Diego community planning area, so the City record.
+ * sd_neighborhood: a City of San Diego community planning area or neighborhood, so the City record.
  * sd_community: a Census CDP in San Diego County, so the county's record for unincorporated land.
  * sd_county: San Diego County itself, so the county's record for unincorporated land.
  * base_or_reservation: a San Diego County community that is mostly base or reservation land, which county ordinances don't govern, so state law only.
@@ -26,7 +26,7 @@ export interface PlaceResolution {
   why: ResolveWhy;
 }
 
-const NEIGHBORHOOD_IDS = new Set(SD_NEIGHBORHOODS.map((n) => neighborhoodId(n.slug)));
+const NEIGHBORHOOD_IDS = new Set([...SD_NEIGHBORHOODS, ...SD_CITY_NEIGHBORHOODS].map((n) => neighborhoodId(n.slug)));
 const NOT_COUNTY_GEOIDS = new Set(NOT_COUNTY_LAND.map((p) => p.geoid));
 const UNINCORPORATED: PlaceId = "unincorporated_san_diego_county";
 

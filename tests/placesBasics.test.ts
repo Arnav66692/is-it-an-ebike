@@ -70,7 +70,9 @@ describe("the checked San Diego cities", () => {
 
 describe("the City of San Diego neighborhoods", () => {
   it("lists every community planning area once, with the City's page as the source", () => {
-    expect(SD_NEIGHBORHOODS).toHaveLength(51);
+    // 52 areas on the page, Downtown among them, whose link goes to its community profile.
+    expect(SD_NEIGHBORHOODS).toHaveLength(52);
+    expect(SD_NEIGHBORHOODS.map((n) => n.name)).toContain("Downtown");
     const slugs = SD_NEIGHBORHOODS.map((n) => n.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
     expect(SD_NEIGHBORHOODS_SOURCE.url).toBe("https://www.sandiego.gov/planning/community-plans");
