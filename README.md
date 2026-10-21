@@ -72,7 +72,7 @@ The costly mistake is calling a bike legal when it isn't, so the engine is built
 
 `/find` asks the rider's age and height, where they ride (the same place search), their main uses (school or commute, fun, trails, cargo or kids, folding), a budget and colors they like. It lists the catalog bikes in the budget.
 
-- Each bike gets the rules engine's YES or NO for this rider in these places today, from the maker's stated specs only. A fact the page leaves out stays unknown, so a rule that needs it makes the answer NO, with the reason. A bike that can switch into a faster class mode is treated the way the checker treats one. A pedal-less e-moto is never YES.
+- Each bike gets the rules engine's YES or NO for this rider in these places today, from the maker's stated specs only. A fact the page leaves out stays unknown, so a rule that needs it makes the answer NO, with the reason. A bike sold in more than one class is checked in every class it names, and a speed it can be set to counts as its top speed. A pedal-less e-moto is never YES.
 - "Check this bike" opens the checker with the maker's facts loaded as read facts, each one not checked, so the checker still can't say YES until the family checks each fact against the bike.
 - Ranked by fit alone: a YES first, then the uses, colors and height that match, then the lower price. No maker counts for or against a bike, there are no images, and no link earns a fee.
 - `data/bikes/catalog.json` has 29 models from 11 makers, 25 e-bikes and 4 pedal-less e-motos, read from each maker's own page on Oct 21, 2026 and reopened field by field by a second reader the same day. Each shows its price as "on the maker's site Oct 21, 2026", its colors, key specs and the maker's link. `docs/BIKE_FINDER.md` has the details.

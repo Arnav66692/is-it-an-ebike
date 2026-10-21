@@ -71,20 +71,6 @@ export function statedWheelInches(text: string | null): number | null {
   return inches ? Number(inches[1]) : null;
 }
 
-/**
- * True when the page shows the bike can run in more than one class or past its shipped speed,
- * like "Class 1, 2, or 3" or "20MPH, adjustable to 25MPH". The engine treats it like a bike with
- * a mode that can be switched on, the same as the checker does.
- */
-export function statedSwitchable(bike: CatalogBike): boolean | null {
-  const classes = statedClasses(bike.class_as_stated);
-  if (classes.length > 1 || bike.derived.class_3_mode_mentioned === true) return true;
-  const top = bike.top_speed_stated_mph;
-  const any = bike.derived.max_speed_any_mode_mph;
-  if (top !== null && any !== null && any > top) return true;
-  return null;
-}
-
 /** The fastest speed the maker's page gives for any mode, or null when it gives none. */
 export function statedTopMph(bike: CatalogBike): number | null {
   const speeds = [bike.top_speed_stated_mph, bike.derived.max_speed_any_mode_mph, bike.throttle_top_speed_mph, bike.assisted_top_speed_mph].filter(
@@ -122,7 +108,10 @@ export function catalogFacts(bike: CatalogBike): BikeFacts {
     throttleMph: bike.throttle_top_speed_mph,
     assistMph: bike.assisted_top_speed_mph,
     topSpeedMph: top,
-    switchable: statedSwitchable(bike),
+    // A page that names several classes is checked in each one, the way the checker reads a
+    // listing. A speed it can be set to is in topSpeedMph. No page here names an unlock or
+    // off-road mode, so the switchable fact stays unknown, as it does for a typed-in bike.
+    switchable: null,
     wheelFrontIn: wheel,
     wheelRearIn: wheel,
     weightLb: bike.weight_lb,
@@ -140,7 +129,6 @@ function sourceLines(bike: CatalogBike, facts: BikeFacts): Partial<Record<FactKe
   if (facts.throttleMph !== null) lines.throttleMph = `Throttle speed: ${facts.throttleMph} mph`;
   if (facts.assistMph !== null) lines.assistMph = `Pedal assist speed: ${facts.assistMph} mph`;
   if (facts.topSpeedMph !== null) lines.topSpeedMph = `Top speed: ${facts.topSpeedMph} mph${bike.speed_note ? `. ${bike.speed_note}` : ""}`;
-  if (facts.switchable !== null) lines.switchable = `Speed or class modes: ${bike.class_as_stated ?? bike.speed_note ?? ""}`;
   if (bike.wheel_size && facts.wheelFrontIn !== null) lines.wheelSize = `Wheels: ${bike.wheel_size}`;
   if (facts.weightLb !== null) lines.weightLb = `Weight: ${facts.weightLb} lb`;
   return lines;

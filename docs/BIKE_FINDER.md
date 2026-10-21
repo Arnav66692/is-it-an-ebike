@@ -16,7 +16,7 @@ The research could not read Trek's pages, which load their specs in the browser 
 
 - Pedals, throttle, rated and peak watts, throttle, assist and top speeds, weight and wheel size are taken as the page states them. A wheel line that disagrees with itself is left unknown.
 - The class line is read for every class it names, so "Class 1, 2, or 3" is all three.
-- A bike that names more than one class, a Class 3 mode, or a top speed above the one it ships with is treated as having a mode that can be switched on, the way the checker treats one.
+- A bike that names more than one class is checked in every class it names, the way the checker reads a listing. A speed it can be set to, like "adjustable to 25MPH", counts as its top speed.
 - The checker's two speed questions are answered only from the maker's stated top speed. Pedal assist can't pass 28 mph when the fastest stated speed is 28 or less. The motor alone can't pass 20 mph when the bike has no throttle, or its stated throttle or top speed is 20 or less. Otherwise the question stays unanswered, and the answer is NO, the maker's page doesn't settle it.
 
 `lib/bikes/finder.ts` runs the rules engine with those facts for the rider's age, state and checked San Diego places, on today's date, and shows the engine's bottom line. A YES says it is on the maker's specs. A pedal-less e-moto is never YES. `tests/finder.test.ts` runs every bike for every state, 15 ages and every checked San Diego place set, more than 50,000 rides, and checks that no bike is YES where the engine on the page's facts alone says it is not allowed.

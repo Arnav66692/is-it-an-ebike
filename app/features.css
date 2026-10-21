@@ -165,3 +165,14 @@
 .finder-card .actions > .btn {
   flex: 1 1 12rem;
 }
+
+/* The mark is a link home on the mods check and the bike finder. Its tap area reaches 44 px. */
+a.brand-mark {
+  position: relative;
+}
+
+a.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+}

@@ -66,32 +66,54 @@ function RuleList({ title, rules, lang }: { title: string; rules: readonly ModRu
   );
 }
 
+/** How many penalties show before the rest fold under "More penalties". */
+export const PENALTIES_SHOWN = 3;
+
+function PenaltyItem({ p, lang }: { p: ModPenalty; lang: Lang }) {
+  return (
+    <li className="mod-rule">
+      <p className="font-semibold" data-claim="" lang="en">
+        {p.for}
+      </p>
+      <p data-claim="" lang="en">
+        {p.penaltyAsWritten}
+      </p>
+      <p className="source-date">
+        {modsText(lang, "who")}{" "}
+        <span data-claim="" lang="en">
+          {p.who}
+        </span>
+      </p>
+      <a className="source-link" href={p.url} target="_blank" rel="noopener noreferrer" data-claim="" lang="en">
+        {p.section}
+      </a>
+    </li>
+  );
+}
+
+/** Every penalty as the data gives it. The first few show, the rest fold under one tap. */
 function PenaltyList({ penalties, lang }: { penalties: readonly ModPenalty[]; lang: Lang }) {
   if (penalties.length === 0) return null;
+  const shown = penalties.slice(0, PENALTIES_SHOWN);
+  const rest = penalties.slice(PENALTIES_SHOWN);
   return (
     <div className="space-y-2">
       <h5 className="eyebrow">{modsText(lang, "penalties")}</h5>
       <ul className="mod-rules" role="list">
-        {penalties.map((p, i) => (
-          <li key={`${p.for}-${i}`} className="mod-rule">
-            <p className="font-semibold" data-claim="" lang="en">
-              {p.for}
-            </p>
-            <p data-claim="" lang="en">
-              {p.penaltyAsWritten}
-            </p>
-            <p className="source-date">
-              {modsText(lang, "who")}{" "}
-              <span data-claim="" lang="en">
-                {p.who}
-              </span>
-            </p>
-            <a className="source-link" href={p.url} target="_blank" rel="noopener noreferrer" data-claim="" lang="en">
-              {p.section}
-            </a>
-          </li>
+        {shown.map((p, i) => (
+          <PenaltyItem key={`${p.for}-${i}`} p={p} lang={lang} />
         ))}
       </ul>
+      {rest.length > 0 ? (
+        <details className="more">
+          <summary>{rest.length === 1 ? modsText(lang, "morePenalty") : modsText(lang, "morePenalties", { n: rest.length })}</summary>
+          <ul className="mod-rules more-body" role="list">
+            {rest.map((p, i) => (
+              <PenaltyItem key={`${p.for}-${i}`} p={p} lang={lang} />
+            ))}
+          </ul>
+        </details>
+      ) : null}
     </div>
   );
 }
@@ -335,7 +357,7 @@ export function ModsCheck({ data }: { data: ModsData }) {
         </fieldset>
       </Card>
 
-      <div className="space-y-4" aria-live="off">
+      <div className="space-y-4">
         <h2 className="step-head">
           <span aria-hidden="true" className="step">
             3
