@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T00:03:11.394Z",
-  "commit": "93fe162",
+  "generated_at": "2026-10-21T01:21:48.872Z",
+  "commit": "b80a350",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
@@ -62,11 +62,13 @@
     "missing_caveat": 0,
     "rendered_cards": 195,
     "hedged": 0,
-    "answer_cards": 434
+    "answer_cards": 434,
+    "card_yes_under_no": 0,
+    "place_cards": 3056
   },
   "tests": {
-    "total": 742,
-    "passed": 742,
+    "total": 788,
+    "passed": 788,
     "failed": 0
   },
   "pilot": {

@@ -5,7 +5,8 @@ The "Where do they ride?" search box loads one file, `public/places/us-places.js
 ## What is in it
 
 - 41,766 rows. 3,144 counties and county equivalents, 32,071 places (cities, towns, villages, boroughs and census designated places, called CDPs), and 6,551 towns and townships.
-- The 51 states and DC are added in code from the file's state list, and the 51 City of San Diego community planning areas from `lib/places/sdNeighborhoods.ts`.
+- The 51 states and DC are added in code from the file's state list, and from `lib/places/sdNeighborhoods.ts` the 52 City of San Diego community planning areas and 70 everyday neighborhood names for parts of the City.
+- San Diego County is also found by the name the answer gives its record, "Unincorporated San Diego County", in English and Spanish (`lib/places/sanDiego.ts`).
 - Towns and townships come from the 12 states where the Census says they are general-purpose local governments: CT, ME, MA, MI, MN, NH, NJ, NY, PA, RI, VT and WI. 1,808 were left out because a place with the same name in the same county is already in the file.
 - 59 places the ACS table doesn't place got their county from their Gazetteer internal point inside the 2025 county boundaries.
 - 292 Puerto Rico places were left out, because the rules table has no Puerto Rico record.
@@ -30,14 +31,16 @@ All files are from the US Census Bureau and are public domain. They were read in
 
 The 12 town states are from the county subdivision entry of the [Census glossary](https://www.census.gov/programs-surveys/geography/about/glossary.html).
 
-The City of San Diego community planning areas are from the City's [General Plan and Community Plans page](https://www.sandiego.gov/planning/community-plans), read 2026-10-20. Each one is a part of the City, so it maps to the City of San Diego record.
+The City of San Diego community planning areas are from the City's [General Plan and Community Plans page](https://www.sandiego.gov/planning/community-plans), read 2026-10-20. Downtown is on that page too, with a link to its community profile. Each one is a part of the City, so it maps to the City of San Diego record.
+
+The everyday neighborhood names are from other City of San Diego pages, read 2026-10-20: the community lists of the nine City Council district pages ([District 1](https://www.sandiego.gov/citycouncil/cd1/communities) through [District 9](https://www.sandiego.gov/citycouncil/cd9/communities)), the neighborhoods the Peninsula, Eastern Area and City Heights community plan pages name, and, for Del Sur and Santaluz, the communities inside Black Mountain Ranch that [Planning Commission Report PC-09-024](https://www.sandiego.gov/sites/default/files/legacy/planning-commission/pdf/pcreports/2009/09024.pdf) names. Each entry lists its page. A name is left out when it is already a planning area or one of its other names, when a San Diego County community has it, when a city, town, village, borough or township elsewhere with that name is one of the 2,500 biggest places in the index (like Middletown, Stockton or Mountain View), or when a city elsewhere in California has it (like San Carlos, Lomita or El Cerrito). A test in `tests/placesSearch.test.ts` checks every entry against those rules.
 
 ## How a pick maps to the rules
 
 `lib/places/resolve.ts` maps a pick by its Census GEOID, state and county, never by name alone.
 
 - Carlsbad, Encinitas, Solana Beach, Del Mar and the City of San Diego map to their own records, each by its GEOID.
-- A City of San Diego community planning area, like Carmel Valley or La Jolla, maps to the City of San Diego record.
+- A City of San Diego community planning area, like Carmel Valley or La Jolla, or a neighborhood name from a City page, like Hillcrest, maps to the City of San Diego record.
 - San Diego County, and every CDP wholly inside it, maps to the unincorporated San Diego County record.
 - Three San Diego County CDPs are mostly base or reservation land, which county ordinances don't govern, so they get California law only. The build measured Camp Pendleton Mainside at 100 percent and Camp Pendleton South at 98 percent on Marine Corps Base Camp Pendleton, and Pala at 94.3 percent on the Pala Reservation. It samples a 120 by 120 grid of points over each CDP and stops if the list in `lib/places/sanDiego.ts` no longer matches.
 - Every other place, including Oceanside, Chula Vista and Escondido, uses its state's law, and the answer says that place's own rules were not checked.
