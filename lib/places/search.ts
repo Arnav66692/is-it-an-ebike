@@ -197,7 +197,9 @@ export function searchResults(index: PlaceIndex, text: string, limit: number = D
   const labels = new Set<string>();
   const out: SearchResult[] = [];
   for (const { entry, tier } of ordered) {
-    const label = placeLabel(index, entry, "en").text;
+    // Two districts can share a name, office city and county, like the two Excel Academy Charter
+    // Districts in Irvine. Each is its own NCES district, so neither hides the other.
+    const label = entry.kind === "district" ? entry.id : placeLabel(index, entry, "en").text;
     if (labels.has(label)) continue;
     labels.add(label);
     out.push({ entry, exact: tier === EXACT });
@@ -261,6 +263,12 @@ export function placeLabel(index: CountyNames, entry: PlaceEntry, lang: Lang): P
   if (entry.kind === "county") {
     const name = lang === "es" ? capitalize(countyNameEs(entry.name)) : entry.name;
     return { name, where: "", state: entry.state, text: `${name}, ${entry.state}` };
+  }
+  if (entry.kind === "district") {
+    // A district's office city, then its county. The county is blank for a district new since the NCES geocodes.
+    const county = entry.counties.length > 0 ? countyText(index, entry, lang) : "";
+    const where = [entry.city ?? "", county].filter(Boolean).join(", ");
+    return { name: entry.name, where, state: entry.state, text: [entry.name, where, entry.state].filter(Boolean).join(", ") };
   }
   const county = countyText(index, entry, lang);
   const where = entry.kind === "neighborhood" ? `${placeName("city_of_san_diego", lang)}, ${county}` : county;

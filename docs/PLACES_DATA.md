@@ -54,3 +54,47 @@ npx tsx scripts/build-places.ts <folder> --built YYYY-MM-DD
 ```
 
 The build stops when a checked city's GEOID no longer names that city in San Diego County, when the base and reservation list changes, when the Census states don't match the rules table, or when a place kind or county is one it doesn't know. Then run `npm test`.
+
+# School districts
+
+The same search box also finds every operating public school district in the 50 states and DC. `lib/places/load.ts` fetches `public/places/us-districts.json` with the place index, the first time the box is used, from the app's own origin. `scripts/build-districts.mjs` builds it, build of 2026-10-21.
+
+## What is in it
+
+- 19,430 districts, every one the NCES 2025-26 directory lists as operating (open, new, added, changed boundary or reopened). The directory has 19,711 records. 268 are closed, inactive or future, and 13 are in the outlying areas, which the rules table doesn't cover.
+- 174 Bureau of Indian Education schools are kept, each under the state it is in.
+- Each row has the NCES ID (LEAID), name, state, county, office city and NCES type. Names and cities are as NCES publishes them, some in capitals.
+- The county is where the district office was in the 2024-25 geocodes. A district can reach into other counties. It is blank for 141 districts, 133 new since those geocodes and 8 with an office in another state.
+- Types 1 and 2 are regular districts. The search names every other type: supervisory union, service agency, state agency, federal agency, charter district, other education agency or specialized district.
+- 124 districts share a name with another district in the same state, ignoring case, so every result shows its office city and county. Five pairs share a name, city and county too. Four of them differ in type, and both districts of every pair stay in the list.
+- San Dieguito Union High is also found as "SDUHSD". A district whose name doesn't say "district" is also found with "school district" after its name.
+
+The file is about 1.44 MB, 340 KB gzipped. A test keeps it under 1.6 MB.
+
+## Sources
+
+| File | Vintage | Used for |
+| --- | --- | --- |
+| [ccd_lea_029_2526_w_0a_050626.zip](https://nces.ed.gov/ccd/data/zip/ccd_lea_029_2526_w_0a_050626.zip) | Common Core of Data, LEA directory, school year 2025-26, preliminary version 0a, data as of May 6, 2026 | Every district, its NCES ID, name, state, office city, type and status |
+| [EDGE_GEOCODE_PUBLICLEA_2425.zip](https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICLEA_2425.zip) | EDGE public school district geocodes, school year 2024-25 | The county of each district office |
+
+Both are public domain, from the National Center for Education Statistics, read Oct 21, 2026. The 2025-26 geocode file returned 404 that day, so counties come from 2024-25. The build checks the directory's status counts against Table 1.1 of the [2025-26 preliminary release notes](https://nces.ed.gov/ccd/doc/SY_2025-26_Preliminary_Data_Release_CCD_Nonfiscal_Release_Notes.docx) and stops if they differ.
+
+## How a district maps to the rules
+
+`lib/places/resolve.ts` maps a district by its NCES ID only.
+
+- San Dieguito Union High School District, LEAID 0634380, turns on the checked SDUHSD campus record. Picking it ticks the SDUHSD campus box instead of adding a chip.
+- Every other district adds a chip and uses its state's law. The answer names it: "Campus rules for Poway Unified were not checked."
+- A district in another state starts over in that state, like any other place.
+- `lib/places/districts.ts` refuses a file that marks any district but SDUHSD as checked, and a test checks all 19,429 others map to no record.
+
+## Rebuilding
+
+Put the two files above in one folder, check that `df -h ~` shows at least 5 GB free first, then run:
+
+```bash
+node scripts/build-districts.mjs <folder> --built YYYY-MM-DD
+```
+
+The build checks every county against `public/places/us-places.json` and stops when SDUHSD is no longer LEAID 0634380 in San Diego County. Then run `npm test`.

@@ -12,7 +12,7 @@ import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/l
 import { formatDate, placeHint, placeName, stateLaw, stateName, stateOf, stateWhere, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { linkedWhere, pickLabels, SD_COUNTY_NAMES, type PickLabels } from "@/lib/places/linked";
-import { addPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
+import { addPick, campusPick, isCampusPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
 import type { PlaceEntry } from "@/lib/places/types";
 import { BikeIcon } from "./BikeIcon";
 import { BikeInput } from "./BikeInput";
@@ -238,8 +238,10 @@ export function Checker() {
       otherPlaces: ride.otherPlaces,
     });
   }, [stage, ageValid, age, stateCode, date, facts, ride]);
-  // The picks whose own city and county rules were not checked, named on the bottom line.
-  const unchecked = uncheckedPicks(where).map((p) => labels[p.id]?.[lang].name ?? p.name);
+  // The picks whose own city, county or campus rules were not checked, named on the bottom line.
+  const notChecked = uncheckedPicks(where);
+  const unchecked = notChecked.filter((p) => p.kind !== "district").map((p) => labels[p.id]?.[lang].name ?? p.name);
+  const uncheckedDistricts = notChecked.filter((p) => p.kind === "district").map((p) => p.name);
 
   // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
   // Worked out on every draw from the checks on screen, so no list kept from an earlier draw can reach it.
@@ -351,8 +353,32 @@ export function Checker() {
     scrollTo(resultsRef);
   }
 
+  /**
+   * San Dieguito Union High School District picked in the search. It ticks the SDUHSD campus box,
+   * the checked campus record, instead of adding a chip. From another state it starts over in California.
+   */
+  function pickCampus(entry: PlaceEntry, entryLabels: PickLabels) {
+    const change = campusPick(where, entry);
+    const moved = entry.state !== stateCode;
+    if (!moved && campus) {
+      setWhereNote({ key: "whereAlready", place: entryLabels });
+      return;
+    }
+    setWhere(change.next);
+    if (moved) setStateCode(entry.state);
+    setCampus(true);
+    setCampusKept(true);
+    if (change.startedOver) setWhereNote({ key: "whereStartedOver", ...change.startedOver });
+    else if (moved) setWhereNote({ key: "whereAddedNewState", place: entryLabels, to: entry.state });
+    else setWhereNote({ key: "whereAdded", place: entryLabels });
+  }
+
   /** A place picked in the search. A place in another state starts over in that state. */
   function pickPlace(entry: PlaceEntry, entryLabels: PickLabels) {
+    if (isCampusPick(entry)) {
+      pickCampus(entry, entryLabels);
+      return;
+    }
     const change = addPick(where, entry);
     setLabels((cur) => ({ ...cur, [entry.id]: entryLabels }));
     setWhere(change.next);
@@ -587,7 +613,7 @@ export function Checker() {
             {(() => {
               const questionsCard = <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />;
               const answer = [
-                summary ? <BottomLineCard key="bottom-line" line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null,
+                summary ? <BottomLineCard key="bottom-line" line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} uncheckedDistricts={uncheckedDistricts} /> : null,
                 <h3 key="by-place" className="section-label">
                   {t(lang, "byPlace")}
                 </h3>,
@@ -605,7 +631,7 @@ export function Checker() {
         {/* Always in the page. Screen readers hear one short sentence when the answer appears or
             changes, not the whole card on every edit. */}
         <p role="status" className="sr-only">
-          {summary ? announcement(summary, lang, unchecked) : ""}
+          {summary ? announcement(summary, lang, unchecked, uncheckedDistricts) : ""}
         </p>
         {result ? (
           <div className="actions no-print">

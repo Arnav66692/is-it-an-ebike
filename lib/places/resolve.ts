@@ -3,6 +3,7 @@
 // in New Mexico or a Carmel Valley in Monterey County never gets a San Diego record.
 
 import type { PlaceId } from "@/lib/rules/types";
+import { isSduhsd } from "./districts";
 import { CHECKED_CITIES, NOT_COUNTY_LAND, SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
 import { neighborhoodId, SD_CITY_NEIGHBORHOODS, SD_NEIGHBORHOODS } from "./sdNeighborhoods";
 import type { PlaceEntry } from "./types";
@@ -14,9 +15,11 @@ import type { PlaceEntry } from "./types";
  * sd_community: a Census CDP in San Diego County, so the county's record for unincorporated land.
  * sd_county: San Diego County itself, so the county's record for unincorporated land.
  * base_or_reservation: a San Diego County community that is mostly base or reservation land, which county ordinances don't govern, so state law only.
- * state_only: everything else. State law applies, and the place's own rules were not checked.
+ * sduhsd_district: San Dieguito Union High School District, by its NCES LEAID, so the SDUHSD campus record.
+ * state_only: everything else. State law applies, and the place's own rules were not checked. Every
+ * other school district is here, so its campus rules are named as not checked.
  */
-export type ResolveWhy = "checked_city" | "sd_neighborhood" | "sd_community" | "sd_county" | "base_or_reservation" | "state_only";
+export type ResolveWhy = "checked_city" | "sd_neighborhood" | "sd_community" | "sd_county" | "base_or_reservation" | "sduhsd_district" | "state_only";
 
 export interface PlaceResolution {
   state: string;
@@ -44,6 +47,10 @@ function stateOnly(entry: PlaceEntry, why: ResolveWhy = "state_only"): PlaceReso
 }
 
 export function resolvePlace(entry: PlaceEntry): PlaceResolution {
+  // A school district maps by its NCES LEAID only. Just one has checked campus rules.
+  if (entry.kind === "district" || entry.source === "district") {
+    return isSduhsd(entry) && onlyInSanDiegoCounty(entry) ? local(entry, "sduhsd_campuses", "sduhsd_district") : stateOnly(entry);
+  }
   if (!onlyInSanDiegoCounty(entry)) return stateOnly(entry);
   switch (entry.source) {
     case "neighborhood":
