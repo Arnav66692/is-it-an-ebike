@@ -798,14 +798,6 @@ div.fact-group.fact-grid {
   box-decoration-break: clone;
 }
 
-/* What the facts card asks of read facts, once, above the list. */
-.read-intro {
-  padding: 0.85rem 1rem;
-  border-radius: 1rem;
-  background: var(--maybe-bg);
-  color: var(--ink);
-}
-
 /* A read fact in one soft row: its short mark, the words it was read from, and its "It matches
    the bike" box. */
 .read-check {

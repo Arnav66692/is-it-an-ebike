@@ -503,7 +503,7 @@ describe("the smaller visual fixes", () => {
     expect(CSS).toMatch(/\.meta \{\s*color: var\(--muted\);\s*font-size: 1rem;/);
     const mark = CSS.slice(CSS.indexOf(".read-mark {"), CSS.indexOf("}", CSS.indexOf(".read-mark {")));
     expect(mark).not.toMatch(/font-size/);
-    expect(CSS).toMatch(/\.read-intro \{[^}]*background: var\(--maybe-bg\)/);
+    expect(CSS).not.toContain(".read-intro");
     expect(CSS.slice(CSS.indexOf(".quote {"), CSS.indexOf("}", CSS.indexOf(".quote {")))).not.toMatch(/font-size/);
   });
 

@@ -103,9 +103,10 @@ describe("the bike input tabs follow the ARIA tabs pattern", () => {
     expect(html).toMatch(/<p role="status" class="sr-only"><\/p>/);
   });
 
-  it("gives Type it in its own line, not the step 3 sentence right above step 3", () => {
-    expect(t("en", "typeHelp")).not.toBe(t("en", "step3Help"));
-    expect(t("es", "typeHelp")).not.toBe(t("es", "step3Help"));
+  it("keeps the facts card free of instruction paragraphs, so Type it in's line is the only one", () => {
+    const card = readFileSync(join(process.cwd(), "components/FactsCard.tsx"), "utf8");
+    expect(card).not.toContain("step3Help");
+    expect(card).not.toContain("readIntro");
   });
 });
 

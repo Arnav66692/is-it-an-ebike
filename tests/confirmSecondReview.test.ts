@@ -277,7 +277,6 @@ describe("the bottom line names the box the family will find", () => {
       const names = boxes.map((tag) => /aria-label="([^"]*)"/.exec(tag)?.[1] ?? "");
       expect(names.length, lang).toBe(unconfirmedFields(bike.checks).length);
       for (const name of names) expect(name.startsWith(t(lang, "readMatches")), `${lang} ${name}`).toBe(true);
-      expect(t(lang, "readIntro"), lang).toContain(`"${t(lang, "readMatches")}"`);
     }
   });
 

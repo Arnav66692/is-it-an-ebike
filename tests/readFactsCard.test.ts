@@ -89,7 +89,7 @@ describe("the words a family reads", () => {
       for (const f of unconfirmedFields(bike.checks)) {
         expect(html, `${lang} ${f}`).toContain(`aria-label="${t(lang, "readMatchesFor", { field: READ_FIELD_NAMES[lang][f] })}"`);
       }
-      expect(html).toContain(t(lang, "readIntro"));
+      expect(html, lang).not.toContain('class="read-intro"');
       expect(html).toContain(t(lang, "readCount", { done: 0, total: 8 }));
     }
     const checked = render(withConfirmed(bike, "classes", true), "en");
@@ -103,12 +103,10 @@ describe("the words a family reads", () => {
     const typed = render(withEdit(emptyChecked(), classBike(2)), "en");
     expect(typed).not.toContain(t("en", "readMarkText"));
     expect(typed).not.toContain(t("en", "readMatches"));
-    expect(typed).not.toContain(t("en", "readIntro"));
   });
 
   it("keeps the new interface text in Arnav's style", () => {
     const keys = [
-      "readIntro",
       "readAnnounceOne",
       "readAnnounceMany",
       "readMarkText",

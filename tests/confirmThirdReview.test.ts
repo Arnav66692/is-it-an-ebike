@@ -288,10 +288,8 @@ describe("the new words", () => {
     expect(line("classes,weightLb", "es")).toMatch(/debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal\.$/);
     expect(line("weightLb", "en")).toMatch(/under that fact in "Check the facts" above, or fix that fact\.$/);
     expect(line("weightLb", "es")).toMatch(/debajo de ese dato en "Revisa los datos", arriba, o corrige el dato\.$/);
-    expect(t("en", "readIntro")).toContain("or fix any that are wrong.");
-    expect(t("es", "readIntro")).toContain("o corrige los que estén mal.");
     for (const lang of LANGS) {
-      for (const key of ["readIntro", "readMarkPhoto", "readMarkChecked", "readMatchesFront", "readMatchesRear", "photoCheckKeptTick", "readAnnounceOne", "readAnnounceMany"] as const) {
+      for (const key of ["readMarkPhoto", "readMarkChecked", "readMatchesFront", "readMatchesRear", "photoCheckKeptTick", "readAnnounceOne", "readAnnounceMany"] as const) {
         expect(t(lang, key), `${lang}.${key}`).not.toMatch(/[—;]/);
       }
     }
