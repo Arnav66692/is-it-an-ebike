@@ -210,6 +210,13 @@ export interface MatrixSummary {
   stateCases: number;
   localCases: number;
   byStatus: Record<Status, number>;
+  /**
+   * How each engine verdict is drawn on its place card, YES or NO, with the facts typed in. An
+   * allowed card is drawn NO when the bottom line can't confirm it, like a ride past the state check.
+   */
+  shownAs: Record<Status, Record<Answer, number>>;
+  /** A card drawn YES or NO other than the raw data gives it. */
+  shownWrong: MatrixCase[];
   falseLegal: MatrixCase[];
   missedYes: MatrixCase[];
   /** A rendered place card whose answer is not a plain YES or NO, or that gives a hedge as the answer. */
@@ -262,6 +269,8 @@ function bottomAnswerProblems(bl: BottomLine, stateCode: string): string[] {
 
 export function runMatrix(): MatrixSummary {
   const byStatus: Record<Status, number> = { yes: 0, no: 0, not_ebike: 0, cant_confirm: 0, need_info: 0 };
+  const shownAs = Object.fromEntries((Object.keys(byStatus) as Status[]).map((st) => [st, { yes: 0, no: 0 }])) as Record<Status, Record<Answer, number>>;
+  const shownWrong: MatrixCase[] = [];
   const falseLegal: MatrixCase[] = [];
   const missedYes: MatrixCase[] = [];
   const hedged: MatrixCase[] = [];
@@ -280,8 +289,11 @@ export function runMatrix(): MatrixSummary {
     if (problems.length > 0) hedged.push({ ...c, blockers: problems });
   };
 
-  const check = (c: MatrixCase) => {
+  const check = (c: MatrixCase, v: Verdict) => {
     byStatus[c.status] += 1;
+    const shown = cardAnswer(v, c.date, c.state);
+    shownAs[c.status][shown] += 1;
+    if (shown !== answerFor(cardMustSayYes(v, c.state, c.date, 0))) shownWrong.push(c);
     if (c.status === "yes" && c.blockers.length > 0) falseLegal.push(c);
     if (c.status !== "yes" && c.blockers.length === 0) missedYes.push(c);
   };
@@ -296,18 +308,18 @@ export function runMatrix(): MatrixSummary {
           const blockers = stateBlockers(state, bike.facts, age, date);
           const base = { state, cls: bike.cls, age, date, variant: bike.name };
           stateCases += 1;
-          check({ ...base, scope: "state", status: result.state.status, blockers });
+          check({ ...base, scope: "state", status: result.state.status, blockers }, result.state);
           readCard({ ...base, scope: "state", status: result.state.status, blockers: [] }, result.state, result.localNotice);
           for (const v of result.local) {
             localCases += 1;
-            check({ ...base, scope: v.id, status: v.status, blockers: [...blockers, ...localBlockersAllClasses(v.id, bike.facts, age, date)] });
+            check({ ...base, scope: v.id, status: v.status, blockers: [...blockers, ...localBlockersAllClasses(v.id, bike.facts, age, date)] }, v);
             readCard({ ...base, scope: v.id, status: v.status, blockers: [] }, v, false);
           }
         }
       }
     }
   }
-  return { cases: stateCases + localCases, stateCases, localCases, byStatus, falseLegal, missedYes, hedged, answerCards: answerCards.size };
+  return { cases: stateCases + localCases, stateCases, localCases, byStatus, shownAs, shownWrong, falseLegal, missedYes, hedged, answerCards: answerCards.size };
 }
 
 /** California place sets for the bottom line: none, each place alone, and all of them. */

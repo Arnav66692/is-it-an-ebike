@@ -7,6 +7,8 @@ import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { DATES, runBottomLineMatrix, runMatrix, SHAPES, VARIANTS, type ReadVariant } from "../tests/matrix";
+import { stateCheckedThrough } from "../lib/rules/bottomLine";
+import { getState, STATE_CODES } from "../lib/rules/compile";
 
 const root = join(__dirname, "..");
 const read = <T>(path: string): T | null => {
@@ -90,6 +92,9 @@ const accuracy = {
     state_cases: matrix.stateCases,
     local_cases: matrix.localCases,
     by_status: matrix.byStatus,
+    // How each verdict is drawn on its card. An allowed card is drawn NO when the bottom line can't confirm it.
+    shown_as: matrix.shownAs,
+    shown_wrong: matrix.shownWrong.length,
     false_legal: matrix.falseLegal.length,
     missed_yes: matrix.missedYes.length,
     hedged: matrix.hedged.length,
@@ -134,6 +139,15 @@ mkdirSync(join(root, "data", "results"), { recursive: true });
 writeFileSync(join(root, "data", "results", "accuracy.json"), JSON.stringify(accuracy, null, 2) + "\n");
 
 const s = matrix.byStatus;
+const STATUS_ROWS: [keyof typeof s, string][] = [
+  ["yes", "Allowed"],
+  ["no", "Rider not allowed"],
+  ["not_ebike", "Not an e-bike"],
+  ["cant_confirm", "Can't confirm it's legal"],
+  ["need_info", "Follow-up question still open"],
+];
+// The matrix dates past every state's 30-day check, counted from the rules table.
+const lateDates = DATES.filter((d) => STATE_CODES.every((c) => d > stateCheckedThrough(getState(c).lastChecked)));
 // Said only when the counts above show it.
 const illegalSame = READ_ROWS.every(([key]) => bottom.byRead[key].no_illegal === bottom.byRead.typed.no_illegal);
 const checkedSame = JSON.stringify(bottom.byRead.read_all_checked) === JSON.stringify(bottom.byRead.typed);
@@ -160,16 +174,15 @@ An independent checker in \`tests/oracle.ts\` reads the raw JSON itself and list
 | **False legal** (engine says yes, table gives a reason for no) | **${matrix.falseLegal.length}** |
 | Missed yes (engine refuses, table gives no reason to) | ${matrix.missedYes.length} |
 | Rendered place card whose answer is not a plain YES or NO, or leads with a hedge | ${matrix.hedged.length} |
+| Place card drawn YES or NO other than the raw data gives it | ${matrix.shownWrong.length} |
 
 Every place card answers YES or NO. Only an allowed card is YES. A card that is not allowed, not an e-bike, can't be confirmed or still has a question open is NO, with a plain reason under it, like "We can't confirm it's legal in South Carolina." The engine decides exactly as before, only the words changed. The check renders ${matrix.answerCards.toLocaleString("en-US")} distinct place cards from these cases, each in English and Spanish, and fails any card whose headline is not YES or NO, whose mark or reason line doesn't match it, or that gives a hedge like "Can't confirm", "unsure" or "not sure" as the answer. The "Not sure" choice on a follow-up question is a question, not an answer, and it leads to NO.
 
-| Engine verdict | Shown as | Cases | Share |
-|---|---|---|---|
-| Allowed | YES | ${s.yes.toLocaleString("en-US")} | ${pct(s.yes, matrix.cases)} |
-| Rider not allowed | NO | ${s.no.toLocaleString("en-US")} | ${pct(s.no, matrix.cases)} |
-| Not an e-bike | NO | ${s.not_ebike.toLocaleString("en-US")} | ${pct(s.not_ebike, matrix.cases)} |
-| Can't confirm it's legal | NO | ${s.cant_confirm.toLocaleString("en-US")} | ${pct(s.cant_confirm, matrix.cases)} |
-| Follow-up question still open | NO until it is answered | ${s.need_info.toLocaleString("en-US")} | ${pct(s.need_info, matrix.cases)} |
+| Engine verdict | Cases | Share | Card shows YES | Card shows NO |
+|---|---|---|---|---|
+${STATUS_ROWS.map(([key, name]) => `| ${name} | ${s[key].toLocaleString("en-US")} | ${pct(s[key], matrix.cases)} | ${matrix.shownAs[key].yes.toLocaleString("en-US")} | ${matrix.shownAs[key].no.toLocaleString("en-US")} |`).join("\n")}
+
+An allowed card shows NO when the bottom line can't confirm that same card: a ride date past the 30-day state check, a "not sure" fast-mode answer, or a record not read in enacted text. ${lateDates.length} of the ${DATES.length} dates in this matrix are past the state check for every state, so ${pct(matrix.shownAs.yes.no, s.yes)} of allowed cards show NO here. Every other verdict always shows NO.
 
 ${vitest ? `Full test suite: ${vitest.numPassedTests} of ${vitest.numTotalTests} tests passed.` : "Run `npm run results` to add the full test suite count."}
 

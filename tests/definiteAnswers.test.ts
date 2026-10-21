@@ -204,7 +204,7 @@ describe("the accuracy page labels every answer YES or NO", () => {
     it(`in ${lang === "en" ? "English" : "Spanish"}`, () => {
       const text = ACCURACY_TEXT[lang];
       const yes = [text.statusYes, text.blYes];
-      const no = [text.statusNo, text.statusNotEbike, text.statusCantConfirm, text.statusNeedInfo, text.blNoIllegal, text.blNoUnconfirmed];
+      const no = [text.statusAllowedNo, text.statusNo, text.statusNotEbike, text.statusCantConfirm, text.statusNeedInfo, text.blNoIllegal, text.blNoUnconfirmed];
       for (const label of yes) expect(label.split(/[ ,]/)[0], label).toBe(ANSWER_WORD[lang].yes);
       for (const label of no) expect(label.split(/[ ,]/)[0], label).toBe(ANSWER_WORD[lang].no);
       expect(hedgeProblems([...yes, ...no], true)).toEqual([]);

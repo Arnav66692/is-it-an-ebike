@@ -14,7 +14,10 @@ export interface AccuracyText {
   engineCases: (cases: string, places: number) => string;
   falseLegal: string;
   missedYes: string;
+  /** Cards that say YES: allowed, with nothing the bottom line can't confirm. */
   statusYes: string;
+  /** Allowed cards that say NO, because the bottom line can't confirm them. */
+  statusAllowedNo: string;
   statusNo: string;
   statusNotEbike: string;
   statusCantConfirm: string;
@@ -75,6 +78,7 @@ const en: AccuracyText = {
   falseLegal: "False legal results",
   missedYes: "Refused when the table allows it",
   statusYes: "YES",
+  statusAllowedNo: "NO, allowed by the rules table but a check is missing, like a ride date past the state check",
   statusNo: "NO, rider not allowed",
   statusNotEbike: "NO, not an e-bike",
   statusCantConfirm: "NO, can't confirm it's legal",
@@ -141,6 +145,7 @@ const es: AccuracyText = {
   falseLegal: "Resultados legales falsos",
   missedYes: "Rechazados cuando la tabla lo permite",
   statusYes: "SÍ",
+  statusAllowedNo: "NO, permitida por la tabla de reglas pero falta una revisión, como una fecha de viaje después de la revisión estatal",
   statusNo: "NO, la persona no puede usarla",
   statusNotEbike: "NO, no es una bicicleta eléctrica",
   statusCantConfirm: "NO, no podemos confirmar que sea legal",

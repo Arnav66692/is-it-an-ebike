@@ -29,6 +29,15 @@ describe("generated test matrix", () => {
     const sample = summary.hedged.slice(0, 5);
     expect(sample, JSON.stringify(sample, null, 1)).toEqual([]);
   });
+
+  it("counts how each verdict is drawn, and draws every card the way the raw data says", () => {
+    const sample = summary.shownWrong.slice(0, 5);
+    expect(sample, JSON.stringify(sample, null, 1)).toEqual([]);
+    // Only an allowed card is ever drawn YES, and some allowed cards are drawn NO, like a ride past the state check.
+    for (const status of ["no", "not_ebike", "cant_confirm", "need_info"] as const) expect(summary.shownAs[status].yes, status).toBe(0);
+    expect(summary.shownAs.yes.yes + summary.shownAs.yes.no).toBe(summary.byStatus.yes);
+    expect(summary.shownAs.yes.no).toBeGreaterThan(0);
+  });
 });
 
 describe("generated bottom-line matrix", () => {

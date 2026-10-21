@@ -333,3 +333,24 @@ describe("the page", () => {
     expect(p.campusBox()).toBeUndefined();
   });
 });
+
+describe("the accuracy page counts only cards that say YES as YES", () => {
+  it("never puts the allowed count under YES when some allowed cards say NO", async () => {
+    const { AccuracyView } = await import("@/components/AccuracyView");
+    const accuracy = JSON.parse(readFileSync(join(ROOT, "data", "results", "accuracy.json"), "utf8")) as {
+      engine: { by_status: { yes: number }; shown_as?: { yes: { yes: number; no: number } } };
+    };
+    const page = renderToStaticMarkup(createElement(AccuracyView, { lang: "en" }));
+    // The engine's own table only. The bottom line table has a YES row of its own, for whole rides.
+    const html = page.slice(page.indexOf("Rules engine"), page.indexOf("Bottom line YES or NO"));
+    const rows = [...html.matchAll(/<th[^>]*>([^<]*)<\/th><td[^>]*>([^<]*)<\/td>/g)].map((m) => [m[1], m[2]] as const);
+    const yes = rows.filter(([name]) => name === "YES");
+    const shown = accuracy.engine.shown_as;
+    if (!shown) {
+      expect(yes).toEqual([]);
+      return;
+    }
+    expect(yes[0][1]).toMatch(new RegExp(`^${shown.yes.yes.toLocaleString("en-US")} `));
+    expect(shown.yes.yes + shown.yes.no).toBe(accuracy.engine.by_status.yes);
+  });
+});

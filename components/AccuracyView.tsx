@@ -51,6 +51,8 @@ export function AccuracyView({ lang }: { lang: Lang }) {
   // Rendered answers that are not a plain YES or NO. Older result files don't have the count.
   const hedged = (e as { hedged?: number }).hedged;
   const bl = (accuracy as { bottom_line?: BottomLineResults }).bottom_line ?? null;
+  // How allowed cards are drawn, YES or NO. Older result files don't have it.
+  const shownAs = (e as { shown_as?: Record<string, { yes: number; no: number }> }).shown_as ?? null;
   const fmt = (n: number) => n.toLocaleString(locale);
   const share = (n: number) => `${((100 * n) / e.cases).toFixed(1)}%`;
   const verdict = (bar: Bar) => `${localizeResult(bar.result, lang)}, ${bar.pass ? text.pass : text.fail}`;
@@ -91,7 +93,9 @@ export function AccuracyView({ lang }: { lang: Lang }) {
             <Row label={text.falseLegal} value={fmt(e.false_legal)} strong />
             <Row label={text.missedYes} value={fmt(e.missed_yes)} />
             {hedged !== undefined ? <Row label={text.hedged} value={fmt(hedged)} /> : null}
-            <Row label={text.statusYes} value={`${fmt(e.by_status.yes)} (${share(e.by_status.yes)})`} />
+            {/* YES counts only the allowed cards that say YES. An older result file without the count shows no YES row. */}
+            {shownAs ? <Row label={text.statusYes} value={`${fmt(shownAs.yes.yes)} (${share(shownAs.yes.yes)})`} /> : null}
+            {shownAs ? <Row label={text.statusAllowedNo} value={`${fmt(shownAs.yes.no)} (${share(shownAs.yes.no)})`} /> : null}
             <Row label={text.statusNo} value={`${fmt(e.by_status.no)} (${share(e.by_status.no)})`} />
             <Row label={text.statusNotEbike} value={`${fmt(e.by_status.not_ebike)} (${share(e.by_status.not_ebike)})`} />
             <Row label={text.statusCantConfirm} value={`${fmt(e.by_status.cant_confirm)} (${share(e.by_status.cant_confirm)})`} />
