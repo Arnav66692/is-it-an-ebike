@@ -1019,9 +1019,31 @@ div.fact-group.fact-grid {
 }
 
 .bl-item {
+  display: grid;
+  gap: 0.15rem;
   padding: 0.7rem 0.9rem;
   border-radius: 0.8rem;
   background: var(--sunk);
+}
+
+/* The places an item is about, above its one short line. */
+.bl-where {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bl-short {
+  font-weight: 600;
+}
+
+/* The full sentence under a short line, folded. Its summary is a 44 px tap target like every other. */
+.bl-more {
+  margin-top: 0.1rem;
+}
+
+.bl-more > p {
+  padding-bottom: 0.4rem;
 }
 
 .bl-foot {

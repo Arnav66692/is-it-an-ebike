@@ -2,9 +2,9 @@
 
 import { useId } from "react";
 import type { BottomLine, BottomLineItem, CardRef } from "@/lib/rules/bottomLine";
-import { capitalize, cardWhere, formatDate, joinList, placeNameInList, placeNameInline, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
+import { capitalize, cardWhere, formatDate, joinList, placeNameCovered, placeNameInList, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
-import { renderLine } from "@/lib/i18n/verdicts";
+import { renderLine, renderShortLine } from "@/lib/i18n/verdicts";
 
 /** YES or NO, never a maybe. A ride we can't confirm is legal is a NO, with the reason under it. */
 const MARK: Record<BottomLine["kind"], string> = {
@@ -67,7 +67,7 @@ export function whereLabel(where: CardRef[], lang: Lang, stateCode: string): str
 /** "This covers California state law and the City of San Diego." */
 export function coversSentence(line: BottomLine, lang: Lang, stateCode: string): string {
   if (line.covered.length === 1) return t(lang, "blCoversStateOnly", { law: stateLaw(stateCode, lang, "inline") });
-  const names = line.covered.map((r) => (r.scope === "state" ? stateLaw(stateCode, lang, "inline") : placeNameInline(r.id, lang)));
+  const names = line.covered.map((r) => (r.scope === "state" ? stateLaw(stateCode, lang, "inline") : placeNameCovered(r.id, lang)));
   return t(lang, "blCovers", { list: joinList(names, lang) });
 }
 
@@ -119,19 +119,34 @@ interface ItemListProps {
   stateCode: string;
 }
 
+/**
+ * Each item is one short line under the places it names, like "Tick the 7 facts we read, in step
+ * 3.", so the card reads as one compact answer. When the full sentence says more, it is folded
+ * under the line and opens on tap, so nothing it says is lost.
+ */
 function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
   const shown = mergeRendered(items, lang, state);
   if (shown.length === 0) return null;
   return (
     <div className="space-y-2">
       <h4 className="eyebrow text-muted">{title}</h4>
-      <ul className="bl-list">
-        {shown.map((item, i) => (
-          <li key={`${item.line.code}-${i}`} className="bl-item">
-            <span className="block text-[0.9rem] font-semibold text-muted">{whereLabel(item.where, lang, stateCode)}</span>
-            <span className="block">{renderLine(item.line, lang, state)}</span>
-          </li>
-        ))}
+      <ul className="bl-list" role="list">
+        {shown.map((item, i) => {
+          const full = renderLine(item.line, lang, state);
+          const short = renderShortLine(item.line, lang, state);
+          return (
+            <li key={`${item.line.code}-${i}`} className="bl-item">
+              <span className="bl-where">{whereLabel(item.where, lang, stateCode)}</span>
+              <span className="bl-short">{short ?? full}</span>
+              {short ? (
+                <details className="line-details bl-more">
+                  <summary>{t(lang, "blMore")}</summary>
+                  <p className="mt-1">{full}</p>
+                </details>
+              ) : null}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -191,6 +206,8 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
 
       <div className="bl-body">
         <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
+        {/* The reason under a not-an-e-bike NO is one short line. What that means for other vehicles is here. */}
+        {line.kind === "no_illegal" && line.notEbikeOnly ? <p>{t(lang, "blNotEbikeNote")}</p> : null}
         <ItemList title={t(lang, "blToCheck")} items={toCheck} lang={lang} state={state} stateCode={stateCode} />
         <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
 

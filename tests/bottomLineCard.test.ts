@@ -88,9 +88,9 @@ describe("bottom-line card", () => {
     expect(bl.kind).toBe("no_illegal");
     expect(bl.blocked.flatMap((b) => b.where)).toEqual([{ scope: "state", id: "TX" }]);
     // A machine with no pedals is not an e-bike, so the line says that rather than citing a rule that bars the ride.
-    expect(announcement(bl, "en")).toBe(
-      "Bottom line: NO. Not an e-bike under the law we checked. E-bike rules don't cover it, and the rules for other vehicles are not checked here.",
-    );
+    // The reason under the NO is one short line. What it means for other vehicles is in the card's body.
+    expect(announcement(bl, "en")).toBe("Bottom line: NO. Not an e-bike under the law we checked.");
+    expect(render(bl, "en", "TX")).toContain("E-bike rules don't cover it, and the rules for other vehicles are not checked here.");
     for (const lang of ["en", "es"] as const) {
       const text = render(bl, lang, "TX");
       expect(text).not.toMatch(/place you picked|lugar que marcaste/);

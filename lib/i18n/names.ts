@@ -74,6 +74,8 @@ interface PlaceNames {
   list?: { en: string; es: string };
   /** Where a ride happens, when "in" plus the inline name doesn't read right: "on an SDUHSD campus". */
   where?: { en: string; es: string };
+  /** In "This covers ...", when the inline name would name the place another way than the card's labels do. */
+  covers?: { en: string; es: string };
 }
 
 const PLACE_NAMES: Record<PlaceId, PlaceNames> = {
@@ -100,6 +102,7 @@ const PLACE_NAMES: Record<PlaceId, PlaceNames> = {
     inline: { en: "SDUHSD campus rules", es: "las reglas de las escuelas de SDUHSD" },
     list: { en: "an SDUHSD campus", es: "una escuela de SDUHSD" },
     where: { en: "on an SDUHSD campus", es: "en una escuela de SDUHSD" },
+    covers: { en: "an SDUHSD campus", es: "una escuela de SDUHSD" },
     hint: { en: "Canyon Crest Academy, Torrey Pines and the other district schools", es: "Canyon Crest Academy, Torrey Pines y las demás escuelas del distrito" },
   },
 };
@@ -114,6 +117,12 @@ export function placeNameInline(id: string, lang: Lang): string {
   const p = PLACE_NAMES[id as PlaceId];
   if (!p) return id;
   return p.inline ? p.inline[lang] : p[lang];
+}
+
+/** The place name in "This covers California state law, the City of San Diego and an SDUHSD campus." */
+export function placeNameCovered(id: string, lang: Lang): string {
+  const p = PLACE_NAMES[id as PlaceId];
+  return p?.covers ? p.covers[lang] : placeNameInline(id, lang);
 }
 
 /** The place name as an item in a list, for example the second item in "City of San Diego and an SDUHSD campus". */

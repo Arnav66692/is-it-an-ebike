@@ -564,6 +564,59 @@ const CHANGES: Record<Lang, Record<string, string>> = {
 
 const TEMPLATES: Record<Lang, Record<string, Template>> = { en: EN, es: ES satisfies Templates };
 
+/**
+ * One short line for a What's missing or Still to check item whose full sentence runs long, like
+ * "Tick the 7 facts we read, in step 3." The full sentence stays on the card, folded under it.
+ * Codes not listed here are already one short sentence.
+ */
+const SHORT: Record<Lang, Partial<Record<BottomLineCode, Template>>> = {
+  en: {
+    bl_unconfirmed_facts: (p) => {
+      const count = namedReadFields(n(p.fields)).length;
+      return count === 1 ? "Tick the fact we read, in step 3." : `Tick the ${count} facts we read, in step 3.`;
+    },
+    bl_no_unchecked_facts: (p) => {
+      const count = namedReadFields(n(p.fields)).length;
+      return count === 1 ? "Tick the fact we read, in step 3. The answer could change." : `Tick the ${count} facts we read, in step 3. The answer could change.`;
+    },
+    bl_unsure_fast_mode: (p) =>
+      ({
+        both: "You answered \"not sure\" about fast modes.",
+        motor: "You answered \"not sure\" about the motor alone going past 20 mph.",
+        assist: "You answered \"not sure\" about pedal assist going past 28 mph.",
+      })[fastUnsure(p)],
+    bl_unverified_primary_partial: (p) => (p.place === "sduhsd_campuses" ? "District rules are only on a web page." : "Some of these rules are only on a web page."),
+    bl_unverified_primary_not_found: () => "The enacted text of these rules wasn't found.",
+    bl_state_after_check: (p, c) => `Rules confirmed only through ${formatDate(n(p.through), c.lang)}.`,
+  },
+  es: {
+    bl_unconfirmed_facts: (p) => {
+      const count = namedReadFields(n(p.fields)).length;
+      return count === 1 ? "Marca el dato que leímos, en el paso 3." : `Marca los ${count} datos que leímos, en el paso 3.`;
+    },
+    bl_no_unchecked_facts: (p) => {
+      const count = namedReadFields(n(p.fields)).length;
+      return count === 1 ? "Marca el dato que leímos, en el paso 3. La respuesta podría cambiar." : `Marca los ${count} datos que leímos, en el paso 3. La respuesta podría cambiar.`;
+    },
+    bl_unsure_fast_mode: (p) =>
+      ({
+        both: "Respondiste \"no sé\" sobre los modos rápidos.",
+        motor: "Respondiste \"no sé\" sobre si el motor solo pasa de 20 mph.",
+        assist: "Respondiste \"no sé\" sobre si la asistencia al pedalear pasa de 28 mph.",
+      })[fastUnsure(p)],
+    bl_unverified_primary_partial: (p) =>
+      p.place === "sduhsd_campuses" ? "Las reglas del distrito solo están en una página web." : "Algunas de estas reglas solo están en una página web.",
+    bl_unverified_primary_not_found: () => "No se encontró el texto vigente de estas reglas.",
+    bl_state_after_check: (p, c) => `Reglas confirmadas solo hasta el ${formatDate(n(p.through), c.lang)}.`,
+  },
+};
+
+/** The short line for a bottom-line item, or null when its full sentence is already short. */
+export function renderShortLine(line: Line, lang: Lang, state: string): string | null {
+  const template = SHORT[lang][line.code as BottomLineCode];
+  return template ? template(line.params ?? {}, { state, lang }) : null;
+}
+
 export function renderLine(line: Line, lang: Lang, state: string): string {
   const template = TEMPLATES[lang][line.code] ?? TEMPLATES.en[line.code];
   if (!template) return line.code;

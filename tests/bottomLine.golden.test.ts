@@ -374,7 +374,7 @@ describe("what each golden bottom line says first, on the card and to a screen r
   it("no pedals is NO, not an e-bike, on the bottom line and on each place card", () => {
     const result = evaluate({ state: "CA", riderAge: 30, rideDate: TODAY_PT, facts: classBike(2, { hasPedals: false }), places: ["city_of_san_diego", "encinitas"] });
     expect(shown(bottomLine(result, TODAY_PT), "CA")).toEqual(
-      no("no_illegal", "Not an e-bike under the law we checked. E-bike rules don't cover it, and the rules for other vehicles are not checked here."),
+      no("no_illegal", "Not an e-bike under the law we checked."),
     );
     for (const v of result.local) {
       const card = shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang: "en", stateCode: "CA", rideDate: TODAY_PT })));

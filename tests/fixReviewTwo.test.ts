@@ -410,3 +410,42 @@ describe("the first paint has the page's frame, in the page's language", () => {
     expect(readFileSync(join(ROOT, "components", "ClientOnly.tsx"), "utf8")).not.toContain('<p className="page app-title">');
   });
 });
+
+describe("a NO bottom line reads as one compact answer", () => {
+  const unconfirmed = ["hasPedals", "classes", "ratedWatts", "hasThrottle", "assistMph", "wheelSize", "weightLb"] as const;
+  const result = evaluate({ state: "CA", riderAge: 15, rideDate: "2026-10-20", facts: classBike(1), places: ["city_of_san_diego", "encinitas", "sduhsd_campuses"] });
+  const bl = bottomLine(result, "2026-10-20", [...unconfirmed]);
+
+  for (const lang of ["en", "es"] as const) {
+    it(`gives each What's missing item one short line, with the full sentence folded under it (${lang})`, () => {
+      expect(bl.kind).toBe("no_unconfirmed");
+      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" }));
+      const shorts = [...html.matchAll(/<span class="bl-short">([^<]*)<\/span>/g)].map((m) => m[1]);
+      expect(shorts.length).toBe(bl.missing.length);
+      for (const s of shorts) expect(s.length, s).toBeLessThan(90);
+      expect(shorts[0]).toBe(lang === "en" ? "Tick the 7 facts we read, in step 3." : "Marca los 7 datos que leímos, en el paso 3.");
+      // Every full sentence is still on the card, inside a details element that opens on tap.
+      for (const item of bl.missing) {
+        const full = renderLine(item.line, lang, "California").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+        expect(html).toContain(full);
+      }
+      expect(html.match(/<details class="line-details bl-more">/g)?.length).toBeGreaterThanOrEqual(2);
+    });
+  }
+
+  it("names the SDUHSD campus the same way in the coverage line and in the item labels", () => {
+    const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang: "en", stateCode: "CA" }));
+    expect(html).toContain("This covers California state law, the City of San Diego, Encinitas and an SDUHSD campus.");
+    expect(html).not.toContain("SDUHSD campus rules");
+    expect(html).toContain(">An SDUHSD campus<");
+  });
+
+  it("keeps the not-an-e-bike reason to one short sentence, with the rest in the body", () => {
+    for (const lang of ["en", "es"] as const) {
+      expect(t(lang, "blNotEbikeSub").split(". ").length, lang).toBe(1);
+      const r = evaluate({ state: "CA", riderAge: 30, rideDate: "2026-10-20", facts: classBike(2, { hasPedals: false }), places: ["encinitas"] });
+      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bottomLine(r, "2026-10-20"), lang, stateCode: "CA" }));
+      expect(html).toContain(t(lang, "blNotEbikeNote").replace(/'/g, "&#x27;"));
+    }
+  });
+});
