@@ -94,6 +94,11 @@ describe("generated bottom-line matrix", () => {
     expect(summary.wrongKind.slice(0, 5), show(summary.wrongKind)).toEqual([]);
   });
 
+  it("never shows a place card YES under a NO that names that card or a read fact left unchecked", () => {
+    expect(summary.placeCards).toBeGreaterThan(1_000);
+    expect(summary.cardYesUnderNo.slice(0, 5), show(summary.cardYesUnderNo)).toEqual([]);
+  });
+
   it("shows every rendered bottom line and announcement as a plain YES or NO, never can't confirm, unsure or not sure", () => {
     expect(summary.answerCards).toBeGreaterThan(300);
     expect(summary.hedged.slice(0, 5), show(summary.hedged)).toEqual([]);

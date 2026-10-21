@@ -5,7 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { checkerToday, focusGate, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, readMayMoveFocus, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, type CheckedFacts } from "@/lib/provenance";
+import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, unconfirmedFields, type CheckedFacts } from "@/lib/provenance";
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
@@ -184,6 +184,8 @@ export function Checker() {
   // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
   // Worked out on every draw from the checks on screen, so no list kept from an earlier draw can reach it.
   const summary = summaryFor(result, date, bike.checks);
+  // The same unchecked facts hold every allowed place card back from a YES too.
+  const unconfirmed = unconfirmedFields(bike.checks);
 
   const pending: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]
@@ -488,9 +490,9 @@ export function Checker() {
             <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />
             {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null}
             <p className="section-label">{t(lang, "byPlace")}</p>
-            <VerdictCard verdict={result.state} lang={lang} stateCode={stateCode} showLocalNotice={result.localNotice} />
+            <VerdictCard verdict={result.state} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} showLocalNotice={result.localNotice} />
             {result.local.map((v) => (
-              <VerdictCard key={v.id} verdict={v} lang={lang} stateCode={stateCode} />
+              <VerdictCard key={v.id} verdict={v} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} />
             ))}
           </>
         ) : (

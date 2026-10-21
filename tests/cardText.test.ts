@@ -29,7 +29,7 @@ function text(html: string): string {
 
 const result = (state: string, age: number, facts: BikeFacts, places: PlaceId[] = []) =>
   evaluate({ state, riderAge: age, rideDate: DAY, facts, places });
-const card = (v: Verdict, lang: Lang, stateCode: string) => text(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode })));
+const card = (v: Verdict, lang: Lang, stateCode: string) => text(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode, rideDate: DAY })));
 const bottom = (state: string, age: number, facts: BikeFacts, lang: Lang, places: PlaceId[] = []) =>
   text(renderToStaticMarkup(createElement(BottomLineCard, { line: bottomLine(result(state, age, facts, places), DAY), lang, stateCode: state })));
 

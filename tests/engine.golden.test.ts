@@ -399,7 +399,7 @@ describe("what each golden state card says first (Oct 20, 2026)", () => {
   /** The engine's status, then the YES or NO, its mark and the line under it, as the card shows them. */
   const shown = (state: string, age: number, facts: BikeFacts, lang: Lang = "en", date = TODAY) => {
     const v = run(state, age, facts, date).state;
-    return { status: v.status, ...shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode: state }))) };
+    return { status: v.status, ...shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode: state, rideDate: date }))) };
   };
   const no = (status: string, line: string) => ({ status, word: "NO", mark: "✕", line });
 

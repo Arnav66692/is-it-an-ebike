@@ -1,17 +1,38 @@
 "use client";
 
-import type { Line, Source, Status, Verdict } from "@/lib/rules/types";
+import { cardGaps, type BottomLineGap } from "@/lib/rules/bottomLine";
+import type { Line, ReadField, Source, Status, Verdict } from "@/lib/rules/types";
 import { cardWhere, citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
 import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
 
 /**
- * Every card answers YES or NO. Only an allowed card is YES. Not allowed, not an e-bike, can't
- * confirm and questions still open are all NO, so uncertainty never reads as a YES or a maybe.
- * The engine's status is not changed, only how it reads.
+ * Why an allowed card still answers NO. `gaps` are what the bottom line names on this card: a
+ * "not sure" fast-mode answer, a record not read in enacted text, or a ride date past the state
+ * check. `facts` is true while a fact read from a link or photo is not checked against the bike.
+ * Null when the card is not allowed, or allowed with nothing held back.
  */
-export function cardAnswer(status: Status): "yes" | "no" {
-  return status === "yes" ? "yes" : "no";
+export interface HeldBack {
+  gaps: BottomLineGap[];
+  facts: boolean;
+}
+
+export function heldBack(verdict: Verdict, rideDate: string, unconfirmed: readonly ReadField[] = []): HeldBack | null {
+  if (verdict.status !== "yes") return null;
+  const gaps = cardGaps(verdict, rideDate);
+  const facts = unconfirmed.length > 0;
+  return gaps.length > 0 || facts ? { gaps, facts } : null;
+}
+
+/**
+ * Every card answers YES or NO. Only an allowed card with nothing held back is YES. Not allowed,
+ * not an e-bike, can't confirm, questions still open, and an allowed card the bottom line can't
+ * confirm are all NO, so uncertainty never reads as a YES or a maybe, and a card never says YES
+ * under a bottom line that says NO because of that same card. The engine's status is not
+ * changed, only how it reads.
+ */
+export function cardAnswer(verdict: Verdict, rideDate: string, unconfirmed: readonly ReadField[] = []): "yes" | "no" {
+  return verdict.status === "yes" && heldBack(verdict, rideDate, unconfirmed) === null ? "yes" : "no";
 }
 
 type Lead = ((v: Verdict, lang: Lang, stateCode: string) => string) | null;
@@ -32,10 +53,15 @@ const LEAD: Record<Status, Lead> = {
 
 /**
  * The line right under the YES or NO when the card needs one, for example "Not an e-bike under
- * Vermont state law." or "We can't confirm it's legal in South Carolina." The card's own reason
- * comes next. Null when the card's own reason is the line under the answer.
+ * Vermont state law." or "We can't confirm it's legal in South Carolina." An allowed card held
+ * back says "We can't confirm it's legal in Texas." for a gap on the card, or that the read facts
+ * must be checked first. The card's own reason comes next. Null when the card's own reason is the
+ * line under the answer.
  */
-export function answerLead(verdict: Verdict, lang: Lang, stateCode: string): string | null {
+export function answerLead(verdict: Verdict, lang: Lang, stateCode: string, held: HeldBack | null = null): string | null {
+  if (held) {
+    return held.gaps.length > 0 ? t(lang, "answerCantConfirm", { where: cardWhere(verdict.scope, verdict.id, lang) }) : t(lang, "blFactsSub");
+  }
   const lead = LEAD[verdict.status];
   return lead ? lead(verdict, lang, stateCode) : null;
 }
@@ -108,10 +134,14 @@ interface Props {
   verdict: Verdict;
   lang: Lang;
   stateCode: string;
+  /** The ride date the bottom line uses, so a card past its state check answers NO with it. */
+  rideDate: string;
+  /** Facts read from a link or photo that the family has not checked yet. Any one holds a YES back. */
+  unconfirmed?: readonly ReadField[];
   showLocalNotice?: boolean;
 }
 
-export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props) {
+export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = [], showLocalNotice }: Props) {
   const state = stateName(stateCode, lang);
   const title =
     verdict.scope === "state" ? stateLaw(stateCode, lang, "title") : placeName(verdict.id, lang);
@@ -120,9 +150,12 @@ export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props
   const verifiedKey =
     verdict.scope === "state" ? `state_verified_${verdict.verified}` : verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";
-  const answer = cardAnswer(verdict.status);
-  const lead = answerLead(verdict, lang, stateCode);
+  const held = heldBack(verdict, rideDate, unconfirmed);
+  const answer = cardAnswer(verdict, rideDate, unconfirmed);
+  const lead = answerLead(verdict, lang, stateCode, held);
   const reason = renderLine(verdict.reason, lang, state);
+  // What holds an allowed card back, each sentence once. Read facts are named on the bottom line.
+  const heldLines = held ? [...new Set(held.gaps.map((g) => renderLine(g.line, lang, state)))] : [];
 
   return (
     <article className="card place space-y-2" data-status={verdict.status} data-answer={answer} aria-label={title}>
@@ -136,12 +169,18 @@ export function VerdictCard({ verdict, lang, stateCode, showLocalNotice }: Props
       <p className="font-semibold leading-snug" data-answer-line="">
         {lead ?? reason}
       </p>
-      {lead ? <p>{reason}</p> : null}
+      {held ? heldLines.map((l) => <p key={l}>{l}</p>) : lead ? <p>{reason}</p> : null}
 
       {/* Everything else about this place opens on tap: the rules, the notes, the sources and the dates. */}
       <details className="more">
         <summary>{t(lang, "cardMore")}</summary>
         <div className="more-body">
+          {held ? (
+            <div className="space-y-2">
+              <h4 className="eyebrow text-muted">{t(lang, "cardRuleSays")}</h4>
+              <p>{reason}</p>
+            </div>
+          ) : null}
           {verdict.reason.detail ? (
             <details className="line-details meta">
               <summary>{t(lang, "details")}</summary>

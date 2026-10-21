@@ -114,6 +114,8 @@ const accuracy = {
     rendered_cards: bottom.renderedCards,
     hedged: bottom.hedged.length,
     answer_cards: bottom.answerCards,
+    card_yes_under_no: bottom.cardYesUnderNo.length,
+    place_cards: bottom.placeCards,
   },
   tests: vitest
     ? { total: vitest.numTotalTests, passed: vitest.numPassedTests, failed: vitest.numFailedTests }
@@ -192,6 +194,7 @@ Under every answer the app shows one strict YES or NO for the whole ride (\`lib/
 | NO, not allowed that changes when the facts are read, checked or not, instead of typed | ${bottom.illegalChanged.length} |
 | Rendered card or announcement missing, or repeating, the line that names unchecked facts | ${bottom.factsNotShown.length} |
 | Rendered bottom line or screen reader sentence whose answer is not a plain YES or NO, or leads with a hedge | ${bottom.hedged.length} |
+| **Place card YES under a NO that names that card or an unchecked fact**, or a card answer the raw data doesn't give (${bottom.placeCards.toLocaleString("en-US")} distinct rendered place cards) | **${bottom.cardYesUnderNo.length}** |
 
 | Bottom line, facts typed in | Rides | Share |
 |---|---|---|

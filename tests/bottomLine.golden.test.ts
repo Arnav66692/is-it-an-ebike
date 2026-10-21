@@ -362,9 +362,13 @@ describe("what each golden bottom line says first, on the card and to a screen r
     const result = evaluate({ state: "CA", riderAge: 15, rideDate: TODAY_PT, facts: classBike(1), places: ["sduhsd_campuses"] });
     expect(shown(bottomLine(result, TODAY_PT), "CA")).toEqual(no("no_unconfirmed", "We can't confirm it's legal on an SDUHSD campus."));
     expect(shown(bottomLine(result, TODAY_PT), "CA", "es")).toEqual(no("no_unconfirmed", "No podemos confirmar que sea legal en una escuela de SDUHSD."));
-    // The campus card itself says what the district page says, so the engine's call is unchanged.
-    const campus = shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: result.local[0], lang: "en", stateCode: "CA" })));
-    expect(campus.word).toBe("YES");
+    // The engine's call is unchanged: the district page allows it. The campus card answers NO too,
+    // with the same reason as the bottom line, so the two never disagree on screen. What the
+    // district page says stays on the card, under "What the rule says for these facts".
+    expect(result.local[0].status).toBe("yes");
+    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: result.local[0], lang: "en", stateCode: "CA", rideDate: TODAY_PT }));
+    expect(shownAnswer(html)).toEqual({ word: "NO", mark: "✕", line: "We can't confirm it's legal on an SDUHSD campus." });
+    expect(html).toContain("What the rule says for these facts");
   });
 
   it("no pedals is NO, not an e-bike, on the bottom line and on each place card", () => {
@@ -373,7 +377,7 @@ describe("what each golden bottom line says first, on the card and to a screen r
       no("no_illegal", "Not an e-bike under the law we checked. E-bike rules don't cover it, and the rules for other vehicles are not checked here."),
     );
     for (const v of result.local) {
-      const card = shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang: "en", stateCode: "CA" })));
+      const card = shownAnswer(renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang: "en", stateCode: "CA", rideDate: TODAY_PT })));
       expect(card, v.id).toEqual({ word: "NO", mark: "✕", line: "Not an e-bike under California state law." });
     }
   });

@@ -10,7 +10,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
 import { announcement, BottomLineCard, subtitle } from "@/components/BottomLineCard";
-import { VerdictCard } from "@/components/VerdictCard";
+import { cardAnswer, VerdictCard } from "@/components/VerdictCard";
 import { bottomLine, type BottomLine, type BottomLineKind } from "@/lib/rules/bottomLine";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { PLACE_IDS } from "@/lib/rules/local";
@@ -222,13 +222,26 @@ export interface MatrixSummary {
 const answerFor = (allowed: boolean): Answer => (allowed ? "yes" : "no");
 
 /**
+ * True when the card must read YES, worked out from the raw data here, not from the card or the
+ * bottom line: the card is allowed, its record was read in enacted text, a state card's ride is no
+ * more than 30 days after the state check, the fast modes were not answered "not sure", and no
+ * read fact is left unchecked. Anything else is a NO on the card too, the same as on the bottom line.
+ */
+function cardMustSayYes(v: Verdict, state: string, date: string, unchecked: number): boolean {
+  if (v.status !== "yes" || unchecked > 0) return false;
+  if (!topVerifiedInData(v.scope, v.id)) return false;
+  if (v.scope === "state" && stateStaleInData(state, date)) return false;
+  return !v.cautions.some((c) => c.code === CAUTION_FAST_MODE_UNVERIFIED);
+}
+
+/**
  * Renders the real place card in both languages and lists every way its answer is not a plain YES
  * or NO: the headline, its mark and the reason line under it, and any hedge label anywhere on it.
  */
-function verdictAnswerProblems(v: Verdict, stateCode: string, showLocalNotice: boolean): string[] {
-  const expected = answerFor(v.status === "yes");
+function verdictAnswerProblems(v: Verdict, stateCode: string, showLocalNotice: boolean, rideDate: string, unconfirmed: readonly ReadField[] = []): string[] {
+  const expected = answerFor(cardMustSayYes(v, stateCode, rideDate, unconfirmed.length));
   return (["en", "es"] as const).flatMap((lang) => {
-    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode, showLocalNotice }));
+    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode, rideDate, unconfirmed, showLocalNotice }));
     return [...headlineProblems(html, lang, expected), ...hedgeProblems(visibleLines(html))].map((p) => `${lang}: ${p}`);
   });
 }
@@ -259,10 +272,10 @@ export function runMatrix(): MatrixSummary {
   // rendered card per combination covers every case.
   const readCard = (c: MatrixCase, v: Verdict, showLocalNotice: boolean) => {
     const lines = [v.reason, ...v.requirements, ...v.cautions, ...v.notes].map((l) => l.code).join(",");
-    const key = `${c.state}|${v.id}|${v.status}|${lines}|${showLocalNotice}`;
+    const key = `${c.state}|${v.id}|${v.status}|${lines}|${showLocalNotice}|${cardMustSayYes(v, c.state, c.date, 0)}`;
     if (answerCards.has(key)) return;
     answerCards.add(key);
-    const problems = verdictAnswerProblems(v, c.state, showLocalNotice);
+    const problems = verdictAnswerProblems(v, c.state, showLocalNotice, c.date);
     if (problems.length > 0) hedged.push({ ...c, blockers: problems });
   };
 
@@ -437,6 +450,13 @@ export interface BottomLineSummary {
   hedged: BottomLineCase[];
   /** How many distinct rendered bottom lines were read for that check. */
   answerCards: number;
+  /**
+   * A place card whose YES or NO is not the one the raw data gives it on this ride, or a place card
+   * that says YES while the bottom line's NO names that card, or names a read fact left unchecked.
+   */
+  cardYesUnderNo: BottomLineCase[];
+  /** How many distinct rendered place cards were read for that check. */
+  placeCards: number;
 }
 
 /**
@@ -528,6 +548,8 @@ export function runBottomLineMatrix(): BottomLineSummary {
   const answerCards = new Set<string>();
   const rendered = new Set<string>();
   const factsRendered = new Set<string>();
+  const cardYesUnderNo: BottomLineCase[] = [];
+  const placeRendered = new Set<string>();
   let cases = 0;
   let bottomLines = 0;
 
@@ -637,6 +659,24 @@ export function runBottomLineMatrix(): BottomLineSummary {
 
                 // The answer and the line under it depend on the kind and on the reason line, so
                 // one rendered card per pair in each place set covers every case.
+                // Each place card on the page says YES only when the raw data gives it a YES on this
+                // ride, and never YES under a NO that names that card or a fact left unchecked.
+                const factsOpen = bl.missing.some((m) => m.kind === "facts") || bl.factsNote !== null;
+                for (const v of cards) {
+                  const shown = cardAnswer(v, date, run.unconfirmed);
+                  const must = cardMustSayYes(v, state, date, run.expected.length);
+                  const named = bl.missing.some((m) => m.where.some((w) => w.scope === v.scope && w.id === v.id));
+                  if ((shown === "yes") !== must) cardYesUnderNo.push({ ...base, why: [`${v.id} shows ${shown}, data gives ${must ? "yes" : "no"}`] });
+                  if (shown === "yes" && bl.kind !== "yes" && (named || factsOpen)) cardYesUnderNo.push({ ...base, why: [`${v.id} shows yes under a NO that ${named ? "names it" : "names unchecked facts"}`] });
+                  // One rendered card per combination checks the drawn headline says the same.
+                  const cardKey = `${state}|${v.id}|${v.status}|${v.reason.code}|${v.cautions.map((c) => c.code).join(",")}|${must}|${run.expected.length > 0}`;
+                  if (!placeRendered.has(cardKey)) {
+                    placeRendered.add(cardKey);
+                    const problems = verdictAnswerProblems(v, state, false, date, run.unconfirmed);
+                    if (problems.length > 0) cardYesUnderNo.push({ ...base, why: [`${v.id}`, ...problems] });
+                  }
+                }
+
                 const answerKey = `${key}|${bl.notEbikeOnly}|${bl.factsNote !== null}|${subtitle(bl, "en")}`;
                 if (!answerCards.has(answerKey)) {
                   answerCards.add(answerKey);
@@ -669,5 +709,7 @@ export function runBottomLineMatrix(): BottomLineSummary {
     factsCards: factsRendered.size,
     hedged,
     answerCards: answerCards.size,
+    cardYesUnderNo,
+    placeCards: placeRendered.size,
   };
 }

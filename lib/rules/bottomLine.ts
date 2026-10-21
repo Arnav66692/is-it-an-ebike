@@ -147,7 +147,15 @@ function unverifiedLine(v: Verdict): Line {
   return { code, params: { place: v.id } };
 }
 
-/** Every reason this card keeps the answer from a YES, short of being illegal. */
+/**
+ * Every reason this card keeps the answer from a YES, short of being illegal. The place card uses
+ * the same list, so an allowed card with a gap here answers NO too, and the card and the bottom
+ * line never disagree on screen (components/VerdictCard.tsx).
+ */
+export function cardGaps(v: Verdict, rideDate: string): BottomLineGap[] {
+  return gapsOf(v, rideDate);
+}
+
 function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
   const where = [refOf(v)];
   const gaps: BottomLineGap[] = [];
