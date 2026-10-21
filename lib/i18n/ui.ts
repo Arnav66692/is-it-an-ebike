@@ -263,7 +263,7 @@ const es: Record<UiKey, string> = {
   navLabel: "Partes de la app",
   navCheck: "Revisar",
   navMods: "Modificaciones",
-  navFind: "Buscar bici",
+  navFind: "Buscar bicicleta",
   checkMods: "Revisar sus modificaciones",
   step1: "Dónde y quién",
   state: "Estado",
