@@ -127,6 +127,20 @@ function topicOf(node: ConditionNode | null, caution: CompiledCaution): CautionT
   return "fast_mode";
 }
 
+/**
+ * The part of a condition that is still unknown. In "weight over 100 or wheels 11 inches or less",
+ * with 20-inch wheels and the weight not known, that is the weight. When both parts are unknown,
+ * the whole condition is.
+ */
+function unknownPart(node: ConditionNode, env: Env): ConditionNode {
+  if (node.t !== "and" && node.t !== "or") return node;
+  const a = evaluateCondition(node.a, env);
+  const b = evaluateCondition(node.b, env);
+  if (a === null && b !== null) return unknownPart(node.a, env);
+  if (b === null && a !== null) return unknownPart(node.b, env);
+  return node;
+}
+
 function cautionLine(caution: CompiledCaution, env: Env, cls: ClassNum): Line {
   const node = caution.node ? deciding(caution.node, env) : null;
   return line(
@@ -269,7 +283,8 @@ function evaluateDevice(
       if (pending.length > 0) {
         pending.forEach((q) => questions.add(q));
       } else {
-        const topic = topicOf(caution.node, caution);
+        // Named for the part still unknown, so a weight left "not sure" never asks for the wheel size.
+        const topic = topicOf(unknownPart(caution.node, env), caution);
         unclear = unclear ?? line(`unsure_${topic}`, { cls, verdict: caution.verdict }, caution.source, caution.reason);
       }
     }

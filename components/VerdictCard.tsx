@@ -17,9 +17,9 @@ export interface HeldBack {
   facts: boolean;
 }
 
-export function heldBack(verdict: Verdict, rideDate: string, unconfirmed: readonly ReadField[] = []): HeldBack | null {
+export function heldBack(verdict: Verdict, rideDate: string, stateCode: string, unconfirmed: readonly ReadField[] = []): HeldBack | null {
   if (verdict.status !== "yes") return null;
-  const gaps = cardGaps(verdict, rideDate);
+  const gaps = cardGaps(verdict, rideDate, stateCode);
   const facts = unconfirmed.length > 0;
   return gaps.length > 0 || facts ? { gaps, facts } : null;
 }
@@ -31,8 +31,8 @@ export function heldBack(verdict: Verdict, rideDate: string, unconfirmed: readon
  * under a bottom line that says NO because of that same card. The engine's status is not
  * changed, only how it reads.
  */
-export function cardAnswer(verdict: Verdict, rideDate: string, unconfirmed: readonly ReadField[] = []): "yes" | "no" {
-  return verdict.status === "yes" && heldBack(verdict, rideDate, unconfirmed) === null ? "yes" : "no";
+export function cardAnswer(verdict: Verdict, rideDate: string, stateCode: string, unconfirmed: readonly ReadField[] = []): "yes" | "no" {
+  return verdict.status === "yes" && heldBack(verdict, rideDate, stateCode, unconfirmed) === null ? "yes" : "no";
 }
 
 type Lead = ((v: Verdict, lang: Lang, stateCode: string) => string) | null;
@@ -150,8 +150,8 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
   const verifiedKey =
     verdict.scope === "state" ? `state_verified_${verdict.verified}` : verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";
-  const held = heldBack(verdict, rideDate, unconfirmed);
-  const answer = cardAnswer(verdict, rideDate, unconfirmed);
+  const held = heldBack(verdict, rideDate, stateCode, unconfirmed);
+  const answer = cardAnswer(verdict, rideDate, stateCode, unconfirmed);
   const lead = answerLead(verdict, lang, stateCode, held);
   const reason = renderLine(verdict.reason, lang, state);
   // What holds an allowed card back, each sentence once. Read facts are named on the bottom line.

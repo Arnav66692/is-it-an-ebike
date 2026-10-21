@@ -77,12 +77,14 @@ export interface RideWhere {
 /**
  * The engine's places for the picks and the campus choice. The campus choice shows for a ride in San
  * Diego County, and stays on the page while it is ticked, so the campus never counts without being
- * seen. Picks only count in their own state, so one state's places never mix into another's answer.
+ * seen. `kept` keeps it on the page once the family has used it, so unticking it never takes the box
+ * from under their finger, or their keyboard focus with it. Picks only count in their own state, so
+ * one state's places never mix into another's answer.
  */
-export function rideWhere(current: PlacePicks, stateCode: string, campus: boolean): RideWhere {
+export function rideWhere(current: PlacePicks, stateCode: string, campus: boolean, kept: boolean = false): RideWhere {
   const where = current.state === stateCode ? engineWhere(current) : null;
   if (stateCode !== SD_STATE) return { places: [], otherPlaces: where?.otherPlaces ?? false, campusShown: false };
-  const campusShown = inSanDiegoCounty(current) || campus;
+  const campusShown = inSanDiegoCounty(current) || campus || kept;
   const places: PlaceId[] = [...(where?.places ?? []), ...(campusShown && campus ? (["sduhsd_campuses"] as PlaceId[]) : [])];
   return { places, otherPlaces: where?.otherPlaces ?? false, campusShown };
 }

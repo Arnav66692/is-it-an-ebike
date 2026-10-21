@@ -180,7 +180,8 @@ describe("the page answers YES or NO at every step, and keeps Not sure as an inp
     expect(p.answers()).toEqual({
       cards: ["CA SÍ"],
       bottom: { word: "SÍ", mark: "✓", line: "Permitida en todos los lugares que revisamos, para esta persona y esta bicicleta." },
-      heard: "En resumen: SÍ. Permitida en todos los lugares que revisamos, para esta persona y esta bicicleta.",
+      // A YES also says, as the card does, that no city or county rules were checked.
+      heard: "En resumen: SÍ. Permitida en todos los lugares que revisamos, para esta persona y esta bicicleta. No se revisaron las reglas de la ciudad ni del condado.",
     });
   });
 

@@ -113,11 +113,11 @@ describe("a place card answers NO when the bottom line can't confirm that same p
 
   it("an allowed card with nothing held back is YES, and a card that is not allowed is never held back", () => {
     const yes = evaluate({ state: "CA", riderAge: 30, rideDate: TODAY, facts: classBike(1), places: [] }).state;
-    expect(heldBack(yes, TODAY)).toBeNull();
-    expect(cardAnswer(yes, TODAY)).toBe("yes");
+    expect(heldBack(yes, TODAY, "CA")).toBeNull();
+    expect(cardAnswer(yes, TODAY, "CA")).toBe("yes");
     const no = evaluate({ state: "CA", riderAge: 14, rideDate: TODAY, facts: classBike(3), places: [] }).state;
     expect(no.status).toBe("no");
-    expect(heldBack(no, TODAY, ["classes"])).toBeNull();
-    expect(cardAnswer(no, TODAY)).toBe("no");
+    expect(heldBack(no, TODAY, "CA", ["classes"])).toBeNull();
+    expect(cardAnswer(no, TODAY, "CA")).toBe("no");
   });
 });

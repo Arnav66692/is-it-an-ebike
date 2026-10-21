@@ -75,14 +75,18 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
  * The one short sentence screen readers announce when the bottom line appears or changes,
  * for example "Bottom line: NO. Not allowed. At least one rule we checked says no." or "Bottom
  * line: NO. We can't confirm it's legal in South Carolina." It always says YES or NO first.
- * A NO, not allowed that still rests on unchecked read facts adds that it could change once
- * they are checked. The full card stays out of the live region, so it is never read again on
- * every edit.
+ * A YES also says which city or county rules were not checked, like "City and county rules for
+ * Austin were not checked.", as the card does, so a YES under state law alone is never heard as
+ * more than that. A NO, not allowed that still rests on unchecked read facts adds
+ * that it could change once they are checked. The full card stays out of the live region, so it
+ * is never read again on every edit.
  */
-export function announcement(line: BottomLine, lang: Lang): string {
+export function announcement(line: BottomLine, lang: Lang, uncheckedPlaces: readonly string[] = []): string {
   const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
   const head = `${t(lang, "blTitle")}: ${word}. ${subtitle(line, lang)}`;
-  return line.factsNote ? `${head} ${t(lang, "blFactsCouldChange")}` : head;
+  // A YES covers only what was checked, so it says which city or county rules were not. A NO stays one short sentence.
+  const unchecked = line.kind === "yes" ? uncheckedLine(line, lang, uncheckedPlaces) : null;
+  return [head, unchecked, line.factsNote ? t(lang, "blFactsCouldChange") : null].filter(Boolean).join(" ");
 }
 
 /**

@@ -230,7 +230,8 @@ const answerFor = (allowed: boolean): Answer => (allowed ? "yes" : "no");
 function cardMustSayYes(v: Verdict, state: string, date: string, unchecked: number): boolean {
   if (v.status !== "yes" || unchecked > 0) return false;
   if (!topVerifiedInData(v.scope, v.id)) return false;
-  if (v.scope === "state" && stateStaleInData(state, date)) return false;
+  // A San Diego card's YES rests on the state's rules too, so a ride past the state check holds it back as well.
+  if (stateStaleInData(state, date)) return false;
   return !v.cautions.some((c) => c.code === CAUTION_FAST_MODE_UNVERIFIED);
 }
 
@@ -663,7 +664,7 @@ export function runBottomLineMatrix(): BottomLineSummary {
                 // ride, and never YES under a NO that names that card or a fact left unchecked.
                 const factsOpen = bl.missing.some((m) => m.kind === "facts") || bl.factsNote !== null;
                 for (const v of cards) {
-                  const shown = cardAnswer(v, date, run.unconfirmed);
+                  const shown = cardAnswer(v, date, state, run.unconfirmed);
                   const must = cardMustSayYes(v, state, date, run.expected.length);
                   const named = bl.missing.some((m) => m.where.some((w) => w.scope === v.scope && w.id === v.id));
                   if ((shown === "yes") !== must) cardYesUnderNo.push({ ...base, why: [`${v.id} shows ${shown}, data gives ${must ? "yes" : "no"}`] });

@@ -4,21 +4,29 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/photo/runPedalCheck", () => ({
   hasWebGpu: vi.fn(async () => true),
   runPedalCheck: vi.fn(),
 }));
 
-import { whereNoteText } from "@/components/Checker";
+import { BikeInput } from "@/components/BikeInput";
+import { announcement, BottomLineCard } from "@/components/BottomLineCard";
+import { Checker, whereNoteText } from "@/components/Checker";
+import { FactsCard } from "@/components/FactsCard";
+import { cardAnswer, VerdictCard } from "@/components/VerdictCard";
 import { CLOSED, comboKey, focusAfterRemove, PlaceSearch, resultDetail, tooSoonToRemove } from "@/components/PlaceSearch";
-import type { Lang } from "@/lib/i18n/names";
+import { placeName, type Lang } from "@/lib/i18n/names";
+import { renderLine } from "@/lib/i18n/verdicts";
 import { pickLabels } from "@/lib/places/linked";
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { resolvePlace } from "@/lib/places/resolve";
 import { countyNameEs, enterChoice, placeLabel, searchPlaces, searchResults } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndexFile } from "@/lib/places/types";
+import { bottomLine, evaluate } from "@/lib/rules";
+import { headlineProblems, shownAnswer } from "./answerWords";
+import { classBike } from "./helpers";
 import { elements, mount, one, textOf, type El } from "./hooks";
 
 const ROOT = join(__dirname, "..");
@@ -205,5 +213,123 @@ describe("Spanish status lines name Washington, DC with its article", () => {
     expect(whereNoteText({ key: "whereStateSwitched", from: "CA", to: "DC" }, "en")).toBe(
       "Now using Washington, DC law. The places in California were removed, since one answer covers one state.",
     );
+  });
+});
+
+describe("Pennsylvania names the fact still unknown", () => {
+  it("asks about the weight when the weight was answered Not sure and the wheel size is known", () => {
+    const facts = { ...classBike(1), weightLb: null, weightOver100: null, unsure: ["weight" as const] };
+    const r = evaluate({ state: "PA", riderAge: 16, rideDate: "2026-10-20", facts, places: [] });
+    expect(r.state.status).toBe("cant_confirm");
+    expect(r.state.reason.code).toBe("unsure_weight");
+    expect(renderLine(r.state.reason, "en", "Pennsylvania")).toBe("We need to know whether it weighs over 100 pounds to confirm this in Pennsylvania.");
+    expect(renderLine(r.state.reason, "es", "Pensilvania")).toContain("pesa más de 100 libras");
+  });
+
+  it("still asks for the wheel size when that is the part unknown", () => {
+    const facts = { ...classBike(1), wheelFrontIn: null, wheelRearIn: null, unsure: ["wheels" as const] };
+    const r = evaluate({ state: "PA", riderAge: 16, rideDate: "2026-10-20", facts, places: [] });
+    expect(r.state.reason.code).toBe("unsure_wheel_size");
+  });
+});
+
+describe("San Diego place cards say NO on a ride date past the state check", () => {
+  const LATE = "2027-01-15";
+  const result = evaluate({ state: "CA", riderAge: 14, rideDate: LATE, facts: classBike(1), places: ["city_of_san_diego", "carlsbad"] });
+
+  it("holds back every allowed local card, as the state card and the bottom line are", () => {
+    expect(result.local.map((v) => v.status)).toEqual(["yes", "yes"]);
+    expect(bottomLine(result, LATE).kind).toBe("no_unconfirmed");
+    expect([result.state, ...result.local].map((v) => cardAnswer(v, LATE, "CA"))).toEqual(["no", "no", "no"]);
+    // Inside the state check the same ride is YES on each card.
+    const inside = evaluate({ state: "CA", riderAge: 14, rideDate: "2026-11-15", facts: classBike(1), places: ["city_of_san_diego", "carlsbad"] });
+    expect(inside.local.map((v) => cardAnswer(v, "2026-11-15", "CA"))).toEqual(["yes", "yes"]);
+  });
+
+  it("draws NO on each local card, with the reason and the state check line", () => {
+    for (const v of result.local) {
+      for (const lang of ["en", "es"] as const) {
+        const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode: "CA", rideDate: LATE }));
+        expect(headlineProblems(html, lang, "no"), `${v.id} ${lang}`).toEqual([]);
+        expect(shownAnswer(html).word).toBe("NO");
+      }
+      const en = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang: "en", stateCode: "CA", rideDate: LATE }));
+      expect(en).toContain("so we can confirm them only through Nov 15, 2026");
+    }
+  });
+});
+
+describe("a YES heard by a screen reader says which local rules were not checked", () => {
+  it("adds the unchecked line the card shows, in both languages", () => {
+    const r = evaluate({ state: "TX", riderAge: 15, rideDate: "2026-10-20", facts: classBike(1), places: [], otherPlaces: true });
+    const bl = bottomLine(r, "2026-10-20");
+    expect(bl.kind).toBe("yes");
+    expect(announcement(bl, "en", ["Austin"])).toBe(
+      "Bottom line: YES. Allowed in every place we checked, for this rider and this bike. City and county rules for Austin were not checked.",
+    );
+    expect(announcement(bl, "es", ["Austin"])).toBe(
+      "En resumen: SÍ. Permitida en todos los lugares que revisamos, para esta persona y esta bicicleta. No se revisaron las reglas de la ciudad y del condado para Austin.",
+    );
+  });
+});
+
+describe("the page", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 21, 12));
+    vi.stubGlobal("requestAnimationFrame", (run: (time: number) => void) => {
+      run(0);
+      return 0;
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  function page(search: string) {
+    vi.stubGlobal("window", { location: { search } });
+    const m = mount(Checker, {}, { effects: false });
+    const find = (type: unknown, what: string) => one(m.tree(), (e) => e.type === type, what);
+    const live = () => elements(m.tree()).filter((e) => e.type === "p" && e.props.role === "status").map(textOf);
+    const campusBox = () => elements(m.tree()).find((e) => e.type === "input" && e.props["aria-label"] === placeName("sduhsd_campuses", "en"));
+    const check = (age: string) => {
+      m.act(() => call(find(BikeInput, "bike input"), "onManual"));
+      m.act(() => call(one(m.tree(), (e) => e.type === "input" && e.props.name === "age", "age box"), "onChange", { target: { value: age } }));
+      m.act(() => call(find(FactsCard, "facts card"), "onChange", classBike(1)));
+      m.act(() => call(find(FactsCard, "facts card"), "onCheck"));
+    };
+    return { m, find, live, campusBox, check };
+  }
+
+  it("reads out the unchecked line with a YES for Austin", () => {
+    const p = page("?lang=en&state=TX");
+    const austin = entry("p-4805000");
+    p.m.act(() => call(p.find(PlaceSearch, "place search"), "onPick", austin, pickLabels(INDEX, austin)));
+    p.check("15");
+    expect(shownAnswer(renderToStaticMarkup(p.find(BottomLineCard, "bottom line"))).word).toBe("YES");
+    expect(p.live()).toContain(
+      "Bottom line: YES. Allowed in every place we checked, for this rider and this bike. City and county rules for Austin were not checked.",
+    );
+  });
+
+  it("keeps the SDUHSD campus box on the page after it is unticked, with no San Diego County place picked", () => {
+    const p = page("?lang=en&state=CA&place=city_of_san_diego,sduhsd_campuses");
+    expect(p.campusBox()?.props.checked).toBe(true);
+    p.m.act(() => call(p.find(PlaceSearch, "place search"), "onRemove", "p-0666000"));
+    expect(p.campusBox()?.props.checked).toBe(true);
+    p.m.act(() => call(p.campusBox() as El, "onChange", { target: { checked: false } }));
+    expect(p.campusBox()?.props.checked).toBe(false);
+    p.m.act(() => call(p.campusBox() as El, "onChange", { target: { checked: true } }));
+    expect(p.campusBox()?.props.checked).toBe(true);
+  });
+
+  it("drops a kept campus box once the ride moves to another state", () => {
+    const p = page("?lang=en&state=CA&place=sduhsd_campuses");
+    p.m.act(() => call(p.campusBox() as El, "onChange", { target: { checked: false } }));
+    expect(p.campusBox()).toBeDefined();
+    p.m.act(() => call(one(p.m.tree(), (e) => e.type === "select", "state picker"), "onChange", { target: { value: "OR" } }));
+    expect(p.campusBox()).toBeUndefined();
   });
 });

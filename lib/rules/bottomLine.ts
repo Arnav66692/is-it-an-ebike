@@ -7,6 +7,7 @@
 // Uncertainty never turns into a YES. Every NO names the read facts still unchecked, since a NO
 // can rest on a misread fact too, like pedals read as missing.
 
+import { getState } from "./compile";
 import { addDays } from "./dates";
 import {
   CAUTION_FAST_MODE_UNVERIFIED,
@@ -150,10 +151,21 @@ function unverifiedLine(v: Verdict): Line {
 /**
  * Every reason this card keeps the answer from a YES, short of being illegal. The place card uses
  * the same list, so an allowed card with a gap here answers NO too, and the card and the bottom
- * line never disagree on screen (components/VerdictCard.tsx).
+ * line never disagree on screen (components/VerdictCard.tsx). A San Diego card's YES is built
+ * from the state's own answers for each class, so on a ride date past the state check it can't be
+ * confirmed either. It names the same state line the bottom line names for the state card.
  */
-export function cardGaps(v: Verdict, rideDate: string): BottomLineGap[] {
-  return gapsOf(v, rideDate);
+export function cardGaps(v: Verdict, rideDate: string, stateCode: string): BottomLineGap[] {
+  const gaps = gapsOf(v, rideDate);
+  return v.scope === "local" ? [...gaps, ...staleGap([refOf(v)], getState(stateCode).lastChecked, rideDate)] : gaps;
+}
+
+/** The gap for a ride past the state check, or none. */
+function staleGap(where: CardRef[], lastChecked: string, rideDate: string): BottomLineGap[] {
+  const through = stateCheckedThrough(lastChecked);
+  if (rideDate <= through) return [];
+  const code: BottomLineCode = "bl_state_after_check";
+  return [{ kind: "stale", where, line: { code, params: { checked: lastChecked, through } } }];
 }
 
 function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
@@ -172,13 +184,7 @@ function gapsOf(v: Verdict, rideDate: string): BottomLineGap[] {
   // and the unverified sentence would only say the same thing again.
   const saysUnverified = v.scope === "state" && v.status === "cant_confirm" && v.reason.code === "never_legal";
   if (!isTopVerified(v) && !saysUnverified) gaps.push({ kind: "unverified", where, line: unverifiedLine(v) });
-  if (v.scope === "state") {
-    const through = stateCheckedThrough(v.lastChecked);
-    if (rideDate > through) {
-      const code: BottomLineCode = "bl_state_after_check";
-      gaps.push({ kind: "stale", where, line: { code, params: { checked: v.lastChecked, through } } });
-    }
-  }
+  if (v.scope === "state") gaps.push(...staleGap(where, v.lastChecked, rideDate));
   return gaps;
 }
 

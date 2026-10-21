@@ -125,6 +125,8 @@ export function Checker() {
   const [where, setWhere] = useState<PlacePicks>(initial.where);
   const [labels, setLabels] = useState<Record<string, PickLabels>>(initial.labels);
   const [campus, setCampus] = useState(initial.campus);
+  // Set once the family uses the campus box, so unticking it keeps it on the page. A move to another state clears it.
+  const [campusKept, setCampusKept] = useState(false);
   const [whereNote, setWhereNote] = useState<WhereNote | null>(null);
   const campusId = useId();
   // The facts and where each came from change together. Nothing here is saved, so a reload or a
@@ -210,7 +212,7 @@ export function Checker() {
   // date is ever checked. Anything else shows an error and no answer.
   const date = rideDateFor(pickDate, dateText, today);
 
-  const ride = useMemo(() => rideWhere(where, stateCode, campus), [where, stateCode, campus]);
+  const ride = useMemo(() => rideWhere(where, stateCode, campus, campusKept), [where, stateCode, campus, campusKept]);
   const result = useMemo(() => {
     if (stage !== "result" || !ageValid || age === null || date === null) return null;
     return evaluate({
@@ -349,6 +351,7 @@ export function Checker() {
     if (moved) {
       setStateCode(entry.state);
       setCampus(false);
+      setCampusKept(false);
     }
     if (change.startedOver) setWhereNote({ key: "whereStartedOver", ...change.startedOver, campusRemoved });
     else if (moved) setWhereNote({ key: "whereAddedNewState", place: entryLabels, to: entry.state, campusRemoved });
@@ -367,6 +370,7 @@ export function Checker() {
     const campusRemoved = campus;
     setStateCode(code);
     setCampus(false);
+    setCampusKept(false);
     setWhere({ state: code, picks: [] });
     if (had) setWhereNote({ key: "whereStateSwitched", from: stateCode, to: code, campusRemoved });
     else setWhereNote(campusRemoved ? { key: "whereNewState", to: code, campusRemoved } : null);
@@ -420,7 +424,10 @@ export function Checker() {
                 aria-label={placeName("sduhsd_campuses", lang)}
                 aria-describedby={`${campusId}-hint`}
                 checked={campus}
-                onChange={(e) => setCampus(e.target.checked)}
+                onChange={(e) => {
+                  setCampus(e.target.checked);
+                  setCampusKept(true);
+                }}
               />
               <span>
                 {placeName("sduhsd_campuses", lang)}
@@ -581,7 +588,7 @@ export function Checker() {
         {/* Always in the page. Screen readers hear one short sentence when the answer appears or
             changes, not the whole card on every edit. */}
         <p role="status" className="sr-only">
-          {summary ? announcement(summary, lang) : ""}
+          {summary ? announcement(summary, lang, unchecked) : ""}
         </p>
         {result ? (
           <div className="actions no-print">
