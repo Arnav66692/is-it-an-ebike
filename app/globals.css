@@ -409,9 +409,10 @@ html[lang="es"] .hero .app-title {
   line-height: 1.5;
 }
 
+/* The tagline keeps the column's width and left edge, and splits into even lines. */
 .hero .tagline {
-  max-width: 36ch;
   margin-top: 0.875rem;
+  text-wrap: balance;
   color: var(--band-muted);
 }
 
@@ -596,8 +597,10 @@ html:not([lang="es"]) .sk-es {
   }
 }
 
+/* "Place by place" lines up with the step heading and the text inside the cards. */
 .section-label {
   padding-top: 0.5rem;
+  padding-left: calc(var(--pad) + 1px);
   color: var(--muted);
 }
 
@@ -1850,10 +1853,9 @@ div.fact-group.fact-grid {
 
 .source-link {
   grid-area: link;
-  display: inline-flex;
-  align-items: center;
+  display: block;
   min-height: 2.75rem;
-  padding: 0.25rem 0;
+  padding: 0.6rem 0;
   font-weight: 500;
 }
 
@@ -1867,7 +1869,8 @@ a.source-link {
 
 a.source-link::after {
   content: "";
-  flex: none;
+  display: inline-block;
+  vertical-align: -1px;
   width: 12px;
   height: 12px;
   margin-left: 6px;
@@ -1990,6 +1993,33 @@ a.source-link::after {
   padding-left: 1rem;
   text-align: right;
   white-space: nowrap;
+}
+
+/* On a phone each row is its label, then its number under it, so long labels keep a full line. */
+@media (max-width: 479px) {
+  .table,
+  .table tbody {
+    display: block;
+  }
+
+  .table tr {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .table tr:first-child {
+    border-top: 0;
+  }
+
+  .table th,
+  .table td {
+    padding: 0;
+    border-top: 0;
+    text-align: left;
+    white-space: normal;
+  }
 }
 
 /* ---------- QR flyer ---------- */
@@ -2137,8 +2167,8 @@ a.source-link::after {
   }
 
   /* The ✓ and ✕ show as text, and the solid blocks keep their edges. */
-  .bl-mark,
-  .badge > [aria-hidden="true"] {
+  .bl-head[data-answer] .bl-mark,
+  .badge[data-answer] > [aria-hidden="true"] {
     width: auto;
     height: auto;
     overflow: visible;
@@ -2252,8 +2282,8 @@ a.source-link::after {
   .bl-reason {
     animation: none;
   }
-  .bl-mark,
-  .badge > [aria-hidden="true"] {
+  .bl-head[data-answer] .bl-mark,
+  .badge[data-answer] > [aria-hidden="true"] {
     width: auto;
     height: auto;
     overflow: visible;

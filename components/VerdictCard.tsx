@@ -2,7 +2,7 @@
 
 import { cardGaps, type BottomLineGap } from "@/lib/rules/bottomLine";
 import type { Line, ReadField, Source, Status, Verdict } from "@/lib/rules/types";
-import { cardWhere, citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
+import { capitalize, cardWhere, citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
 import { keepWords } from "@/lib/i18n/keep";
 import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
@@ -98,8 +98,9 @@ function SourceItem({ source, lang }: { source: Source; lang: Lang }) {
   const kind = isUiKey(kindKey) ? t(lang, kindKey) : "";
   const href = safeHref(source.url);
   const label = source.citation ? citationText(source.citation) : (source.url ?? "");
+  // The date sits on the same line as the kind of source, so it needs no brackets.
   const effective = source.effective && /^\d{4}-\d{2}-\d{2}$/.test(source.effective)
-    ? ` (${t(lang, "effective", { date: formatDate(source.effective, lang) })})`
+    ? capitalize(t(lang, "effective", { date: formatDate(source.effective, lang) }))
     : "";
   // Each source is its own block, and its link is a tap target at least 44 px tall.
   return (
@@ -114,7 +115,7 @@ function SourceItem({ source, lang }: { source: Source; lang: Lang }) {
           {label}
         </span>
       )}
-      {effective ? <span className="source-date">{effective.trim()}</span> : null}
+      {effective ? <span className="source-date">{effective}</span> : null}
     </li>
   );
 }
