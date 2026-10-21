@@ -11,7 +11,8 @@ import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
 import { formatDate, placeHint, placeName, stateLaw, stateName, stateOf, stateWhere, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
-import { linkedWhere, pickLabels, SD_COUNTY_NAMES, type PickLabels } from "@/lib/places/linked";
+import { linkedPickIds, linkedWhere, pickLabels, SD_COUNTY_NAMES, withLinkedPicks, type PickLabels } from "@/lib/places/linked";
+import { loadSearchIndex } from "@/lib/places/load";
 import { addPick, campusPick, isCampusPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
 import type { PlaceEntry } from "@/lib/places/types";
 import { BikeIcon } from "./BikeIcon";
@@ -46,6 +47,8 @@ interface Initial {
   /** A catalog bike the bike finder sent, by id, and the rider's age it was checked for. */
   bike: string | null;
   age: string;
+  /** Search picks with no checked record that a "Check this bike" link names, found once the index loads. */
+  pickIds: string[];
 }
 
 /**
@@ -68,6 +71,7 @@ function readInitial(): Initial {
     ...linkedWhere(link.state, link.places),
     today: checkerToday(localToday()),
     ...finderLink(window.location.search),
+    pickIds: linkedPickIds(window.location.search),
   };
 }
 
@@ -158,6 +162,9 @@ export function Checker() {
   // Set once the family uses the campus box, so unticking it keeps it on the page. A move to another state clears it.
   const [campusKept, setCampusKept] = useState(false);
   const [whereNote, setWhereNote] = useState<WhereNote | null>(null);
+  // True until a link's ?pick= places are found in the search index. Meanwhile, or when the index
+  // can't load, the answer says city and county rules were not checked, so it never drops them.
+  const [linkPicksOpen, setLinkPicksOpen] = useState(initial.pickIds.length > 0);
   const campusId = useId();
   // The facts and where each came from change together. Nothing here is saved, so a reload or a
   // shared link starts with no facts and nothing checked.
@@ -225,6 +232,27 @@ export function Checker() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial.bike]);
 
+  // Places with no checked record that the bike finder sent, like a school district, become chips
+  // once the search index loads, so the answer names them as not checked, as the finder did.
+  useEffect(() => {
+    if (initial.pickIds.length === 0) return;
+    let live = true;
+    loadSearchIndex()
+      .then((index) => {
+        if (!live) return;
+        const entries = initial.pickIds.map((id) => index.byId.get(id)).filter((e): e is PlaceEntry => e !== undefined);
+        setLabels((cur) => ({ ...cur, ...Object.fromEntries(entries.map((e) => [e.id, pickLabels(index, e)])) }));
+        setWhere((cur) => withLinkedPicks(cur, initial.state, entries));
+        if (entries.length === initial.pickIds.length) setLinkPicksOpen(false);
+      })
+      .catch(() => {
+        // The answer keeps saying city and county rules were not checked.
+      });
+    return () => {
+      live = false;
+    };
+  }, [initial]);
+
   // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
   // comes back into view, so an old tab never answers for yesterday.
   useEffect(() => {
@@ -267,9 +295,9 @@ export function Checker() {
       rideDate: date,
       facts,
       places: ride.places,
-      otherPlaces: ride.otherPlaces,
+      otherPlaces: ride.otherPlaces || (linkPicksOpen && stateCode === initial.state),
     });
-  }, [stage, ageValid, age, stateCode, date, facts, ride]);
+  }, [stage, ageValid, age, stateCode, date, facts, ride, linkPicksOpen, initial.state]);
   // The picks whose own city, county or campus rules were not checked, named on the bottom line.
   const notChecked = uncheckedPicks(where);
   const unchecked = notChecked.filter((p) => p.kind !== "district").map((p) => labels[p.id]?.[lang].name ?? p.name);

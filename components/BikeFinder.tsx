@@ -34,10 +34,15 @@ export function finderAge(text: string): number | null {
   return n !== null && n >= MIN_AGE_INPUT && n <= MAX_AGE_INPUT ? n : null;
 }
 
-/** The checker link for a bike: its facts, the state, the checked places and the rider's age. */
-export function checkHref(bike: CatalogBike, lang: Lang, state: string, places: readonly PlaceId[], age: number): string {
+/**
+ * The checker link for a bike: its facts, the state, the checked places, the picks with no checked
+ * record, like a school district, and the rider's age. The checker names those picks as not checked,
+ * the same as the finder's card.
+ */
+export function checkHref(bike: CatalogBike, lang: Lang, state: string, places: readonly PlaceId[], age: number, uncheckedIds: readonly string[] = []): string {
   const params: Record<string, string> = { bike: bike.id, state, age: String(age) };
   if (places.length > 0) params.place = places.join(",");
+  if (uncheckedIds.length > 0) params.pick = uncheckedIds.join(",");
   return pageHref("/", lang, params);
 }
 
@@ -110,11 +115,13 @@ interface ResultProps {
   state: string;
   where: string;
   places: readonly PlaceId[];
+  /** The search ids of the picks with no checked record, for the checker link. */
+  uncheckedIds?: readonly string[];
   unchecked: string | null;
   readDate: string;
 }
 
-export function FinderResultCard({ result, lang, age, state, where, places, unchecked, readDate }: ResultProps) {
+export function FinderResultCard({ result, lang, age, state, where, places, uncheckedIds = [], unchecked, readDate }: ResultProps) {
   const { bike, line, yes } = result;
   const word = yes ? "yes" : "no";
   const stateLabel = stateName(state, lang);
@@ -207,7 +214,7 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
       </details>
 
       <div className="actions">
-        <a className="btn btn-go" href={checkHref(bike, lang, state, places, age)}>
+        <a className="btn btn-go" href={checkHref(bike, lang, state, places, age, uncheckedIds)}>
           {finderText(lang, "checkBike")}
         </a>
         <a className="btn btn-quiet" href={bike.maker_url} target="_blank" rel="noopener noreferrer">
@@ -370,6 +377,7 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
                   state={state}
                   where={whereText}
                   places={ride?.places ?? []}
+                  uncheckedIds={notChecked.map((p) => p.id)}
                   unchecked={unchecked}
                   readDate={meta.readDate}
                 />

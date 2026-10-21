@@ -268,12 +268,22 @@ describe("loading the places and districts together", () => {
     expect(searchPlaces(a, "SDUHSD")[0].id).toBe(SDUHSD.id);
   });
 
-  it("tries again after the district file fails", async () => {
+  it("keeps cities working when the district file fails, and tries the districts again next time", async () => {
     resetSearchIndex();
     const failing = async (url: string) => (url === DISTRICT_INDEX_URL ? { ok: false, status: 503, json: async () => null } : { ok: true, status: 200, json: async () => PLACES_FILE });
-    await expect(loadSearchIndex(failing)).rejects.toThrow(/HTTP 503/);
+    const placesOnly = await loadSearchIndex(failing);
+    expect(placesOnly.entries.length).toBe(PLACES.entries.length);
+    expect(searchPlaces(placesOnly, "Encinitas")[0].name).toBe("Encinitas");
     const ok = async (url: string) => ({ ok: true, status: 200, json: async () => (url === DISTRICT_INDEX_URL ? DISTRICTS : PLACES_FILE) });
-    await expect(loadSearchIndex(ok)).resolves.toBeTruthy();
+    const full = await loadSearchIndex(ok);
+    expect(full.entries.length).toBe(PLACES.entries.length + 19430);
+  });
+
+  it("keeps cities working when the district file is damaged", async () => {
+    resetSearchIndex();
+    const broken = async (url: string) => ({ ok: true, status: 200, json: async () => (url === DISTRICT_INDEX_URL ? { rows: [["bad"]] } : PLACES_FILE) });
+    const placesOnly = await loadSearchIndex(broken);
+    expect(searchPlaces(placesOnly, "Encinitas")[0].name).toBe("Encinitas");
   });
 });
 
