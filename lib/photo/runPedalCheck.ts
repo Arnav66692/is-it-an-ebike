@@ -2,6 +2,7 @@
 // transformers.js 3.8.1 from jsDelivr, the same 20-query batch and one call on the whole photo. Nothing
 // here loads until the user taps, and the photo never leaves the device.
 
+import { shrinkPhoto } from "./shrink";
 import { PEDAL_MODEL, PEDAL_QUERIES, pedalCall, pedalScore, type PedalCall } from "./pedalRule";
 
 const LIB_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js";
@@ -85,23 +86,10 @@ function load(onProgress: (fraction: number) => void): Promise<Loaded> {
   return loading;
 }
 
-async function shrink(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
-  if (scale === 1) return file;
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  return new Promise((resolve) => canvas.toBlob((b) => resolve(b ?? file), "image/png"));
+function shrink(file: File): Promise<Blob> {
+  return shrinkPhoto(file, MAX_SIDE, "image/png");
 }
 
-/**
- * Downloads the model on first use, then scores one photo. onProgress gets the download fraction and
- * then 1 once the model is ready. The score decides only the pedals fact.
- */
 export async function runPedalCheck(file: File, onProgress: (fraction: number) => void): Promise<PedalResult> {
   const { lib, processor, model, textInputs } = await load(onProgress);
   onProgress(1);

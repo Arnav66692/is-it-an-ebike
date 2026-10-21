@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { tabTap, type InputTab, type RequestGate } from "@/lib/checkerState";
 import { parseSpecText, type Extraction, type TextSource } from "@/lib/extract/parse";
+import { shrinkPhoto } from "@/lib/photo/shrink";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
 import { Card } from "./controls";
@@ -22,17 +23,8 @@ type ReaderProps = Pick<Props, "lang" | "onRead" | "gate">;
 const MAX_SIDE = 2000;
 
 /** Shrinks big phone photos before OCR so it runs faster. The image never leaves the device. */
-async function prepareImage(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
-  if (scale === 1) return file;
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  return new Promise((resolve) => canvas.toBlob((b) => resolve(b ?? file), "image/jpeg", 0.92));
+function prepareImage(file: File): Promise<Blob> {
+  return shrinkPhoto(file, MAX_SIDE, "image/jpeg", 0.92);
 }
 
 function LabelReader({ lang, onRead, gate }: ReaderProps) {
@@ -80,7 +72,6 @@ function LabelReader({ lang, onRead, gate }: ReaderProps) {
         id={id}
         type="file"
         accept="image/*"
-        capture="environment"
         className="sr-only"
         onChange={(e) => {
           const file = e.target.files?.[0];

@@ -238,7 +238,6 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
               id={id}
               type="file"
               accept="image/*"
-              capture="environment"
               className="sr-only"
               aria-label={t(lang, "photoCheckChoose")}
               aria-disabled={working ? true : undefined}
