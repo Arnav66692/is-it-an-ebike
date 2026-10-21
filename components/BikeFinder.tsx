@@ -9,6 +9,7 @@ import { useId, useMemo, useState } from "react";
 import { findBikes, BUDGETS, COLOR_FAMILIES, USES, type Budget, type ColorFamily, type FinderResult, type FitReason, type Use } from "@/lib/bikes/finder";
 import type { CatalogBike } from "@/lib/bikes/facts";
 import type { CatalogMeta } from "@/lib/bikes/catalog";
+import { photoFor, storeName } from "@/lib/bikes/photos";
 import { budgetText, colorText, feetInches, finderText, topicText, purposeText } from "@/lib/i18n/finder";
 import { formatDate, joinList, stateName, type Lang } from "@/lib/i18n/names";
 import { keepWords } from "@/lib/i18n/keep";
@@ -196,6 +197,8 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
         {bike.colors.length > 0 ? <span lang={lang !== "en" ? "en" : undefined}>{bike.colors.join(", ")}</span> : finderText(lang, "spec_none")}
       </p>
 
+      <BikePhoto bike={bike} lang={lang} />
+
       <details className="more">
         <summary>{finderText(lang, "specs")}</summary>
         <div className="more-body">
@@ -224,10 +227,33 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
           {finderText(lang, "checkBike")}
         </a>
         <a className="btn btn-quiet" href={bike.maker_url} target="_blank" rel="noopener noreferrer">
-          {finderText(lang, "makerPage")}
+          {finderText(lang, "makerPage", { site: storeName(bike.maker_url) })}
         </a>
       </div>
     </article>
+  );
+}
+
+/**
+ * The maker's photo of the bike, in a drawer. The image loads from the maker's site only once the
+ * drawer is opened, so a closed list sends no request anywhere.
+ */
+export function BikePhoto({ bike, lang }: { bike: CatalogBike; lang: Lang }) {
+  const [open, setOpen] = useState(false);
+  const url = photoFor(bike.id);
+  if (!url) return null;
+  const name = `${bike.maker} ${bike.model}`;
+  return (
+    <details className="more finder-photo" onToggle={(e) => setOpen(e.currentTarget.open)}>
+      <summary>{finderText(lang, "photo")}</summary>
+      <div className="more-body">
+        {open ? (
+          // A plain img, so the photo comes straight from the maker and is never copied or cached here.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt={finderText(lang, "photoAlt", { name })} loading="lazy" referrerPolicy="no-referrer" className="finder-photo-img" />
+        ) : null}
+      </div>
+    </details>
   );
 }
 
@@ -416,6 +442,7 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
             <p>{finderText(lang, "about1", { n: catalog.length, makers, date: formatDate(meta.readDate, lang) })}</p>
             <p>{finderText(lang, "about2")}</p>
             <p>{finderText(lang, "about3")}</p>
+            <p>{finderText(lang, "about4")}</p>
           </div>
         </details>
         <p className="meta">{t(lang, "notLegalAdvice")}</p>

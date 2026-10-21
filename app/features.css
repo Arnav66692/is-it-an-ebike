@@ -185,3 +185,14 @@ a.brand-mark::after {
   position: absolute;
   inset: -2px;
 }
+
+/* The maker's photo of a finder bike, inside its drawer. */
+.finder-photo-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  background: var(--card);
+  border: 1px solid var(--line);
+}

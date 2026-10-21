@@ -83,11 +83,14 @@ const en = {
   wattsPeak: "{rated} W rated, {peak} W peak",
   peakOnly: "{peak} W peak",
   checkBike: "Check this bike",
-  makerPage: "Maker's page",
+  makerPage: "Buy on {site}",
+  photo: "See a photo",
+  photoAlt: "{name}, from the maker's site",
   aboutTitle: "About this list",
   about1: "{n} bikes from {makers} makers, read from each maker's page {date}. Prices and stock change.",
   about2: "Ranked by fit alone. No maker pays to be here and no link earns a fee.",
   about3: "A YES uses only what the maker's page states. Check this bike opens the checker with those facts, to check against the bike itself.",
+  about4: "Photos load from the maker's site only when you open one. Buy links go straight to the maker.",
 };
 
 type FinderKey = keyof typeof en;
@@ -170,11 +173,14 @@ const es: Record<FinderKey, string> = {
   wattsPeak: "{rated} W nominales, {peak} W máximos",
   peakOnly: "{peak} W máximos",
   checkBike: "Revisar esta bicicleta",
-  makerPage: "Página del fabricante",
+  makerPage: "Comprar en {site}",
+  photo: "Ver una foto",
+  photoAlt: "{name}, de la página del fabricante",
   aboutTitle: "Sobre esta lista",
   about1: "{n} bicicletas de {makers} fabricantes, leídas de la página de cada fabricante el {date}. Los precios y las existencias cambian.",
   about2: "Ordenadas solo por lo bien que le quedan. Ningún fabricante paga por estar aquí y ningún enlace cobra comisión.",
   about3: "Un SÍ usa solo lo que dice la página del fabricante. Revisar esta bicicleta abre la revisión con esos datos, para compararlos con la bicicleta misma.",
+  about4: "Las fotos se cargan desde la página del fabricante solo cuando abres una. Los enlaces de compra van directo al fabricante.",
 };
 
 const TEXT: Record<Lang, Record<FinderKey, string>> = { en, es };

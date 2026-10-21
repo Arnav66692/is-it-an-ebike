@@ -26,3 +26,7 @@ The research could not read Trek's pages, which load their specs in the browser 
 ## Ranking
 
 Only bikes in the budget are listed. A YES for this rider in these places comes first, then the closer fit: 3 points for each use that matches, 1 for a color they like, 1 for a height in the maker's fit range, and 10 off for a height outside it or an age outside the maker's own age rule. Ties go to the lower price, then a fixed number made from the bike's id (FNV-1a), which has no order of its own. No maker's name counts for or against a bike, and a test renames every maker and checks the order stays the same. There are no images, and no link earns a fee.
+
+## Photos and buy links
+
+Each bike has a "See a photo" drawer. The photo is the share image on the maker's own page (its og:image tag), read Oct 21, 2026 and checked to load over https (`data/bikes/photos.json`). It stays on the maker's server, loads only when the drawer is opened, and is never copied into this repo. The buy link goes straight to the maker's page, with no affiliate code.

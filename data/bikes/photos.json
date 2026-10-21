@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "read_date": "2026-10-21",
+    "method": "Each maker page's own share image (its og:image tag), read Oct 21, 2026 and checked to load over https as an image. The photos stay on the makers' servers. None is copied into this repo.",
+    "loads": "A photo loads from the maker's site only when someone opens it."
+  },
+  "photos": {
+    "aventon-abound-lr": {
+      "image_url": "https://cdn.shopify.com/s/files/1/1520/2468/files/01_Abound-LR_Stealth_Side_1-bike.jpg?v=1737999400",
+      "source_page": "https://www.aventon.com/products/abound-lr-ebike"
+    },
+    "aventon-aventure-3": {
+      "image_url": "https://cdn.shopify.com/s/files/1/1520/2468/files/01_Aventure-3_Matcha_Side_1.jpg?v=1746639285",
+      "source_page": "https://www.aventon.com/products/aventure-3-ebike"
+    },
+    "aventon-level-4-rec": {
+      "image_url": "https://cdn.shopify.com/s/files/1/1520/2468/files/Level-4-SO-REC-Mate-Black-01.jpg?v=1774046241",
+      "source_page": "https://www.aventon.com/products/level-4-rec-ebike"
+    },
+    "aventon-soltera-2-5": {
+      "image_url": "https://cdn.shopify.com/s/files/1/1520/2468/files/Baja-Soltera-2.5-6.jpg?v=1756958410",
+      "source_page": "https://www.aventon.com/products/soltera-2-5-ebike"
+    },
+    "aventon-soltera-3-adv": {
+      "image_url": "https://cdn.shopify.com/s/files/1/1520/2468/files/01_Soltera_3_Matte_Midnight_Black_Side_1.png?v=1772703749",
+      "source_page": "https://www.aventon.com/products/soltera-3-ebike"
+    },
+    "gotrax-ranger": {
+      "image_url": "https://gotrax.com/cdn/shop/files/gotrax-ranger-electric-bike-2584640.jpg?v=1761240163&width=2048",
+      "source_page": "https://gotrax.com/products/gotrax-ranger"
+    },
+    "gotrax-ranger-16": {
+      "image_url": "https://gotrax.com/cdn/shop/files/ranger-16-electric-bike-5507461.jpg?v=1777557434&width=2048",
+      "source_page": "https://gotrax.com/products/ranger-16-electric-bike"
+    },
+    "hiboy-c1": {
+      "image_url": "https://www.hiboy.com/cdn/shop/files/11_187b6d91-4f53-4e9a-b47f-445088b3561e.png?v=1781597555&width=2048",
+      "source_page": "https://www.hiboy.com/products/hiboy-c1-folding-electric-bike"
+    },
+    "jetson-haze": {
+      "image_url": "https://ridejetson.com/cdn/shop/products/JHAZE-BLK_02.jpg?v=1759252705",
+      "source_page": "https://ridejetson.com/products/haze-folding-electric-bike"
+    },
+    "lectric-xp-lite2": {
+      "image_url": "https://lectricebikes.com/cdn/shop/files/lite-white_a6ef01c7-4607-4639-b0c4-09846a407fc9.png?v=1768990516",
+      "source_page": "https://lectricebikes.com/products/xp-lite-arctic-white"
+    },
+    "lectric-xp4": {
+      "image_url": "https://lectricebikes.com/cdn/shop/files/XP4-T-BXP_114a4807-a772-4a64-9699-348d007460c7.png?v=1768038905",
+      "source_page": "https://lectricebikes.com/products/xp-black"
+    },
+    "lectric-xpeak2": {
+      "image_url": "https://lectricebikes.com/cdn/shop/files/XPeak-T-Black-Acc.png?v=1770981709",
+      "source_page": "https://lectricebikes.com/products/xpeak-high-step-ebike"
+    },
+    "lectric-xpedition2": {
+      "image_url": "https://lectricebikes.com/cdn/shop/files/XPed-T-White-Dual-Acc_4764bba6-d935-4c72-9d89-957b95599c05.png?v=1770981358",
+      "source_page": "https://lectricebikes.com/products/xpedition-dual-battery"
+    },
+    "rad-radexpand-5-plus": {
+      "image_url": "https://cdn.shopify.com/s/files/1/0799/9645/files/1-min.png?v=1708034517",
+      "source_page": "https://www.radpowerbikes.com/products/radexpand-plus-electric-folding-bike"
+    },
+    "rad-radrunner": {
+      "image_url": "https://cdn.shopify.com/s/files/1/0799/9645/files/Runner_2025_Classic_Blue_Right_Side_d287913a-ec57-4f76-8ba7-8b2ead76009b.png?v=1743697750",
+      "source_page": "https://www.radpowerbikes.com/products/radrunner-electric-cargo-utility-bike"
+    },
+    "rad-radster-trail": {
+      "image_url": "https://cdn.shopify.com/s/files/1/0799/9645/files/Radster_Trail_Regular_Copper_Red_Right_Side.png?v=1709660016",
+      "source_page": "https://www.radpowerbikes.com/products/radster-trail-electric-off-road-bike"
+    },
+    "ride1up-portola-02": {
+      "image_url": "https://ride1up.com/wp-content/uploads/2026/07/Portola_Gray_rack_01-scaled.webp",
+      "source_page": "https://ride1up.com/product/portola-02/"
+    },
+    "ride1up-roadster-v3": {
+      "image_url": "https://ride1up.com/wp-content/uploads/2026/03/RV3-MedLrg_Grn-scaled.webp",
+      "source_page": "https://ride1up.com/product/roadster-v3/"
+    },
+    "super73-z-miami": {
+      "image_url": "https://super73.com/cdn/shop/files/25YMZMIAMI_CORE_FRONTHERO_de5b8c0a-fb02-4386-bf97-10d95025e36d.jpg?v=1772738545",
+      "source_page": "https://super73.com/products/super73-z-miami-core-legacy"
+    },
+    "specialized-globe-haul-st": {
+      "image_url": "https://resources.specialized.com/image/91022-80_HAUL-ST-OBSD_HERO-SQUARE?q=75&w=1400&h=2880&fit=max&fm=webp",
+      "source_page": "https://www.specialized.com/us/en/haul-st/p/277759"
+    },
+    "tern-quick-haul-d8": {
+      "image_url": "https://www.ternbicycles.com/sites/default/files/styles/extra_large_rectangle_1x/public/2022-02/TN-photo-QuickHaul_D8-tabasco-web.jpg.webp?itok=yxCDiKLY",
+      "source_page": "https://www.ternbicycles.com/us/bikes/471/quick-haul-d8"
+    },
+    "velotric-discover-2": {
+      "image_url": "https://www.velotricbike.com/cdn/shop/files/Discover_2-Cherry_Crimson_right_side_1_1_1.png?crop=center&height=1170&v=1781150053&width=1170",
+      "source_page": "https://www.velotricbike.com/products/velotric-discover-2"
+    },
+    "velotric-fold-1": {
+      "image_url": "https://www.velotricbike.com/cdn/shop/files/F1_ElectricBlue_rightside1_1.png?crop=center&height=3900&v=1713178049&width=3900",
+      "source_page": "https://www.velotricbike.com/products/velotric-fold-1"
+    },
+    "velotric-nomad-2": {
+      "image_url": "https://www.velotricbike.com/cdn/shop/files/N2_ST_Cranberry_6db64f59-9f01-4aa7-b9e2-11b8b33337f8.png?crop=center&height=1950&v=1739432018&width=1950",
+      "source_page": "https://www.velotricbike.com/products/velotric-nomad-2"
+    },
+    "velotric-t1-st-plus": {
+      "image_url": "https://www.velotricbike.com/cdn/shop/files/T1ST_plus_lava_right_side_1_1_1.png?crop=center&height=3900&v=1764064119&width=3900",
+      "source_page": "https://www.velotricbike.com/products/velotric-t1st-ebike"
+    },
+    "hiboy-dk2": {
+      "image_url": "https://www.hiboy.com/cdn/shop/files/1-2_3f343213-11aa-4cd9-87cb-e12f0644702e.jpg?v=1781663077&width=2048",
+      "source_page": "https://www.hiboy.com/products/hiboy-dk2-electric-dirt-bike-for-kids-ages-3-7"
+    },
+    "jetson-bolt": {
+      "image_url": "https://ridejetson.com/cdn/shop/products/JBOLT-RED_01.png?v=1762525512",
+      "source_page": "https://ridejetson.com/products/bolt-electric-bike"
+    },
+    "jetson-jax": {
+      "image_url": "https://ridejetson.com/cdn/shop/files/JJAX-BLK_RJ-02.jpg?v=1783539209",
+      "source_page": "https://ridejetson.com/products/jax-electric-dirt-bike"
+    },
+    "super73-k1d": {
+      "image_url": "https://super73.com/cdn/shop/files/Super73_MY23_K1D_PricklyPink_FrontHero_e7d52242-c094-4328-8197-faaa612bcd3f.jpg?v=1761262919",
+      "source_page": "https://super73.com/products/super73-k1d"
+    }
+  }
+}
