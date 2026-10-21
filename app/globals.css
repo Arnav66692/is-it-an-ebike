@@ -509,15 +509,10 @@ html:not([lang="es"]) .sk-es {
   color: var(--muted);
 }
 
-/* The bike step's three tabs, as their track. */
-.sk-tabs {
-  min-height: 70px;
-}
-
-@media (min-width: 640px) {
-  .sk-tabs {
-    min-height: 58px;
-  }
+/* The bike step's three tabs, the first one open, as on the real page. */
+.sk-tabs button[data-on="true"] {
+  background: var(--primary);
+  color: var(--primary-ink);
 }
 
 /* ---------- Cards and steps ---------- */
@@ -2347,6 +2342,22 @@ a.source-link::after {
   }
   .tabs button[aria-selected="true"] {
     color: #000;
+  }
+  /* The same for every control drawn as white words on an ink fill: picked choices, pressed
+     buttons, main buttons and the step numerals print as black words in a black edge. */
+  .choice input:checked + span,
+  .btn,
+  .btn[aria-pressed="true"],
+  .step {
+    color: #000;
+    border: 2px solid #000;
+  }
+  .btn:disabled {
+    color: #333333;
+    border: 1px solid #999999;
+  }
+  .step {
+    border-width: 1px;
   }
   /* Small icons drawn as a masked fill keep their ink on paper. */
   .more > summary::before,

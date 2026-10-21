@@ -3,6 +3,7 @@
 // the first steps, so the page doesn't jump when it arrives. The page's language is set on <html>
 // before the first paint (lib/pageLang.ts), and CSS shows the words in that language.
 
+import { formatDate } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
 import { BikeIcon } from "./BikeIcon";
 import { FlyerSheet } from "./FlyerSheet";
@@ -35,6 +36,11 @@ function BothTitle() {
     </>
   );
 }
+
+/** A date as long as most, standing in for today's. */
+const SAMPLE_DATE = "2026-10-21";
+
+const SK_TABS: UiKey[] = ["tabLabel", "tabLink", "tabType"];
 
 function StepTitle({ step, k }: { step: number; k: UiKey }) {
   return (
@@ -128,7 +134,13 @@ export function CheckerSkeleton() {
               <Both k="date" />
             </p>
             <div className="flex min-h-12 flex-wrap items-center gap-x-3">
-              <Both k="dateToday" />
+              {/* Today's date isn't known here, so a date of the same length holds its place unseen. */}
+              {(["en", "es"] as const).map((lang) => (
+                <span key={lang} className={`sk-${lang}`} lang={lang}>
+                  {t(lang, "dateToday")}
+                  <span className="invisible">, {formatDate(SAMPLE_DATE, lang)}</span>
+                </span>
+              ))}
               <span className="link-btn">
                 <Both k="dateOther" />
               </span>
@@ -139,7 +151,14 @@ export function CheckerSkeleton() {
 
       <section className="card space-y-5">
         <StepTitle step={2} k="step2" />
-        <div className="tabs sk-tabs" aria-hidden="true" />
+        {/* The three tabs with their words, so the track wraps to the same height as the real one. */}
+        <div className="tabs sk-tabs" aria-hidden="true">
+          {SK_TABS.map((k, i) => (
+            <button key={k} type="button" disabled tabIndex={-1} data-on={i === 0 ? "true" : undefined}>
+              <Both k={k} />
+            </button>
+          ))}
+        </div>
         {/* The Label photo panel, open first on the real page. */}
         <div className="sk-panel space-y-4" aria-hidden="true">
           <p className="help">

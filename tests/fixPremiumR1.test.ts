@@ -130,6 +130,8 @@ describe("the loading frame", () => {
       expect(html, k).toContain(t("en", k).replace(/'/g, "&#x27;"));
     }
     expect(html).toContain("sk-panel");
+    // The tab words, so the track wraps like the real one.
+    for (const k of ["tabLabel", "tabLink", "tabType"] as const) expect(html, k).toContain(t("es", k));
   });
 });
 
@@ -187,5 +189,11 @@ describe("copy", () => {
       // The answer and its lead are still there.
       expect(html, lang).toContain('data-answer-line=""');
     }
+  });
+});
+
+describe("print without background graphics", () => {
+  it("prints every white-on-ink control as black words in a black edge", () => {
+    expect(media("print")).toMatch(/\.choice input:checked \+ span,\n\s*\.btn,\n\s*\.btn\[aria-pressed="true"\],\n\s*\.step \{\s*color: #000;/);
   });
 });
