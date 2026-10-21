@@ -13,13 +13,17 @@ vi.mock("@/lib/photo/runPedalCheck", () => ({
   runPedalCheck: vi.fn(),
 }));
 
+import { AccuracyView } from "@/components/AccuracyView";
 import { BikeInput, tabKey } from "@/components/BikeInput";
 import { BottomLineCard } from "@/components/BottomLineCard";
 import { Checker, whereNoteShown, whereNoteText } from "@/components/Checker";
 import { FactsCard } from "@/components/FactsCard";
+import { flyerLang } from "@/components/Flyer";
 import { FollowUps } from "@/components/FollowUps";
 import { PlaceSearch, statusVisible } from "@/components/PlaceSearch";
 import { focusGate } from "@/lib/checkerState";
+import { parseSpecText, quoteText } from "@/lib/extract/parse";
+import { ACCURACY_TEXT } from "@/lib/i18n/accuracy";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { pickLabels } from "@/lib/places/linked";
@@ -242,5 +246,49 @@ describe("the page", () => {
     expect(order()).toEqual(["bottom line", "questions"]);
     // Place by place is a heading under The answer, so heading navigation finds it.
     expect(p.all().some((e) => e.type === "h3" && textOf(e) === t("en", "byPlace"))).toBe(true);
+  });
+});
+
+describe("the quotes under each read fact", () => {
+  it("keep to the fact's whole sentence, so a quote never starts with the 1 of Class 1 or ends with No", () => {
+    const text = "Class 1 e-bike with pedals. 350W rated motor. No throttle. Pedal assist up to 20 mph.";
+    const e = parseSpecText(text, "listing").evidence;
+    expect(e.ratedWatts?.map(quoteText)).toEqual(["350W rated motor."]);
+    expect(e.hasPedals?.map(quoteText)).toEqual(["Class 1 e-bike with pedals."]);
+    expect(e.hasThrottle?.map(quoteText)).toEqual(["No throttle."]);
+  });
+
+  it("show where a long sentence was cut, and stay a true substring of the text", () => {
+    const text =
+      "Specifications for this model include an aluminum frame and hydraulic disc brakes and a rear hub motor rated at 500W with a peak of 900W and a removable battery and integrated lights and fenders and a rear rack";
+    const [ev] = parseSpecText(text, "listing").evidence.ratedWatts ?? [];
+    if (!ev) throw new Error("no rated watts read");
+    expect(text).toContain(ev.text);
+    expect(quoteText(ev).startsWith("…")).toBe(true);
+    expect(quoteText(ev).endsWith("…")).toBe(true);
+  });
+});
+
+describe("the accuracy page and the flyer", () => {
+  it("spell out the results date like every other date in the app", () => {
+    for (const lang of ["en", "es"] as const) {
+      const html = renderToStaticMarkup(createElement(AccuracyView, { lang }));
+      expect(html, lang).not.toMatch(/\d{1,2}\/\d{1,2}\/\d{4}/);
+      expect(html, lang).toMatch(lang === "en" ? /updated [A-Z][a-z]{2} \d{1,2}, \d{4}\./ : /actualizado el \d{1,2} de [a-z]+ de \d{4}\./);
+    }
+  });
+
+  it("describe the test rides without the old Somewhere else choice", () => {
+    for (const lang of ["en", "es"] as const) {
+      const text = ACCURACY_TEXT[lang].blCases("1", "4");
+      expect(text).not.toMatch(/Somewhere else|Otro lugar/);
+    }
+  });
+
+  it("give the flyer's Back and Print in the language its link asks for", () => {
+    expect(flyerLang("?lang=es")).toBe("es");
+    expect(flyerLang("?lang=en")).toBe("en");
+    expect(flyerLang("")).toBe("en");
+    expect([t("es", "flyerBack"), t("es", "flyerPrint")]).toEqual(["Volver", "Imprimir"]);
   });
 });

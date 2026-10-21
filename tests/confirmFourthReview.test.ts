@@ -11,7 +11,7 @@ import { PedalPhotoCheck, photoStatus } from "@/components/PedalPhotoCheck";
 import { ShapeFacts, wheelMatchesKey } from "@/components/ShapeFacts";
 import { withWeight, withWheelSize } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
-import { parseSpecText, type Extraction } from "@/lib/extract/parse";
+import { parseSpecText, quoteText, type Extraction } from "@/lib/extract/parse";
 import type { Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { READ_FIELD_NAMES } from "@/lib/i18n/verdicts";
@@ -342,7 +342,8 @@ describe("each box to tick sits under the fact it confirms", () => {
         expect(at[field]?.owner, `${lang} ${field}`).toBe(field);
         const quotes = (e[field] ?? []).slice(0, 2);
         expect(quotes.length, `${lang} ${field}`).toBeGreaterThan(0);
-        for (const quote of quotes) expect(at[field]?.between, `${lang} ${field}`).toContain(`>${quote.text}</q>`);
+        // The quote as shown: its words, with "…" where it is cut in the middle of a sentence.
+        for (const quote of quotes) expect(at[field]?.between, `${lang} ${field}`).toContain(`>${quoteText(quote)}</q>`);
       }
     }
   });

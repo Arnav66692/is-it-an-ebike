@@ -5,7 +5,7 @@
 // line can't say YES (lib/provenance.ts, lib/rules/bottomLine.ts).
 
 import { useId, type Ref } from "react";
-import type { Evidence as Ev } from "@/lib/extract/parse";
+import { quoteText, type Evidence as Ev } from "@/lib/extract/parse";
 import type { FactCheck } from "@/lib/provenance";
 import type { ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
@@ -86,7 +86,7 @@ export function ReadNote({ lang, field, check, onConfirm, evidence, matchesKey, 
   const label = check?.source === "photo" ? t(lang, "readFromBefore") : t(lang, "readFrom");
   return (
     <>
-      <Evidence label={label} texts={evidence?.map((e) => e.text)} />
+      <Evidence label={label} texts={evidence?.map(quoteText)} />
       <ReadCheck lang={lang} field={field} check={check} onConfirm={onConfirm} matchesKey={matchesKey} boxRef={boxRef} />
     </>
   );

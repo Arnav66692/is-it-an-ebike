@@ -13,6 +13,22 @@ export interface Evidence {
   /** Exact text from the input. Always a substring of what was parsed. */
   text: string;
   index: number;
+  /** True when the text goes on before this quote in the middle of a sentence, so it is shown with a leading "…". */
+  cutBefore?: boolean;
+  /** True when the text goes on after this quote in the middle of a sentence, so it is shown with a trailing "…". */
+  cutAfter?: boolean;
+}
+
+/** Where a sentence ends: a period, ! or ? followed by a space, or a line break. */
+const SENTENCE_END = /[.!?]\s|\n/g;
+
+/**
+ * The quote as the card shows it. A quote cut in the middle of a sentence gets "…" at the cut,
+ * so "…with pedals. 350W rated motor." can't be read as the whole sentence. The words inside
+ * stay a true substring of the text.
+ */
+export function quoteText(ev: Evidence): string {
+  return `${ev.cutBefore ? "…" : ""}${ev.text}${ev.cutAfter ? "…" : ""}`;
 }
 
 export interface Extraction {
@@ -56,20 +72,53 @@ function slice(text: string, from: number, to: number): string {
 /** Two spaces: normalized text never has them, so they mark the edge of a blanked-out stretch. */
 const SKIPPED_EDGE = "  ";
 
-/** Keeps evidence short and readable, and always a true substring of the text. */
+/** How far past its window a quote may reach to start or end with its whole sentence. */
+const SENTENCE_REACH = 40;
+
+/**
+ * Keeps evidence short and readable, and always a true substring of the text. The quote keeps to
+ * the sentence the match is in, and takes the whole sentence when it is only a little longer, so
+ * it never starts with the tail of the sentence before, like the "1" of "Class 1", or ends with
+ * the first word of the next, like "No".
+ */
 function snippet(text: string, index: number, length: number): Evidence {
-  let start = Math.max(0, index - 14);
-  let end = Math.min(text.length, index + length + 14);
-  // Widen to whole words so the card never shows "OTOR WATTAGE".
-  while (start > 0 && start > index - 30 && /\S/.test(text[start - 1])) start -= 1;
-  while (end < text.length && end < index + length + 30 && /\S/.test(text[end])) end += 1;
   // Two spaces in a row only appear where text about other products was blanked out. Evidence
   // never reaches across one, so it stays a true substring of the text that was read.
   const gapBefore = text.lastIndexOf(SKIPPED_EDGE, index);
-  if (gapBefore >= start) start = gapBefore + SKIPPED_EDGE.length;
+  const floor = gapBefore >= 0 ? gapBefore + SKIPPED_EDGE.length : 0;
   const gapAfter = text.indexOf(SKIPPED_EDGE, index + length);
-  if (gapAfter >= 0 && gapAfter < end) end = gapAfter;
-  return { text: text.slice(start, end).trim(), index: start };
+  const ceil = gapAfter >= 0 ? gapAfter : text.length;
+  let start = Math.max(floor, index - 14);
+  let end = Math.min(ceil, index + length + 14);
+  // Widen to whole words so the card never shows "OTOR WATTAGE".
+  while (start > floor && start > index - 30 && /\S/.test(text[start - 1])) start -= 1;
+  while (end < ceil && end < index + length + 30 && /\S/.test(text[end])) end += 1;
+
+  // The start of the match's sentence, when it is close enough.
+  const lookFrom = Math.max(floor, start - SENTENCE_REACH);
+  let sentenceStart: number | null = null;
+  for (const m of text.slice(lookFrom, index).matchAll(SENTENCE_END)) sentenceStart = lookFrom + (m.index ?? 0) + m[0].length;
+  if (sentenceStart !== null) start = sentenceStart;
+  else if (lookFrom === floor) start = floor;
+  // The end of the match's sentence, when it is close enough.
+  const after = new RegExp(SENTENCE_END.source, "g");
+  after.lastIndex = index + length;
+  const stop = after.exec(text);
+  const reach = Math.min(ceil, end + SENTENCE_REACH);
+  if (stop && stop.index < reach) end = stop.index + (stop[0].startsWith("\n") ? 0 : 1);
+  else if (reach === ceil) end = ceil;
+
+  const raw = text.slice(start, end);
+  const from = start + (raw.length - raw.trimStart().length);
+  const quote = raw.trim();
+  const before = text.slice(floor, from).trimEnd();
+  const rest = text.slice(from + quote.length, ceil).trimStart();
+  return {
+    text: quote,
+    index: from,
+    cutBefore: before !== "" && !/[.!?:\n]$/.test(before),
+    cutAfter: rest !== "" && !/[.!?:]$/.test(quote),
+  };
 }
 
 function push(map: Extraction["evidence"], key: FactKey, ev: Evidence): void {

@@ -197,6 +197,8 @@ const en = {
   startOver: "Start over",
   accuracy: "How accurate is this?",
   flyer: "Print a QR flyer",
+  flyerBack: "Back",
+  flyerPrint: "Print",
   howTitle: "How it works",
   howBody:
     "A fixed rules table makes every call. It covers all 50 states and Washington, DC, plus seven San Diego County places. The app only reads facts from the label or listing. It never guesses a class. Every answer is YES or NO. When the facts or the law can't support a YES, the answer is NO and it says what is missing. Facts it reads are marked, and the answer can't say YES until you check each one against the bike.",
@@ -429,6 +431,8 @@ const es: Record<UiKey, string> = {
   startOver: "Empezar de nuevo",
   accuracy: "¿Qué tan preciso es?",
   flyer: "Imprimir un volante con código QR",
+  flyerBack: "Volver",
+  flyerPrint: "Imprimir",
   howTitle: "Cómo funciona",
   howBody:
     "Una tabla fija de reglas toma cada decisión. Cubre los 50 estados y el Distrito de Columbia, además de siete lugares del condado de San Diego. La app solo lee datos de la etiqueta o del anuncio. Nunca adivina una clase. Cada respuesta es SÍ o NO. Cuando los datos o la ley no alcanzan para un SÍ, la respuesta es NO y dice qué falta. Los datos que lee quedan marcados, y la respuesta no puede decir SÍ hasta que compares cada uno con la bicicleta.",

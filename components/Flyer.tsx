@@ -3,12 +3,25 @@
 import Link from "next/link";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
+import type { Lang } from "@/lib/i18n/names";
+import { t } from "@/lib/i18n/ui";
+
+/** The flyer page's language, from ?lang=es on its link. The flyer itself is in both languages. */
+export function flyerLang(search: string): Lang {
+  return new URLSearchParams(search).get("lang") === "es" ? "es" : "en";
+}
 
 /** Printable flyer for bike shops and school offices. The QR opens the checker in San Diego mode. */
 export function Flyer() {
   const [base] = useState(() => process.env.NEXT_PUBLIC_SITE_URL || window.location.origin);
+  // Back and Print follow the language the family chose on the checker.
+  const [lang] = useState<Lang>(() => flyerLang(window.location.search));
   const [qr, setQr] = useState("");
   const url = base.replace(/^https?:\/\//, "");
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   useEffect(() => {
     const target = `${base}/?state=CA&place=city_of_san_diego,sduhsd_campuses`;
@@ -20,15 +33,15 @@ export function Flyer() {
   return (
     <div className="page">
       <div className="no-print flex items-center justify-between">
-        <Link href="/" className="link-btn back-link inline-flex items-center gap-2">
+        <Link href={lang === "es" ? "/?lang=es" : "/"} className="link-btn back-link inline-flex items-center gap-2">
           <span aria-hidden="true">&larr;</span>
-          <span>Back</span>
+          <span>{t(lang, "flyerBack")}</span>
         </Link>
         <button type="button" className="btn btn-quiet" onClick={() => window.print()}>
-          Print
+          {t(lang, "flyerPrint")}
         </button>
       </div>
-      <article className="card flyer">
+      <article className="card flyer" lang="en">
         <div className="space-y-2">
           <h1 className="app-title text-[2.25rem]">Is it an e-bike?</h1>
           <p className="text-2xl font-bold text-muted" lang="es">

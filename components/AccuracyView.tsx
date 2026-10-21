@@ -1,7 +1,7 @@
 import Link from "next/link";
 import accuracy from "@/data/results/accuracy.json";
 import { ACCURACY_TEXT, localizeResult } from "@/lib/i18n/accuracy";
-import type { Lang } from "@/lib/i18n/names";
+import { formatDate, type Lang } from "@/lib/i18n/names";
 
 type Bar = { bar: string; result: string; pass: boolean };
 
@@ -16,6 +16,7 @@ interface BottomLineResults {
   missed_illegal?: number;
   missing_caveat: number;
   hedged?: number;
+  card_yes_under_no?: number;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
@@ -58,7 +59,8 @@ export function AccuracyView({ lang }: { lang: Lang }) {
   const ocr = accuracy.pilot.photos_ocr as { photos: number; invented: number; pass: boolean } | null;
   const v2 = (accuracy.pilot as { photos_v2?: { pass: boolean; bars: Record<string, Bar>; breakdown: Record<string, { right: number; of: number }> } | null }).photos_v2 ?? null;
   const v3 = (accuracy.pilot as { photos_v3?: { pass: boolean; bars: Record<string, Bar>; breakdown: { hard_cases: { right: number; of: number }; real_world: { right: number; of: number }; mean_ms: number | null } } | null }).photos_v3 ?? null;
-  const updated = new Date(accuracy.generated_at).toLocaleDateString(locale, { timeZone: "America/Los_Angeles" });
+  // The day the results were made, in Pacific time, spelled out like every other date in the app.
+  const updated = formatDate(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date(accuracy.generated_at)), lang);
 
   return (
     <main className="page flex-1" lang={lang}>
@@ -113,6 +115,7 @@ export function AccuracyView({ lang }: { lang: Lang }) {
               {bl.missed_illegal !== undefined ? <Row label={text.blMissedIllegal} value={fmt(bl.missed_illegal)} /> : null}
               <Row label={text.blMissingCaveat} value={fmt(bl.missing_caveat)} />
               {bl.hedged !== undefined ? <Row label={text.hedged} value={fmt(bl.hedged)} /> : null}
+              {bl.card_yes_under_no !== undefined ? <Row label={text.blCardYesUnderNo} value={fmt(bl.card_yes_under_no)} strong /> : null}
               <Row label={text.blYes} value={fmt(bl.by_kind.yes)} />
               <Row label={text.blNoIllegal} value={fmt(bl.by_kind.no_illegal)} />
               <Row label={text.blNoUnconfirmed} value={fmt(bl.by_kind.no_unconfirmed)} />
