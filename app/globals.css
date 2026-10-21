@@ -105,10 +105,13 @@ h1,
 h2,
 h3,
 h4,
-.bl-reason,
-.flyer-line,
-.tagline {
+.flyer-line {
   text-wrap: balance;
+}
+
+/* The big line under YES or NO fills its lines and never leaves one word alone on the last. */
+.bl-reason {
+  text-wrap: pretty;
 }
 
 :focus-visible {
@@ -1193,7 +1196,7 @@ div.fact-group.fact-grid {
    least 44 px tall, then its date. */
 .sources {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.75rem;
 }
 
 .source {
@@ -1223,7 +1226,6 @@ a.source-link {
 
 .source-date {
   color: var(--muted);
-  font-size: 0.9375rem;
 }
 
 
@@ -1350,6 +1352,12 @@ a.source-link {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 1.05rem;
   overflow-wrap: anywhere;
+}
+
+/* The address before it is known, in the loading frame, at the size it will have. */
+.url-pill[data-empty="true"] {
+  min-width: 10rem;
+  min-height: 2.45rem;
 }
 
 /* ---------- Motion and print ---------- */

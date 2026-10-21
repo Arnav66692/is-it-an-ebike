@@ -479,7 +479,8 @@ describe("the smaller visual fixes", () => {
   });
 
   it("balances the big answer line, the headings and the flyer, and keeps paragraphs free of one-word last lines", () => {
-    expect(CSS).toMatch(/h1,\s*h2,\s*h3,\s*h4,\s*\.bl-reason,\s*\.flyer-line,\s*\.tagline \{\s*text-wrap: balance;/);
+    expect(CSS).toMatch(/h1,\s*h2,\s*h3,\s*h4,\s*\.flyer-line \{\s*text-wrap: balance;/);
+    expect(CSS).toMatch(/\.bl-reason \{\s*text-wrap: pretty;/);
     expect(CSS).toMatch(/p,\s*li,\s*legend \{\s*text-wrap: pretty;/);
     expect(readFileSync(join(ROOT, "components", "FlyerSheet.tsx"), "utf8").match(/flyer-line/g)?.length).toBe(4);
   });
