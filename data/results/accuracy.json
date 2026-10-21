@@ -1,75 +1,75 @@
 {
-  "generated_at": "2026-10-21T02:51:20.132Z",
-  "commit": "d049b62",
+  "generated_at": "2026-10-21T05:14:23.912Z",
+  "commit": "cfa4449",
   "engine": {
     "states": 51,
     "san_diego_places": 7,
-    "cases": 516200,
-    "state_cases": 453900,
-    "local_cases": 62300,
+    "cases": 758280,
+    "state_cases": 544680,
+    "local_cases": 213600,
     "by_status": {
-      "yes": 232684,
-      "no": 82110,
-      "not_ebike": 66040,
-      "cant_confirm": 120472,
-      "need_info": 14894
+      "yes": 341890,
+      "no": 130108,
+      "not_ebike": 93240,
+      "cant_confirm": 171966,
+      "need_info": 21076
     },
     "shown_as": {
       "yes": {
-        "yes": 44150,
-        "no": 188534
+        "yes": 55278,
+        "no": 286612
       },
       "no": {
         "yes": 0,
-        "no": 82110
+        "no": 130108
       },
       "not_ebike": {
         "yes": 0,
-        "no": 66040
+        "no": 93240
       },
       "cant_confirm": {
         "yes": 0,
-        "no": 120472
+        "no": 171966
       },
       "need_info": {
         "yes": 0,
-        "no": 14894
+        "no": 21076
       }
     },
     "shown_wrong": 0,
     "false_legal": 0,
     "missed_yes": 0,
     "hedged": 0,
-    "answer_cards": 2168
+    "answer_cards": 2820
   },
   "bottom_line": {
-    "cases": 605200,
-    "bottom_lines": 2420800,
+    "cases": 1003920,
+    "bottom_lines": 4015680,
     "by_kind": {
-      "yes": 50418,
-      "no_illegal": 179414,
-      "no_unconfirmed": 375368
+      "yes": 72674,
+      "no_illegal": 306244,
+      "no_unconfirmed": 625002
     },
     "by_read": {
       "typed": {
-        "yes": 50418,
-        "no_illegal": 179414,
-        "no_unconfirmed": 375368
+        "yes": 72674,
+        "no_illegal": 306244,
+        "no_unconfirmed": 625002
       },
       "read_none_checked": {
         "yes": 0,
-        "no_illegal": 179414,
-        "no_unconfirmed": 425786
+        "no_illegal": 306244,
+        "no_unconfirmed": 697676
       },
       "read_one_unchecked": {
         "yes": 0,
-        "no_illegal": 179414,
-        "no_unconfirmed": 425786
+        "no_illegal": 306244,
+        "no_unconfirmed": 697676
       },
       "read_all_checked": {
-        "yes": 50418,
-        "no_illegal": 179414,
-        "no_unconfirmed": 375368
+        "yes": 72674,
+        "no_illegal": 306244,
+        "no_unconfirmed": 625002
       }
     },
     "unchecked_yes": 0,
@@ -83,15 +83,15 @@
     "missed_illegal": 0,
     "wrong_kind": 0,
     "missing_caveat": 0,
-    "rendered_cards": 195,
+    "rendered_cards": 273,
     "hedged": 0,
-    "answer_cards": 434,
+    "answer_cards": 644,
     "card_yes_under_no": 0,
-    "place_cards": 3082
+    "place_cards": 3593
   },
   "tests": {
-    "total": 839,
-    "passed": 839,
+    "total": 871,
+    "passed": 871,
     "failed": 0
   },
   "pilot": {

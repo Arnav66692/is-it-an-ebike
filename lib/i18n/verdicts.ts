@@ -3,7 +3,7 @@
 
 import type { BottomLineCode } from "@/lib/rules/bottomLine";
 import { isQuestionId, QUESTION_IDS, READ_FIELDS, type Line, type QuestionId, type ReadField } from "@/lib/rules/types";
-import { formatDate, joinList, placeNameInline, type Lang } from "./names";
+import { formatDate, joinList, placeName, placeNameInline, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
 interface Ctx {
@@ -230,6 +230,8 @@ const EN = {
     "This place may ban riders under 12 from Class 1 and 2, and we couldn't confirm whether it has. Check before riding.",
   local_under_12_no_end: (p, c) =>
     `The local code bars riders under 12 from Class 1 and 2 e-bikes and gives no end date. The state law that allows that ban ends ${formatDate(n(p.powerEnds), c.lang)}, and it isn't settled whether the ban still applies after that. Check before riding.`,
+  local_under_12_start_unclear: (p, c) =>
+    `This place's ban on riders under 12 on Class 1 and 2 e-bikes starts ${formatDate(n(p.since), c.lang)} by its own text, but state law may have put it in force on ${formatDate(n(p.from), c.lang)}. Check before riding.`,
   local_under_12_after_check: (p, c) =>
     `This place's rules for riders under 12 were last checked on ${formatDate(n(p.checked), c.lang)}, and they can change before your ride date. We can confirm them only through ${formatDate(n(p.through), c.lang)}. Check again before riding.`,
   local_allowed: (p, c) => `Allowed in ${placeNameInline(n(p.place), c.lang)} for ${aAge(p.age)}.`,
@@ -306,6 +308,112 @@ const EN = {
   county_dpr_sites: () =>
     "The County parks department closes Lindo Lake and Jess Martin skate parks, the Ramona Grasslands Old Survey Road 97 Trail, Sweetwater Bike Park and the Valley Center Community Park skate park to all e-bikes.",
   county_dpr_class3: () => "The County parks department says Class 3 e-bikes are not allowed on County trails.",
+  esc_under_12_passengers: () =>
+    "Escondido's text also bars children under 12 from riding as passengers on a Class 1 or 2 e-bike (EMC 5-6(c)). State law only mentions operating.",
+  esc_fines_start: () =>
+    "Escondido's text allows a fine of up to $25 from Nov 16, 2026. The state law behind the ban gives only warning notices for the first 60 days a ban is in force, which would run through Jan 14, 2027.",
+  esc_sidewalks_soon: () =>
+    "No riding an e-bike on any sidewalk in Escondido, at any age, or where signs bar bikes (EMC 5-5). The rule starts Nov 15, 2026 by its own text and may already apply.",
+  esc_sidewalks: () => "No riding an e-bike on any sidewalk in Escondido, at any age, or where signs bar bikes (EMC 5-5).",
+  esc_parks: () =>
+    "In Escondido parks and other recreational areas, city code bars driving any vehicle off paved park roads and parking areas (EMC 18-129). It isn't settled whether that covers e-bikes on park paths.",
+  esc_seizure: () =>
+    "Police can seize a bike or e-bike when the rider is cited for reckless riding or for not riding with due care (EMC 5-9).",
+  sm_sidewalks: () =>
+    "No riding on sidewalks in a business district, on the sidewalk of any street with a designated bike path or bike way, or where signs bar it. Sidewalks in residential areas are allowed. Yield to people walking (SMMC 12.25.040).",
+  sm_class3_parks: () => "No Class 3 e-bikes in any San Marcos park or on any City trail (SMMC 9.04.070(f)(2)).",
+  sm_parks: () =>
+    "In San Marcos parks and on City trails, Class 1 and 2 e-bikes may ride only in areas set aside for bikes, at 15 mph at most and 5 mph within 50 feet of anyone else (SMMC 9.04.070(f)).",
+  sm_trail_list: () =>
+    "The City's trail page says Class 1 and 2 e-bikes are not allowed on the trails around Walnut Grove Park and the Highlands.",
+  cv_under_12_passengers: () =>
+    "Children under 12 can't ride as passengers on a Class 1 or 2 e-bike in Chula Vista either (CVMC 10.73.040). State law only mentions operating.",
+  cv_no_passengers_under_18: () =>
+    "In Chula Vista, a rider under 18 can't carry any passenger on an e-bike (CVMC 10.73.050(A)).",
+  cv_sidewalks: () =>
+    "No e-bike riding on sidewalks in a business district or where signs bar it, and no Class 3 on any sidewalk. On other sidewalks, go at a safe speed and yield to people walking (CVMC 10.73.080).",
+  cv_parks: () =>
+    "In City parks, no riding a bike or e-bike on paths, walks or courts unless the City has marked or permitted the path for bikes (CVMC 2.66.250). Whether that permission covers e-bikes isn't settled.",
+  cv_impound: () =>
+    "The City can impound an e-bike ridden against its e-bike rules for up to 30 days (CVMC 10.73.120(G)).",
+  lm_emoto: () =>
+    "La Mesa police can remove an e-moto that can top 20 mph on the motor alone when the rider has no license for it, and hold it at least 48 hours (LMMC 12.38.050). They can also remove a Class 3 e-bike ridden by someone under 16.",
+  lm_sidewalks: () =>
+    "La Mesa code bars riding any vehicle on any sidewalk except across a driveway, and it counts bicycles as vehicles (LMMC 12.32.040, 12.04.030). The city's e-bike page says no e-bike class may ride on sidewalks. Ride in the street or bike lane.",
+  lm_parks: () =>
+    "In La Mesa parks and on other public lands, city code bars motorized vehicles off roads and parking lots without police permission, and bars self-driven vehicles on park paths, fields and lawns (LMMC 12.32.140, 9.08.095). It isn't settled whether that covers e-bikes.",
+  poway_under_12_passengers: () =>
+    "Poway's text also bars children under 12 from riding as passengers on a Class 1 or 2 e-bike (PMC 10.57.040(A)). State law only mentions operating.",
+  poway_no_passengers_under_18: () =>
+    "In Poway, a rider under 18 can't carry any passenger on an e-bike (PMC 10.57.050(A)).",
+  poway_speed: () =>
+    "E-bike speed limits in Poway: 10 mph on sidewalks, 5 mph on school-zone sidewalks when children are there, 20 mph on bike paths and trails (PMC 10.57.070).",
+  poway_where: () =>
+    "E-bikes may use sidewalks, bike paths and trails unless signs say no, but not sidewalks in a business district (PMC 10.40.010). In parks, stay on marked trails, paths and roads, and off courts, fields and lawns (PMC 10.57.090).",
+  poway_impound: () =>
+    "The City can impound an e-bike ridden against its e-bike rules for up to 30 days (PMC 10.57.100(G)).",
+  poway_trails_page: () =>
+    "Poway's trails page says motorized vehicles aren't allowed on trails, with bike limits of 10 mph at Lake Poway and 15 mph elsewhere, and no bikes at Blue Sky Ecological Reserve. City code allows e-bikes on trails unless signs say no, so follow the trail signs.",
+  ec_parks: () =>
+    "No riding an e-bike, any class and any age, in any El Cajon park, playground or public facility, or on the Civic Center and Prescott Promenade grounds. Even sitting on a stopped e-bike counts. Walking it there is allowed (ECMC 9.42.030).",
+  ec_sidewalks: () =>
+    "El Cajon code bars riding any vehicle on any sidewalk except across a driveway (ECMC 10.08.070). It isn't settled whether that covers e-bikes, so ride in the street or bike lane.",
+  santee_under_12_passengers: () =>
+    "Santee's text also bars children under 12 from riding as passengers on a Class 1 or 2 e-bike (SMC 10.22.015(A)). State law only mentions operating.",
+  santee_sidewalks: () =>
+    "No riding an e-bike on any Santee sidewalk where the City has posted a sign against it (SMC 10.22.016).",
+  santee_parks: () =>
+    "In Santee parks, ride only on roads, and on walkways and trails the City has marked for bikes (SMC 8.08.280).",
+  cor_under_12_passengers: () =>
+    "Coronado's text also bars children under 12 from riding as passengers on a Class 1 or 2 e-bike (CMC 56.18.060(B)). State law only mentions operating.",
+  cor_sidewalks: () =>
+    "No riding an e-bike on any Coronado sidewalk, the Hotel del Coronado Paseo, the Coronado Shores Boardwalk or the Glorietta Bay Marina Promenade. Get off and walk it there, or ride on the road (CMC 56.18.050).",
+  cor_beaches_parks: () =>
+    "Coronado bars vehicles, motorized or not, on public beaches, parks and the golf course unless the City allows them (CMC 56.18.040). The City treats that as covering e-bikes.",
+  oc_pier: () =>
+    "No riding a bike or e-bike on the Oceanside Pier or its ramps, the Pier Amphitheater, Pier Plaza, the Junior Seau Beach Community Center area, or where signs bar it (OCC 5.14). From May 15 to Sep 15 no bikes at all on the pier (OCC 18.1).",
+  oc_sidewalks: () =>
+    "No riding on sidewalks in front of businesses unless signs allow it. On other sidewalks, 10 mph at most, go with traffic and yield to people walking (OCC 5.14(g)).",
+  oc_beach: () =>
+    "Oceanside bars riding any motorized machine on the beach (OCC 19.7). That very likely covers e-bikes.",
+  oc_seizure: () =>
+    "Police can seize a Class 1, 2 or 3 e-bike when the rider is cited for reckless riding, for not riding with due care, or for two or more criminal e-bike code violations in 12 months (OCC 5.18).",
+  vista_sidewalks: () =>
+    "No riding a bike or e-bike on any sidewalk in Vista, at any age, except at signed and striped Bicycle Master Plan spots (VMC 10.68.030).",
+  vista_dismount: () =>
+    "In Vista, get off and walk the bike to use a crosswalk or a sidewalk (VMC 10.68.060).",
+  vista_passengers: () =>
+    "A passenger needs a seat installed by the bike's maker. No riding on handlebars or pegs (VMC 10.68.040(B)).",
+  vista_parks: () =>
+    "In Vista parks, ride a bike or e-bike only on paths and trails marked for it (VMC 12.08.010(O)).",
+  ib_pier: () =>
+    "No riding a bike, e-bike or any other vehicle on the Imperial Beach pier (IBMC 12.68.010).",
+  ib_beach: () =>
+    "Imperial Beach bars bringing or driving any vehicle, with a motor or without, onto the beach (IBMC 12.60.110). That likely covers e-bikes.",
+  ib_parks: () =>
+    "In Imperial Beach parks, including Dunes Park, Portwood Pier Plaza and the Tijuana Estuary Boardwalk, bikes may ride only in areas the Council has set aside, and never on walkways (IBMC 12.56.020, 12.56.050). Whether this covers e-bikes isn't settled, so walk the bike there.",
+  ib_sidewalks: () =>
+    "No riding a bicycle on sidewalks in a business district (IBMC 10.56.180). The code defines bicycle as human powered, so treat e-bikes the same to be safe.",
+  lg_pending: () =>
+    "On Sep 15, 2026 Lemon Grove's Mayor asked to put a possible e-bike ordinance on a future agenda. Check again before riding.",
+  lg_sidewalks: () =>
+    "No riding a bicycle on sidewalks in a business district (LGMC 10.44.010). Treat e-bikes the same to be safe.",
+  lg_parks: () =>
+    "Lemon Grove bars motor vehicles in parks except in their parking areas (LGMC 12.20.140). It isn't settled whether that covers e-bikes.",
+  nc_sidewalks: () =>
+    "National City bans riding bicycles on sidewalks in business and residence districts, which covers most sidewalks (NCMC 11.52.020). The code defines bicycle as human powered, so it isn't settled whether that covers e-bikes. Ride in the street or bike lane to be safe.",
+  nc_parks: () =>
+    "In National City parks, playgrounds and golf courses, no riding a motorized vehicle on walkways or grass (NCMC 10.52.010(G)). That likely covers e-bikes.",
+  nc_offroad: () =>
+    "Riding an e-moto or other off-highway vehicle for fun on open, unimproved land is barred in National City, and the vehicle can be seized after a warning (NCMC 7.20.100).",
+  city_starting: (p, c) => `Starting ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.en[n(p.note)]?.(p, c) ?? ""}`,
+  city_no_age_limit: (p, c) =>
+    `${placeName(n(p.place), c.lang)} had no under-12 e-bike ban when checked on ${formatDate(n(p.date), c.lang)}, but state law lets it adopt one (VC 21214.7(b)). Check again before riding.`,
+  city_course_in_lieu: () =>
+    "No court record and no fee for the citation if a parent or guardian gives proof, within 120 days of it, that the rider finished an e-bike safety and training program.",
+  city_warning_period: (p, c) => `Warnings only until ${formatDate(n(p.from), c.lang)}. Fines start then.`,
+  city_age_12: () => "This city's ban covers only riders under 12. A 12-year-old may ride Class 1 or 2.",
+  city_emoto_state_law: (p, c) => `${placeName(n(p.place), c.lang)} has no e-moto rule of its own that we found. Under state law, ${EMOTO_REMOVAL_EN}`,
   bl_unconfirmed_facts: (p, c) =>
     `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under that fact in "Check the facts" above, or fix that fact` : `under each one in "Check the facts" above, or fix any that are wrong`}.`,
   bl_no_unchecked_facts: (p, c) =>
@@ -434,6 +542,8 @@ const ES = {
     "Este lugar puede prohibir las Clases 1 y 2 a menores de 12 años, y no pudimos confirmar si lo ha hecho. Verifica antes de salir.",
   local_under_12_no_end: (p, c) =>
     `El código local prohíbe a los menores de 12 años usar bicicletas eléctricas Clase 1 y 2, sin fecha de fin. La ley estatal que permite esa prohibición termina el ${formatDate(n(p.powerEnds), c.lang)}, y no está resuelto si la prohibición sigue vigente después. Verifica antes de salir.`,
+  local_under_12_start_unclear: (p, c) =>
+    `La prohibición de este lugar para menores de 12 años en bicicletas eléctricas Clase 1 y 2 empieza el ${formatDate(n(p.since), c.lang)} según su propio texto, pero la ley estatal podría haberla puesto en vigor el ${formatDate(n(p.from), c.lang)}. Verifica antes de salir.`,
   local_under_12_after_check: (p, c) =>
     `Las reglas de este lugar para menores de 12 años se revisaron por última vez el ${formatDate(n(p.checked), c.lang)}, y pueden cambiar antes de la fecha de tu viaje. Solo podemos confirmarlas hasta el ${formatDate(n(p.through), c.lang)}. Vuelve a revisar antes de salir.`,
   local_allowed: (p, c) => `Permitida en ${placeNameInline(n(p.place), c.lang)} para alguien de ${p.age} años.`,
@@ -511,6 +621,115 @@ const ES = {
   county_dpr_sites: () =>
     "El departamento de parques del condado cierra a todas las bicicletas eléctricas los skateparks de Lindo Lake y Jess Martin, el sendero Old Survey Road 97 de Ramona Grasslands, el Sweetwater Bike Park y el skatepark del Valley Center Community Park.",
   county_dpr_class3: () => "El departamento de parques del condado dice que las bicicletas eléctricas Clase 3 no se permiten en los senderos del condado.",
+  esc_under_12_passengers: () =>
+    "El texto de Escondido también prohíbe que los menores de 12 años vayan como pasajeros en una bicicleta eléctrica Clase 1 o 2 (EMC 5-6(c)). La ley estatal solo menciona manejarla.",
+  esc_fines_start: () =>
+    "El texto de Escondido permite una multa de hasta $25 desde el 16 de noviembre de 2026. La ley estatal en que se basa la prohibición solo da advertencias durante los primeros 60 días en vigor, lo que llegaría hasta el 14 de enero de 2027.",
+  esc_sidewalks_soon: () =>
+    "No se puede andar en bicicleta eléctrica por ninguna acera de Escondido, a ninguna edad, ni donde un letrero prohíba bicicletas (EMC 5-5). La regla empieza el 15 de noviembre de 2026 según su propio texto y podría aplicarse ya.",
+  esc_sidewalks: () =>
+    "No se puede andar en bicicleta eléctrica por ninguna acera de Escondido, a ninguna edad, ni donde un letrero prohíba bicicletas (EMC 5-5).",
+  esc_parks: () =>
+    "En parques y otras áreas recreativas de Escondido, el código prohíbe manejar cualquier vehículo fuera de los caminos pavimentados del parque y los estacionamientos (EMC 18-129). No está resuelto si eso incluye bicicletas eléctricas en los caminos del parque.",
+  esc_seizure: () =>
+    "La policía puede quitar una bicicleta o bicicleta eléctrica cuando a quien la maneja le dan una citación por manejar de forma imprudente o sin el debido cuidado (EMC 5-9).",
+  sm_sidewalks: () =>
+    "No se puede andar por aceras de zonas comerciales, por la acera de una calle con ciclovía designada, ni donde un letrero lo prohíba. Se permiten las aceras de zonas residenciales. Cede el paso a quienes caminan (SMMC 12.25.040).",
+  sm_class3_parks: () =>
+    "No se permiten bicicletas eléctricas Clase 3 en ningún parque de San Marcos ni en ningún sendero de la Ciudad (SMMC 9.04.070(f)(2)).",
+  sm_parks: () =>
+    "En parques y senderos de San Marcos, las Clases 1 y 2 solo pueden andar en zonas destinadas a bicicletas, a 15 mph como máximo y a 5 mph a menos de 50 pies de otras personas (SMMC 9.04.070(f)).",
+  sm_trail_list: () =>
+    "La página de senderos de la Ciudad dice que las Clases 1 y 2 no se permiten en los senderos alrededor de Walnut Grove Park y la zona de Highlands.",
+  cv_under_12_passengers: () =>
+    "En Chula Vista, los menores de 12 años tampoco pueden ir como pasajeros en una bicicleta eléctrica Clase 1 o 2 (CVMC 10.73.040). La ley estatal solo menciona manejarla.",
+  cv_no_passengers_under_18: () =>
+    "En Chula Vista, quien maneja una bicicleta eléctrica y tiene menos de 18 años no puede llevar pasajeros (CVMC 10.73.050(A)).",
+  cv_sidewalks: () =>
+    "No se puede andar en bicicleta eléctrica por aceras de zonas comerciales ni donde un letrero lo prohíba, y la Clase 3 no puede ir por ninguna acera. En otras aceras, ve a una velocidad segura y cede el paso a quienes caminan (CVMC 10.73.080).",
+  cv_parks: () =>
+    "En los parques de la Ciudad no se puede andar en bicicleta ni en bicicleta eléctrica por caminos, andadores o canchas, salvo que la Ciudad haya marcado o autorizado el camino para bicicletas (CVMC 2.66.250). No está resuelto si ese permiso incluye bicicletas eléctricas.",
+  cv_impound: () =>
+    "La Ciudad puede retener hasta 30 días una bicicleta eléctrica usada en contra de sus reglas (CVMC 10.73.120(G)).",
+  lm_emoto: () =>
+    "La policía de La Mesa puede retirar una moto eléctrica que pase de 20 mph solo con el motor cuando quien la maneja no tiene licencia para ella, y retenerla al menos 48 horas (LMMC 12.38.050). También puede retirar una bicicleta eléctrica Clase 3 que maneje alguien menor de 16 años.",
+  lm_sidewalks: () =>
+    "El código de La Mesa prohíbe andar en cualquier vehículo por cualquier acera, salvo para cruzar una entrada de autos, y cuenta las bicicletas como vehículos (LMMC 12.32.040, 12.04.030). La página de la ciudad dice que ninguna clase de bicicleta eléctrica puede ir por las aceras. Anda por la calle o la ciclovía.",
+  lm_parks: () =>
+    "En parques y otros terrenos públicos de La Mesa, el código prohíbe vehículos motorizados fuera de calles y estacionamientos sin permiso de la policía, y vehículos autopropulsados en caminos, campos y pasto de los parques (LMMC 12.32.140, 9.08.095). No está resuelto si eso incluye bicicletas eléctricas.",
+  poway_under_12_passengers: () =>
+    "El texto de Poway también prohíbe que los menores de 12 años vayan como pasajeros en una bicicleta eléctrica Clase 1 o 2 (PMC 10.57.040(A)). La ley estatal solo menciona manejarla.",
+  poway_no_passengers_under_18: () =>
+    "En Poway, quien maneja una bicicleta eléctrica y tiene menos de 18 años no puede llevar pasajeros (PMC 10.57.050(A)).",
+  poway_speed: () =>
+    "Límites de velocidad para bicicletas eléctricas en Poway: 10 mph en aceras, 5 mph en aceras de zonas escolares cuando hay niños, 20 mph en ciclovías y senderos (PMC 10.57.070).",
+  poway_where: () =>
+    "Las bicicletas eléctricas pueden usar aceras, ciclovías y senderos salvo que un letrero lo prohíba, pero no las aceras de zonas comerciales (PMC 10.40.010). En los parques, quédate en senderos, caminos y calles marcados, y fuera de canchas, campos y pasto (PMC 10.57.090).",
+  poway_impound: () =>
+    "La Ciudad puede retener hasta 30 días una bicicleta eléctrica usada en contra de sus reglas (PMC 10.57.100(G)).",
+  poway_trails_page: () =>
+    "La página de senderos de Poway dice que no se permiten vehículos motorizados en los senderos, con límites para bicicletas de 10 mph en Lake Poway y 15 mph en los demás, y sin bicicletas en Blue Sky Ecological Reserve. El código de la ciudad permite bicicletas eléctricas en senderos salvo que un letrero lo prohíba, así que sigue los letreros.",
+  ec_parks: () =>
+    "No se puede andar en bicicleta eléctrica, de ninguna clase y a ninguna edad, en ningún parque, área de juegos o instalación pública de El Cajon, ni en los terrenos del Civic Center y Prescott Promenade. Incluso estar sentado en una bicicleta eléctrica detenida cuenta. Se puede llevar caminando (ECMC 9.42.030).",
+  ec_sidewalks: () =>
+    "El código de El Cajon prohíbe andar en cualquier vehículo por cualquier acera, salvo para cruzar una entrada de autos (ECMC 10.08.070). No está resuelto si eso incluye bicicletas eléctricas, así que anda por la calle o la ciclovía.",
+  santee_under_12_passengers: () =>
+    "El texto de Santee también prohíbe que los menores de 12 años vayan como pasajeros en una bicicleta eléctrica Clase 1 o 2 (SMC 10.22.015(A)). La ley estatal solo menciona manejarla.",
+  santee_sidewalks: () =>
+    "No se puede andar en bicicleta eléctrica por ninguna acera de Santee donde la Ciudad haya puesto un letrero que lo prohíba (SMC 10.22.016).",
+  santee_parks: () =>
+    "En los parques de Santee, anda solo por las calles y por los caminos y senderos que la Ciudad haya marcado para bicicletas (SMC 8.08.280).",
+  cor_under_12_passengers: () =>
+    "El texto de Coronado también prohíbe que los menores de 12 años vayan como pasajeros en una bicicleta eléctrica Clase 1 o 2 (CMC 56.18.060(B)). La ley estatal solo menciona manejarla.",
+  cor_sidewalks: () =>
+    "No se puede andar en bicicleta eléctrica por ninguna acera de Coronado, el Paseo del Hotel del Coronado, el paseo de Coronado Shores ni el paseo de la marina de Glorietta Bay. Ahí bájate y llévala caminando, o anda por la calle (CMC 56.18.050).",
+  cor_beaches_parks: () =>
+    "Coronado prohíbe vehículos, con o sin motor, en playas públicas, parques y el campo de golf salvo que la Ciudad lo permita (CMC 56.18.040). La Ciudad lo aplica a las bicicletas eléctricas.",
+  oc_pier: () =>
+    "No se puede andar en bicicleta ni en bicicleta eléctrica en el muelle de Oceanside o sus rampas, el anfiteatro del muelle, Pier Plaza, la zona del Junior Seau Beach Community Center, ni donde un letrero lo prohíba (OCC 5.14). Del 15 de mayo al 15 de septiembre no se permiten bicicletas en el muelle (OCC 18.1).",
+  oc_sidewalks: () =>
+    "No se puede andar por aceras frente a negocios, salvo que un letrero lo permita. En otras aceras, 10 mph como máximo, en el sentido del tráfico y cediendo el paso a quienes caminan (OCC 5.14(g)).",
+  oc_beach: () =>
+    "Oceanside prohíbe andar en cualquier máquina motorizada en la playa (OCC 19.7). Eso muy probablemente incluye las bicicletas eléctricas.",
+  oc_seizure: () =>
+    "La policía puede quitar una bicicleta eléctrica Clase 1, 2 o 3 cuando a quien la maneja le dan una citación por manejar de forma imprudente, sin el debido cuidado, o por dos o más infracciones penales del código en 12 meses (OCC 5.18).",
+  vista_sidewalks: () =>
+    "No se puede andar en bicicleta ni en bicicleta eléctrica por ninguna acera de Vista, a ninguna edad, salvo en los puntos del Plan Maestro de Bicicletas con letreros y marcas (VMC 10.68.030).",
+  vista_dismount: () =>
+    "En Vista, bájate y lleva la bicicleta caminando para usar un cruce peatonal o una acera (VMC 10.68.060).",
+  vista_passengers: () =>
+    "Un pasajero necesita un asiento instalado por el fabricante de la bicicleta. No se puede ir en el manubrio ni en los reposapiés (VMC 10.68.040(B)).",
+  vista_parks: () =>
+    "En los parques de Vista, anda en bicicleta o bicicleta eléctrica solo por caminos y senderos marcados para ello (VMC 12.08.010(O)).",
+  ib_pier: () =>
+    "No se puede andar en bicicleta, bicicleta eléctrica ni ningún otro vehículo en el muelle de Imperial Beach (IBMC 12.68.010).",
+  ib_beach: () =>
+    "Imperial Beach prohíbe llevar o manejar cualquier vehículo, con o sin motor, en la playa (IBMC 12.60.110). Eso probablemente incluye las bicicletas eléctricas.",
+  ib_parks: () =>
+    "En los parques de Imperial Beach, incluidos Dunes Park, Portwood Pier Plaza y el paseo del estuario de Tijuana, las bicicletas solo pueden andar en zonas que el Concejo haya destinado para ello, y nunca en andadores (IBMC 12.56.020, 12.56.050). No está resuelto si esto incluye bicicletas eléctricas, así que ahí llévala caminando.",
+  ib_sidewalks: () =>
+    "No se puede andar en bicicleta por aceras de zonas comerciales (IBMC 10.56.180). El código define bicicleta como de pedal, así que, por seguridad, trata igual a las bicicletas eléctricas.",
+  lg_pending: () =>
+    "El 15 de septiembre de 2026, el alcalde de Lemon Grove pidió llevar una posible ordenanza de bicicletas eléctricas a una agenda futura. Vuelve a revisar antes de salir.",
+  lg_sidewalks: () =>
+    "No se puede andar en bicicleta por aceras de zonas comerciales (LGMC 10.44.010). Por seguridad, trata igual a las bicicletas eléctricas.",
+  lg_parks: () =>
+    "Lemon Grove prohíbe vehículos de motor en los parques, salvo en sus estacionamientos (LGMC 12.20.140). No está resuelto si eso incluye bicicletas eléctricas.",
+  nc_sidewalks: () =>
+    "National City prohíbe andar en bicicleta por las aceras de zonas comerciales y residenciales, que son casi todas (NCMC 11.52.020). El código define bicicleta como de pedal, así que no está resuelto si eso incluye bicicletas eléctricas. Por seguridad, anda por la calle o la ciclovía.",
+  nc_parks: () =>
+    "En parques, áreas de juegos y campos de golf de National City, no se puede andar en vehículos motorizados por andadores ni por el pasto (NCMC 10.52.010(G)). Eso probablemente incluye las bicicletas eléctricas.",
+  nc_offroad: () =>
+    "En National City está prohibido andar por diversión en una moto eléctrica u otro vehículo todoterreno en terrenos abiertos sin construir, y el vehículo puede ser confiscado después de una advertencia (NCMC 7.20.100).",
+  city_starting: (p, c) => `A partir del ${formatDate(n(p.date), c.lang)}: ${TEMPLATES.es[n(p.note)]?.(p, c) ?? ""}`,
+  city_no_age_limit: (p, c) =>
+    `${placeName(n(p.place), c.lang)} no tenía una prohibición para menores de 12 años cuando se revisó el ${formatDate(n(p.date), c.lang)}, pero la ley estatal le permite adoptar una (VC 21214.7(b)). Vuelve a revisar antes de salir.`,
+  city_course_in_lieu: () =>
+    "No se manda registro al tribunal ni se cobra la citación si el padre, la madre o el tutor legal da prueba, dentro de 120 días, de que la persona terminó un programa de seguridad y capacitación de bicicletas eléctricas.",
+  city_warning_period: (p, c) => `Solo advertencias hasta el ${formatDate(n(p.from), c.lang)}. Después empiezan las multas.`,
+  city_age_12: () => "La prohibición de esta ciudad solo cubre a menores de 12 años. Alguien de 12 años puede usar una Clase 1 o 2.",
+  city_emoto_state_law: (p, c) =>
+    `${placeName(n(p.place), c.lang)} no tiene una regla propia sobre motos eléctricas que hayamos encontrado. Según la ley estatal, ${EMOTO_REMOVAL_ES}`,
   bl_unconfirmed_facts: (p, c) =>
     `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? `debajo de ese dato en "Revisa los datos", arriba, o corrige el dato` : `debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal`}.`,
   bl_no_unchecked_facts: (p, c) =>

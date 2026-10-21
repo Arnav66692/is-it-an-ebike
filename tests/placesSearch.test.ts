@@ -106,11 +106,11 @@ describe("what a pick maps to", () => {
     expect(resolvePlace(village)).toEqual({ state: "CA", localRecord: null, checked: false, why: "state_only" });
   });
 
-  it("maps Oceanside, Chula Vista and Escondido to California law only", () => {
-    for (const name of ["Oceanside", "Chula Vista", "Escondido"]) {
+  it("maps Oceanside, Chula Vista and Escondido to their own records, checked on Oct 20, 2026", () => {
+    for (const [name, record] of [["Oceanside", "oceanside"], ["Chula Vista", "chula_vista"], ["Escondido", "escondido"]] as const) {
       const city = only(named(name, "CA", "city"));
       expect(city.counties).toEqual([SD_COUNTY_FIPS]);
-      expect(resolvePlace(city)).toEqual({ state: "CA", localRecord: null, checked: false, why: "state_only" });
+      expect(resolvePlace(city)).toEqual({ state: "CA", localRecord: record, checked: true, why: "checked_city" });
     }
   });
 
@@ -203,11 +203,12 @@ describe("no place gets a record it doesn't have", () => {
     }
   });
 
-  it("gives other incorporated San Diego County cities state law only", () => {
+  it("has a checked record for every incorporated city in San Diego County, and no other place gets one", () => {
     const checked = new Set(CHECKED_CITIES.map((c) => c.geoid));
-    const others = INDEX.entries.filter((e) => e.source === "place" && e.kind !== "community" && e.counties.includes(SD_COUNTY_FIPS) && !checked.has(e.geoid ?? ""));
-    expect(others.map((e) => e.name)).toEqual(expect.arrayContaining(["Oceanside", "Chula Vista", "Escondido", "Coronado"]));
-    for (const e of others) expect(resolvePlace(e).localRecord).toBeNull();
+    const cities = INDEX.entries.filter((e) => e.source === "place" && e.kind !== "community" && e.counties.includes(SD_COUNTY_FIPS));
+    expect(cities).toHaveLength(18);
+    expect(cities.filter((e) => !checked.has(e.geoid ?? ""))).toEqual([]);
+    expect(CHECKED_CITIES).toHaveLength(18);
   });
 
   it("never maps the SDUHSD campus record from a place", () => {
@@ -392,8 +393,10 @@ describe("picks", () => {
   it("gives the engine the checked records and says when a place was not checked", () => {
     const checked = addPick(addPick(NO_PICKS, carlsbad).next, carmelValley).next;
     expect(engineWhere(checked)).toEqual({ state: "CA", places: ["carlsbad", "city_of_san_diego"], otherPlaces: false });
-    const withOceanside = addPick(checked, oceanside).next;
-    expect(engineWhere(withOceanside)).toEqual({ state: "CA", places: ["carlsbad", "city_of_san_diego"], otherPlaces: true });
+    // Oceanside has its own record. A town outside San Diego County has none, so it is not checked.
+    expect(engineWhere(addPick(checked, oceanside).next)).toEqual({ state: "CA", places: ["carlsbad", "city_of_san_diego", "oceanside"], otherPlaces: false });
+    const withUnchecked = addPick(checked, only(named("Carmel Valley Village", "CA"))).next;
+    expect(engineWhere(withUnchecked)).toEqual({ state: "CA", places: ["carlsbad", "city_of_san_diego"], otherPlaces: true });
     expect(engineWhere(addPick(NO_PICKS, austin).next)).toEqual({ state: "TX", places: [], otherPlaces: true });
     expect(engineWhere(NO_PICKS)).toBeNull();
   });

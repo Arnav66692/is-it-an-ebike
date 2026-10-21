@@ -109,6 +109,11 @@ export interface RawLocalRule {
   citations_from_source_type?: string;
   /** The local rule's own end date. Null means its enacted text gives none. */
   ends?: string | null;
+  /**
+   * The earliest day the rule may already be in force, when its start is uncertain. Escondido's
+   * ban starts Nov 15, 2026 by its own text, but the state default would start it Oct 16, 2026.
+   */
+  start_unclear_from?: string;
   source_type: string;
   notes?: string;
 }

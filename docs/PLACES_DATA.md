@@ -39,11 +39,11 @@ The everyday neighborhood names are from other City of San Diego pages, read 202
 
 `lib/places/resolve.ts` maps a pick by its Census GEOID, state and county, never by name alone.
 
-- Carlsbad, Encinitas, Solana Beach, Del Mar and the City of San Diego map to their own records, each by its GEOID.
+- All 18 incorporated cities in San Diego County map to their own records, each by its GEOID: San Diego, Carlsbad, Chula Vista, Coronado, Del Mar, El Cajon, Encinitas, Escondido, Imperial Beach, La Mesa, Lemon Grove, National City, Oceanside, Poway, San Marcos, Santee, Solana Beach and Vista. The 13 added on Oct 20, 2026 got their GEOIDs from the one city row in county 06073 with each name in `public/places/us-places.json`.
 - A City of San Diego community planning area, like Carmel Valley or La Jolla, or a neighborhood name from a City page, like Hillcrest, maps to the City of San Diego record.
 - San Diego County, and every CDP wholly inside it, maps to the unincorporated San Diego County record.
 - Three San Diego County CDPs are mostly base or reservation land, which county ordinances don't govern, so they get California law only. The build measured Camp Pendleton Mainside at 100 percent and Camp Pendleton South at 98 percent on Marine Corps Base Camp Pendleton, and Pala at 94.3 percent on the Pala Reservation. It samples a 120 by 120 grid of points over each CDP and stops if the list in `lib/places/sanDiego.ts` no longer matches.
-- Every other place, including Oceanside, Chula Vista and Escondido, uses its state's law, and the answer says that place's own rules were not checked.
+- Every other place uses its state's law, and the answer says that place's own rules were not checked.
 
 ## Rebuilding
 

@@ -57,6 +57,8 @@ interface SdRuleRaw {
   effective_date: string | null;
   /** The rule's own end date, or null when its text gives none. */
   ends?: string | null;
+  /** The earliest day the rule may already be in force, when its start is uncertain. */
+  start_unclear_from?: string;
 }
 const SD = sdJson as unknown as {
   jurisdictions: {
@@ -326,6 +328,10 @@ export function localBlockers(place: string, cls: Cls, age: number, date: string
   if (ban && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? 12) && date >= ban.effective_date) {
     const repealed = typeof ban.ends === "string" && date >= ban.ends;
     if (!repealed) reasons.push(date < UNDER_12_POWER_ENDS ? "local_under_12" : "local_under_12_no_end");
+  }
+  // A ban that may have started before the date its text gives can't be ruled out in between.
+  if (ban && ban.start_unclear_from && ban.effective_date && classOneOrTwo && age < (ban.min_age ?? 12) && date >= ban.start_unclear_from && date < ban.effective_date) {
+    reasons.push("local_under_12_start_unclear");
   }
   // With no ban in force, the record only vouches for ride dates up to the time a new ban
   // would need to take effect after the check. School rules don't come from this power.
