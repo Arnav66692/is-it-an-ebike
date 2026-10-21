@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T15:21:27.232Z",
-  "commit": "00bdae6",
+  "generated_at": "2026-10-21T17:43:51.450Z",
+  "commit": "88684a6",
   "engine": {
     "states": 51,
     "san_diego_places": 20,
@@ -102,7 +102,16 @@
       "yes_beyond_source": 0,
       "yes_unanswered": 0,
       "claims_not_in_data": 0,
-      "claims": 4972
+      "claims": 4972,
+      "rides": {
+        "states": 51,
+        "rides": 124176,
+        "yes": 11759,
+        "yes_engine_not_yes": 0,
+        "yes_unsettled": 0,
+        "ca_changed": 0,
+        "ca_digest_changed": 0
+      }
     },
     "finder": {
       "bikes": 29,
@@ -114,8 +123,8 @@
     }
   },
   "tests": {
-    "total": 1007,
-    "passed": 1007,
+    "total": 1034,
+    "passed": 1034,
     "failed": 0
   },
   "pilot": {

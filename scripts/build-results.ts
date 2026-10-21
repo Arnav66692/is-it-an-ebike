@@ -6,7 +6,8 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { districtGates, finderGates, modGates } from "../tests/featureGates";
+import { districtGates, finderGates, modGates, modRideGates } from "../tests/featureGates";
+import { CA_ANSWERS_BEFORE } from "../tests/modsDigest";
 import { DATES, runBottomLineMatrix, runMatrix, SHAPES, VARIANTS, type ReadVariant } from "../tests/matrix";
 import { stateCheckedThrough } from "../lib/rules/bottomLine";
 import { getState, STATE_CODES } from "../lib/rules/compile";
@@ -59,6 +60,7 @@ const matrix = runMatrix();
 const bottom = runBottomLineMatrix();
 const districts = districtGates();
 const mods = modGates();
+const modRides = modRideGates();
 const finder = finderGates();
 const vitest = read<VitestReport>(".cache/vitest.json");
 const clip = read<ClipResult>("pilot/results/photos-clip.json");
@@ -131,7 +133,7 @@ const accuracy = {
     card_yes_under_no: bottom.cardYesUnderNo.length,
     place_cards: bottom.placeCards,
   },
-  features: { districts, mods, finder },
+  features: { districts, mods: { ...mods, rides: modRides }, finder },
   tests: vitest
     ? { total: vitest.numTotalTests, passed: vitest.numPassedTests, failed: vitest.numFailedTests }
     : null,
@@ -246,10 +248,17 @@ Added on Oct 21, 2026. Each gate counts an answer that must never happen. \`test
 | **Mod YES for an outcome the research doesn't read as the same class or a new class** | **${mods.yes_beyond_source}** |
 | **Mod YES with no outcome picked, or "something else, or not sure"** | **${mods.yes_unanswered}** |
 | **Rendered reason, rule, date or penalty that is not the data's own words** (${mods.claims.toLocaleString("en-US")} checked, English and Spanish) | **${mods.claims_not_in_data}** |
+| Mods check rides in every state and DC, 4 ages, every mod, class and choice, 3 bikes (500 W, 1000 W, watts not typed), California with and without the City of San Diego | ${modRides.rides.toLocaleString("en-US")}, ${modRides.yes.toLocaleString("en-US")} YES |
+| **Mod YES where the engine, on the bike after the mod, says anything but YES** | **${modRides.yes_engine_not_yes}** |
+| **Mod YES with no outcome picked, "something else", or an outcome that depends on the result** | **${modRides.yes_unsettled}** |
+| **California ride whose research answer, rules or penalties differ from before, or whose NO turned YES** | **${modRides.ca_changed}** |
+| **California research answers that differ from the fingerprint taken before every state was added** (${CA_ANSWERS_BEFORE.n.toLocaleString("en-US")} answers) | **${modRides.ca_digest_changed}** |
 | Bike finder rides, ${finder.bikes} catalog bikes in every state, 15 ages and the checked San Diego place sets | ${finder.rides.toLocaleString("en-US")}, ${finder.yes.toLocaleString("en-US")} YES |
 | **Finder YES where the engine, on the maker's facts alone, says not allowed** | **${finder.yes_engine_refuses}** |
 | **Finder YES for a bike without stated pedals, or an e-moto** | **${finder.yes_without_pedals}** |
 | **Checker YES for a bike sent by Check this bike before its facts are checked** | **${finder.yes_before_checked}** |
+
+Mutation checks on the mods rides, done by hand on Oct 21: taking the engine's YES for every state but California made the engine gate fail (67,722 false YES), and letting a California research YES stand when the engine says NO made both the engine gate and the California gate fail (637 each).
 
 ## Pilot (bars committed in PILOT.md before each run)
 
@@ -298,5 +307,5 @@ The five accuracy numbers on the frozen labeled set (zero false-legal calls, eve
 
 writeFileSync(join(root, "RESULTS.md"), md);
 process.stdout.write(
-  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. Feature gates ${districts.other_checked + mods.yes_beyond_source + mods.yes_unanswered + mods.claims_not_in_data + finder.yes_engine_refuses + finder.yes_without_pedals + finder.yes_before_checked}. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact. ${matrix.hedged.length + bottom.hedged.length} rendered answers not a plain YES or NO.\n`,
+  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. Feature gates ${districts.other_checked + mods.yes_beyond_source + mods.yes_unanswered + mods.claims_not_in_data + modRides.yes_engine_not_yes + modRides.yes_unsettled + modRides.ca_changed + modRides.ca_digest_changed + finder.yes_engine_refuses + finder.yes_without_pedals + finder.yes_before_checked}. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact. ${matrix.hedged.length + bottom.hedged.length} rendered answers not a plain YES or NO.\n`,
 );

@@ -7,7 +7,13 @@ type Bar = { bar: string; result: string; pass: boolean };
 
 interface FeatureResults {
   districts: { districts: number; other_checked: number };
-  mods: { yes_beyond_source: number; yes_unanswered: number; claims_not_in_data: number };
+  mods: {
+    yes_beyond_source: number;
+    yes_unanswered: number;
+    claims_not_in_data: number;
+    /** The mods check in every state. Older result files don't have it. */
+    rides?: { yes_engine_not_yes: number; yes_unsettled: number; ca_changed: number; ca_digest_changed: number };
+  };
   finder: { yes_engine_refuses: number; yes_without_pedals: number; yes_before_checked: number };
 }
 
@@ -160,6 +166,8 @@ export function AccuracyView({ lang }: { lang: Lang }) {
               <Row label={text.modsBeyond} value={fmt(features.mods.yes_beyond_source)} strong />
               <Row label={text.modsUnanswered} value={fmt(features.mods.yes_unanswered)} />
               <Row label={text.modsClaims} value={fmt(features.mods.claims_not_in_data)} />
+              {features.mods.rides ? <Row label={text.modsEngine} value={fmt(features.mods.rides.yes_engine_not_yes + features.mods.rides.yes_unsettled)} strong /> : null}
+              {features.mods.rides ? <Row label={text.modsCaChanged} value={fmt(features.mods.rides.ca_changed + features.mods.rides.ca_digest_changed)} /> : null}
               <Row label={text.finderRefuses} value={fmt(features.finder.yes_engine_refuses)} strong />
               <Row label={text.finderPedals} value={fmt(features.finder.yes_without_pedals)} />
               <Row label={text.finderBeforeChecked} value={fmt(features.finder.yes_before_checked)} strong />

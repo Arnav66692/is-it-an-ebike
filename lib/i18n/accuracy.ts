@@ -69,6 +69,8 @@ export interface AccuracyText {
   modsBeyond: string;
   modsUnanswered: string;
   modsClaims: string;
+  modsEngine: string;
+  modsCaChanged: string;
   finderRefuses: string;
   finderPedals: string;
   finderBeforeChecked: string;
@@ -145,6 +147,8 @@ const en: AccuracyText = {
   modsBeyond: "Mod YES beyond what the research says",
   modsUnanswered: "Mod YES with no answer picked",
   modsClaims: "Mod reason, rule or penalty not in the research's own words",
+  modsEngine: "Mod YES in any state where the rules engine says otherwise",
+  modsCaChanged: "California mod answer changed from before every state was added",
   finderRefuses: "Finder YES where the rules say not allowed",
   finderPedals: "Finder YES for a bike without stated pedals",
   finderBeforeChecked: "Checker YES before the maker's facts are checked",
@@ -223,6 +227,8 @@ const es: AccuracyText = {
   modsBeyond: "SÍ de una modificación más allá de lo que dice la investigación",
   modsUnanswered: "SÍ de una modificación sin respuesta elegida",
   modsClaims: "Razón, ley o multa que no son las palabras de la investigación",
+  modsEngine: "SÍ de una modificación en cualquier estado donde el motor de reglas dice otra cosa",
+  modsCaChanged: "Respuesta de California para una modificación que cambió desde antes de agregar todos los estados",
   finderRefuses: "SÍ del buscador donde las reglas dicen que no se permite",
   finderPedals: "SÍ del buscador para una bicicleta sin pedales declarados",
   finderBeforeChecked: "SÍ de la revisión antes de revisar los datos del fabricante",
