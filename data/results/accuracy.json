@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T09:14:07.433Z",
-  "commit": "1786409",
+  "generated_at": "2026-10-21T09:29:58.588Z",
+  "commit": "6e36331",
   "engine": {
     "states": 51,
     "san_diego_places": 20,
@@ -107,7 +107,7 @@
     "finder": {
       "bikes": 29,
       "rides": 62640,
-      "yes": 9210,
+      "yes": 14262,
       "yes_engine_refuses": 0,
       "yes_without_pedals": 0,
       "yes_before_checked": 0
