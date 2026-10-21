@@ -5,13 +5,16 @@ import type { Lang } from "./names";
 const en = {
   appName: "Is it an e-bike?",
   tagline: "Check one bike for one rider, with the law behind every answer.",
+  coverStates: "50 states + DC",
+  coverPlaces: "20 San Diego County places",
+  coverAccount: "No account",
   switchLang: "Español",
   switchLangLabel: "Ver esta página en español",
   step1: "Where and who",
   state: "State",
-  stateHelp: "The answer uses this state's law. Picking a place sets it for you.",
+  stateHelp: "The answer uses this state's law.",
   whereLabel: "Where do they ride?",
-  whereHelp: "Type a city, town, county or state. Add every place they ride.",
+  whereHelp: "Add every place they ride.",
   wherePlaceholder: "City, county or state",
   whereLoading: "Loading places",
   whereFailed: "The list of places didn't load. Pick the state below, or try the search again.",
@@ -47,18 +50,18 @@ const en = {
   date: "Ride date",
   dateToday: "Today",
   dateOther: "Check a future date",
-  dateHelp: "Some rules change on set dates. Pick a date to see the rules in force then.",
+  dateHelp: "Some rules change on set dates.",
   dateError: "Pick a date from today through {last}.",
   step2: "The bike",
   tabLabel: "Label photo",
   tabLink: "Product link",
   tabType: "Type it in",
-  labelHelp: "Take a close, sharp photo of the class label. It's usually on the frame near the pedals.",
+  labelHelp: "The class label is usually on the frame near the pedals.",
   labelPrivacy: "Your photo stays on your phone. It is read right here in your browser.",
   choosePhoto: "Take or choose a photo",
   reading: "Reading the label",
   readFailed: "No label text came through. Try a closer, brighter photo, or type the facts in.",
-  linkHelp: "Paste the link to the bike's product page.",
+  linkHelp: "Product page link",
   fetch: "Read the listing",
   fetching: "Reading the listing",
   linkPrivacy: "We fetch that one page to read its specs. Nothing is stored.",
@@ -70,7 +73,7 @@ const en = {
   linkLimited: "Too many checks in a row. Wait a minute and try again.",
   nothingFound: "We found no class, watt or speed figures in that text. Check the label, or type the facts in.",
   step3: "Check the facts",
-  typeHelp: "Fill in what you know from the label or the listing in step 3 below.",
+  typeHelp: "Fill in the facts in step 3.",
   readFrom: "Read from",
   readFromBefore: "Before the photo check, the text said",
   readAnnounceOne: "We read 1 fact. It is marked in \"Check the facts\". Look at the bike, then tick \"It matches the bike\" under it, or fix it. The answer can't say YES until it is checked.",
@@ -121,7 +124,7 @@ const en = {
   topMph: "Top speed, mode not stated (mph)",
   unlock: "It has an unlock or off-road mode",
   shapeTitle: "Wheels and weight",
-  shapeHelp: "Some state rules depend on these. Check each one against the bike, and clear anything that isn't about this bike.",
+  shapeHelp: "Some state rules depend on these. Clear anything that isn't about this bike.",
   wheelSizeIn: "Wheel size (inches)",
   weightLb: "Weight with the battery (pounds)",
   footPegs: "Foot pegs for the rider?",
@@ -238,13 +241,16 @@ export type UiKey = keyof typeof en;
 const es: Record<UiKey, string> = {
   appName: "¿Es una bicicleta eléctrica?",
   tagline: "Revisa una bicicleta para una persona, con la ley detrás de cada respuesta.",
+  coverStates: "50 estados + DC",
+  coverPlaces: "20 lugares del condado de San Diego",
+  coverAccount: "Sin cuenta",
   switchLang: "English",
   switchLangLabel: "View this page in English",
   step1: "Dónde y quién",
   state: "Estado",
-  stateHelp: "La respuesta usa la ley de este estado. Al elegir un lugar, se elige solo.",
+  stateHelp: "La respuesta usa la ley de este estado.",
   whereLabel: "¿Por dónde anda?",
-  whereHelp: "Escribe una ciudad, un pueblo, un condado o un estado. Agrega cada lugar por donde anda.",
+  whereHelp: "Agrega cada lugar por donde anda.",
   wherePlaceholder: "Ciudad, condado o estado",
   whereLoading: "Cargando lugares",
   whereFailed: "La lista de lugares no cargó. Elige el estado abajo o vuelve a intentar la búsqueda.",
@@ -280,18 +286,18 @@ const es: Record<UiKey, string> = {
   date: "Fecha del viaje",
   dateToday: "Hoy",
   dateOther: "Revisar una fecha futura",
-  dateHelp: "Algunas reglas cambian en fechas fijas. Elige una fecha para ver las reglas vigentes ese día.",
+  dateHelp: "Algunas reglas cambian en fechas fijas.",
   dateError: "Elige una fecha desde hoy hasta el {last}.",
   step2: "La bicicleta",
   tabLabel: "Foto de la etiqueta",
   tabLink: "Enlace del producto",
   tabType: "Escribir los datos",
-  labelHelp: "Toma una foto cercana y nítida de la etiqueta de clase. Suele estar en el cuadro, cerca de los pedales.",
+  labelHelp: "La etiqueta de clase suele estar en el cuadro, cerca de los pedales.",
   labelPrivacy: "Tu foto se queda en tu teléfono. Se lee aquí mismo en tu navegador.",
   choosePhoto: "Tomar o elegir una foto",
   reading: "Leyendo la etiqueta",
   readFailed: "No se pudo leer texto. Prueba una foto más cercana y con más luz, o escribe los datos.",
-  linkHelp: "Pega el enlace de la página del producto.",
+  linkHelp: "Enlace de la página del producto",
   fetch: "Leer el anuncio",
   fetching: "Leyendo el anuncio",
   linkPrivacy: "Abrimos esa sola página para leer los datos. No guardamos nada.",
@@ -303,7 +309,7 @@ const es: Record<UiKey, string> = {
   linkLimited: "Demasiadas consultas seguidas. Espera un minuto y vuelve a intentar.",
   nothingFound: "No encontramos clase, vatios ni velocidades en ese texto. Revisa la etiqueta o escribe los datos.",
   step3: "Revisa los datos",
-  typeHelp: "Completa lo que sepas de la etiqueta o del anuncio en el paso 3, abajo.",
+  typeHelp: "Completa los datos en el paso 3.",
   readFrom: "Leído de",
   readFromBefore: "Antes de la revisión de la foto, el texto decía",
   readAnnounceOne: "Leímos 1 dato. Está marcado en \"Revisa los datos\". Mira la bicicleta y marca \"Coincide con la bicicleta\" debajo de él, o corrígelo. La respuesta no puede decir SÍ hasta que lo revises.",
@@ -354,7 +360,7 @@ const es: Record<UiKey, string> = {
   topMph: "Velocidad máxima, sin decir el modo (mph)",
   unlock: "Tiene un modo desbloqueado o todoterreno",
   shapeTitle: "Ruedas y peso",
-  shapeHelp: "Algunas reglas estatales dependen de esto. Compara cada dato con la bicicleta y borra lo que no sea de esta bicicleta.",
+  shapeHelp: "Algunas reglas estatales dependen de esto. Borra lo que no sea de esta bicicleta.",
   wheelSizeIn: "Tamaño de las ruedas (pulgadas)",
   weightLb: "Peso con la batería (libras)",
   footPegs: "¿Tiene reposapiés para el conductor?",
@@ -472,6 +478,15 @@ export function t(lang: Lang, key: UiKey, params: Record<string, string | number
   let text = UI[lang][key] ?? UI.en[key];
   for (const [k, v] of Object.entries(params)) text = text.replace(`{${k}}`, String(v));
   return text;
+}
+
+/**
+ * The title split before its last word, so the page can set that word in a block of its own:
+ * "Is it an " and "e-bike?", or "¿Es una bicicleta " and "eléctrica?".
+ */
+export function titleParts(text: string): [lead: string, key: string] {
+  const at = text.lastIndexOf(" ");
+  return at < 0 ? ["", text] : [text.slice(0, at + 1), text.slice(at + 1)];
 }
 
 /** Every interface string key, for tests. */

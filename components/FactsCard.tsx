@@ -21,6 +21,9 @@ const MAX_WATTS = 20000;
 /** How far above the bottom of the screen the facts list must start before the Check bar sticks, in px. */
 const STICKY_AFTER = 260;
 
+/** Up to this many read facts, the progress shows one segment per fact. Past it, one bar. */
+const MAX_SEGMENTS = 12;
+
 interface Props {
   lang: Lang;
   facts: BikeFacts;
@@ -225,15 +228,23 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
               {allChecked ? "✓ " : ""}
               {t(lang, "readCountShort", { done: counts.confirmed, total: counts.read })}
             </p>
-            <div className="bar" data-done={allChecked ? "true" : "false"}>
-              <div style={{ width: `${Math.round((100 * counts.confirmed) / counts.read)}%` }} />
-            </div>
+            {counts.read <= MAX_SEGMENTS ? (
+              <div className="segs" data-done={allChecked ? "true" : "false"}>
+                {Array.from({ length: counts.read }, (_, i) => (
+                  <i key={i} data-on={i < counts.confirmed ? "true" : "false"} />
+                ))}
+              </div>
+            ) : (
+              <div className="bar" data-done={allChecked ? "true" : "false"}>
+                <div style={{ width: `${Math.round((100 * counts.confirmed) / counts.read)}%` }} />
+              </div>
+            )}
           </div>
         ) : null}
         <p role="status" className="sr-only">
           {counts.read > 0 ? t(lang, "readCount", { done: counts.confirmed, total: counts.read }) : ""}
         </p>
-        <button type="button" className="btn w-full" onClick={onCheck}>
+        <button type="button" className="btn btn-go w-full" onClick={onCheck}>
           {t(lang, "check")}
         </button>
       </div>

@@ -76,8 +76,8 @@ describe("the first review's style fixes", () => {
     expect(rule(".bottom-line")).toMatch(/border:\s*0/);
   });
 
-  it("marks the open tab with an accent ring, not a shade alone", () => {
-    expect(rule('.tabs button[aria-selected="true"]')).toMatch(/inset 0 0 0 2px var\(--accent\)/);
+  it("marks the open tab with a solid ink fill, not a shade alone", () => {
+    expect(rule('.tabs button[aria-selected="true"]')).toMatch(/background: var\(--primary\)/);
   });
 
   it("keeps focus rings, picked choices and the open tab in Windows contrast themes", () => {

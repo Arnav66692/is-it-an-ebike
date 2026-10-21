@@ -18,7 +18,7 @@ import { FactsCard } from "@/components/FactsCard";
 import { cardAnswer, VerdictCard } from "@/components/VerdictCard";
 import { CLOSED, comboKey, focusAfterRemove, PlaceSearch, resultDetail, tooSoonToRemove } from "@/components/PlaceSearch";
 import { placeName, type Lang } from "@/lib/i18n/names";
-import { t } from "@/lib/i18n/ui";
+import { t, titleParts } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
 import { pickLabels } from "@/lib/places/linked";
 import { parsePlaceIndex } from "@/lib/places/parse";
@@ -400,7 +400,8 @@ describe("the first paint has the page's frame, in the page's language", () => {
     const html = renderToStaticMarkup(createElement(CheckerSkeleton));
     for (const cls of ["app-bar", "brand-mark", "lang-btn", "app-title", "tagline", "card-title"]) expect(html, cls).toContain(`class="${cls}`);
     for (const lang of ["en", "es"] as const) {
-      expect(html).toContain(`<span class="sk-${lang}" lang="${lang}">${t(lang, "appName")}</span>`);
+      const [lead, word] = titleParts(t(lang, "appName"));
+      expect(html).toContain(`<span class="sk-${lang}" lang="${lang}">${lead}<span class="hero-key">${word}</span></span>`);
       expect(html).toContain(t(lang, "step1"));
       expect(html).toContain(t(lang, "whereLabel"));
     }
@@ -499,10 +500,11 @@ describe("the smaller visual fixes", () => {
     expect(CSS).toMatch(/\.source-link \{[^}]*min-height: 2\.75rem;/);
   });
 
-  it("sets the facts step's words at 16 px or more", () => {
+  it("sets the facts step's words at 16 px or more, and its short mono labels at 13 px", () => {
     expect(CSS).toMatch(/\.meta \{\s*color: var\(--muted\);\s*font-size: 1rem;/);
     const mark = CSS.slice(CSS.indexOf(".read-mark {"), CSS.indexOf("}", CSS.indexOf(".read-mark {")));
-    expect(mark).not.toMatch(/font-size/);
+    expect(mark).toContain("font-family: var(--font-geist-mono)");
+    expect(mark).toMatch(/font-size: 0\.8125rem;/);
     expect(CSS).not.toContain(".read-intro");
     expect(CSS.slice(CSS.indexOf(".quote {"), CSS.indexOf("}", CSS.indexOf(".quote {")))).not.toMatch(/font-size/);
   });
@@ -517,6 +519,6 @@ describe("the smaller visual fixes", () => {
     expect(button.props.className).toContain("btn-quiet");
     m.act(() => call(button, "onClick"));
     expect(onChange.mock.calls[0][0].unsure).toEqual([]);
-    expect(CSS).toMatch(/\.btn-quiet\[aria-pressed="true"\][^{]*\{[^}]*background: var\(--accent\)/);
+    expect(CSS).toMatch(/\.btn-quiet\[aria-pressed="true"\][^{]*\{[^}]*background: var\(--primary\)/);
   });
 });

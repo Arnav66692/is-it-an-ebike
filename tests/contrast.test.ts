@@ -63,6 +63,29 @@ const PAIRS: [string, string, number][] = [
   ["ink", "raised-hover", TEXT],
   ["muted", "raised-hover", TEXT],
   ["accent", "raised-hover", UI],
+  // The premium pass: tinted panels, the solid YES and NO blocks, the dark bands and the ink buttons.
+  ["ink", "accent-soft", TEXT],
+  ["muted", "yes-bg", TEXT],
+  ["muted", "no-bg", TEXT],
+  ["muted", "maybe-bg", TEXT],
+  // The dashed edge of a read fact still to check.
+  ["maybe", "card", UI],
+  ["on-solid", "yes-solid", TEXT],
+  ["on-solid", "no-solid", TEXT],
+  ["yes-solid", "band-verdict", UI],
+  ["no-solid", "band-verdict", UI],
+  ["yes-solid", "card", UI],
+  ["no-solid", "card", UI],
+  ["accent-solid-ink", "accent-solid", TEXT],
+  ["band-ink", "band", TEXT],
+  ["band-muted", "band", TEXT],
+  ["band-focus", "band", UI],
+  ["band-ink", "band-verdict", TEXT],
+  ["band-muted", "band-verdict", TEXT],
+  ["band-focus", "band-verdict", UI],
+  ["primary-ink", "primary", TEXT],
+  ["primary-ink", "primary-hover", TEXT],
+  ["field-line", "accent-soft", UI],
 ];
 
 describe("the page colors meet WCAG AA contrast", () => {

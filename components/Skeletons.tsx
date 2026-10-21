@@ -6,6 +6,7 @@
 import { t, type UiKey } from "@/lib/i18n/ui";
 import { BikeIcon } from "./BikeIcon";
 import { FlyerSheet } from "./FlyerSheet";
+import { Coverage, TitleWords } from "./Hero";
 
 /** One line in both languages. Only the page's own language is shown. */
 function Both({ k }: { k: UiKey }) {
@@ -16,6 +17,20 @@ function Both({ k }: { k: UiKey }) {
       </span>
       <span className="sk-es" lang="es">
         {t("es", k)}
+      </span>
+    </>
+  );
+}
+
+/** The title in both languages, each with its last word in a block. */
+function BothTitle() {
+  return (
+    <>
+      <span className="sk-en" lang="en">
+        <TitleWords text={t("en", "appName")} />
+      </span>
+      <span className="sk-es" lang="es">
+        <TitleWords text={t("es", "appName")} />
       </span>
     </>
   );
@@ -36,7 +51,7 @@ function LaterStepFrame({ step, k, hint }: { step: number; k: UiKey; hint: UiKey
   return (
     <section className="card card-later space-y-1">
       <StepTitle step={step} k={k} />
-      <p className="help pl-11">
+      <p className="help pl-10">
         <Both k={hint} />
       </p>
     </section>
@@ -46,7 +61,7 @@ function LaterStepFrame({ step, k, hint }: { step: number; k: UiKey; hint: UiKey
 export function CheckerSkeleton() {
   return (
     <div className="page" aria-busy="true">
-      <header className="app-head">
+      <header className="app-head hero">
         <div className="app-bar">
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
@@ -62,11 +77,12 @@ export function CheckerSkeleton() {
           </span>
         </div>
         <h1 className="app-title">
-          <Both k="appName" />
+          <BothTitle />
         </h1>
         <p className="tagline">
           <Both k="tagline" />
         </p>
+        <Coverage words={(k) => <Both k={k} />} />
       </header>
 
       <section className="card space-y-5">
@@ -81,9 +97,9 @@ export function CheckerSkeleton() {
             </p>
           </div>
           <div className="combo-field" aria-hidden="true">
-            <svg viewBox="0 0 20 20" width="20" height="20" className="combo-icon">
-              <circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" strokeWidth="2" />
-              <path d="M13 13l4.25 4.25" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <svg viewBox="0 0 20 20" width="18" height="18" className="combo-icon">
+              <circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
             </svg>
             <div className="field combo-input sk-field">
               <Both k="wherePlaceholder" />

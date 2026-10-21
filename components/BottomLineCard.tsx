@@ -130,7 +130,7 @@ function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
   if (shown.length === 0) return null;
   return (
     <div className="space-y-2">
-      <h4 className="eyebrow text-muted">{title}</h4>
+      <h4 className="eyebrow">{title}</h4>
       <ul className="bl-list" role="list">
         {shown.map((item, i) => {
           const full = renderLine(item.line, lang, state);
@@ -214,7 +214,7 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
 
         {yes && line.requirements.length > 0 ? (
           <div className="space-y-2">
-            <h4 className="eyebrow text-muted">{t(lang, "blMustDo")}</h4>
+            <h4 className="eyebrow">{t(lang, "blMustDo")}</h4>
             <ul className="list-disc space-y-1 pl-5">
               {line.requirements.map((l, i) => (
                 <li key={`${l.code}-${i}`}>{keepWords(renderLine(l, lang, state))}</li>

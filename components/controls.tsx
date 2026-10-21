@@ -187,7 +187,7 @@ export function LaterStep({ title, step, hint }: { title: string; step: number; 
         </span>
         {title}
       </h2>
-      <p className="help pl-11">{hint}</p>
+      <p className="help pl-10">{hint}</p>
     </section>
   );
 }

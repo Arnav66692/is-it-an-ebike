@@ -161,7 +161,7 @@ function LinkReader({ lang, onRead, gate }: ReaderProps) {
           onChange={(e) => setUrl(e.target.value)}
           className="field flex-1"
         />
-        <button type="button" className="btn" disabled={busy || url.trim().length === 0} onClick={() => void fetchLink()}>
+        <button type="button" className="btn btn-go" disabled={busy || url.trim().length === 0} onClick={() => void fetchLink()}>
           {busy ? t(lang, "fetching") : t(lang, "fetch")}
         </button>
       </div>

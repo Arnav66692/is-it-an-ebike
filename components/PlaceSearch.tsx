@@ -120,9 +120,9 @@ interface Props {
 
 function SearchIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 20 20" width="20" height="20" className="combo-icon">
-      <circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" strokeWidth="2" />
-      <path d="M13 13l4.25 4.25" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <svg aria-hidden="true" viewBox="0 0 20 20" width="18" height="18" className="combo-icon">
+      <circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
     </svg>
   );
 }
@@ -236,6 +236,41 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
           {t(lang, "whereHelp")}
         </p>
       </div>
+      {picks.length > 0 ? (
+        // role="list" keeps the list and its name for VoiceOver, which drops them from a list styled with no bullets.
+        <ul ref={chips} className="chips" role="list" aria-label={t(lang, "wherePicked")}>
+          {picks.map((p, i) => (
+            <li key={p.id} className="chip">
+              <span className="chip-text">
+                <span className="chip-name">{p.label.name}</span>
+                {p.detail ? <span className="chip-where">{p.detail}</span> : null}
+              </span>
+              <button
+                type="button"
+                className="chip-remove"
+                aria-label={t(lang, "whereRemove", { place: p.label.text })}
+                title={t(lang, "whereRemove", { place: p.label.text })}
+                onPointerDown={(e) => {
+                  pointer.current = e.pointerType;
+                }}
+                onClick={() => {
+                  const touch = pointer.current === "touch" || pointer.current === "pen";
+                  pointer.current = null;
+                  const now = Date.now();
+                  if (tooSoonToRemove(now, lastChange.current)) return;
+                  lastChange.current = now;
+                  refocus.current = { at: i, touch };
+                  onRemove(p.id);
+                }}
+              >
+                <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
+                </svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <div className="combo">
         <div className="combo-field">
           <SearchIcon />
@@ -309,41 +344,6 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
       <p role="status" className={statusShown ? "combo-status" : "sr-only"} data-shown={statusShown ? "true" : "false"}>
         {status}
       </p>
-      {picks.length > 0 ? (
-        // role="list" keeps the list and its name for VoiceOver, which drops them from a list styled with no bullets.
-        <ul ref={chips} className="chips" role="list" aria-label={t(lang, "wherePicked")}>
-          {picks.map((p, i) => (
-            <li key={p.id} className="chip">
-              <span className="chip-text">
-                <span className="chip-name">{p.label.name}</span>
-                {p.detail ? <span className="chip-where">{p.detail}</span> : null}
-              </span>
-              <button
-                type="button"
-                className="chip-remove"
-                aria-label={t(lang, "whereRemove", { place: p.label.text })}
-                title={t(lang, "whereRemove", { place: p.label.text })}
-                onPointerDown={(e) => {
-                  pointer.current = e.pointerType;
-                }}
-                onClick={() => {
-                  const touch = pointer.current === "touch" || pointer.current === "pen";
-                  pointer.current = null;
-                  const now = Date.now();
-                  if (tooSoonToRemove(now, lastChange.current)) return;
-                  lastChange.current = now;
-                  refocus.current = { at: i, touch };
-                  onRemove(p.id);
-                }}
-              >
-                <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
-                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 }

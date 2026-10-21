@@ -204,7 +204,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
       <div className="space-y-2">
         {step === "closed" ? (
           <>
-            <button ref={openButton} type="button" className="btn btn-quiet" onClick={() => go("confirm")}>
+            <button ref={openButton} type="button" className="link-btn link-icon" onClick={() => go("confirm")}>
               {t(lang, "photoCheckOpen")}
             </button>
             <p className="meta">{t(lang, "photoCheckHelp")}</p>

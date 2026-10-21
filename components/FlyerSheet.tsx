@@ -2,6 +2,8 @@
 // code, and the loading frame draws it with the code's empty square, so nothing moves when the
 // page's script arrives.
 
+import { TitleWords } from "./Hero";
+
 interface Props {
   /** The QR code as a data URL, or empty while it is made. */
   qr: string;
@@ -13,8 +15,10 @@ export function FlyerSheet({ qr, url }: Props) {
   return (
     <article className="card flyer" lang="en">
       <div className="space-y-2">
-        <h1 className="app-title text-[2.25rem]">Is it an e-bike?</h1>
-        <p className="text-2xl font-bold text-muted" lang="es">
+        <h1 className="app-title">
+          <TitleWords text="Is it an e-bike?" />
+        </h1>
+        <p className="text-2xl font-medium text-muted" lang="es">
           ¿Es una bicicleta eléctrica?
         </p>
       </div>
@@ -26,7 +30,7 @@ export function FlyerSheet({ qr, url }: Props) {
         </div>
       ) : (
         <div className="qr-frame">
-          <div className="h-64 w-64 max-w-full rounded-xl bg-sunk" aria-hidden="true" />
+          <div className="h-64 w-64 max-w-full bg-sunk" aria-hidden="true" />
         </div>
       )}
       <div className="space-y-2">

@@ -28,6 +28,28 @@ interface CheckProps {
   quotes?: string[];
 }
 
+/**
+ * A square mark: an outline with an exclamation point while the fact is unchecked, and a filled
+ * square with a check once it is ticked. The words beside it say the same, so color is never alone.
+ */
+function MarkIcon({ ticked }: { ticked: boolean }) {
+  return (
+    <svg aria-hidden="true" className="read-mark-icon" viewBox="0 0 14 14" width="14" height="14" fill="none">
+      {ticked ? (
+        <>
+          <rect width="14" height="14" rx="1" fill="currentColor" />
+          <path className="knock" d="M3.5 7.25l2.25 2.25 4.75-5" strokeWidth="1.75" strokeLinecap="square" />
+        </>
+      ) : (
+        <>
+          <rect x="0.75" y="0.75" width="12.5" height="12.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M7 3.5v4.25M7 9.5v1.25" stroke="currentColor" strokeWidth="1.5" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 /** The words a fact was read from, as quotes, at most two. */
 function Quotes({ texts }: { texts: string[] }) {
   return (
@@ -67,9 +89,7 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef, q
     <div className="read-check" data-confirmed={ticked ? "true" : "false"}>
       <p id={noteId} className="read-line">
         <span className={ticked ? "read-mark read-mark-done" : "read-mark"} data-read-mark={check.status}>
-          <span aria-hidden="true" className="read-mark-icon">
-            {ticked ? "\u2713" : "!"}
-          </span>
+          <MarkIcon ticked={ticked} />
           {/* Both words share one grid cell, so the mark keeps the width of the longer one. Only
               the words for the box's state are visible, and only they are read out. */}
           <span className="read-mark-words">

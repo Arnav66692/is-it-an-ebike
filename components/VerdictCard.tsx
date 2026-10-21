@@ -124,7 +124,7 @@ function Section({ title, lines, lang, state }: { title: string; lines: Line[]; 
   if (shown.length === 0) return null;
   return (
     <div className="space-y-2">
-      <h5 className="eyebrow text-muted">{title}</h5>
+      <h5 className="eyebrow">{title}</h5>
       <ul className="list-disc space-y-2 pl-5">
         {shown.map((l, i) => (
           <LineItem key={`${l.code}-${i}`} line={l} lang={lang} state={state} />
@@ -181,7 +181,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
         <div className="more-body">
           {held ? (
             <div className="space-y-2">
-              <h5 className="eyebrow text-muted">{t(lang, "cardRuleSays")}</h5>
+              <h5 className="eyebrow">{t(lang, "cardRuleSays")}</h5>
               <p>{keepWords(reason)}</p>
             </div>
           ) : null}
@@ -202,7 +202,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
 
           {verdict.sources.length > 0 ? (
             <div className="space-y-2">
-              <h5 className="eyebrow text-muted">{t(lang, "sources")}</h5>
+              <h5 className="eyebrow">{t(lang, "sources")}</h5>
               {/* role="list" keeps the list for VoiceOver, which drops it from a list with no bullets. */}
               <ul className="sources" role="list">
                 {verdict.sources.map((s, i) => (

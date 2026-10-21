@@ -20,6 +20,7 @@ import { announcement, BottomLineCard } from "./BottomLineCard";
 import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
+import { Coverage, TitleWords } from "./Hero";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { VerdictCard } from "./VerdictCard";
 
@@ -399,7 +400,7 @@ export function Checker() {
 
   return (
     <div className="page">
-      <header className="app-head">
+      <header className="app-head hero">
         <div className="app-bar">
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
@@ -408,8 +409,11 @@ export function Checker() {
             {t(lang, "switchLang")}
           </button>
         </div>
-        <h1 className="app-title">{t(lang, "appName")}</h1>
+        <h1 className="app-title">
+          <TitleWords text={t(lang, "appName")} />
+        </h1>
         <p className="tagline">{t(lang, "tagline")}</p>
+        <Coverage words={(k) => t(lang, k)} />
       </header>
 
       <Card title={t(lang, "step1")} step={1}>
