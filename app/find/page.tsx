@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FinderApp } from "@/components/ClientOnly";
+import { FinderApp } from "@/components/FinderApp";
 import { CATALOG, CATALOG_META } from "@/lib/bikes/catalog";
 import { finderText } from "@/lib/i18n/finder";
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ModsApp } from "@/components/ClientOnly";
+import { ModsApp } from "@/components/ModsApp";
 import { modsText } from "@/lib/i18n/mods";
 import { MODS_DATA } from "@/lib/mods/data";
 

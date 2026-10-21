@@ -4,8 +4,15 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
-import { checkHref } from "@/components/BikeFinder";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { BikeFinder, checkHref, FinderResultCard } from "@/components/BikeFinder";
+import { BikeInput } from "@/components/BikeInput";
+import { BottomLineCard } from "@/components/BottomLineCard";
+import { Checker } from "@/components/Checker";
+import { FactsCard } from "@/components/FactsCard";
+import { PlaceSearch } from "@/components/PlaceSearch";
+import { pickLabels } from "@/lib/places/linked";
+import { elements, mount, one, textOf, type El } from "./hooks";
 import { ModAnswerCard, modsAge, overallReason } from "@/components/ModsCheck";
 import { answerMod, modApplies, outcomesFor, type ModChoice } from "@/lib/mods/answer";
 import { MODS_DATA, type ModView } from "@/lib/mods/data";
@@ -13,9 +20,12 @@ import { uncheckedLine } from "@/components/BottomLineCard";
 import { parseShareLink } from "@/lib/checkerState";
 import { catalogBike } from "@/lib/bikes/catalog";
 import type { CatalogBike } from "@/lib/bikes/facts";
-import { finderLine } from "@/lib/bikes/finder";
+import { colorsIn, findBikes, finderLine, type FinderQuiz } from "@/lib/bikes/finder";
+import { CATALOG, CATALOG_META } from "@/lib/bikes/catalog";
+import { finderText } from "@/lib/i18n/finder";
 import { withDistricts, type DistrictIndexFile } from "@/lib/places/districts";
 import { linkedPickIds, linkedWhere, withLinkedPicks } from "@/lib/places/linked";
+
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { addPick, NO_PICKS, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
 import type { PlaceEntry, PlaceIndexFile } from "@/lib/places/types";
@@ -224,5 +234,96 @@ describe("mods answers", () => {
     expect(css).toMatch(/\.check input\[type="radio"\] \{\s*border-radius: 50%;/);
     expect(css).toMatch(/a\.btn:hover \{\s*color: var\(--primary-ink\);/);
     expect(css).toMatch(/a\.btn-quiet:hover \{\s*color: var\(--ink\);/);
+  });
+});
+
+describe("the bike finder", () => {
+  const quiz: FinderQuiz = { age: 30, height: null, uses: [], budget: "any", colors: [], state: "CA", places: [], otherPlaces: false, rideDate: TODAY };
+
+  it("ranks the same whatever the makers are called", () => {
+    const order = (makers: (b: CatalogBike) => string) => findBikes(CATALOG.map((b) => ({ ...b, maker: makers(b) })), quiz).map((r) => r.bike.id);
+    const real = order((b) => b.maker);
+    expect(order(() => "Zzz")).toEqual(real);
+    expect(order((b) => (b.maker.startsWith("Rad") ? "Aaa" : b.maker))).toEqual(real);
+    expect(order((b) => `${b.maker.split("").reverse().join("")}`)).toEqual(real);
+  });
+
+  it("never shows the catalog's computed speed as the maker's top speed", () => {
+    const globe = bike("specialized-globe-haul-st");
+    const [r] = findBikes([globe], quiz);
+    const html = renderToStaticMarkup(createElement(FinderResultCard, { result: r, lang: "en", age: 30, state: "CA", where: "California", places: [], unchecked: null, readDate: CATALOG_META.readDate }));
+    expect(html).toMatch(/<dt>Top speed<\/dt><dd>Not stated<\/dd>/);
+    expect(html).toMatch(/<dt>Pedal assist to<\/dt><dd>28 mph<\/dd>/);
+  });
+
+  it("matches colors by whole word", () => {
+    const tang = { ...bike("lectric-xp4"), colors: ["Blu Tang"] };
+    expect(colorsIn(tang, "other")).toEqual([]);
+    expect(colorsIn(tang, "blue")).toEqual(["Blu Tang"]);
+    expect(colorsIn({ ...tang, colors: ["Sandstone"] }, "other")).toEqual(["Sandstone"]);
+  });
+
+  it("keeps the price note in the specs fold and marks only the maker's words as English", () => {
+    const b = CATALOG.find((x) => x.price_note !== null);
+    if (!b) throw new Error("no price note");
+    const [r] = findBikes([b], quiz);
+    const html = renderToStaticMarkup(createElement(FinderResultCard, { result: r, lang: "es", age: 30, state: "CA", where: "California", places: [], unchecked: null, readDate: CATALOG_META.readDate }));
+    const fold = html.slice(html.indexOf("<details"));
+    expect(html.indexOf(">" + (b.price_note ?? "").replace(/&/g, "&amp;"))).toBeGreaterThan(html.indexOf("<details"));
+    expect(fold).toContain(finderText("es", "priceNote"));
+    expect(html).not.toContain('<dl class="specs" lang="en"');
+  });
+
+  it("writes the age as a compound word and quotes the maker's age rule", () => {
+    expect(finderText("en", "yesLine", { age: 15, where: "Encinitas" })).toBe("YES on the maker's specs, for a 15-year-old in Encinitas.");
+    expect(finderText("en", "fit_maker_age", { text: "Must be 16" })).toBe("Maker's age rule, \u201cMust be 16\u201d");
+  });
+});
+
+function call(element: El, name: string, ...args: unknown[]): unknown {
+  const handler = element.props[name];
+  if (typeof handler !== "function") throw new Error(`${name} is not a handler`);
+  return (handler as (...a: unknown[]) => unknown)(...args);
+}
+
+describe("pages with places picked", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 21, 12));
+    vi.stubGlobal("requestAnimationFrame", (run: (time: number) => void) => {
+      run(0);
+      return 0;
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("says so in the finder when a place in another state starts over", () => {
+    vi.stubGlobal("window", { location: { search: "?lang=en" } });
+    const m = mount(BikeFinder, { catalog: CATALOG, meta: CATALOG_META }, { effects: false });
+    const search = () => one(m.tree(), (e) => e.type === PlaceSearch, "place search");
+    const status = () => elements(m.tree()).filter((e) => e.type === "p" && e.props.role === "status").map(textOf).join(" ");
+    const encinitas = entry("p-0622678");
+    m.act(() => call(search(), "onPick", encinitas, pickLabels(INDEX, encinitas)));
+    m.act(() => call(search(), "onPick", encinitas, pickLabels(INDEX, encinitas)));
+    expect(status()).toMatch(/already/i);
+    const texas = INDEX.entries.find((e) => e.kind === "district" && e.state === "TX");
+    if (!texas) throw new Error("no Texas district");
+    m.act(() => call(search(), "onPick", texas, pickLabels(INDEX, texas)));
+    expect(status()).toMatch(/California/);
+  });
+
+  it("keeps the checker's not-checked line while a linked district is still loading", () => {
+    vi.stubGlobal("window", { location: { search: "?lang=en&state=CA&place=encinitas&pick=d-0631530&age=16" } });
+    const m = mount(Checker, {}, { effects: false });
+    m.act(() => call(one(m.tree(), (e) => e.type === BikeInput, "bike input"), "onManual"));
+    m.act(() => call(one(m.tree(), (e) => e.type === FactsCard, "facts card"), "onChange", classBike(1)));
+    m.act(() => call(one(m.tree(), (e) => e.type === FactsCard, "facts card"), "onCheck"));
+    const card = one(m.tree(), (e) => e.type === BottomLineCard, "bottom line");
+    const html = renderToStaticMarkup(card);
+    expect(html).toMatch(/were not checked/);
   });
 });

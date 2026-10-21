@@ -9,7 +9,7 @@ import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, su
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
-import { formatDate, placeHint, placeName, stateLaw, stateName, stateOf, stateWhere, type Lang } from "@/lib/i18n/names";
+import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { linkedPickIds, linkedWhere, pickLabels, SD_COUNTY_NAMES, withLinkedPicks, type PickLabels } from "@/lib/places/linked";
 import { loadSearchIndex } from "@/lib/places/load";
@@ -25,6 +25,9 @@ import { Coverage, TitleWords } from "./Hero";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { pageHref, SiteNav } from "./SiteHeader";
 import { VerdictCard } from "./VerdictCard";
+import { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
+
+export { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
 
 type Stage = "input" | "facts" | "result";
 
@@ -73,42 +76,6 @@ function readInitial(): Initial {
     ...finderLink(window.location.search),
     pickIds: linkedPickIds(window.location.search),
   };
-}
-
-/**
- * A status line about the places: one added, removed or already there, or a move to another
- * state's law. A move to another state is shown on the page, not only read out, and so is the
- * SDUHSD campus choice it removes.
- */
-export interface WhereNote {
-  key: "whereAdded" | "whereRemoved" | "whereAlready" | "whereStartedOver" | "whereStateSwitched" | "whereAddedNewState" | "whereNewState";
-  place?: PickLabels;
-  from?: string;
-  to?: string;
-  /** The SDUHSD campus was ticked and the move to another state removed it. */
-  campusRemoved?: boolean;
-}
-
-/**
- * The status line's words. States are named the way the answers name them, so Spanish says
- * "en el Distrito de Columbia" and "la ley del Distrito de Columbia", with the article.
- */
-export function whereNoteText(note: WhereNote | null, lang: Lang): string {
-  if (!note) return "";
-  const from = note.from ?? "";
-  const to = note.to ?? "";
-  const main = t(lang, note.key, {
-    place: note.place?.[lang].text ?? "",
-    inTo: stateWhere(to, lang),
-    placesFrom: lang === "es" ? stateOf(from, lang) : stateWhere(from, lang),
-    lawTo: stateLaw(to, lang, "inline"),
-  });
-  return note.campusRemoved ? `${main} ${t(lang, "whereCampusRemoved")}` : main;
-}
-
-/** True when the note says the answer moved to another state's law, so it is shown, not only read out. */
-export function whereNoteShown(note: WhereNote | null): boolean {
-  return note !== null && (note.to !== undefined || note.campusRemoved === true);
 }
 
 /**

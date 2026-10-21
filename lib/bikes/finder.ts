@@ -32,12 +32,17 @@ const COLOR_WORDS: Record<ColorFamily, readonly string[]> = {
   blue: ["blue", "blu", "cobalt", "azure", "navy"],
   green: ["green", "sage", "matcha", "mint", "pine", "fir", "olive"],
   red: ["red", "crimson", "cranberry", "cherry", "lava", "tabasco", "sriracha"],
-  other: ["yellow", "mustard", "pink", "lavender", "bronze", "copper", "gold", "sand", "baja", "tan", "java"],
+  other: ["yellow", "mustard", "pink", "lavender", "bronze", "copper", "gold", "sand", "sandstone", "sandstorm", "baja", "tan", "java"],
 };
 
-/** The maker's color names in this family. */
+/** The whole words in a color name, so "Blu Tang" is "blu" and "tang", never "tan". */
+function colorWords(name: string): string[] {
+  return name.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+}
+
+/** The maker's color names in this family, matched by whole word. */
 export function colorsIn(bike: CatalogBike, family: ColorFamily): string[] {
-  return bike.colors.filter((c) => COLOR_WORDS[family].some((w) => c.toLowerCase().includes(w)));
+  return bike.colors.filter((c) => colorWords(c).some((w) => COLOR_WORDS[family].includes(w)));
 }
 
 /** Heights in a maker's fit line, like 4'11" and 6'3", in inches. */
@@ -146,8 +151,19 @@ function fitOf(bike: CatalogBike, quiz: FinderQuiz): { fits: FitReason[]; misfit
 }
 
 /**
+ * A fixed number for each bike, from its id, that breaks a tie in the ranking. It has no order of
+ * its own, unlike a name, so no maker early in the alphabet comes first. FNV-1a, 32 bits.
+ */
+export function tieBreak(id: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 0x01000193) >>> 0;
+  return h;
+}
+
+/**
  * Every bike in the budget, best fit first. A YES for this rider in these places comes before a
- * NO, then the closer fit, then the lower price, then the model name, so no maker is favored.
+ * NO, then the closer fit, then the lower price, then a fixed tie-break from the bike's id, so no
+ * maker's name moves a bike up or down.
  */
 export function findBikes(catalog: readonly CatalogBike[], quiz: FinderQuiz): FinderResult[] {
   return catalog
@@ -162,6 +178,6 @@ export function findBikes(catalog: readonly CatalogBike[], quiz: FinderQuiz): Fi
         Number(b.yes) - Number(a.yes) ||
         b.score - a.score ||
         (a.bike.price_usd ?? Infinity) - (b.bike.price_usd ?? Infinity) ||
-        `${a.bike.maker} ${a.bike.model}`.localeCompare(`${b.bike.maker} ${b.bike.model}`),
+        tieBreak(a.bike.id) - tieBreak(b.bike.id),
     );
 }

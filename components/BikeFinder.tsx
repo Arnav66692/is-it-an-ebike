@@ -24,6 +24,7 @@ import { uncheckedLine } from "./BottomLineCard";
 import { Card, Choice } from "./controls";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { pageHref, SiteHeader, useLang } from "./SiteHeader";
+import { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
 
 /** Heights the quiz offers, 4'0" to 6'6", in inches. */
 export const HEIGHTS: readonly number[] = Array.from({ length: 31 }, (_, i) => 48 + i);
@@ -99,13 +100,19 @@ function motorText(bike: CatalogBike, lang: Lang): string {
   return finderText(lang, "spec_none");
 }
 
-function SpecRow({ label, value, lang }: { label: string; value: string | null; lang: Lang }) {
+/** One spec. A maker's own words are marked English, so a Spanish screen reader reads them right. */
+function SpecRow({ label, value, lang, makerWords = false }: { label: string; value: string | null; lang: Lang; makerWords?: boolean }) {
   return (
     <div className="spec">
       <dt>{label}</dt>
-      <dd>{value ?? finderText(lang, "spec_none")}</dd>
+      <dd lang={value !== null && makerWords && lang !== "en" ? "en" : undefined}>{value ?? finderText(lang, "spec_none")}</dd>
     </div>
   );
+}
+
+/** A speed the maker's page states, like "28 mph", or null. The catalog's computed speeds are never shown as the maker's. */
+export function mphText(value: number | null): string | null {
+  return value === null ? null : `${value} mph`;
 }
 
 interface ResultProps {
@@ -127,7 +134,6 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
   const stateLabel = stateName(state, lang);
   const reasons = yes ? [] : noReasons(line, lang, state);
   const must = yes ? [...new Set(line.requirements.map((l) => renderLine(l, lang, stateLabel)))].slice(0, 3) : [];
-  const speed = [bike.top_speed_stated_mph, bike.derived.max_speed_any_mode_mph].filter((v): v is number => v !== null);
   return (
     <article className="card place finder-card space-y-3" data-answer={word} aria-label={`${bike.maker} ${bike.model}`}>
       <header className="place-head">
@@ -162,11 +168,6 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
           ? finderText(lang, "price", { price: money(bike.price_usd, lang), date: formatDate(readDate, lang) })
           : finderText(lang, "priceUnknown", { date: formatDate(readDate, lang) })}
       </p>
-      {bike.price_note ? (
-        <p className="meta" lang="en">
-          {bike.price_note}
-        </p>
-      ) : null}
 
       {result.fits.length > 0 ? (
         <div className="space-y-1">
@@ -190,23 +191,27 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
       ) : null}
 
       <p>
-        <span className="eyebrow">{finderText(lang, "colors")}</span> {bike.colors.length > 0 ? bike.colors.join(", ") : finderText(lang, "spec_none")}
+        <span className="eyebrow">{finderText(lang, "colors")}</span>{" "}
+        {bike.colors.length > 0 ? <span lang={lang !== "en" ? "en" : undefined}>{bike.colors.join(", ")}</span> : finderText(lang, "spec_none")}
       </p>
 
       <details className="more">
         <summary>{finderText(lang, "specs")}</summary>
         <div className="more-body">
-          <dl className="specs" lang="en">
-            <SpecRow label={finderText(lang, "spec_class")} value={bike.class_as_stated} lang={lang} />
+          <dl className="specs">
+            <SpecRow label={finderText(lang, "spec_class")} value={bike.class_as_stated} lang={lang} makerWords />
             <SpecRow label={finderText(lang, "spec_motor")} value={motorText(bike, lang)} lang={lang} />
-            <SpecRow label={finderText(lang, "spec_speed")} value={speed.length > 0 ? `${Math.max(...speed)} mph` : null} lang={lang} />
+            <SpecRow label={finderText(lang, "spec_speed")} value={mphText(bike.top_speed_stated_mph)} lang={lang} />
+            <SpecRow label={finderText(lang, "spec_assist")} value={mphText(bike.assisted_top_speed_mph)} lang={lang} />
+            <SpecRow label={finderText(lang, "spec_throttle")} value={mphText(bike.throttle_top_speed_mph)} lang={lang} />
             <SpecRow label={finderText(lang, "spec_battery")} value={bike.battery_wh !== null ? `${bike.battery_wh} Wh` : null} lang={lang} />
             <SpecRow label={finderText(lang, "spec_weight")} value={bike.weight_lb !== null ? `${bike.weight_lb} lb` : null} lang={lang} />
-            <SpecRow label={finderText(lang, "spec_wheels")} value={bike.wheel_size} lang={lang} />
-            <SpecRow label={finderText(lang, "spec_fit")} value={bike.rider_fit} lang={lang} />
+            <SpecRow label={finderText(lang, "spec_wheels")} value={bike.wheel_size} lang={lang} makerWords />
+            <SpecRow label={finderText(lang, "spec_fit")} value={bike.rider_fit} lang={lang} makerWords />
+            {bike.price_note ? <SpecRow label={finderText(lang, "priceNote")} value={bike.price_note} lang={lang} makerWords /> : null}
           </dl>
           {bike.speed_note ? (
-            <p className="meta" lang="en">
+            <p className="meta" lang={lang !== "en" ? "en" : undefined}>
               {bike.speed_note}
             </p>
           ) : null}
@@ -225,14 +230,6 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
   );
 }
 
-function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
-  return (
-    <button type="button" className="btn btn-quiet toggle" aria-pressed={on} onClick={onClick}>
-      {label}
-    </button>
-  );
-}
-
 export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[]; meta: CatalogMeta }) {
   const [lang, switchLang] = useLang();
   const ageId = useId();
@@ -242,6 +239,7 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
   const [height, setHeight] = useState<number | null>(null);
   const [where, setWhere] = useState<PlacePicks>(NO_PICKS);
   const [labels, setLabels] = useState<Record<string, PickLabels>>({});
+  const [whereNote, setWhereNote] = useState<WhereNote | null>(null);
   const [uses, setUses] = useState<Use[]>([]);
   const [budget, setBudget] = useState<Budget>("any");
   const [colors, setColors] = useState<ColorFamily[]>([]);
@@ -262,6 +260,25 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
   const whereText = state ? whereWords(where.picks, labels, lang, state) : "";
   const makers = new Set(catalog.map((b) => b.maker)).size;
   const yesCount = results?.filter((r) => r.yes).length ?? 0;
+
+  const noResults = results?.filter((r) => !r.yes) ?? [];
+  function card(r: FinderResult) {
+    const unchecked = uncheckedLine(r.line, lang, uncheckedNames, uncheckedDistricts);
+    return (
+      <FinderResultCard
+        key={r.bike.id}
+        result={r}
+        lang={lang}
+        age={age ?? 0}
+        state={state ?? ""}
+        where={whereText}
+        places={ride?.places ?? []}
+        uncheckedIds={notChecked.map((p) => p.id)}
+        unchecked={unchecked}
+        readDate={meta.readDate}
+      />
+    );
+  }
 
   function toggleIn<T>(list: T[], item: T): T[] {
     return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
@@ -324,10 +341,20 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
           })}
           onPick={(entry, entryLabels) => {
             setLabels((cur) => ({ ...cur, [entry.id]: entryLabels }));
-            setWhere((cur) => addPick(cur, entry).next);
+            const change = addPick(where, entry);
+            setWhere(change.next);
+            if (change.next === where) setWhereNote({ key: "whereAlready", place: entryLabels });
+            else if (change.startedOver) setWhereNote({ key: "whereStartedOver", ...change.startedOver });
+            else setWhereNote({ key: "whereAdded", place: entryLabels });
           }}
-          onRemove={(id) => setWhere((cur) => removePick(cur, id))}
+          onRemove={(id) => {
+            setWhere((cur) => removePick(cur, id));
+            setWhereNote(labels[id] ? { key: "whereRemoved", place: labels[id] } : null);
+          }}
         />
+        <p role="status" className={whereNoteShown(whereNote) ? "note" : "sr-only"}>
+          {whereNoteText(whereNote, lang)}
+        </p>
       </Card>
 
       <Card title={finderText(lang, "step3")} step={3}>
@@ -341,11 +368,14 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
           ))}
         </fieldset>
         <Choice legend={finderText(lang, "budgetLegend")} options={BUDGETS.map((b) => ({ value: b, label: budgetText(lang, b) }))} value={budget} onChange={setBudget} />
-        <fieldset className="space-y-2">
+        <fieldset className="space-y-1">
           <legend className="field-label">{finderText(lang, "colorsLegend")}</legend>
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div className="grid grid-cols-2 gap-x-4">
             {COLOR_FAMILIES.map((c) => (
-              <Toggle key={c} label={colorText(lang, c)} on={colors.includes(c)} onClick={() => setColors((cur) => toggleIn(cur, c))} />
+              <label key={c} className="check">
+                <input type="checkbox" checked={colors.includes(c)} onChange={() => setColors((cur) => toggleIn(cur, c))} />
+                <span>{colorText(lang, c)}</span>
+              </label>
             ))}
           </div>
         </fieldset>
@@ -365,25 +395,17 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
               ? finderText(lang, "none")
               : finderText(lang, results.length === 1 ? "countOne" : "countMany", { n: results.length, yes: yesCount })}
         </p>
-        {results && state
-          ? results.map((r) => {
-              const unchecked = uncheckedLine(r.line, lang, uncheckedNames, uncheckedDistricts);
-              return (
-                <FinderResultCard
-                  key={r.bike.id}
-                  result={r}
-                  lang={lang}
-                  age={age ?? 0}
-                  state={state}
-                  where={whereText}
-                  places={ride?.places ?? []}
-                  uncheckedIds={notChecked.map((p) => p.id)}
-                  unchecked={unchecked}
-                  readDate={meta.readDate}
-                />
-              );
-            })
-          : null}
+        {results && state ? (
+          <>
+            {results.filter((r) => r.yes).map(card)}
+            {noResults.length > 0 ? (
+              <details className="more finder-more">
+                <summary>{noResults.length === 1 ? finderText(lang, "moreNoOne") : finderText(lang, "moreNoMany", { n: noResults.length })}</summary>
+                <div className="more-body space-y-4">{noResults.map(card)}</div>
+              </details>
+            ) : null}
+          </>
+        ) : null}
       </div>
 
       <footer className="site-foot">
