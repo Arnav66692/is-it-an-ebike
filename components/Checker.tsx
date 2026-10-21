@@ -43,6 +43,20 @@ interface Initial {
   labels: Record<string, PickLabels>;
   campus: boolean;
   today: string;
+  /** A catalog bike the bike finder sent, by id, and the rider's age it was checked for. */
+  bike: string | null;
+  age: string;
+}
+
+/**
+ * The bike and the rider's age a "Check this bike" link from the bike finder names, like
+ * ?bike=rad-radrunner&age=15. The age only fills the box, so it is checked like a typed one.
+ */
+export function finderLink(search: string): { bike: string | null; age: string } {
+  const params = new URLSearchParams(search);
+  const bike = params.get("bike");
+  const age = params.get("age") ?? "";
+  return { bike: bike && /^[a-z0-9-]{1,80}$/.test(bike) ? bike : null, age: /^\d{1,3}$/.test(age) ? age : "" };
 }
 
 /** Reads the QR or shared-link settings once. This component only renders in the browser. */
@@ -53,6 +67,7 @@ function readInitial(): Initial {
     state: link.state,
     ...linkedWhere(link.state, link.places),
     today: checkerToday(localToday()),
+    ...finderLink(window.location.search),
   };
 }
 
@@ -131,7 +146,7 @@ export function Checker() {
   const [initial] = useState(readInitial);
   const [lang, setLang] = useState<Lang>(initial.lang);
   const [stateCode, setStateCode] = useState(initial.state);
-  const [ageText, setAgeText] = useState("");
+  const [ageText, setAgeText] = useState(initial.age);
   const [ageError, setAgeError] = useState(false);
   const [today, setToday] = useState(initial.today);
   const [dateText, setDateText] = useState(initial.today);
@@ -193,6 +208,22 @@ export function Checker() {
     focusBike.current = false;
     bikeRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }, [starts]);
+
+  // A bike sent from the bike finder comes in as read from its maker's page, every fact not
+  // checked, the same as a product link. The catalog loads only for such a link.
+  useEffect(() => {
+    if (!initial.bike) return;
+    let live = true;
+    void Promise.all([import("@/lib/bikes/catalog"), import("@/lib/bikes/facts")]).then(([{ catalogBike }, { catalogExtraction }]) => {
+      const found = initial.bike ? catalogBike(initial.bike) : null;
+      if (live && found) handleRead(catalogExtraction(found));
+    });
+    return () => {
+      live = false;
+    };
+    // handleRead is the page's own function and the link is read once, on the first draw.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial.bike]);
 
   // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
   // comes back into view, so an old tab never answers for yesterday.

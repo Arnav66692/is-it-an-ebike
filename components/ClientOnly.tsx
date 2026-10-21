@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { finderText } from "@/lib/i18n/finder";
 import { modsText } from "@/lib/i18n/mods";
 import { CheckerSkeleton, FlyerSkeleton, SectionSkeleton } from "./Skeletons";
 
@@ -19,4 +20,9 @@ export const FlyerApp = dynamic(() => import("./Flyer").then((m) => m.Flyer), {
 export const ModsApp = dynamic(() => import("./ModsCheck").then((m) => m.ModsCheck), {
   ssr: false,
   loading: () => <SectionSkeleton title={{ en: modsText("en", "title"), es: modsText("es", "title") }} />,
+});
+
+export const FinderApp = dynamic(() => import("./BikeFinder").then((m) => m.BikeFinder), {
+  ssr: false,
+  loading: () => <SectionSkeleton title={{ en: finderText("en", "title"), es: finderText("es", "title") }} />,
 });

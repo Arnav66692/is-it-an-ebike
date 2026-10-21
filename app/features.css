@@ -109,3 +109,58 @@
   min-height: 2.75rem;
   padding: 0.6rem 0 0.4rem;
 }
+
+/* ---------- Bike finder ---------- */
+
+/* The maker's name sits above the model on its own short line. */
+.finder-maker {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.finder-price {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* A color or a use the family can turn on and off. */
+.toggle {
+  min-width: 3rem;
+}
+
+/* The maker's specs, a label and its value on each row, stacked on a phone. */
+.specs {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.spec {
+  display: grid;
+  gap: 0.125rem;
+  overflow-wrap: anywhere;
+}
+
+.spec > dt {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .spec {
+    grid-template-columns: 9rem 1fr;
+    gap: 1rem;
+  }
+}
+
+.finder-card .actions > .btn {
+  flex: 1 1 12rem;
+}

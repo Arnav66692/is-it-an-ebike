@@ -1,0 +1,2458 @@
+{
+ "meta": {
+  "title": "What bike fits you, maker catalog",
+  "read_date": "2026-10-21",
+  "timezone_note": "Pages read on Oct 21, 2026, Pacific time.",
+  "counts": {
+   "e_bikes": 25,
+   "pedal_less_e_motos": 4
+  },
+  "method": "Each record comes from the maker product page, plus the maker store product data at products.json for colors or prices where noted. Pages were read with the gstack browse tool until it broke mid-run, then with plain HTTP fetches of the same maker URLs.",
+  "null_rule": "A field is null when the maker page did not say it.",
+  "computed_values": "Any computed number is marked, see weight_is_computed, the battery notes and the derived block.",
+  "class_label_sticker": "No maker page in this set mentioned a physical class label or sticker.",
+  "not_legal_advice": "This file records what makers say. It does not decide what is legal.",
+  "verification": {
+   "checked_on": "2026-10-21",
+   "timezone_note": "Pages reopened on Oct 21, 2026, Pacific time.",
+   "method": "Every maker page was fetched again as static HTML. Shopify stores were also read through each product's own .js data on the maker domain, and Ride1Up through its page variant data. Each field was compared to the page text or that data by hand. Evidence quotes were also checked by script against the saved pages.",
+   "models_checked": 29,
+   "models_verified_true": 29,
+   "models_verified_false": 0,
+   "models_removed": [],
+   "fields_changed": 48,
+   "browser_note": "The gstack browse tool failed to launch during this check because its Playwright Chromium executable was missing, and no browser was installed. No page was rendered with scripts. The static HTML and product data held every field checked."
+  }
+ },
+ "bikes": [
+  {
+   "id": "aventon-abound-lr",
+   "maker": "Aventon",
+   "model": "Abound LR",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.aventon.com/products/abound-lr-ebike",
+   "extra_source_urls": [
+    "https://www.aventon.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Feature bar says Top Speed 20MPH, adjustable to 25MPH.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1188,
+   "motor_note": "Spec table says 750w hub drive with 1188W peak. Feature bar says 1440W peak in Boost, up to 30 seconds.",
+   "battery_wh": 733,
+   "weight_lb": 88,
+   "wheel_size": "20 x 3.0 in",
+   "rider_fit": "Height 4'11\"-6'3\", one size",
+   "rider_min_height_in": 59,
+   "rider_age": null,
+   "price_usd": 1999.0,
+   "price_note": "Page offered Pre-Order Now. Page data gave ship dates of 2026-11-16 for Sage and 2026-12-05 for Matte Stealth.",
+   "colors": [
+    "Sage",
+    "Matte Stealth"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Cargo & Utility",
+   "frame_note": "Step-through frame with a long rear rack, payload 440 lbs, rear rack limit 143 lbs",
+   "evidence_quotes": [
+    "Top Speed | 20MPH | (Adjustable to 25MPH)",
+    "Ideal Use | Cargo & Utility",
+    "Rider Height | 4'11\" - 6'3\""
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "cargo"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 25,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.aventon.com/products/abound-lr-ebike",
+     "https://www.aventon.com/products/abound-lr-ebike.js"
+    ],
+    "note": "Specs, class, speed, motor, battery, weight, tires, fit, price and colors match the page.",
+    "changes": [
+     {
+      "field": "frame_note",
+      "old": "Step-through long-tail, payload 440 lbs, rear rack limit 143 lbs",
+      "old_was_missing": false,
+      "new": "Step-through frame with a long rear rack, payload 440 lbs, rear rack limit 143 lbs",
+      "why": "Page says Step-Through and long rear rack. It never says long-tail."
+     },
+     {
+      "field": "derived.max_speed_any_mode_mph",
+      "old": 20,
+      "old_was_missing": false,
+      "new": 25,
+      "why": "Feature bar says 20MPH, adjustable to 25MPH, so the top speed in any mode is 25."
+     },
+     {
+      "field": "derived.can_exceed_20_mph",
+      "old": false,
+      "old_was_missing": false,
+      "new": true,
+      "why": "Same reason. Adjustable to 25MPH is above 20."
+     },
+     {
+      "field": "price_note",
+      "old": "Page showed Pre-Order Now.",
+      "old_was_missing": false,
+      "new": "Page offered Pre-Order Now. Page data gave ship dates of 2026-11-16 for Sage and 2026-12-05 for Matte Stealth.",
+      "why": "Added the per-color dates from the page data. Pre-order status confirmed by negative stock with pre-order on."
+     }
+    ]
+   }
+  },
+  {
+   "id": "aventon-aventure-3",
+   "maker": "Aventon",
+   "model": "Aventure 3",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.aventon.com/products/aventure-3-ebike",
+   "extra_source_urls": [
+    "https://www.aventon.com/products.json?limit=250",
+    "https://www.aventon.com/products/aventure-3-step-through-ebike.js"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Spec table says Class 2 Ebike, but the feature bar shows Top Speed Max 28 MPH. The page data names that icon 20MPH, adjustable to 28, with a Class 2 icon. The visible page does not explain this.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1440,
+   "motor_note": "750W hub drive, 1440W peak in Boost Mode. The page says Boost lasts up to 30 seconds.",
+   "battery_wh": 733,
+   "weight_lb": 76,
+   "wheel_size": "26 x 4.0 in fat tire",
+   "rider_fit": "Height R 5'3\"-5'10\", L 5'10\"-6'4\"",
+   "rider_min_height_in": 63,
+   "rider_age": null,
+   "price_usd": 1999.0,
+   "price_note": "Add to Cart shown.",
+   "colors": [
+    "Stealth",
+    "Matcha",
+    "Cobalt Blue",
+    "Java"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "All-Terrain",
+   "frame_note": "Step-over and step-through frames",
+   "evidence_quotes": [
+    "Top Speed | Max 28 MPH",
+    "Ebike Class | Class 2 Ebike",
+    "36V, 20Ah, 733Wh"
+   ],
+   "colors_note": "Stealth and Matcha are step-over colors. Cobalt Blue and Java are step-through colors.",
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "fat_tire_or_trail"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": false,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.aventon.com/products/aventure-3-ebike",
+     "https://www.aventon.com/products/aventure-3-ebike.js",
+     "https://www.aventon.com/products/aventure-3-step-through-ebike.js"
+    ],
+    "note": "All spec values match. Step-over page sells Stealth and Matcha. Step-through product sells Cobalt Blue and Java at the same price.",
+    "changes": [
+     {
+      "field": "speed_note",
+      "old": "Spec table says Class 2 Ebike, but the feature bar says Top Speed Max 28 MPH. The page does not explain the gap. Treat 28 mph as above Class 2 limits.",
+      "old_was_missing": false,
+      "new": "Spec table says Class 2 Ebike, but the feature bar shows Top Speed Max 28 MPH. The page data names that icon 20MPH, adjustable to 28, with a Class 2 icon. The visible page does not explain this.",
+      "why": "Page data names the icon 20MPH, adjustable to 28, which the old note missed. Dropped the line about Class 2 limits, since that is a legal claim with no source on this page."
+     },
+     {
+      "field": "extra_source_urls",
+      "old": [
+       "https://www.aventon.com/products.json?limit=250"
+      ],
+      "old_was_missing": false,
+      "new": [
+       "https://www.aventon.com/products.json?limit=250",
+       "https://www.aventon.com/products/aventure-3-step-through-ebike.js"
+      ],
+      "why": "Cobalt Blue and Java come from the separate step-through product, so that source is now named."
+     }
+    ]
+   }
+  },
+  {
+   "id": "aventon-level-4-rec",
+   "maker": "Aventon",
+   "model": "Level 4 REC",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.aventon.com/products/level-4-rec-ebike",
+   "extra_source_urls": [
+    "https://www.aventon.com/products.json?limit=250",
+    "https://www.aventon.com/products/level-4-rec-step-through-ebike.js"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2 (Convertible to Class 3)",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Feature bar says Top Speed Max 28 MPH. Class field says Class 2, convertible to Class 3.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1188,
+   "motor_note": "750W hub motor, 1188W peak, 1440W peak in Boost Mode",
+   "battery_wh": 733,
+   "weight_lb": 68.5,
+   "wheel_size": "27.5 x 2.2 in",
+   "rider_fit": "Height S/M 5'3\"-5'10\", L 5'10\"-6'4\"",
+   "rider_min_height_in": 63,
+   "rider_age": null,
+   "price_usd": 1999.0,
+   "price_note": null,
+   "colors": [
+    "Matte Black",
+    "Matte Storm Blue",
+    "Glacier Mint",
+    "Sandstone"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Commuting, per the page headline",
+   "frame_note": "Step-over and step-through frames, rack and fenders included",
+   "evidence_quotes": [
+    "Ebike Class | Class 2 (Convertible to Class 3)",
+    "Top Speed | Max 28 MPH",
+    "Motor Power | 750W (1188W Peak)"
+   ],
+   "colors_note": "Matte Black and Matte Storm Blue are step-over colors. Glacier Mint and Sandstone are step-through colors.",
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "commuter"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": false,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.aventon.com/products/level-4-rec-ebike",
+     "https://www.aventon.com/products/level-4-rec-ebike.js",
+     "https://www.aventon.com/products/level-4-rec-step-through-ebike.js"
+    ],
+    "note": "Class, speed, motor, battery, weight, tires, fit, price and colors match. All four step-over variants were in stock.",
+    "changes": [
+     {
+      "field": "extra_source_urls",
+      "old": [
+       "https://www.aventon.com/products.json?limit=250"
+      ],
+      "old_was_missing": false,
+      "new": [
+       "https://www.aventon.com/products.json?limit=250",
+       "https://www.aventon.com/products/level-4-rec-step-through-ebike.js"
+      ],
+      "why": "Glacier Mint and Sandstone come from the separate step-through product, so that source is now named."
+     }
+    ]
+   }
+  },
+  {
+   "id": "aventon-soltera-2-5",
+   "maker": "Aventon",
+   "model": "Soltera 2.5",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.aventon.com/products/soltera-2-5-ebike",
+   "extra_source_urls": [
+    "https://www.aventon.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Spec bar says Top Speed 20MPH. Page does not split throttle and assist speeds.",
+   "motor_rated_w": 350,
+   "motor_peak_w": 540,
+   "motor_note": "36V, 350W sustained, 540W peak hub motor",
+   "battery_wh": 345.6,
+   "weight_lb": 46,
+   "wheel_size": "700 x 38C",
+   "rider_fit": "Height S 5'1\"-5'5\", M 5'5\"-5'9\", L 5'10\"-6'2\"",
+   "rider_min_height_in": 61,
+   "rider_age": null,
+   "price_usd": 1199.0,
+   "price_note": "Default variant offered Pre-Order Now with a ship date of 2026-11-08. All Matte Midnight Black sizes and Baja Large were pre-order. Baja Small and Medium were in stock.",
+   "colors": [
+    "Matte Midnight Black",
+    "Baja"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Urban Riding",
+   "frame_note": "Step-over frame, sizes S, M, L",
+   "evidence_quotes": [
+    "Ebike Class | Class 2 Ebike",
+    "36V, 350W sustained, 540W peak brushless hub motor",
+    "Rider Height | S 5'1\"-5'5\""
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "commuter"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": false,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.aventon.com/products/soltera-2-5-ebike",
+     "https://www.aventon.com/products/soltera-2-5-ebike.js"
+    ],
+    "note": "Class 2, 20 mph, 350W with 540W peak, 345.6Wh, 46 lbs, fit and colors match.",
+    "changes": [
+     {
+      "field": "wheel_size",
+      "old": "700c",
+      "old_was_missing": false,
+      "new": "700 x 38C",
+      "why": "Tire line says Kenda K1085 700x38C. Added the width."
+     },
+     {
+      "field": "price_note",
+      "old": "Page showed Pre-Order Now with expected ship date November 8, 2026.",
+      "old_was_missing": false,
+      "new": "Default variant offered Pre-Order Now with a ship date of 2026-11-08. All Matte Midnight Black sizes and Baja Large were pre-order. Baja Small and Medium were in stock.",
+      "why": "Page variant data shows stock differs by color and size, so one status for the whole bike was too broad."
+     }
+    ]
+   }
+  },
+  {
+   "id": "aventon-soltera-3-adv",
+   "maker": "Aventon",
+   "model": "Soltera 3 ADV",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.aventon.com/products/soltera-3-ebike",
+   "extra_source_urls": [
+    "https://www.aventon.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": false,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": 20,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Spec says Throttle N/A. Feature bar says Top Speed 20MPH and the page text mentions a max speed of 20MPH.",
+   "motor_rated_w": 250,
+   "motor_peak_w": 540,
+   "motor_note": "Spec table says 36v, 250W, 40Nm with no peak. Feature bar shows 250W with 540W Peak Motor. The page data names that icon 250w with 500W Peak, so the page is not consistent on peak.",
+   "battery_wh": 366.8,
+   "weight_lb": 37,
+   "wheel_size": "700 x 38C",
+   "rider_fit": "Height S 5'1\"-5'5\", M 5'5\"-5'9\", L 5'9\"-6'1\", XL 6'1\"-6'4\". The spec table XL row says 5'1\"-6'4\", but the page size data gives XL as 6'1\"-6'4\".",
+   "rider_min_height_in": 61,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 1499.0,
+   "price_note": "Price from the maker product data, $1,499 for every variant. 5 of 12 variants were sold out, all Small sizes plus Large in Matte Midnight Black and Matte Storm Blue.",
+   "colors": [
+    "Matte Midnight Black",
+    "Matte Storm Blue",
+    "Sterling"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Urban Riding",
+   "frame_note": "Step-over frame, rigid fork, sizes S to XL",
+   "evidence_quotes": [
+    "Speed | Class 1",
+    "Throttle | N/A",
+    "Integrated Lithium-ion 36.9V, 9.94Ah, 366.8Wh"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "commuter",
+     "lightweight"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": false,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.aventon.com/products/soltera-3-ebike",
+     "https://www.aventon.com/products/soltera-3-ebike.js"
+    ],
+    "note": "Class 1, no throttle, 366.8Wh, 37 lbs, 700x38C, colors and price match.",
+    "changes": [
+     {
+      "field": "motor_peak_w",
+      "old": null,
+      "old_was_missing": false,
+      "new": 540,
+      "why": "Feature bar on the page states 540W Peak Motor. The old null missed it."
+     },
+     {
+      "field": "motor_note",
+      "old": "36v, 250W hub motor, 40Nm",
+      "old_was_missing": false,
+      "new": "Spec table says 36v, 250W, 40Nm with no peak. Feature bar shows 250W with 540W Peak Motor. The page data names that icon 250w with 500W Peak, so the page is not consistent on peak.",
+      "why": "Records the peak figure and the 500W conflict in the page data."
+     },
+     {
+      "field": "speed_note",
+      "old": "Spec says Throttle N/A. Page text mentions a max speed of 20MPH.",
+      "old_was_missing": false,
+      "new": "Spec says Throttle N/A. Feature bar says Top Speed 20MPH and the page text mentions a max speed of 20MPH.",
+      "why": "Feature bar Top Speed 20MPH was not mentioned."
+     },
+     {
+      "field": "rider_fit",
+      "old": "Height S 5'1\"-5'5\", M 5'5\"-5'9\", L 5'9\"-6'1\". The XL row says 5'1\"-6'4\", which looks like a typo on the page.",
+      "old_was_missing": false,
+      "new": "Height S 5'1\"-5'5\", M 5'5\"-5'9\", L 5'9\"-6'1\", XL 6'1\"-6'4\". The spec table XL row says 5'1\"-6'4\", but the page size data gives XL as 6'1\"-6'4\".",
+      "why": "Page size data confirms the XL range, so the typo guess is now backed."
+     },
+     {
+      "field": "price_note",
+      "old": "Price from the maker's product data, since the static page did not show it as text. One variant was unavailable.",
+      "old_was_missing": false,
+      "new": "Price from the maker product data, $1,499 for every variant. 5 of 12 variants were sold out, all Small sizes plus Large in Matte Midnight Black and Matte Storm Blue.",
+      "why": "Old note said one variant was unavailable. Page data shows five sold out."
+     }
+    ]
+   }
+  },
+  {
+   "id": "gotrax-ranger",
+   "maker": "GOTRAX",
+   "model": "Ranger",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://gotrax.com/products/gotrax-ranger",
+   "extra_source_urls": [
+    "https://gotrax.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": 25,
+   "top_speed_stated_mph": 25,
+   "speed_note": "Page says up to 25 miles per hour on pedal assist and 20 on throttle. No class named.",
+   "motor_rated_w": 500,
+   "motor_peak_w": 750,
+   "motor_note": "Spec table says Motor 500 W and the feature bar says 500W Avg. The page Specifications panel says 500W / 750W Peak.",
+   "battery_wh": null,
+   "battery_note": "Page gives 48V 10.4Ah only.",
+   "weight_lb": 69.7,
+   "weight_note": "Spec table says Weight 69.7 with no unit. The page Size & Fit panel says Product Weight 69.7lbs.",
+   "wheel_size": "20 x 4 in fat tire",
+   "rider_fit": "Total weight limit 264 lbs. No rider height or age given for this model.",
+   "rider_min_height_in": null,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 799,
+   "price_note": "Sale price $799, regular $999. Page structured data and maker product data list both styles in stock. The static HTML also holds a Sold out label in the price block, so the visible status was not confirmed.",
+   "colors": [
+    "Gray",
+    "Blue"
+   ],
+   "colors_source": "product page style options",
+   "intended_use_as_stated": "Moto-style fat tire eBike for city streets and off-road paths",
+   "frame_note": "Steel frame, front suspension, hydraulic brakes",
+   "evidence_quotes": [
+    "up to 25 miles per hour on pedal assist",
+    "20 miles per hour on throttle",
+    "Throttle | Half Twist"
+   ],
+   "colors_note": "Gray is the Ranger style. Blue is the Pioneer style.",
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "moto_style",
+     "fat_tire_or_trail",
+     "budget"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 25,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://gotrax.com/products/gotrax-ranger",
+     "https://gotrax.com/products/gotrax-ranger.js"
+    ],
+    "note": "Speed split of 25 mph assist and 20 mph throttle, no class named, 48V 10.4Ah, steel frame, hydraulic brakes and styles match.",
+    "changes": [
+     {
+      "field": "motor_peak_w",
+      "old": null,
+      "old_was_missing": false,
+      "new": 750,
+      "why": "Page Specifications panel states 750W Peak. The old null missed it."
+     },
+     {
+      "field": "motor_note",
+      "old": "Listed as 500 W, and 500W Avg in the feature bar",
+      "old_was_missing": false,
+      "new": "Spec table says Motor 500 W and the feature bar says 500W Avg. The page Specifications panel says 500W / 750W Peak.",
+      "why": "Records where the peak figure is on the page."
+     },
+     {
+      "field": "weight_note",
+      "old": "Spec table says Weight 69.7 with no unit shown. Lbs is assumed from the rest of the table.",
+      "old_was_missing": false,
+      "new": "Spec table says Weight 69.7 with no unit. The page Size & Fit panel says Product Weight 69.7lbs.",
+      "why": "The page does give the unit, in the Size & Fit panel."
+     },
+     {
+      "field": "wheel_size",
+      "old": "4 in fat tire. Maker parts list names a 20 x 4.0 wheel assembly for the Ranger.",
+      "old_was_missing": false,
+      "new": "20 x 4 in fat tire",
+      "why": "Page Size & Fit panel says Tire Size 20 x 4 inches. The old value leaned on a parts list instead of the product page."
+     },
+     {
+      "field": "price_note",
+      "old": "Sale price $799, regular $999. Static page HTML also contained a Sold out label, so stock status is unclear.",
+      "old_was_missing": false,
+      "new": "Sale price $799, regular $999. Page structured data and maker product data list both styles in stock. The static HTML also holds a Sold out label in the price block, so the visible status was not confirmed.",
+      "why": "Both styles show InStock in page data, so the old note overstated the doubt."
+     },
+     {
+      "field": "intended_use_as_stated",
+      "old": "Moto-style fat tire cruiser",
+      "old_was_missing": false,
+      "new": "Moto-style fat tire eBike for city streets and off-road paths",
+      "why": "The maker page never calls it a cruiser. That word only shows up in a customer review title. New text uses the page's own words."
+     }
+    ]
+   }
+  },
+  {
+   "id": "gotrax-ranger-16",
+   "maker": "GOTRAX",
+   "model": "Ranger 16",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://gotrax.com/products/ranger-16-electric-bike",
+   "extra_source_urls": [
+    "https://gotrax.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": 20,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Top speed 20 mph. Assist levels 6, 13 and 20 mph. Twist throttle, no separate throttle speed given.",
+   "motor_rated_w": 350,
+   "motor_peak_w": null,
+   "motor_note": "350W brushless rear hub",
+   "battery_wh": 281,
+   "battery_note": "Page says 36V 7.8Ah, approx. 281 Wh",
+   "weight_lb": 56.9,
+   "wheel_size": "16 x 3.0 in",
+   "rider_fit": "Recommended age 13+. Max rider load 165 lb. Fit box on the page shows rider height 4'0\"-5'10\" and seat height 26.0 in.",
+   "rider_fit_note": "The rider height line sits in a fit box next to an ad for the larger Ranger. Its weight and load numbers match the Ranger 16, so it appears to describe the Ranger 16.",
+   "rider_min_height_in": 48,
+   "rider_age": "Recommended age 13+",
+   "rider_min_age": 13,
+   "price_usd": 549,
+   "price_note": "Shown as $549 with a struck $579, save $30.",
+   "colors": null,
+   "colors_source": "No color options on the page or in maker product data",
+   "intended_use_as_stated": "Moto-style mini e-bike for teens and adults, city streets and dirt trails",
+   "frame_note": "Steel frame, long bench seat, mechanical disc brakes",
+   "evidence_quotes": [
+    "Class 2 eBike",
+    "Recommended age | 13+",
+    "36V 7.8Ah lithium-ion (approx. 281 Wh)"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "kids_teen",
+     "moto_style",
+     "budget"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": true,
+    "young_rider_marketing": true
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://gotrax.com/products/ranger-16-electric-bike",
+     "https://gotrax.com/products/ranger-16-electric-bike.js"
+    ],
+    "note": "Every field matches the page, including Class 2, 20 mph, assist levels 6, 13 and 20 mph, 350W, 281 Wh, 56.9 lbs, 16 x 3.0 tires, age 13+, fit box 4'0\" to 5'10\", and $549 with a struck $579.",
+    "changes": []
+   }
+  },
+  {
+   "id": "hiboy-c1",
+   "maker": "Hiboy",
+   "model": "C1 Folding Electric Bike",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.hiboy.com/products/hiboy-c1-folding-electric-bike",
+   "extra_source_urls": [
+    "https://www.hiboy.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": 20,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Spec says Top Speed 20 MPH in Throttle Mode and up to 20 MPH in Pedal Assist Mode. The page never names a class.",
+   "motor_rated_w": 350,
+   "motor_peak_w": 648,
+   "motor_note": "Rated 350 W, peak 648 W",
+   "battery_wh": null,
+   "battery_note": "Page gives 36V 7.8Ah only. 36 x 7.8 = 280.8 Wh is a computed figure, not stated.",
+   "weight_lb": null,
+   "weight_note": "Bike weight not found on the page. Max load 230 lbs.",
+   "wheel_size": "14 in air tires",
+   "rider_fit": "Recommended Age Over 12 years old. No rider height given.",
+   "rider_min_height_in": null,
+   "rider_age": "Recommended Age Over 12 years old",
+   "rider_min_age": 12,
+   "price_usd": 629.9,
+   "price_note": "Sale price $629.90, regular $899.99, save $270. The page ties it to a Halloween sale through Oct 31.",
+   "colors": [
+    "White",
+    "Black"
+   ],
+   "colors_source": "product page style options",
+   "intended_use_as_stated": "Compact folding bike for city commuting and short trips",
+   "frame_note": "Folding frame, front suspension, 3 modes named pure electric, normal and pedal assist",
+   "evidence_quotes": [
+    "Recommended Age Over 12 years old",
+    "Rated Power of Motor 350 W",
+    "Top Speed 20 MPH — Throttle Mode"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding",
+     "commuter",
+     "budget"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": true
+   },
+   "colors_note": "Maker product data listed White as available and Black as unavailable. A 2-Pack Black option was also unavailable.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.hiboy.com/products/hiboy-c1-folding-electric-bike",
+     "https://www.hiboy.com/products/hiboy-c1-folding-electric-bike.js"
+    ],
+    "note": "No class named, 20 mph throttle and assist, 350W rated, 648W peak, 36V 7.8Ah, 14 in tires, age over 12, sale $629.90 through Oct 31, and no bike weight on the page all match.",
+    "changes": [
+     {
+      "field": "frame_note",
+      "old": "Folding frame, front suspension, 3 modes including throttle-only",
+      "old_was_missing": false,
+      "new": "Folding frame, front suspension, 3 modes named pure electric, normal and pedal assist",
+      "why": "Uses the page's own names for the 3 modes instead of throttle-only."
+     },
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "Maker product data listed White as available and Black as unavailable. A 2-Pack Black option was also unavailable.",
+      "why": "New note. Stock differs by color in maker product data."
+     }
+    ]
+   }
+  },
+  {
+   "id": "jetson-haze",
+   "maker": "Jetson",
+   "model": "Haze Folding Electric Bike",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://ridejetson.com/products/haze-folding-electric-bike",
+   "extra_source_urls": [
+    "https://ridejetson.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": 15.5,
+   "assisted_top_speed_mph": 15.5,
+   "top_speed_stated_mph": 15.5,
+   "speed_note": "Up to 15.5 mph using the throttle, cruise control, or pedal assist. No class named on the page.",
+   "motor_rated_w": 350,
+   "motor_peak_w": null,
+   "motor_note": "Motor 350 W",
+   "battery_wh": null,
+   "battery_note": "Page gives 48V, 7.5Ah only, removable.",
+   "weight_lb": 48,
+   "wheel_size": "16 in",
+   "rider_fit": "For Riders Aged US 12+, Canada 16+. Weight limit 265 lb.",
+   "rider_min_height_in": null,
+   "rider_age": "For riders aged 12+ in the US and 16+ in Canada",
+   "rider_min_age": 12,
+   "price_usd": 699.99,
+   "price_note": "Regular and sale price both $699.99.",
+   "colors": null,
+   "colors_source": "No color options on the page or in maker product data",
+   "intended_use_as_stated": "Compact folding e-bike",
+   "frame_note": "Magnesium alloy frame, full fold, single speed, front and rear disc brakes",
+   "evidence_quotes": [
+    "For Riders Aged | US: 12+ / Canada: 16+",
+    "Up to 15.5 mph using the throttle",
+    "Motor | 350 W"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding",
+     "budget"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 15.5,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": true
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://ridejetson.com/products/haze-folding-electric-bike",
+     "https://ridejetson.com/products/haze-folding-electric-bike.js"
+    ],
+    "note": "Every field matches, including 15.5 mph, 350 W, 48V 7.5Ah, 48 lb, 16 in wheels, ages US 12+ and Canada 16+, full fold, and $699.99 in stock.",
+    "changes": []
+   }
+  },
+  {
+   "id": "lectric-xp-lite2",
+   "maker": "Lectric eBikes",
+   "model": "XP Lite2",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://lectricebikes.com/products/xp-lite-arctic-white",
+   "extra_source_urls": [],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1 or 2 eBike",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Feature bar says TOP SPEED 20 mph. Half-twist throttle.",
+   "motor_rated_w": 300,
+   "motor_peak_w": 819,
+   "motor_note": "300W rear hub motor, 819W peak",
+   "battery_wh": 375,
+   "battery_note": "Standard 375Wh. Long-Range 672Wh option for +$200.",
+   "weight_lb": 48,
+   "weight_is_computed": true,
+   "weight_note": "Page says 41 lbs with the 7 lb battery removed. 48 is the sum. The page description also says 49 pounds, so the page is not consistent.",
+   "wheel_size": "20 x 2.5 in",
+   "rider_fit": "Height 4'8\"-6'2\"",
+   "rider_min_height_in": 56,
+   "rider_age": "Must be 16 years of age or older to ride, per a page disclaimer",
+   "rider_min_age": 16,
+   "price_usd": 799,
+   "price_note": "Standard battery, chain drive. Stock line said IN STOCK - LIMITED QUANTITY REMAINING.",
+   "colors": [
+    "Arctic White",
+    "Lectric Blue",
+    "Sandstorm",
+    "Lavender Haze",
+    "JW Black"
+   ],
+   "colors_source": "product page configurator",
+   "intended_use_as_stated": "Foldable Electric Commuter Bike",
+   "frame_note": "Folding frame, payload 275 lbs",
+   "evidence_quotes": [
+    "own the road as a Class 1 or 2 eBike",
+    "A 300W rear hub-motor (819W Peak)",
+    "Rider Height | 4'8\" - 6'2\""
+   ],
+   "class_note": "A footnote limits this to where permitted by state law.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding",
+     "commuter",
+     "lightweight"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": true,
+    "young_rider_marketing": false
+   },
+   "colors_note": "Configurator lists five colors though the description says four. Lectric Blue and Lavender Haze come only with the Long-Range battery. JW Black comes only with the Gates Carbon Belt Drive, a $100 option.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://lectricebikes.com/products/xp-lite-arctic-white",
+     "https://lectricebikes.com/products/xp-lite-arctic-white.js"
+    ],
+    "note": "Class 1 or 2 with the state law footnote, 20 mph, 300W with 819W peak, 375Wh standard, 20x2.5 tires, fit 4'8\" to 6'2\", age 16+, and $799 in stock match.",
+    "changes": [
+     {
+      "field": "weight_note",
+      "old": "Page says 41 lbs with the 7 lb battery removed. 48 is the sum.",
+      "old_was_missing": false,
+      "new": "Page says 41 lbs with the 7 lb battery removed. 48 is the sum. The page description also says 49 pounds, so the page is not consistent.",
+      "why": "Description text says Weighing in at just 49 pounds, which the old note missed."
+     },
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "Configurator lists five colors though the description says four. Lectric Blue and Lavender Haze come only with the Long-Range battery. JW Black comes only with the Gates Carbon Belt Drive, a $100 option.",
+      "why": "New note. Page configurator ties some colors to paid options."
+     }
+    ]
+   }
+  },
+  {
+   "id": "lectric-xp4",
+   "maker": "Lectric eBikes",
+   "model": "XP4, standard 500W motor",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://lectricebikes.com/products/xp-black",
+   "extra_source_urls": [],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1, 2, or 3 eBike",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Feature bar says TOP SPEED 28 mph. Page does not give a separate throttle speed.",
+   "motor_rated_w": 500,
+   "motor_peak_w": 1092,
+   "motor_note": "500W rear hub motor, 1092W peak. A 750W upgrade is offered for $300 more.",
+   "battery_wh": 500,
+   "weight_lb": 69,
+   "weight_is_computed": true,
+   "weight_note": "Page says 62 lbs without battery and battery weighs 7 lbs. 69 is the sum.",
+   "wheel_size": "20 x 3 in",
+   "rider_fit": "Height 4'10\"-6'3\"",
+   "rider_min_height_in": 58,
+   "rider_age": "Must be 16 years of age or older to ride, per a page disclaimer",
+   "rider_min_age": 16,
+   "price_usd": 999,
+   "price_note": "Shown as $999 with a struck $1,146, save $147. Stock line said in stock, almost gone.",
+   "colors": [
+    "Tempest Grey",
+    "Pine Green",
+    "Stratus White",
+    "Raindrop Blue"
+   ],
+   "colors_source": "product page configurator",
+   "intended_use_as_stated": "Foldable Electric Utility Bike",
+   "frame_note": "Folding frame, rear rack 150 lb, payload 330 lbs",
+   "evidence_quotes": [
+    "own the road as a Class 1, 2, or 3 eBike",
+    "Must be 16 years of age or older to ride.",
+    "500W rear hub motor (1092W peak)"
+   ],
+   "class_note": "Rider picks the class mode. A footnote says where permitted by state law.",
+   "colors_note": "Step-over comes in Tempest Grey and Pine Green. Step-thru comes in Tempest Grey, Stratus White and Raindrop Blue.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding",
+     "commuter"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": false
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://lectricebikes.com/products/xp-black",
+     "https://lectricebikes.com/products/xp-black.js"
+    ],
+    "note": "Every field matches, including Class 1, 2, or 3, 28 mph, 500W with 1092W peak, 500Wh, 62 lbs plus a 7 lb battery, 20 x 3 tires, fit 4'10\" to 6'3\", age 16+, $999 with a struck $1,146, and the frame and color split.",
+    "changes": []
+   }
+  },
+  {
+   "id": "lectric-xpeak2",
+   "maker": "Lectric eBikes",
+   "model": "XPeak2",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://lectricebikes.com/products/xpeak-high-step-ebike",
+   "extra_source_urls": [],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1, 2, or 3 eBike",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Feature bar says TOP SPEED 28 mph. No separate throttle speed given.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1310,
+   "motor_note": "750W rear hub motor, 1310W peak",
+   "battery_wh": 720,
+   "battery_note": "Standard 720Wh. Long-Range option for +$200.",
+   "weight_lb": 75,
+   "weight_is_computed": true,
+   "weight_note": "Page says 64.5 lbs with battery removed and battery weighs 10.5 lbs. 75 is the sum.",
+   "wheel_size": "26 x 4 in fat tire",
+   "rider_fit": "Height 5'4\"-6'5\"",
+   "rider_min_height_in": 64,
+   "rider_age": "Must be 16 years of age or older to ride, per a page disclaimer",
+   "rider_min_age": 16,
+   "price_usd": 1499,
+   "price_note": "Shown as $1,499 with a struck $1,903, save $404. Stock line said in stock, only a few left.",
+   "colors": [
+    "Tempest Grey",
+    "Stratus White"
+   ],
+   "colors_source": "product page configurator",
+   "intended_use_as_stated": "Off-Road Fat-Tire Electric Bike",
+   "frame_note": "80mm suspension fork, high-step and step-thru frames",
+   "evidence_quotes": [
+    "750-watt Stealth M24 motor (1310 Peak)",
+    "as a Class 1, 2, or 3 eBike",
+    "Rider Height | 5'4\" - 6'5\""
+   ],
+   "class_note": "Rider picks the class mode. A footnote says where permitted by state law.",
+   "colors_note": "Tempest Grey is the high-step color. Stratus White is the step-thru color.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "fat_tire_or_trail"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": false,
+    "young_rider_marketing": false
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://lectricebikes.com/products/xpeak-high-step-ebike",
+     "https://lectricebikes.com/products/xpeak-high-step-ebike.js"
+    ],
+    "note": "Every field matches, including Class 1, 2, or 3, 28 mph, 750W with 1310W peak, 720Wh, 64.5 lbs plus a 10.5 lb battery, 26 x 4 tires, fit 5'4\" to 6'5\", age 16+, and $1,499 with a struck $1,903.",
+    "changes": []
+   }
+  },
+  {
+   "id": "lectric-xpedition2",
+   "maker": "Lectric eBikes",
+   "model": "XPedition2, dual battery",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://lectricebikes.com/products/xpedition-dual-battery",
+   "extra_source_urls": [],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1, 2, or 3 eBike",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Feature bar says TOP SPEED 28 mph. No separate throttle speed given.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1310,
+   "motor_note": "750W rear hub motor, 1310W peak",
+   "battery_wh": 1248,
+   "battery_note": "Two 48V 13Ah batteries, 1248Wh combined. Single-battery option is $400 less.",
+   "weight_lb": 83,
+   "weight_is_computed": true,
+   "weight_note": "Page says 65 lbs without batteries and each battery weighs 9 lbs. 83 is 65 plus two batteries.",
+   "wheel_size": "20 x 2.5 in",
+   "rider_fit": "Height 4'11\"-6'5\"",
+   "rider_min_height_in": 59,
+   "rider_age": "Must be 16 years of age or older to ride, per a page disclaimer",
+   "rider_min_age": 16,
+   "price_usd": 1799,
+   "price_note": "Shown as $1,799 with a struck $2,412, save $613. Stock line said in stock, almost gone.",
+   "colors": [
+    "Stratus White",
+    "Raindrop Blue"
+   ],
+   "colors_source": "product page configurator",
+   "intended_use_as_stated": "Long-Range Electric Cargo Bike",
+   "frame_note": "Cargo frame, rear rack 300lb capacity, payload 450 lbs, 50mm suspension fork",
+   "evidence_quotes": [
+    "A 750W rear hub-motor (1310W Peak)",
+    "own the road as a Class 1, 2, or 3 eBike",
+    "Rider Height | 4'11\" - 6'5\""
+   ],
+   "class_note": "Rider picks the class mode. A footnote says where permitted by state law.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "cargo"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": false
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://lectricebikes.com/products/xpedition-dual-battery",
+     "https://lectricebikes.com/products/xpedition-dual-battery.js"
+    ],
+    "note": "Every field matches, including Class 1, 2, or 3, 28 mph, 750W with 1310W peak, two 13Ah batteries for 1248Wh, 65 lbs plus two 9 lb batteries, 20 x 2.5 tires, fit 4'11\" to 6'5\", age 16+, and $1,799 with a struck $2,412. Configurator puts the single battery $400 below the dual.",
+    "changes": []
+   }
+  },
+  {
+   "id": "rad-radexpand-5-plus",
+   "maker": "Rad Power Bikes",
+   "model": "RadExpand 5 Plus",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.radpowerbikes.com/products/radexpand-plus-electric-folding-bike",
+   "extra_source_urls": [
+    "https://www.radpowerbikes.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class switchable between 1 and 2. Ships in Class 2 status.",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": 20,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Feature bar says Top Speed 20 mph. Class mode text says Class 2 is up to 20 mph while pedaling or throttling.",
+   "motor_rated_w": 750,
+   "motor_peak_w": null,
+   "motor_note": "Rear hub 750W, 64 Nm. Page says actual power to ground is under 750W.",
+   "battery_wh": 720,
+   "weight_lb": 72.5,
+   "wheel_size": "20 x 4.0 in",
+   "rider_fit": "Height 4'10\"-5'10\"",
+   "rider_min_height_in": 58,
+   "rider_age": null,
+   "price_usd": 1899,
+   "price_note": "Slate Blue, the default color, showed Out of Stock. Stone Tan said ships within 2 business days. A site banner said save $500, with the discount reflected in the sale price.",
+   "colors": [
+    "Slate Blue",
+    "Stone Tan"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Folding. Product name says Electric Folding Bike.",
+   "frame_note": "Folding frame, front suspension, rear rack 59 lb",
+   "evidence_quotes": [
+    "Class switchable between 1 and 2. Ships in Class 2 status.",
+    "For riders 4'10\"-5'10\"",
+    "15Ah 720 Wh"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding",
+     "fat_tire_or_trail"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.radpowerbikes.com/products/radexpand-plus-electric-folding-bike",
+     "https://www.radpowerbikes.com/products/radexpand-plus-electric-folding-bike.js"
+    ],
+    "note": "Class switchable 1 and 2, ships Class 2, 20 mph, 750W 64 Nm, 720 Wh, 72.5 lb, 20 x 4.0 tires, fit 4'10\" to 5'10\", rack 59 lb, $1,899 and colors match.",
+    "changes": [
+     {
+      "field": "price_note",
+      "old": "Page showed Out of Stock.",
+      "old_was_missing": false,
+      "new": "Slate Blue, the default color, showed Out of Stock. Stone Tan said ships within 2 business days. A site banner said save $500, with the discount reflected in the sale price.",
+      "why": "Page variant data shows stock differs by color. The old note said Out of Stock for the whole bike."
+     }
+    ]
+   }
+  },
+  {
+   "id": "rad-radrunner",
+   "maker": "Rad Power Bikes",
+   "model": "RadRunner",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.radpowerbikes.com/products/radrunner-electric-cargo-utility-bike",
+   "extra_source_urls": [
+    "https://www.radpowerbikes.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Feature bar says Top Speed 20 mph. Throttle is a half-twist grip.",
+   "motor_rated_w": 750,
+   "motor_peak_w": null,
+   "motor_note": "Rear hub 750W. Page says actual power to ground is under 750W.",
+   "battery_wh": 624,
+   "weight_lb": 65,
+   "wheel_size": "20 x 3.3 in",
+   "rider_fit": "Height 4'11\"-6'2\", one size",
+   "rider_min_height_in": 59,
+   "rider_age": null,
+   "price_usd": 1499,
+   "price_note": "Both colors showed Back Order. A site banner said Get it for just $1,399, with the discount reflected in the sale price, but the product price shown was $1,499.",
+   "colors": [
+    "Classic Blue",
+    "Forest Green"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Cargo and utility. Product name says Electric Cargo Utility Bike.",
+   "frame_note": "Single speed, integrated rear rack 120 lb, payload 320 lb",
+   "evidence_quotes": [
+    "Class | Class 2",
+    "Battery | Safe Shield Advanced External Battery (13 Ah), 624 Wh",
+    "Rider Heights | 4'11\"-6'2\""
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "cargo",
+     "moto_style"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.radpowerbikes.com/products/radrunner-electric-cargo-utility-bike",
+     "https://www.radpowerbikes.com/products/radrunner-electric-cargo-utility-bike.js"
+    ],
+    "note": "Class 2, 20 mph, 750W 60 Nm, 624 Wh, 65 lb, 20 x 3.3 tires, fit 4'11\" to 6'2\", single speed, rack 120 lb, payload 320 lb and colors match.",
+    "changes": [
+     {
+      "field": "price_note",
+      "old": "Page showed Back Order and Out of stock for Classic Blue. A site banner mentioned a $1,399 sale, but the product price shown was $1,499.",
+      "old_was_missing": false,
+      "new": "Both colors showed Back Order. A site banner said Get it for just $1,399, with the discount reflected in the sale price, but the product price shown was $1,499.",
+      "why": "Page variant data marks both colors Back Order. The Out of stock text the old note cited is a generic notify-me template, not this bike's status."
+     }
+    ]
+   }
+  },
+  {
+   "id": "rad-radster-trail",
+   "maker": "Rad Power Bikes",
+   "model": "Radster Trail",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.radpowerbikes.com/products/radster-trail-electric-off-road-bike",
+   "extra_source_urls": [
+    "https://www.radpowerbikes.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class switchable 1 to 3. Ships in Class 2 status.",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": 28,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Feature bar says Top Speed 28 mph. Mode text says Class 2 is up to 20 mph pedaling or throttling, and Class 3 is up to 28 mph while pedaling.",
+   "motor_rated_w": 750,
+   "motor_peak_w": null,
+   "motor_note": "Rear hub 750W, 100 Nm. Page says actual power to ground is under 750W.",
+   "battery_wh": 720,
+   "weight_lb": 77.5,
+   "wheel_size": "27.5 x 3.0 in",
+   "rider_fit": "Height Regular 4'11\"-5'8\", Large 5'7\"-6'4\"",
+   "rider_min_height_in": 59,
+   "rider_age": null,
+   "price_usd": 1999,
+   "price_note": "Copper Red in the Regular frame was $1,999.99 in maker data. The other three variants were $1,999. All four said ships within 2 business days. A banner offered a free ABUS lock, $189 in instant savings.",
+   "colors": [
+    "Copper Red",
+    "Fir Green"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Off-road and all-terrain. Product name says Electric Off-Road Bike.",
+   "frame_note": "Front suspension 80mm, Regular and Large frames",
+   "evidence_quotes": [
+    "Class switchable 1 to 3. Ships in Class 2 status.",
+    "Class 3: up to 28 mph while pedaling.",
+    "15Ah 720 Wh"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "fat_tire_or_trail"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "weight_note": "Regular frame 77.5 lb. Large frame 78 lb.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.radpowerbikes.com/products/radster-trail-electric-off-road-bike",
+     "https://www.radpowerbikes.com/products/radster-trail-electric-off-road-bike.js"
+    ],
+    "note": "Class switchable 1 to 3, ships Class 2, Class 2 up to 20 mph, Class 3 up to 28 mph, 750W 100 Nm, 720 Wh, 27.5 x 3.0 tires, fit Regular 4'11\" to 5'8\" and Large 5'7\" to 6'4\", and colors match. The page also lists a Class 3 Limited mode up to 25 mph.",
+    "changes": [
+     {
+      "field": "weight_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "Regular frame 77.5 lb. Large frame 78 lb.",
+      "why": "New note. The page lists a separate Large frame weight."
+     },
+     {
+      "field": "price_note",
+      "old": "Page said ships within 2 business days.",
+      "old_was_missing": false,
+      "new": "Copper Red in the Regular frame was $1,999.99 in maker data. The other three variants were $1,999. All four said ships within 2 business days. A banner offered a free ABUS lock, $189 in instant savings.",
+      "why": "Maker data shows one variant at $1,999.99, and the page shows the lock offer."
+     }
+    ]
+   }
+  },
+  {
+   "id": "ride1up-portola-02",
+   "maker": "Ride1Up",
+   "model": "Portola 02",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://ride1up.com/product/portola-02/",
+   "extra_source_urls": [
+    "https://ride1up.com/product/portola/"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1-3",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": 28,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Page says Class 1-3 with 28mph pedal assist and 20mph throttle. Left-hand thumb throttle.",
+   "motor_rated_w": 750,
+   "motor_peak_w": null,
+   "motor_note": "750w sustained geared hub motor, 90nm",
+   "battery_wh": null,
+   "battery_note": "10Ah or 15Ah options. Page ships a 48V charger but does not state battery Wh.",
+   "weight_lb": 61,
+   "weight_note": "61 lbs for Portola 02 with 10Ah battery, 63 lbs with 15Ah, from the dimension table.",
+   "wheel_size": "20 x 3 in",
+   "rider_fit": "Size guide says 4'10\"-6'3\". Dimension table says 4'10\"-6'4\".",
+   "rider_min_height_in": 58,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 995,
+   "price_note": "Portola 02 is $995 with the 10Ah battery and $1,095 with 15Ah. Portola 02 Lite is $895 or $995. Prices come from the page variant data.",
+   "colors": [
+    "Bronze",
+    "Dark Slate",
+    "Cloud White",
+    "Azure Blue"
+   ],
+   "colors_source": "product page color options",
+   "intended_use_as_stated": "Compact torque sensor folding electric bike, from daily commutes to weekend adventures",
+   "frame_note": "Folding frame, 100mm suspension fork, 150 lb rated rear rack",
+   "evidence_quotes": [
+    "Class 1-3 electric bike, with 28mph pedal assist and 20mph throttle",
+    "750w sustained geared hub motor",
+    "Rider Height Range: 4'10\"- 6'3\""
+   ],
+   "class_note": "Page FAQ says the Portola 02 ships as a Class 2 ebike and can be set to Class 1, 2, or 3 through the display.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding",
+     "commuter"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://ride1up.com/product/portola-02/",
+     "https://ride1up.com/product/portola/"
+    ],
+    "note": "Class 1-3, 28 mph assist and 20 mph throttle, 750W 90nm, 10Ah or 15Ah with no Wh, 61 or 63 lbs, 20 x 3 tires, fit 4'10\" to 6'3\" or 6'4\", prices from variant data and colors match. The old /product/portola/ URL redirects to /product/portola-02/.",
+    "changes": [
+     {
+      "field": "class_note",
+      "old": null,
+      "old_was_missing": false,
+      "new": "Page FAQ says the Portola 02 ships as a Class 2 ebike and can be set to Class 1, 2, or 3 through the display.",
+      "why": "New note. The FAQ states the shipping class, which matters for a legality check."
+     },
+     {
+      "field": "intended_use_as_stated",
+      "old": "Compact folding bike for commuting, errands and weekend rides",
+      "old_was_missing": false,
+      "new": "Compact torque sensor folding electric bike, from daily commutes to weekend adventures",
+      "why": "The page never says errands. These are the page's own words."
+     }
+    ]
+   }
+  },
+  {
+   "id": "ride1up-roadster-v3",
+   "maker": "Ride1Up",
+   "model": "Roadster v3",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://ride1up.com/product/roadster-v3/",
+   "extra_source_urls": [],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1-3",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": 28,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Class 1-3 with up to 28mph pedal assist on the chain build. Display has an integrated throttle. Throttle speed not stated.",
+   "motor_rated_w": 500,
+   "motor_peak_w": null,
+   "motor_note": "500W MIVICE hub motor, 50nm",
+   "battery_wh": 360,
+   "weight_lb": 40,
+   "weight_note": "Listed as Bike Weight, Gravel Setup, 40 lbs.",
+   "wheel_size": "700 x 45c",
+   "rider_fit": "Height Low-Step 5'2\"-5'11\", Medium 5'5\"-5'9\", Large 5'9\"-6'4\"",
+   "rider_min_height_in": 62,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 1295,
+   "price_note": "Chain build $1,295 to $1,345 by size and color, regular $1,395. Belt $1,395, listed only in Mint Medium and out of stock. Suspension $1,495 in Onyx Black or White Gold. Prices come from the page variant data.",
+   "colors": [
+    "Onyx Black",
+    "White Gold",
+    "Mint"
+   ],
+   "colors_source": "product page color options",
+   "intended_use_as_stated": "Lightweight premium electric bike",
+   "frame_note": "Low-step, medium and large frames, 9-speed",
+   "evidence_quotes": [
+    "Class 1-3 electric bike, with up to 28mph (chain) pedal assist",
+    "36V, 10Ah (360Wh)",
+    "OLED display with integrated throttle"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "commuter",
+     "lightweight"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": false,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://ride1up.com/product/roadster-v3/"
+    ],
+    "note": "Class 1-3, up to 28 mph assist on the chain build, no throttle speed, 500W 50nm, 360Wh, 40 lbs gravel setup, 700 x 45c tires, fit by frame, and colors match. Page does not say which class it ships in.",
+    "changes": [
+     {
+      "field": "price_note",
+      "old": "Chain build $1,295 to $1,345 by size and color, regular $1,395. Belt $1,395. Suspension $1,495. Prices come from the page variant data.",
+      "old_was_missing": false,
+      "new": "Chain build $1,295 to $1,345 by size and color, regular $1,395. Belt $1,395, listed only in Mint Medium and out of stock. Suspension $1,495 in Onyx Black or White Gold. Prices come from the page variant data.",
+      "why": "Variant data shows the belt build was out of stock and only in one color and size."
+     }
+    ]
+   }
+  },
+  {
+   "id": "super73-z-miami",
+   "maker": "SUPER73",
+   "model": "SUPER73-Z Miami Core",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://super73.com/products/super73-z-miami-core-legacy",
+   "extra_source_urls": [
+    "https://super73.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 2",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": null,
+   "pedals_note": "Spec table lists single-speed gearing but the page text never says pedals. Check photos before relying on this.",
+   "throttle": true,
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Spec says Top Speed 20 MPH and quotes range at 20mph under Class-2 throttle-only operation. Page says app users after January 1, 2025 cannot access modes other than the Class 2 mode it is sold in.",
+   "motor_rated_w": 500,
+   "motor_peak_w": null,
+   "motor_note": "500w nominal",
+   "battery_wh": 480,
+   "weight_lb": 59,
+   "wheel_size": "20 x 4.5 in inner tubes, 4 in VEE Trooper tires",
+   "rider_fit": "Recommended rider height 4'6\"-5'11\". Seat height 28 in.",
+   "rider_min_height_in": 54,
+   "rider_age": "For riders 16 years of age and older",
+   "rider_min_age": 16,
+   "price_usd": 2195,
+   "price_note": "Static page HTML showed Sale price $2,195. Maker product data listed the variant as available.",
+   "colors": [
+    "Metallic Aluminum"
+   ],
+   "colors_source": "product page and maker store product data, products.json",
+   "intended_use_as_stated": "Compact neighborhood explorer. Maker product type is Electric Motorbike.",
+   "frame_note": "Rigid aluminum frame, mechanical brakes, thumb throttle",
+   "evidence_quotes": [
+    "For riders 16 years of age and older.",
+    "500w nominal",
+    "Recommended Rider Height | 4'6\" - 5'11\""
+   ],
+   "class_note": "Page says app users who pair after January 1, 2025 cannot access modes other than the Class 2 mode it is sold in.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "moto_style"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": false,
+    "small_rider_fit": true,
+    "young_rider_marketing": false
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://super73.com/products/super73-z-miami-core-legacy",
+     "https://super73.com/products/super73-z-miami-core-legacy.js"
+    ],
+    "note": "Every field matches, including 20 MPH, range quoted under Class-2 throttle-only operation, the January 1, 2025 app note, 480Wh, 500w nominal, thumb throttle, single speed, 59 lbs, rider height 4'6\" to 5'11\", age 16+, $2,195 and Metallic Aluminum. Page never mentions pedals. Page structured data says InStock.",
+    "changes": []
+   }
+  },
+  {
+   "id": "specialized-globe-haul-st",
+   "maker": "Specialized",
+   "model": "Globe Haul ST",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.specialized.com/us/en/haul-st/p/277759",
+   "extra_source_urls": [
+    "https://www.specialized.com/us/en/globe-throttle/p/220823"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": null,
+   "throttle_note": "The bike's spec list has no throttle. Specialized sells a plug-in Globe Throttle for $59.99. That accessory page says the throttle goes up to 20mph and pedal assist to 28mph, and that California riders need a Class 2 firmware update from a retailer to use it.",
+   "throttle_top_speed_mph": 20,
+   "assisted_top_speed_mph": 28,
+   "top_speed_stated_mph": null,
+   "speed_note": "Speeds come from the Globe Throttle accessory page, not the bike page. The bike page gives no top speed or class.",
+   "motor_rated_w": 700,
+   "motor_peak_w": null,
+   "motor_note": "Page says 700w rear hub motor. It does not say whether 700w is rated or peak.",
+   "battery_wh": 772,
+   "weight_lb": 77.2,
+   "weight_note": "Page lists 35.0kg, also given as 77 lb 2.6 oz. 77.2 lb is that figure rounded to one decimal.",
+   "wheel_size": "20 x 3.5 in",
+   "rider_fit": "Single-size frame fits riders from around 4'5\" up to 6'4\".",
+   "rider_min_height_in": 53,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 2699.99,
+   "price_note": "Add to Cart shown.",
+   "colors": [
+    "Satin Obsidian",
+    "Gloss White Mountains"
+   ],
+   "colors_source": "product page color label and page product data",
+   "intended_use_as_stated": "Cargo, with 419 lbs carrying capacity, rider included",
+   "frame_note": "Short-tail cargo, rear rack 132 lbs, 4-piston hydraulic brakes",
+   "evidence_quotes": [
+    "700w rear hub motor",
+    "Globe external battery, 772Wh, IPX7",
+    "CA SB 1271 mandates that e-bikes with throttles be Class 2"
+   ],
+   "class_note": null,
+   "weight_is_computed": true,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "cargo"
+    ],
+    "price_band": "2200_to_3000",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "colors_note": "Satin Obsidian was the default color and in stock. Gloss White Mountains was marked out of stock in page data.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.specialized.com/us/en/haul-st/p/277759",
+     "https://www.specialized.com/us/en/globe-throttle/p/220823"
+    ],
+    "note": "No class or top speed on the bike page, no throttle in the spec list, 700w rear hub, 772Wh, 35.0kg or 77 lb 2.6 oz, 20 x 3.5 tires, fit about 4'5\" to 6'4\", 419 lbs capacity, 132 lb rack, 4 piston hydraulic brakes and $2,699.99 match. Globe Throttle page confirms $59.99, 20mph throttle, 28mph assist and the California Class 2 firmware note.",
+    "changes": [
+     {
+      "field": "colors",
+      "old": [
+       "Satin Obsidian"
+      ],
+      "old_was_missing": false,
+      "new": [
+       "Satin Obsidian",
+       "Gloss White Mountains"
+      ],
+      "why": "Page product data lists Gloss White Mountains for this model. Other records list colors that were out of stock too, so this one now does."
+     },
+     {
+      "field": "colors_source",
+      "old": "product page color label",
+      "old_was_missing": false,
+      "new": "product page color label and page product data",
+      "why": "Second color comes from page product data."
+     },
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "Satin Obsidian was the default color and in stock. Gloss White Mountains was marked out of stock in page data.",
+      "why": "New note on stock by color."
+     }
+    ]
+   }
+  },
+  {
+   "id": "tern-quick-haul-d8",
+   "maker": "Tern",
+   "model": "Quick Haul D8",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.ternbicycles.com/us/bikes/471/quick-haul-d8",
+   "extra_source_urls": [
+    "https://store.ternbicycles.com/products/quick-haul-d8-1"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": null,
+   "throttle_note": "No throttle appears anywhere in the spec list. The page does not say no throttle in those words.",
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": 20,
+   "top_speed_stated_mph": 20,
+   "speed_note": "Motor line says max speed 20 mph in the US and 25 kph in the EU. No class named.",
+   "motor_rated_w": null,
+   "motor_peak_w": null,
+   "motor_note": "Bosch Active Line Plus, 270% assist, 50 Nm. No watt figure on the page.",
+   "battery_wh": 400,
+   "weight_lb": 50.3,
+   "weight_note": "22.8 kg, or 50.3 lb. The page notes weight may not include racks and fenders.",
+   "wheel_size": "Schwalbe Big Apple 55-406 tires. The 406 size is the 20 inch wheel.",
+   "rider_fit": "Fits riders 5'3\"-6'5\", and 4'9\"-5'11\" with a shorter 350 mm seatpost. Max rider weight 264.6 lb.",
+   "rider_min_height_in": 57,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 2999,
+   "price_note": "Spec page shows $2,999. Tern store shows $2,999.00 and ships e-bikes to a local dealer for assembly.",
+   "colors": [
+    "olive/mustard",
+    "tabasco",
+    "Black"
+   ],
+   "colors_source": "Tern store product page and store product data",
+   "intended_use_as_stated": "Compact e-cargo bike for passengers and cargo",
+   "frame_note": "Rear rack 50 kg, optional front rack 20 kg, 490 mm standover",
+   "evidence_quotes": [
+    "max speed 20 mph (US)",
+    "Bosch PowerPack 400",
+    "Fits riders 160 - 195 cm (5'3\" - 6'5\")"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "cargo"
+    ],
+    "price_band": "2200_to_3000",
+    "max_speed_any_mode_mph": 20,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "colors_note": "The spec page leaves its colors field blank. The store page showed olive/mustard. Store product data marks olive/mustard and tabasco available and Black unavailable, all at $2,999.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.ternbicycles.com/us/bikes/471/quick-haul-d8",
+     "https://store.ternbicycles.com/products/quick-haul-d8-1",
+     "https://store.ternbicycles.com/products/quick-haul-d8-1.js"
+    ],
+    "note": "No class named, no throttle listed, 20 mph US and 25 kph EU, Bosch Active Line Plus 50 Nm with no watt figure, PowerPack 400, 22.8 kg or 50.3 lb, Big Apple 55-406 tires, fit 5'3\" to 6'5\" or 4'9\" to 5'11\" with a 350 mm seatpost, 264.6 lb rider limit, $2,999, dealer assembly and the Oktoberfest banner match.",
+    "changes": [
+     {
+      "field": "colors",
+      "old": [
+       "olive/mustard"
+      ],
+      "old_was_missing": false,
+      "new": [
+       "olive/mustard",
+       "tabasco",
+       "Black"
+      ],
+      "why": "Tern store product data lists tabasco and Black for this model as well."
+     },
+     {
+      "field": "colors_source",
+      "old": "Tern store product page",
+      "old_was_missing": false,
+      "new": "Tern store product page and store product data",
+      "why": "Extra colors come from store product data."
+     },
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "The spec page leaves its colors field blank. The store page showed olive/mustard. Store product data marks olive/mustard and tabasco available and Black unavailable, all at $2,999.",
+      "why": "New note on stock by color."
+     }
+    ]
+   }
+  },
+  {
+   "id": "velotric-discover-2",
+   "maker": "Velotric",
+   "model": "Discover 2",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.velotricbike.com/products/velotric-discover-2",
+   "extra_source_urls": [
+    "https://www.velotricbike.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1 / 2 / 3",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Default max speed 20 MPH, adjustable from 12 to 28 MPH. Top bar says Top Speed 28 MPH. No separate throttle speed given.",
+   "motor_rated_w": 750,
+   "motor_peak_w": null,
+   "motor_note": "48V, 750W, 75Nm",
+   "battery_wh": 705.6,
+   "weight_lb": 63,
+   "wheel_size": "27.5 x 2.4 in",
+   "rider_fit": "Height Regular 4'11\"-5'9\", Large 5'6\"-6'4\"",
+   "rider_min_height_in": 59,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 1499,
+   "price_note": "Shown as $1,499.00 with a struck $1,999.00, save $500.",
+   "colors": [
+    "Pine Green",
+    "Stone Gray",
+    "Mint",
+    "Cherry Crimson"
+   ],
+   "colors_source": "product page General Info and maker product data",
+   "intended_use_as_stated": "Commuter. Maker product type is Electric commuter bike.",
+   "frame_note": "80mm suspension fork, rack and fenders, trigger throttle",
+   "evidence_quotes": [
+    "Max Speed Adjustable Range | 12 ~ 28 MPH",
+    "Class | 1 / 2 / 3",
+    "Motor | 48V, 750W, 75Nm"
+   ],
+   "class_note": "Max speed is adjustable from 12 to 28 MPH.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "commuter"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "colors_note": "General Info lists all four colors. In maker product data only Cherry Crimson was buyable, in both sizes.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.velotricbike.com/products/velotric-discover-2",
+     "https://www.velotricbike.com/products/velotric-discover-2.js"
+    ],
+    "note": "Class 1 / 2 / 3, default 20 MPH, adjustable 12 to 28 MPH, 48V 750W 75Nm, 705.6Wh, 63 lbs, 27.5 x 2.4 tires, fit Regular 4'11\" to 5'9\" and Large 5'6\" to 6'4\", trigger throttle, and $1,499 with a struck $1,999 match.",
+    "changes": [
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "General Info lists all four colors. In maker product data only Cherry Crimson was buyable, in both sizes.",
+      "why": "New note. Three of four colors were not buyable."
+     }
+    ]
+   }
+  },
+  {
+   "id": "velotric-fold-1",
+   "maker": "Velotric",
+   "model": "Fold 1",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.velotricbike.com/products/velotric-fold-1",
+   "extra_source_urls": [
+    "https://www.velotricbike.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1 / 2 / 3",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Default max speed 20 MPH, adjustable from 12 to 28 MPH. Top bar says Top Speed 28 MPH.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1050,
+   "motor_note": "48V, 750W, 1050W peak, 70Nm",
+   "battery_wh": 608,
+   "weight_lb": 63,
+   "weight_note": "Listed as *63 lbs. The footnote for the asterisk was not found in the page text.",
+   "wheel_size": "20 x 3.0 in",
+   "rider_fit": "Height 4'9\"-6'5\", one size",
+   "rider_min_height_in": 57,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 1299,
+   "price_note": "Shown as $1,299.00 with a struck $1,499.00, save $200.",
+   "colors": [
+    "Electric Blue",
+    "Pearl White",
+    "Stone Gray"
+   ],
+   "colors_note": "General Info lists three colors. Only Electric Blue was offered as a buyable variant in maker product data.",
+   "colors_source": "product page General Info and maker product data",
+   "intended_use_as_stated": "Folding. Maker product type is Electric Folding Bike.",
+   "frame_note": "Folding frame, 60mm coil fork, rear rack 120 lbs",
+   "evidence_quotes": [
+    "Motor | 48V, 750W (1050W Peak), 70Nm",
+    "User Height Range | 4'9'' ~ 6'5''",
+    "Class | 1 / 2 / 3"
+   ],
+   "class_note": "Max speed is adjustable from 12 to 28 MPH.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "folding"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.velotricbike.com/products/velotric-fold-1",
+     "https://www.velotricbike.com/products/velotric-fold-1.js"
+    ],
+    "note": "Every field matches, including Class 1 / 2 / 3, 20 MPH default and 12 to 28 MPH range, 750W with 1050W peak and 70Nm, 608Wh, *63 lbs, 20 x 3.0 tires, fit 4'9\" to 6'5\", and $1,299 with a struck $1,499. Only Electric Blue was buyable.",
+    "changes": []
+   }
+  },
+  {
+   "id": "velotric-nomad-2",
+   "maker": "Velotric",
+   "model": "Nomad 2",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.velotricbike.com/products/velotric-nomad-2",
+   "extra_source_urls": [
+    "https://www.velotricbike.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1 / 2 / 3",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": true,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Default max speed 20 MPH, adjustable from 12 to 28 MPH. Top bar says Top Speed 28 MPH.",
+   "motor_rated_w": 750,
+   "motor_peak_w": 1300,
+   "motor_note": "48V, 750W, 1300W Peak, 90Nm",
+   "battery_wh": 705.6,
+   "weight_lb": 75,
+   "wheel_size": "26 x 4.0 in fat tire",
+   "rider_fit": "Step-Thru Regular 4'11\"-5'10\", Large 5'7\"-6'5\". Step-Thru with the suspension seatpost Regular 5'2\"-5'11\", Large 5'10\"-6'5\". High-Step Regular 5'2\"-5'11\", Large 5'10\"-6'5\".",
+   "rider_min_height_in": 59,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 1999,
+   "price_note": "Shown as $1,999.00.",
+   "colors": [
+    "Cranberry",
+    "Slate",
+    "Olive",
+    "Midnight Blue",
+    "Sage"
+   ],
+   "colors_note": "General Info lists step-thru in Cranberry, Slate, Olive and Midnight Blue, and high-step in Sage and Midnight Blue. Buyable variants were Midnight Blue, Cranberry, Olive and Sage.",
+   "colors_source": "product page General Info and maker product data",
+   "intended_use_as_stated": "Fat tire, all-terrain. Maker product type is Electric fat tire bike.",
+   "frame_note": "100mm suspension fork, step-thru and high-step frames",
+   "evidence_quotes": [
+    "Motor | 48V, 750W, 1300W Peak, 90Nm",
+    "Class | 1 / 2 / 3",
+    "Max Speed Adjustable Range | 12~28 MPH"
+   ],
+   "class_note": "Max speed is adjustable from 12 to 28 MPH.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "fat_tire_or_trail"
+    ],
+    "price_band": "1500_to_2199",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.velotricbike.com/products/velotric-nomad-2",
+     "https://www.velotricbike.com/products/velotric-nomad-2.js"
+    ],
+    "note": "Class 1 / 2 / 3, 20 MPH default and 12 to 28 MPH range, 750W with 1300W peak and 90Nm, 705.6Wh, 75 lbs, 26 x 4.0 tires, colors by frame and $1,999 match. High-Step was buyable only in Large.",
+    "changes": [
+     {
+      "field": "rider_fit",
+      "old": "Step-Thru Regular 4'11\"-5'10\", Large 5'7\"-6'5\". High-Step Regular 5'2\"-5'11\", Large 5'10\"-6'5\".",
+      "old_was_missing": false,
+      "new": "Step-Thru Regular 4'11\"-5'10\", Large 5'7\"-6'5\". Step-Thru with the suspension seatpost Regular 5'2\"-5'11\", Large 5'10\"-6'5\". High-Step Regular 5'2\"-5'11\", Large 5'10\"-6'5\".",
+      "why": "Page lists a third fit row for the step-thru with a suspension seatpost, which the old value left out."
+     }
+    ]
+   }
+  },
+  {
+   "id": "velotric-t1-st-plus",
+   "maker": "Velotric",
+   "model": "T1 ST Plus",
+   "vehicle_type": "e-bike",
+   "maker_url": "https://www.velotricbike.com/products/velotric-t1st-ebike",
+   "extra_source_urls": [
+    "https://www.velotricbike.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": "Class 1/3",
+   "class_stated_on_page": true,
+   "class_label_sticker_mentioned": false,
+   "pedals": true,
+   "throttle": false,
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": 28,
+   "top_speed_stated_mph": 28,
+   "speed_note": "Top bar says Top Speed 28 MPH, No Throttle. Default speed 20 MPH, adjustable from 12 to 28 MPH.",
+   "motor_rated_w": 350,
+   "motor_peak_w": 600,
+   "motor_note": "350W, Peak 600W, 40Nm",
+   "battery_wh": 352.8,
+   "weight_lb": 39,
+   "wheel_size": "700 x 40c",
+   "rider_fit": "Height Regular 4'11\"-5'9\", Large 5'6\"-6'4\"",
+   "rider_min_height_in": 59,
+   "rider_age": null,
+   "rider_min_age": null,
+   "price_usd": 1399,
+   "price_note": "Shown as $1,399.00 with a struck $1,649.00, save $250. Only the Regular size in Lava was a buyable variant.",
+   "colors": [
+    "Lava",
+    "Sand"
+   ],
+   "colors_source": "product page General Info and maker product data",
+   "intended_use_as_stated": "Lightweight city bike. Maker product type is Electric road bike.",
+   "frame_note": "Step-through, torque sensor, no throttle",
+   "evidence_quotes": [
+    "Top Speed | 28 MPH(No Throttle)",
+    "Class | 1/3",
+    "Motor | 350W, Peak 600W, 40Nm"
+   ],
+   "class_note": "Max speed is adjustable from 12 to 28 MPH.",
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "commuter",
+     "lightweight"
+    ],
+    "price_band": "800_to_1499",
+    "max_speed_any_mode_mph": 28,
+    "can_exceed_20_mph": true,
+    "class_3_mode_mentioned": true,
+    "small_rider_fit": true,
+    "young_rider_marketing": null
+   },
+   "colors_note": "General Info lists Lava and Sand. Only the Regular size in Lava was a buyable variant in maker product data.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.velotricbike.com/products/velotric-t1st-ebike",
+     "https://www.velotricbike.com/products/velotric-t1st-ebike.js"
+    ],
+    "note": "Class 1/3, Top Speed 28 MPH with no throttle, 20 MPH default, 350W with 600W peak and 40Nm, 352.8Wh, 39 lbs, 700 x 40c tires, fit Regular 4'11\" to 5'9\" and Large 5'6\" to 6'4\", and $1,399 with a struck $1,649 match.",
+    "changes": [
+     {
+      "field": "colors",
+      "old": [
+       "Lava"
+      ],
+      "old_was_missing": false,
+      "new": [
+       "Lava",
+       "Sand"
+      ],
+      "why": "Page General Info lists Sand as well as Lava. The other Velotric records list General Info colors, so this one now does too."
+     },
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "General Info lists Lava and Sand. Only the Regular size in Lava was a buyable variant in maker product data.",
+      "why": "New note that keeps the stock fact from the old price note."
+     },
+     {
+      "field": "colors_source",
+      "old": "product page and maker product data",
+      "old_was_missing": false,
+      "new": "product page General Info and maker product data",
+      "why": "Colors now come from General Info as well."
+     }
+    ]
+   }
+  },
+  {
+   "id": "hiboy-dk2",
+   "maker": "Hiboy",
+   "model": "DK2 Electric Dirt Bike",
+   "vehicle_type": "pedal-less e-moto",
+   "maker_url": "https://www.hiboy.com/products/hiboy-dk2-electric-dirt-bike-for-kids-ages-3-7",
+   "extra_source_urls": [
+    "https://www.hiboy.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": null,
+   "pedals_note": "Page never mentions pedals. The in-the-box list has no pedals. Check photos to confirm.",
+   "throttle": null,
+   "throttle_note": "Speed modes are listed, but the text found does not name a throttle.",
+   "throttle_top_speed_mph": null,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 13,
+   "speed_note": "Speed 13 mph. Three speed modes at 13, 8 and 5 mph.",
+   "motor_rated_w": null,
+   "motor_peak_w": 150,
+   "motor_note": "Peak Motor 150W. No rated figure given.",
+   "battery_wh": null,
+   "battery_note": "Page gives 24V 4.5Ah only.",
+   "weight_lb": 38,
+   "wheel_size": "12 inch pneumatic tires",
+   "rider_fit": "Recommended Age 3 ~ 7 years old. Max load 150 lbs.",
+   "rider_min_height_in": null,
+   "rider_age": "Recommended Age 3 ~ 7 years old",
+   "rider_min_age": 3,
+   "price_usd": 339.99,
+   "price_note": "Sale price $339.99, regular $609.99.",
+   "colors": [
+    "Yellow",
+    "Red",
+    "Green",
+    "Blue"
+   ],
+   "colors_source": "product page color options",
+   "intended_use_as_stated": "Electric dirt bike for kids ages 3-7. Maker product type is Kids E-Bikes.",
+   "frame_note": "Rear suspension, disc brake",
+   "quiz_warning_reason": "Motorized dirt bike for young children, not a bicycle.",
+   "evidence_quotes": [
+    "Recommended Age 3 ~ 7 years old",
+    "Peak Motor 150W",
+    "Speed Mode 3 Levels (13mph->8mph->5mph)"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "not_an_ebike_warning"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 13,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": true
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://www.hiboy.com/products/hiboy-dk2-electric-dirt-bike-for-kids-ages-3-7",
+     "https://www.hiboy.com/products/hiboy-dk2-electric-dirt-bike-for-kids-ages-3-7.js"
+    ],
+    "note": "Age 3 to 7, 150W peak, 13 mph with modes of 13, 8 and 5 mph, 24V 4.5Ah, 38 lbs, 12 inch tires, 150 lb max load, no pedals or throttle named, $339.99 with a regular $609.99, and four colors match.",
+    "changes": [
+     {
+      "field": "intended_use_as_stated",
+      "old": "Electric dirt bike for kids ages 3-7",
+      "old_was_missing": false,
+      "new": "Electric dirt bike for kids ages 3-7. Maker product type is Kids E-Bikes.",
+      "why": "Maker product data files this pedal-less dirt bike as Kids E-Bikes, which the quiz warning should know."
+     }
+    ]
+   }
+  },
+  {
+   "id": "jetson-bolt",
+   "maker": "Jetson",
+   "model": "Bolt Electric Ride-On",
+   "vehicle_type": "pedal-less e-moto",
+   "maker_url": "https://ridejetson.com/products/bolt-electric-bike",
+   "extra_source_urls": [
+    "https://ridejetson.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": false,
+   "pedals_note": "Page tells riders to put their feet on the foot pegs and calls it an all-throttle ride. The store data files it under product type e-bike and the URL says electric-bike.",
+   "throttle": true,
+   "throttle_top_speed_mph": 15.5,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 15.5,
+   "speed_note": "Top Speed 15.5 mph. One speed mode. Twist throttle with cruise control.",
+   "motor_rated_w": 250,
+   "motor_peak_w": null,
+   "motor_note": "Motor 250 W",
+   "battery_wh": null,
+   "battery_note": "Page gives 36V, 6.0Ah only, not removable. 216 Wh would be a computed figure, not stated.",
+   "weight_lb": 34,
+   "wheel_size": "12 in",
+   "rider_fit": "For Riders Aged 13+. Weight limit 265 lb.",
+   "rider_min_height_in": null,
+   "rider_age": "For Riders Aged 13+",
+   "rider_min_age": 13,
+   "price_usd": 549.99,
+   "price_note": "Each color shown at $549.99.",
+   "colors": [
+    "Crimson",
+    "Slate",
+    "Black"
+   ],
+   "colors_source": "product page and maker product data",
+   "intended_use_as_stated": "Compact all-throttle ride to town, beach or campus",
+   "frame_note": "Partial fold, carry handle, rear disc brake",
+   "quiz_warning_reason": "No pedals and an all-throttle design, yet listed in the maker's e-bike product type and URL.",
+   "evidence_quotes": [
+    "Put your kicks on the foot pegs",
+    "An all-electric, all-throttle ride",
+    "For Riders Aged | 13+"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "not_an_ebike_warning"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 15.5,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": true
+   },
+   "colors_note": "Page structured data listed Black in stock and Crimson and Slate out of stock.",
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://ridejetson.com/products/bolt-electric-bike",
+     "https://ridejetson.com/products/bolt-electric-bike.js"
+    ],
+    "note": "Foot pegs, all-throttle, 15.5 mph, 250 W, 36V 6.0Ah not removable, 34 lb, 12 in, age 13+, $549.99 and maker product type e-bike all match.",
+    "changes": [
+     {
+      "field": "colors_note",
+      "old": null,
+      "old_was_missing": true,
+      "new": "Page structured data listed Black in stock and Crimson and Slate out of stock.",
+      "why": "New note. Stock differs by color."
+     }
+    ]
+   }
+  },
+  {
+   "id": "jetson-jax",
+   "maker": "Jetson",
+   "model": "Jax Electric Dirt Bike",
+   "vehicle_type": "pedal-less e-moto",
+   "maker_url": "https://ridejetson.com/products/jax-electric-dirt-bike",
+   "extra_source_urls": [
+    "https://ridejetson.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": null,
+   "pedals_note": "Page never mentions pedals or foot pegs. It is sold as a motocross-style electric dirt bike with a twist throttle. Check photos to confirm no pedals.",
+   "throttle": true,
+   "throttle_top_speed_mph": 14,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 14,
+   "speed_note": "Top Speed 14 mph. Page says the fastest mode is 14 mph, with 7.5 mph and 5 mph modes below it. Twist throttle.",
+   "motor_rated_w": 300,
+   "motor_peak_w": null,
+   "motor_note": "Motor 300 W",
+   "battery_wh": null,
+   "battery_note": "Page gives 36V 4.0Ah only. Range given as 30 min.",
+   "weight_lb": 39.7,
+   "wheel_size": "16 in per the spec table. The highlights text says 14-inch tires, so the page disagrees with itself.",
+   "rider_fit": "For Riders Aged 13+. Weight limit 140 lb.",
+   "rider_min_height_in": null,
+   "rider_age": "For Riders Aged 13+",
+   "rider_min_age": 13,
+   "price_usd": 499.99,
+   "price_note": "Regular and sale price both $499.99.",
+   "colors": null,
+   "colors_source": "No color options on the page or in maker product data",
+   "intended_use_as_stated": "Electric dirt bike for dirt trails and paved paths. Maker product type is ride-on.",
+   "frame_note": "Warranty listed as 180 days",
+   "quiz_warning_reason": "Electric dirt bike marketed to young riders, throttle only, pedals not mentioned.",
+   "evidence_quotes": [
+    "Twist the throttle. Hit the dirt.",
+    "For Riders Aged | 13+",
+    "Motor | 300 W"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "not_an_ebike_warning"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 14,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": true
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://ridejetson.com/products/jax-electric-dirt-bike",
+     "https://ridejetson.com/products/jax-electric-dirt-bike.js"
+    ],
+    "note": "No pedals or foot pegs mentioned, 300 W, 36V 4.0Ah, 39.7 lb, age 13+, 140 lb limit, 180 day warranty, and the 16 in versus 14-inch tire conflict all match.",
+    "changes": [
+     {
+      "field": "speed_note",
+      "old": "Top Speed 14 mph, 3 speed modes, twist throttle.",
+      "old_was_missing": false,
+      "new": "Top Speed 14 mph. Page says the fastest mode is 14 mph, with 7.5 mph and 5 mph modes below it. Twist throttle.",
+      "why": "Added the two lower mode speeds the page gives."
+     },
+     {
+      "field": "intended_use_as_stated",
+      "old": "Electric dirt bike for dirt trails and paved paths",
+      "old_was_missing": false,
+      "new": "Electric dirt bike for dirt trails and paved paths. Maker product type is ride-on.",
+      "why": "Maker product data files the Jax as ride-on, unlike the Bolt, which is filed as e-bike."
+     }
+    ]
+   }
+  },
+  {
+   "id": "super73-k1d",
+   "maker": "SUPER73",
+   "model": "SUPER73-K1D",
+   "vehicle_type": "pedal-less e-moto",
+   "maker_url": "https://super73.com/products/super73-k1d",
+   "extra_source_urls": [
+    "https://super73.com/products.json?limit=250"
+   ],
+   "read_date": "2026-10-21",
+   "class_as_stated": null,
+   "class_stated_on_page": false,
+   "class_label_sticker_mentioned": false,
+   "pedals": false,
+   "pedals_note": "Page calls it an electric balance bike, a type built without pedals. The page does not say no pedals in those words.",
+   "throttle": true,
+   "throttle_top_speed_mph": 15,
+   "assisted_top_speed_mph": null,
+   "top_speed_stated_mph": 15,
+   "speed_note": "Mode 1 up to 7mph, Mode 2 up to 13mph, Track Mode 15mph. The feature bar says 15+ MPH. Twist throttle.",
+   "motor_rated_w": null,
+   "motor_peak_w": 750,
+   "motor_note": "750W Peak hub motor, direct drive. No rated figure given.",
+   "battery_wh": 92.8,
+   "weight_lb": 27,
+   "wheel_size": "16 x 2.4 in",
+   "rider_fit": "Built for ages 4-8. Rider weight limit 75 lbs. Seat height 19 in.",
+   "rider_min_height_in": null,
+   "rider_age": "Built for ages 4-8",
+   "rider_min_age": 4,
+   "price_usd": 595,
+   "price_note": "Sale price $595. Maker product data listed every color as unavailable on Oct 21, 2026.",
+   "colors": [
+    "Prickly Pink",
+    "Obsidian",
+    "Blu Tang",
+    "Sriracha"
+   ],
+   "colors_source": "maker store product data, products.json",
+   "intended_use_as_stated": "Electric balance bike and electric trainer for 4-8 year-olds learning to ride",
+   "frame_note": "Rear hydraulic brake with regenerative braking",
+   "quiz_warning_reason": "Motorized balance bike for young kids with a 750W peak motor, not a bicycle.",
+   "evidence_quotes": [
+    "SUPER73's first electric balance bike",
+    "Built for ages 4-8",
+    "750W Peak / Hub Motor / Direct Drive"
+   ],
+   "class_note": null,
+   "derived": {
+    "note": "Computed by us from the fields above. Not stated by the maker.",
+    "use_tags": [
+     "not_an_ebike_warning"
+    ],
+    "price_band": "under_800",
+    "max_speed_any_mode_mph": 15,
+    "can_exceed_20_mph": false,
+    "class_3_mode_mentioned": null,
+    "small_rider_fit": null,
+    "young_rider_marketing": true
+   },
+   "verified": true,
+   "verification": {
+    "checked_on": "2026-10-21",
+    "checked_by": "independent second reader",
+    "sources_reopened": [
+     "https://super73.com/products/super73-k1d",
+     "https://super73.com/products/super73-k1d.js"
+    ],
+    "note": "Electric balance bike for ages 4-8, 750W peak direct drive hub, 92.8 Wh, 27 lbs, 16 x 2.4 tires, 75 lb rider limit, 19 in seat, $595 and all four colors out of stock all match.",
+    "changes": [
+     {
+      "field": "speed_note",
+      "old": "Mode 1 up to 7mph, Mode 2 up to 13mph, Track Mode 15mph. Twist throttle.",
+      "old_was_missing": false,
+      "new": "Mode 1 up to 7mph, Mode 2 up to 13mph, Track Mode 15mph. The feature bar says 15+ MPH. Twist throttle.",
+      "why": "Added the 15+ MPH feature bar figure, which is higher than the spec table's 15mph."
+     },
+     {
+      "field": "intended_use_as_stated",
+      "old": "Electric balance bike, a first ride for kids",
+      "old_was_missing": false,
+      "new": "Electric balance bike and electric trainer for 4-8 year-olds learning to ride",
+      "why": "Uses the page's own words, electric trainer for 4-8 year-olds learning to ride. The old text said first ride, which the page does not say."
+     }
+    ]
+   }
+  }
+ ]
+}
