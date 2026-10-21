@@ -64,6 +64,23 @@ function LaterStepFrame({ step, k, hint }: { step: number; k: UiKey; hint: UiKey
   );
 }
 
+/** The links between the parts of the app, in both languages, so the bar keeps its height when the page arrives. */
+function NavFrame() {
+  return (
+    <div className="site-nav" aria-hidden="true">
+      <ul role="list">
+        {(["navCheck", "navMods", "navFind"] as const).map((k) => (
+          <li key={k}>
+            <span className="sk-link">
+              <Both k={k} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function CheckerSkeleton() {
   return (
     <div className="page" aria-busy="true">
@@ -72,6 +89,7 @@ export function CheckerSkeleton() {
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
           </span>
+          <NavFrame />
           {/* The language button's place, so the bar has its full height. The working button comes with the page. */}
           <span className="lang-btn sk-pill" aria-hidden="true">
             <span className="sk-en" lang="es">
@@ -205,6 +223,7 @@ export function SectionSkeleton({ title }: { title: { en: string; es: string } }
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
           </span>
+          <NavFrame />
           <span className="lang-btn sk-pill" aria-hidden="true">
             <span className="sk-en" lang="es">
               {t("en", "switchLang")}

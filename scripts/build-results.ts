@@ -6,6 +6,7 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { districtGates, finderGates, modGates } from "../tests/featureGates";
 import { DATES, runBottomLineMatrix, runMatrix, SHAPES, VARIANTS, type ReadVariant } from "../tests/matrix";
 import { stateCheckedThrough } from "../lib/rules/bottomLine";
 import { getState, STATE_CODES } from "../lib/rules/compile";
@@ -56,6 +57,9 @@ const READ_ROWS: [ReadVariant, string][] = [
 
 const matrix = runMatrix();
 const bottom = runBottomLineMatrix();
+const districts = districtGates();
+const mods = modGates();
+const finder = finderGates();
 const vitest = read<VitestReport>(".cache/vitest.json");
 const clip = read<ClipResult>("pilot/results/photos-clip.json");
 const ocr = read<OcrResult>("pilot/results/photos-ocr.json");
@@ -127,6 +131,7 @@ const accuracy = {
     card_yes_under_no: bottom.cardYesUnderNo.length,
     place_cards: bottom.placeCards,
   },
+  features: { districts, mods, finder },
   tests: vitest
     ? { total: vitest.numTotalTests, passed: vitest.numPassedTests, failed: vitest.numFailedTests }
     : null,
@@ -228,6 +233,24 @@ ${readNote}
 
 Mutation checks, done by hand on Oct 19. Ignoring unverified records, ignoring a "not sure" fast-mode answer, or dropping the unchecked-places line each made a bottom-line gate fail. After the review fixes, five more each made a gate fail: running the campus Class 3 rule when pedals are unknown (960 false NO, not allowed), deleting the caveat paragraph from the card (116 rendered cards wrong), letting Carlsbad's ban lapse with the state power (148 false YES), turning off the engine's unchecked-places flag (13 rendered cards wrong), and not counting "not an e-bike" as not allowed (60,600 false YES). After the second review, three more each made a gate fail: ignoring a stated throttle speed when the throttle answer is "not sure" (6,058 false legal cards, 6,674 false YES), dropping a stated top speed when an assist speed is also given (10,030 false legal cards, 11,038 false YES), and letting a San Diego place vouch for an under-12 rider past 30 days after its check (2,204 false legal cards, 4,408 false YES). After the third review, two more each made a gate fail: trusting a Class 1 or 3 label when the throttle answer is blank or "not sure" with no throttle speed (7,572 false legal cards, 1,682 false YES), and letting state law vouch for a ride more than 30 days after its check (198,114 false YES). After facts read from a link or photo had to be checked, five more each made a gate fail: a bottom line that ignores unchecked facts (100,836 YES with a fact unchecked), never marking a read weight as read (2,758 YES with a fact unchecked), counting only facts a card uses, tried by leaving out the weight (2,758 YES with a fact unchecked), naming only the first unchecked fact (425,786 answers naming the wrong facts), and a tick that never checks a fact (50,418 missed YES). A pedal photo call that keeps an old check made 3 unit tests fail. After the second review of the checks, comparing a wheel size edit only with the facts just before it, not with the sizes as read, made 5 unit tests fail. Once every NO had to name the unchecked facts, six more each made a gate fail on Oct 20: never adding the line to a NO, not allowed (358,828 answers naming the wrong facts), naming only the first unchecked fact (179,414), adding it to a NO, can't confirm as well, so the facts are named twice (851,572), dropping it from the rendered card (26 rendered cards wrong), leaving it out of the screen reader sentence (26 rendered cards wrong), and turning a NO, not allowed into NO, can't confirm while a fact is unchecked (358,828 answers changed). After the fourth review of the checks, four more each made unit tests fail on Oct 20: applying a pedal photo call to whatever bike is current (2 tests), deleting the line that keeps a follow-up answer the family's own (1 test), and swapping two boxes on the facts card, rated and peak watts (2 tests) or wheel count and foot pegs (2 tests). Once every answer had to be a plain YES or NO, two more each made a gate fail on Oct 20: putting the old "Can't confirm" label back on place cards that can't confirm (1,074 of 2,113 distinct rendered place cards wrong), and putting the old "Not confirmed." line back under the bottom line's NO (68 of 418 distinct rendered bottom lines wrong). After the second design review, letting a San Diego place card say YES on a ride date past the state check made both card gates fail on Oct 20: 19,128 engine cards drawn other than the raw data gives them, and 153,030 wrong place card answers in the bottom-line matrix.
 
+## School districts, mods check and bike finder
+
+Added on Oct 21, 2026. Each gate counts an answer that must never happen. \`tests/featureGates.ts\` runs them and \`tests/featureGates.test.ts\` fails if any is above 0.
+
+| Gate | Result |
+|---|---|
+| School districts in the search, from the NCES 2025-26 directory | ${districts.districts.toLocaleString("en-US")} |
+| San Dieguito Union High maps to the SDUHSD campus record | ${districts.sduhsd_mapped ? "Yes" : "**No**"} |
+| **Any other district mapped to a checked record** | **${districts.other_checked}** |
+| Mods check answers, every mod, class, choice, 5 ride dates, with and without the City of San Diego | ${mods.answers.toLocaleString("en-US")}, ${mods.yes.toLocaleString("en-US")} YES |
+| **Mod YES for an outcome the research doesn't read as the same class or a new class** | **${mods.yes_beyond_source}** |
+| **Mod YES with no outcome picked, or "something else, or not sure"** | **${mods.yes_unanswered}** |
+| **Rendered reason, rule, date or penalty that is not the data's own words** (${mods.claims.toLocaleString("en-US")} checked, English and Spanish) | **${mods.claims_not_in_data}** |
+| Bike finder rides, ${finder.bikes} catalog bikes in every state, 15 ages and the checked San Diego place sets | ${finder.rides.toLocaleString("en-US")}, ${finder.yes.toLocaleString("en-US")} YES |
+| **Finder YES where the engine, on the maker's facts alone, says not allowed** | **${finder.yes_engine_refuses}** |
+| **Finder YES for a bike without stated pedals, or an e-moto** | **${finder.yes_without_pedals}** |
+| **Checker YES for a bike sent by Check this bike before its facts are checked** | **${finder.yes_before_checked}** |
+
 ## Pilot (bars committed in PILOT.md before each run)
 
 | Check | Bar | Result | Pass |
@@ -275,5 +298,5 @@ The five accuracy numbers on the frozen labeled set (zero false-legal calls, eve
 
 writeFileSync(join(root, "RESULTS.md"), md);
 process.stdout.write(
-  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact. ${matrix.hedged.length + bottom.hedged.length} rendered answers not a plain YES or NO.\n`,
+  `RESULTS.md written. ${matrix.cases} cases, ${matrix.falseLegal.length} false legal. Feature gates ${districts.other_checked + mods.yes_beyond_source + mods.yes_unanswered + mods.claims_not_in_data + finder.yes_engine_refuses + finder.yes_without_pedals + finder.yes_before_checked}. ${bottom.bottomLines} bottom lines, ${bottom.falseYes.length} false YES, ${bottom.uncheckedYes.length} YES with an unchecked fact. ${matrix.hedged.length + bottom.hedged.length} rendered answers not a plain YES or NO.\n`,
 );

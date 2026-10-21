@@ -5,6 +5,12 @@ import { formatDate, type Lang } from "@/lib/i18n/names";
 
 type Bar = { bar: string; result: string; pass: boolean };
 
+interface FeatureResults {
+  districts: { districts: number; other_checked: number };
+  mods: { yes_beyond_source: number; yes_unanswered: number; claims_not_in_data: number };
+  finder: { yes_engine_refuses: number; yes_without_pedals: number; yes_before_checked: number };
+}
+
 interface BottomLineResults {
   cases: number;
   bottom_lines?: number;
@@ -61,6 +67,8 @@ export function AccuracyView({ lang }: { lang: Lang }) {
   const ocr = accuracy.pilot.photos_ocr as { photos: number; invented: number; pass: boolean } | null;
   const v2 = (accuracy.pilot as { photos_v2?: { pass: boolean; bars: Record<string, Bar>; breakdown: Record<string, { right: number; of: number }> } | null }).photos_v2 ?? null;
   const v3 = (accuracy.pilot as { photos_v3?: { pass: boolean; bars: Record<string, Bar>; breakdown: { hard_cases: { right: number; of: number }; real_world: { right: number; of: number }; mean_ms: number | null } } | null }).photos_v3 ?? null;
+  // The district, mods and finder gates. Older result files don't have them.
+  const features = (accuracy as { features?: FeatureResults }).features ?? null;
   // The day the results were made, in Pacific time, spelled out like every other date in the app.
   const updated = formatDate(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date(accuracy.generated_at)), lang);
 
@@ -141,6 +149,24 @@ export function AccuracyView({ lang }: { lang: Lang }) {
         </table>
         <p className="help">{text.pilotBody}</p>
       </section>
+
+      {features ? (
+        <section className="card space-y-4">
+          <h2 className="card-title">{text.featuresTitle}</h2>
+          <p className="help">{text.featuresIntro(fmt(features.districts.districts))}</p>
+          <table className="table">
+            <tbody>
+              <Row label={text.districtOther} value={fmt(features.districts.other_checked)} strong />
+              <Row label={text.modsBeyond} value={fmt(features.mods.yes_beyond_source)} strong />
+              <Row label={text.modsUnanswered} value={fmt(features.mods.yes_unanswered)} />
+              <Row label={text.modsClaims} value={fmt(features.mods.claims_not_in_data)} />
+              <Row label={text.finderRefuses} value={fmt(features.finder.yes_engine_refuses)} strong />
+              <Row label={text.finderPedals} value={fmt(features.finder.yes_without_pedals)} />
+              <Row label={text.finderBeforeChecked} value={fmt(features.finder.yes_before_checked)} strong />
+            </tbody>
+          </table>
+        </section>
+      ) : null}
 
       {v2 ? (
         <section className="card space-y-4">

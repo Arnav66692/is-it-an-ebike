@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T08:58:42.069Z",
-  "commit": "4a13f60",
+  "generated_at": "2026-10-21T09:14:07.433Z",
+  "commit": "1786409",
   "engine": {
     "states": 51,
     "san_diego_places": 20,
@@ -89,9 +89,33 @@
     "card_yes_under_no": 0,
     "place_cards": 3593
   },
+  "features": {
+    "districts": {
+      "districts": 19430,
+      "sduhsd_mapped": true,
+      "other_checked": 0
+    },
+    "mods": {
+      "mods": 18,
+      "answers": 1990,
+      "yes": 480,
+      "yes_beyond_source": 0,
+      "yes_unanswered": 0,
+      "claims_not_in_data": 0,
+      "claims": 6088
+    },
+    "finder": {
+      "bikes": 29,
+      "rides": 62640,
+      "yes": 9210,
+      "yes_engine_refuses": 0,
+      "yes_without_pedals": 0,
+      "yes_before_checked": 0
+    }
+  },
   "tests": {
-    "total": 893,
-    "passed": 893,
+    "total": 978,
+    "passed": 978,
     "failed": 0
   },
   "pilot": {

@@ -23,7 +23,8 @@
   gap: 0 1.25rem;
 }
 
-.site-nav a {
+.site-nav a,
+.site-nav .sk-link {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
