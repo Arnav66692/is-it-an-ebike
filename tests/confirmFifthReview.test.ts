@@ -409,7 +409,7 @@ describe("the page turns ticks into the bottom line", () => {
     const find = (type: unknown, what: string) => one(m.tree(), (e) => e.type === type, what);
     const line = () => find(BottomLineCard, "bottom line").props.line as BottomLine;
     m.act(() => call(find(BikeInput, "bike input"), "onRead", extract(CLASS_2)));
-    const age = one(m.tree(), (e) => e.type === "input" && e.props.type === "number", "age box");
+    const age = one(m.tree(), (e) => e.type === "input" && e.props.name === "age", "age box");
     m.act(() => call(age, "onChange", { target: { value: "30" } }));
     m.act(() => call(find(FactsCard, "facts card"), "onCheck"));
     const facts = find(FactsCard, "facts card").props.facts as BikeFacts;

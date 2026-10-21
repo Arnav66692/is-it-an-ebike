@@ -8,6 +8,17 @@ import type { PlaceId } from "@/lib/rules/types";
 export const SD_COUNTY_FIPS = "06073";
 export const SD_STATE = "CA";
 
+/**
+ * Other names San Diego County's entry is found by: the name the answer itself gives its record
+ * for unincorporated land, in English and Spanish, so a family who types what the answer says
+ * finds it.
+ */
+export const SD_COUNTY_ALSO_KNOWN_AS: readonly string[] = [
+  "Unincorporated San Diego County",
+  "Zona no incorporada del condado de San Diego",
+  "Condado de San Diego",
+];
+
 export interface CheckedCity {
   /** The Census place GEOID, state FIPS plus place FIPS. */
   geoid: string;

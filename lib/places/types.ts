@@ -21,7 +21,7 @@ export type PlaceKind =
 export type PlaceSourceKind = "state" | "county" | "place" | "cousub" | "neighborhood";
 
 export interface PlaceEntry {
-  /** Stable id for share links: "s-CA", "c-06073", "p-0611194", "m-3400112345" or "n-carmel-valley". */
+  /** Stable id, unique in the index: "s-CA", "c-06073", "p-0611194", "m-3400112345" or "n-carmel-valley". The share link names checked records, not these ids (lib/places/linked.ts). */
   id: string;
   /** The name without the Census suffix, like "Carlsbad" for "Carlsbad city". */
   name: string;

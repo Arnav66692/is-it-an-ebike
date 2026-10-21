@@ -4,7 +4,7 @@
 import type { PlaceId } from "@/lib/rules/types";
 import { resolvePlace } from "./resolve";
 import { SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
-import type { PlaceEntry, PlaceIndex } from "./types";
+import type { PlaceEntry } from "./types";
 
 export interface PlacePicks {
   /** The state every pick is in, or null before anything is picked. */
@@ -62,23 +62,6 @@ export function uncheckedPicks(current: PlacePicks): PlaceEntry[] {
 /** True when a pick is in San Diego County, so the page offers the SDUHSD campus choice. */
 export function inSanDiegoCounty(current: PlacePicks): boolean {
   return current.picks.some((p) => p.state === SD_STATE && p.counties.includes(SD_COUNTY_FIPS));
-}
-
-/** The pick ids for a share link, in order. */
-export function pickIds(current: PlacePicks): string[] {
-  return current.picks.map((p) => p.id);
-}
-
-/**
- * The picks a share link names. Unknown ids are dropped, and so is any id in a state other than
- * the first known one, so a link can never mix states.
- */
-export function picksFromIds(index: PlaceIndex, ids: readonly string[]): PlacePicks {
-  const known = ids.map((id) => index.byId.get(id)).filter((e): e is PlaceEntry => e !== undefined);
-  if (known.length === 0) return NO_PICKS;
-  const state = known[0].state;
-  const picks = known.filter((e, i) => e.state === state && known.findIndex((k) => k.id === e.id) === i);
-  return { state, picks };
 }
 
 /** What the rules engine gets for the ride, and whether the page shows the SDUHSD campus choice. */

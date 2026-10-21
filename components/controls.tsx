@@ -132,21 +132,30 @@ export function Evidence({ label, texts }: { label: string; texts?: string[] }) 
   );
 }
 
-export function Card({ title, step, children }: { title: string; step?: number; children: ReactNode }) {
+interface CardProps {
+  title: string;
+  step?: number;
+  /** The heading level. A step is an h2. A card inside a step, like the follow-up questions, is an h3. */
+  level?: 2 | 3;
+  children: ReactNode;
+}
+
+export function Card({ title, step, level = 2, children }: CardProps) {
   // An id from useId, not from the title. aria-labelledby is a list split on spaces, so a title
   // like "Check the facts" would point at ids that don't exist and leave the region unnamed.
   const headingId = useId();
+  const Heading = level === 3 ? "h3" : "h2";
   return (
     <section className="card space-y-5" aria-labelledby={headingId}>
       {/* tabIndex -1 lets the page move keyboard focus to a card's heading without adding a tab stop. */}
-      <h2 id={headingId} tabIndex={-1} className="card-title">
+      <Heading id={headingId} tabIndex={-1} className="card-title">
         {step ? (
           <span aria-hidden="true" className="step">
             {step}
           </span>
         ) : null}
         {title}
-      </h2>
+      </Heading>
       {children}
     </section>
   );

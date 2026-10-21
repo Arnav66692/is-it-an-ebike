@@ -23,7 +23,8 @@ import { t } from "@/lib/i18n/ui";
 import { linkedPick, linkedWhere, pickLabels, SD_COUNTY_NAMES } from "@/lib/places/linked";
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { addPick, NO_PICKS, rideWhere, uncheckedPicks } from "@/lib/places/picks";
-import { entryIdForRecord, resolvePlace } from "@/lib/places/resolve";
+import { resolvePlace } from "@/lib/places/resolve";
+import { parseShareLink } from "@/lib/checkerState";
 import { placeLabel, searchPlaces } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndexFile } from "@/lib/places/types";
 import { PLACE_IDS } from "@/lib/rules";
@@ -178,19 +179,16 @@ describe("the search box on the page", () => {
 
   it("says the list didn't load, and tries again on the next use", async () => {
     let fail = true;
-    const onLoadFailed = vi.fn();
     const m = mount(PlaceSearch, {
       lang: "en" as Lang,
       picks: [],
       onPick: () => {},
       onRemove: () => {},
-      onLoadFailed,
       loadIndex: () => (fail ? Promise.reject(new Error("offline")) : Promise.resolve(INDEX)),
     });
     const input = () => one(m.tree(), (e) => e.type === "input" && e.props.role === "combobox", "combobox");
     m.act(() => call(input(), "onFocus"));
     await m.settle();
-    expect(onLoadFailed).toHaveBeenCalledTimes(1);
     expect(textOf(one(m.tree(), (e) => e.props.role === "status", "status"))).toBe(t("en", "whereFailed"));
     fail = false;
     m.act(() => call(input(), "onFocus"));
@@ -232,7 +230,7 @@ describe("old share links keep working", () => {
         continue;
       }
       if (!pick) throw new Error(`no pick for ${record}`);
-      expect(pick.id).toBe(entryIdForRecord(record));
+      expect(resolvePlace(entry(pick.id)).localRecord).toBe(record);
       const indexed = entry(pick.id);
       expect({ name: pick.name, geoid: pick.geoid, kind: pick.kind, counties: pick.counties, state: pick.state }).toEqual({
         name: indexed.name,
@@ -247,7 +245,10 @@ describe("old share links keep working", () => {
   });
 
   it("reads the QR flyer's link as the City of San Diego plus the SDUHSD campus", () => {
-    const linked = linkedWhere("CA", ["city_of_san_diego", "sduhsd_campuses"]);
+    // The link the flyer prints, read the way the page reads it on load.
+    const link = parseShareLink("?state=CA&place=city_of_san_diego,sduhsd_campuses");
+    expect(link.state).toBe("CA");
+    const linked = linkedWhere(link.state, link.places);
     expect(linked.where.picks.map((p) => p.id)).toEqual(["p-0666000"]);
     expect(linked.campus).toBe(true);
     expect(rideWhere(linked.where, "CA", linked.campus)).toEqual({ places: ["city_of_san_diego", "sduhsd_campuses"], otherPlaces: false, campusShown: true });
@@ -301,7 +302,7 @@ describe("the page, for an 11-year-old on a Class 2", () => {
     const note = () => textOf(elements(m.tree()).filter((e) => e.type === "p" && e.props.role === "status")[0]);
     const campusBox = () => elements(m.tree()).find((e) => e.type === "input" && e.props["aria-label"] === placeName("sduhsd_campuses", "en"));
     m.act(() => call(find(BikeInput, "bike input"), "onManual"));
-    const age = one(m.tree(), (e) => e.type === "input" && e.props.type === "number", "age box");
+    const age = one(m.tree(), (e) => e.type === "input" && e.props.name === "age", "age box");
     m.act(() => call(age, "onChange", { target: { value: "11" } }));
     m.act(() => call(find(FactsCard, "facts card"), "onChange", classBike(2)));
     m.act(() => call(find(FactsCard, "facts card"), "onCheck"));

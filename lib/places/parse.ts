@@ -4,7 +4,7 @@
 import { stateName } from "@/lib/i18n/names";
 import { STATE_CODES } from "@/lib/rules/compile";
 import { normalizeName } from "./normalize";
-import { SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
+import { SD_COUNTY_ALSO_KNOWN_AS, SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
 import { neighborhoodId, SD_CITY_NEIGHBORHOODS, SD_NEIGHBORHOODS } from "./sdNeighborhoods";
 import { KIND_LETTERS, type PlaceEntry, type PlaceIndex, type PlaceIndexFile } from "./types";
 
@@ -81,7 +81,7 @@ export function parsePlaceIndex(file: PlaceIndexFile): PlaceIndex {
   if ([...codes].sort().join() !== [...STATE_CODES].sort().join()) throw new Error("The place index states don't match the rules table");
   const fipsToState = new Map(file.states.map(([code, fips]) => [fips, code]));
 
-  const aliases = file.aliases ?? {};
+  const aliases: Record<string, readonly string[]> = { ...(file.aliases ?? {}), [`c-${SD_COUNTY_FIPS}`]: [...(file.aliases?.[`c-${SD_COUNTY_FIPS}`] ?? []), ...SD_COUNTY_ALSO_KNOWN_AS] };
   const rows = file.rows.map((row, i) => {
     const e = rowEntry(row, i, file, fipsToState);
     const more = aliases[e.id];

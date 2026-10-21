@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { tabTap, type InputTab, type RequestGate } from "@/lib/checkerState";
 import { parseSpecText, type Extraction, type TextSource } from "@/lib/extract/parse";
 import type { Lang } from "@/lib/i18n/names";
@@ -88,12 +88,15 @@ function LabelReader({ lang, onRead, gate }: ReaderProps) {
           e.target.value = "";
         }}
       />
+      {/* The status line is always on the page, empty until a photo is read, so a screen reader
+          hears "Reading the label" when it appears. A live region added with its words already in
+          it is often not read out. */}
+      <p role="status" className={progress !== null ? "meta" : "sr-only"}>
+        {progress !== null ? t(lang, "reading") : ""}
+      </p>
       {progress !== null ? (
-        <div role="status" aria-live="polite" className="space-y-1">
-          <p className="meta">{t(lang, "reading")}</p>
-          <div className="bar">
-            <div style={{ width: `${Math.round(progress * 100)}%` }} />
-          </div>
+        <div className="bar" role="progressbar" aria-label={t(lang, "reading")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)}>
+          <div style={{ width: `${Math.round(progress * 100)}%` }} />
         </div>
       ) : null}
       {error ? (
@@ -190,39 +193,82 @@ function LinkReader({ lang, onRead, gate }: ReaderProps) {
   );
 }
 
+const TABS: { id: Tab; key: UiKey }[] = [
+  { id: "label", key: "tabLabel" },
+  { id: "link", key: "tabLink" },
+  { id: "type", key: "tabType" },
+];
+
+/**
+ * The tab the arrow keys move to, following the ARIA tabs pattern: Left and Right wrap, Home and
+ * End go to the ends. Null for any other key. Moving only moves focus. Enter or Space opens the
+ * tab, since opening "Type it in" starts a new bike (manual activation in the pattern).
+ */
+export function tabKey(index: number, key: string, count: number): number | null {
+  switch (key) {
+    case "ArrowRight":
+      return (index + 1) % count;
+    case "ArrowLeft":
+      return (index - 1 + count) % count;
+    case "Home":
+      return 0;
+    case "End":
+      return count - 1;
+    default:
+      return null;
+  }
+}
+
 export function BikeInput({ lang, onRead, onManual, gate }: Props) {
   const [tab, setTab] = useState<Tab>("label");
-  const tabs: { id: Tab; key: UiKey }[] = [
-    { id: "label", key: "tabLabel" },
-    { id: "link", key: "tabLink" },
-    { id: "type", key: "tabType" },
-  ];
+  const baseId = useId();
+  const tabId = (id: Tab) => `${baseId}-tab-${id}`;
+  const panelId = `${baseId}-panel`;
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+
+  function open(next: Tab) {
+    const tap = tabTap(tab, next);
+    if (!tap.change) return;
+    // A label or link still being read is for the tab the family just left.
+    gate.cancel();
+    setTab(next);
+    if (tap.manual) onManual();
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const to = tabKey(index, e.key, TABS.length);
+    if (to === null) return;
+    e.preventDefault();
+    buttons.current[to]?.focus();
+  }
+
   return (
     <Card title={t(lang, "step2")} step={2}>
       <div role="tablist" className="tabs" aria-label={t(lang, "step2")}>
-        {tabs.map((x) => (
+        {TABS.map((x, i) => (
           <button
             key={x.id}
+            ref={(el) => {
+              buttons.current[i] = el;
+            }}
+            id={tabId(x.id)}
             type="button"
             role="tab"
             aria-selected={tab === x.id}
-            onClick={() => {
-              const tap = tabTap(tab, x.id);
-              if (!tap.change) return;
-              // A label or link still being read is for the tab the family just left.
-              gate.cancel();
-              setTab(x.id);
-              if (tap.manual) onManual();
-            }}
+            aria-controls={panelId}
+            // Only the open tab is a Tab stop. The arrow keys move between the tabs.
+            tabIndex={tab === x.id ? 0 : -1}
+            onKeyDown={(e) => onKeyDown(e, i)}
+            onClick={() => open(x.id)}
           >
             {t(lang, x.key)}
           </button>
         ))}
       </div>
-      <div role="tabpanel" className="pt-1">
+      <div role="tabpanel" id={panelId} aria-labelledby={tabId(tab)} className="pt-1">
         {tab === "label" ? <LabelReader lang={lang} onRead={onRead} gate={gate} /> : null}
         {tab === "link" ? <LinkReader lang={lang} onRead={onRead} gate={gate} /> : null}
-        {tab === "type" ? <p className="help">{t(lang, "step3Help")}</p> : null}
+        {tab === "type" ? <p className="help">{t(lang, "typeHelp")}</p> : null}
       </div>
     </Card>
   );

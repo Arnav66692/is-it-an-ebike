@@ -143,7 +143,7 @@ describe("the page answers YES or NO at every step, and keeps Not sure as an inp
 
     const facts = () => find(FactsCard, "facts card").props.facts as BikeFacts;
     m.act(() => call(find(BikeInput, "bike input"), "onManual"));
-    const age = one(tree(), (e) => e.type === "input" && e.props.type === "number", "age box");
+    const age = one(tree(), (e) => e.type === "input" && e.props.name === "age", "age box");
     m.act(() => call(age, "onChange", { target: { value: "30" } }));
     m.act(() => call(find(FactsCard, "facts card"), "onChange", OPEN));
     m.act(() => call(find(FactsCard, "facts card"), "onCheck"));

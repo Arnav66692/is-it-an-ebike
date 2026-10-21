@@ -233,7 +233,7 @@ function checkerPage() {
   if (!box) throw new Error("No facts box on the page");
   Object.assign(box, { querySelector: (selector: string) => (selector === "h2" ? heading : null) });
   const ageBox = () => {
-    const node = dom.nodeOf(one(m.tree(), (e) => e.type === "input" && e.props.type === "number", "age box"));
+    const node = dom.nodeOf(one(m.tree(), (e) => e.type === "input" && e.props.name === "age", "age box"));
     if (!node) throw new Error("No age box on the page");
     return node;
   };

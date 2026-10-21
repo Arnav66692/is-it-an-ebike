@@ -72,6 +72,12 @@ export function comboStatus(lang: Lang, query: string, loading: boolean, failed:
   return count === 1 ? t(lang, "whereCountOne") : t(lang, "whereCountMany", { n: count });
 }
 
+/** True when the status line is shown on the page: a failed load, or text typed while loading or with no match. */
+export function statusVisible(query: string, loading: boolean, failed: boolean, count: number): boolean {
+  if (failed) return true;
+  return query.trim() !== "" && (loading || count === 0);
+}
+
 /** The second line of a result: what kind of place it is, then its county and state. */
 export function resultDetail(entry: PlaceEntry, label: PlaceLabel, lang: Lang): string {
   const key = `kind_${entry.kind}`;
@@ -103,8 +109,6 @@ interface Props {
   picks: ChipPick[];
   onPick: (entry: PlaceEntry, labels: PickLabels) => void;
   onRemove: (id: string) => void;
-  /** Called when the index fails to load, so the page can point to the state picker. */
-  onLoadFailed?: () => void;
   /** Loads the place index. Tests pass their own. */
   loadIndex?: () => Promise<PlaceIndex>;
 }
@@ -118,7 +122,7 @@ function SearchIcon() {
   );
 }
 
-export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadIndex = loadPlaceIndex }: Props) {
+export function PlaceSearch({ lang, picks, onPick, onRemove, loadIndex = loadPlaceIndex }: Props) {
   const inputId = useId();
   const helpId = useId();
   const listId = useId();
@@ -143,7 +147,6 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
       .catch(() => {
         setLoading(false);
         setFailed(true);
-        onLoadFailed?.();
       });
   }
 
@@ -152,6 +155,9 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
   const expanded = combo.open && results.length > 0;
   const optionId = (i: number) => `${listId}-o${i}`;
   const status = comboStatus(lang, query, loading || (index === null && !failed), failed, results.length);
+  // The count is only read out, since the list shows it. Loading, no match and a failed load are
+  // shown too, so a family who mistypes sees why no list opened.
+  const statusShown = statusVisible(query, loading || (index === null && !failed), failed, results.length);
 
   // The highlighted place stays in view as the arrow keys move through a list that scrolls.
   useEffect(() => {
@@ -245,7 +251,7 @@ export function PlaceSearch({ lang, picks, onPick, onRemove, onLoadFailed, loadI
         </ul>
       </div>
       {/* Always on the page, so a screen reader hears each change in the count. */}
-      <p role="status" className={failed ? "help font-semibold" : "sr-only"}>
+      <p role="status" className={statusShown ? "combo-status" : "sr-only"} data-shown={statusShown ? "true" : "false"}>
         {status}
       </p>
       {picks.length > 0 ? (

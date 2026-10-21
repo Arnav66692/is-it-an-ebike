@@ -120,7 +120,7 @@ function Section({ title, lines, lang, state }: { title: string; lines: Line[]; 
   if (shown.length === 0) return null;
   return (
     <div className="space-y-2">
-      <h4 className="eyebrow text-muted">{title}</h4>
+      <h5 className="eyebrow text-muted">{title}</h5>
       <ul className="list-disc space-y-2 pl-5">
         {shown.map((l, i) => (
           <LineItem key={`${l.code}-${i}`} line={l} lang={lang} state={state} />
@@ -160,7 +160,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
   return (
     <article className="card place space-y-2" data-status={verdict.status} data-answer={answer} aria-label={title}>
       <header className="place-head">
-        <h3 className="place-title">{title}</h3>
+        <h4 className="place-title">{title}</h4>
         <p className="badge" data-status={verdict.status} data-answer={answer}>
           <span aria-hidden="true">{answer === "yes" ? "✓" : "✕"}</span>
           <span>{t(lang, answer === "yes" ? "blYes" : "blNo")}</span>
@@ -177,7 +177,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
         <div className="more-body">
           {held ? (
             <div className="space-y-2">
-              <h4 className="eyebrow text-muted">{t(lang, "cardRuleSays")}</h4>
+              <h5 className="eyebrow text-muted">{t(lang, "cardRuleSays")}</h5>
               <p>{reason}</p>
             </div>
           ) : null}
@@ -198,7 +198,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
 
           {verdict.sources.length > 0 ? (
             <div className="space-y-2">
-              <h4 className="eyebrow text-muted">{t(lang, "sources")}</h4>
+              <h5 className="eyebrow text-muted">{t(lang, "sources")}</h5>
               <ul className="space-y-2 text-[0.95rem]">
                 {verdict.sources.map((s, i) => (
                   <SourceItem key={`${s.citation}-${i}`} source={s} lang={lang} />

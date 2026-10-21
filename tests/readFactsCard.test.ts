@@ -49,8 +49,8 @@ describe("the words a family reads", () => {
     const result = evaluate({ state: "CA", riderAge: 11, rideDate: DAY, facts: classBike(2), places: ["encinitas"] });
     const bl = bottomLine(result, DAY, ["classes", "ratedWatts"]);
     expect(subtitleKey(bl)).toBe("blFactsSub");
-    expect(whereLabel([], "en", "CA")).toBe("The facts I read");
-    expect(whereLabel([], "es", "CA")).toBe("Los datos que leí");
+    expect(whereLabel([], "en", "CA")).toBe("The facts we read");
+    expect(whereLabel([], "es", "CA")).toBe("Los datos que leímos");
     for (const lang of ["en", "es"] as const) {
       const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" })).replace(/&#x27;/g, "'");
       expect(html).toContain(t(lang, "blFactsWhere"));

@@ -8,8 +8,8 @@ import { stateName } from "@/lib/i18n/names";
 import { loadPlaceIndex, PLACE_INDEX_URL, resetPlaceIndex } from "@/lib/places/load";
 import { normalizeName } from "@/lib/places/normalize";
 import { parsePlaceIndex } from "@/lib/places/parse";
-import { addPick, engineWhere, inSanDiegoCounty, NO_PICKS, pickIds, picksFromIds, removePick } from "@/lib/places/picks";
-import { entryIdForRecord, resolvePlace } from "@/lib/places/resolve";
+import { addPick, engineWhere, inSanDiegoCounty, NO_PICKS, removePick } from "@/lib/places/picks";
+import { resolvePlace } from "@/lib/places/resolve";
 import { CHECKED_CITIES, NOT_COUNTY_LAND, SD_COUNTY_FIPS } from "@/lib/places/sanDiego";
 import { enterChoice, placeLabel, searchPlaces, searchResults } from "@/lib/places/search";
 import { SD_CITY_NEIGHBORHOODS, SD_NEIGHBORHOODS } from "@/lib/places/sdNeighborhoods";
@@ -372,7 +372,7 @@ describe("picks", () => {
     const one = addPick(NO_PICKS, carlsbad);
     const two = addPick(one.next, carmelValley);
     expect(two.startedOver).toBeNull();
-    expect(pickIds(two.next)).toEqual(["p-0611194", "n-carmel-valley"]);
+    expect(two.next.picks.map((p) => p.id)).toEqual(["p-0611194", "n-carmel-valley"]);
     expect(addPick(two.next, carlsbad).next).toBe(two.next);
   });
 
@@ -411,23 +411,6 @@ describe("picks", () => {
     expect(inSanDiegoCounty(addPick(NO_PICKS, austin).next)).toBe(false);
   });
 
-  it("reads back from a share link, dropping unknown ids and ids in another state", () => {
-    const back = picksFromIds(INDEX, ["p-0611194", "nope", "p-4805000", "n-carmel-valley", "p-0611194"]);
-    expect(back).toEqual({ state: "CA", picks: [carlsbad, carmelValley] });
-    expect(picksFromIds(INDEX, ["nope"])).toEqual(NO_PICKS);
-  });
-
-  it("keeps old share links working by mapping each checked record to its place", () => {
-    for (const record of PLACE_IDS) {
-      const id = entryIdForRecord(record);
-      if (record === "sduhsd_campuses") {
-        expect(id).toBeNull();
-        continue;
-      }
-      expect(id).not.toBeNull();
-      expect(resolvePlace(entry(id ?? "")).localRecord).toBe(record);
-    }
-  });
 });
 
 describe("the engine with search picks", () => {

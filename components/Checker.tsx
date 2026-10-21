@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { checkerToday, focusGate, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, readMayMoveFocus, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
@@ -53,18 +53,33 @@ function readInitial(): Initial {
   };
 }
 
-/** A status line about the places: one added or removed, or a start over in another state. */
-interface WhereNote {
-  key: "whereAdded" | "whereRemoved" | "whereStartedOver" | "whereStateSwitched";
+/**
+ * A status line about the places: one added, removed or already there, or a move to another
+ * state's law. A move to another state is shown on the page, not only read out, and so is the
+ * SDUHSD campus choice it removes.
+ */
+export interface WhereNote {
+  key: "whereAdded" | "whereRemoved" | "whereAlready" | "whereStartedOver" | "whereStateSwitched" | "whereAddedNewState" | "whereNewState";
   place?: PickLabels;
   from?: string;
   to?: string;
+  /** The SDUHSD campus was ticked and the move to another state removed it. */
+  campusRemoved?: boolean;
 }
 
-function whereNoteText(note: WhereNote | null, lang: Lang): string {
+export function whereNoteText(note: WhereNote | null, lang: Lang): string {
   if (!note) return "";
-  if (note.place) return t(lang, note.key, { place: note.place[lang].text });
-  return t(lang, note.key, { from: stateName(note.from ?? "", lang), to: stateName(note.to ?? "", lang) });
+  const main = t(lang, note.key, {
+    place: note.place?.[lang].text ?? "",
+    from: stateName(note.from ?? "", lang),
+    to: stateName(note.to ?? "", lang),
+  });
+  return note.campusRemoved ? `${main} ${t(lang, "whereCampusRemoved")}` : main;
+}
+
+/** True when the note says the answer moved to another state's law, so it is shown, not only read out. */
+export function whereNoteShown(note: WhereNote | null): boolean {
+  return note !== null && (note.to !== undefined || note.campusRemoved === true);
 }
 
 function storeLang(lang: Lang): void {
@@ -83,6 +98,13 @@ export function Checker() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
+  const bikeRef = useRef<HTMLDivElement>(null);
+  // Set when "Check a future date" swaps its button for the date box, so focus moves to the box.
+  const focusDate = useRef(false);
+  // Set by Start over, so focus moves to the bike step once the answer is gone.
+  const focusBike = useRef(false);
+  // The control the family used last in the answer step, so it keeps focus if the questions move.
+  const answerFocus = useRef<Element | null>(null);
 
   const [initial] = useState(readInitial);
   const [lang, setLang] = useState<Lang>(initial.lang);
@@ -132,6 +154,21 @@ export function Checker() {
     if (!readMayMoveFocus(document.activeElement, document.body, readGate.startedFrom())) return;
     factsRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }, [round, readGate]);
+
+  // "Check a future date" is replaced by the date box, so focus goes to the box, not to the page.
+  useEffect(() => {
+    if (!pickDate || !focusDate.current) return;
+    focusDate.current = false;
+    dateRef.current?.focus();
+  }, [pickDate]);
+
+  // Start over removes the answer and the buttons under it, Start over among them. Focus goes to
+  // the bike step's heading, where the next step is, instead of falling to the page.
+  useEffect(() => {
+    if (!focusBike.current) return;
+    focusBike.current = false;
+    bikeRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+  }, [starts]);
 
   // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
   // comes back into view, so an old tab never answers for yesterday.
@@ -197,6 +234,16 @@ export function Checker() {
     setAsked(shown);
   }
   const questions = shown.ids;
+  // Questions still open come before the answer. Once they are answered, the answer leads and the
+  // questions move under the place cards, where they can still be changed.
+  const questionsFirst = pending.length > 0;
+  // React moves the questions card, not draws it again, so its state stays. A browser drops focus
+  // from a moved element, so the control the family just used gets focus back.
+  useLayoutEffect(() => {
+    const el = answerFocus.current as HTMLElement | null;
+    answerFocus.current = null;
+    if (el && el !== document.activeElement && el.isConnected !== false) el.focus?.({ preventScroll: true });
+  }, [questionsFirst]);
 
   const sortedStates = [...STATE_CODES].sort((a, b) => stateName(a, lang).localeCompare(stateName(b, lang), lang));
 
@@ -210,6 +257,7 @@ export function Checker() {
    * replaced them first (editOn in lib/provenance.ts).
    */
   function editFacts(next: BikeFacts, answered?: readonly ReadField[]) {
+    answerFocus.current = typeof document === "undefined" ? null : document.activeElement;
     setReadNote(null);
     setBike(editOn(facts, next, answered));
   }
@@ -285,11 +333,19 @@ export function Checker() {
     const change = addPick(where, entry);
     setLabels((cur) => ({ ...cur, [entry.id]: entryLabels }));
     setWhere(change.next);
-    if (entry.state !== stateCode) {
+    if (change.next === where) {
+      setWhereNote({ key: "whereAlready", place: entryLabels });
+      return;
+    }
+    const moved = entry.state !== stateCode;
+    const campusRemoved = moved && campus;
+    if (moved) {
       setStateCode(entry.state);
       setCampus(false);
     }
-    setWhereNote(change.startedOver ? { key: "whereStartedOver", ...change.startedOver } : { key: "whereAdded", place: entryLabels });
+    if (change.startedOver) setWhereNote({ key: "whereStartedOver", ...change.startedOver, campusRemoved });
+    else if (moved) setWhereNote({ key: "whereAddedNewState", place: entryLabels, to: entry.state, campusRemoved });
+    else setWhereNote({ key: "whereAdded", place: entryLabels });
   }
 
   function removePlace(id: string) {
@@ -301,10 +357,12 @@ export function Checker() {
   function pickState(code: string) {
     if (code === stateCode) return;
     const had = where.picks.length > 0;
+    const campusRemoved = campus;
     setStateCode(code);
     setCampus(false);
     setWhere({ state: code, picks: [] });
-    setWhereNote(had ? { key: "whereStateSwitched", from: stateCode, to: code } : null);
+    if (had) setWhereNote({ key: "whereStateSwitched", from: stateCode, to: code, campusRemoved });
+    else setWhereNote(campusRemoved ? { key: "whereNewState", to: code, campusRemoved } : null);
   }
 
   function switchLang() {
@@ -340,7 +398,7 @@ export function Checker() {
           onPick={pickPlace}
           onRemove={removePlace}
         />
-        <p role="status" className={whereNote?.from ? "note" : "sr-only"}>
+        <p role="status" className={whereNoteShown(whereNote) ? "note" : "sr-only"}>
           {whereNoteText(whereNote, lang)}
         </p>
 
@@ -390,10 +448,13 @@ export function Checker() {
             <input
               id={ageId}
               ref={ageRef}
-              type="number"
+              name="age"
+              // A text box with a number keypad, not type="number", which a mouse wheel, a trackpad or
+              // an arrow key can change. The age decides answers at 12, 15 and 16, so only typing changes it.
+              type="text"
               inputMode="numeric"
-              min={MIN_AGE_INPUT}
-              max={MAX_AGE_INPUT}
+              autoComplete="off"
+              spellCheck={false}
               value={ageText}
               onChange={(e) => setAgeText(e.target.value)}
               aria-invalid={ageError && !ageValid}
@@ -443,6 +504,7 @@ export function Checker() {
                   className="link-btn"
                   onClick={() => {
                     setDateText(today);
+                    focusDate.current = true;
                     setPickDate(true);
                   }}
                 >
@@ -454,7 +516,9 @@ export function Checker() {
         </div>
       </Card>
 
-      <BikeInput key={`input-${starts}`} lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
+      <div ref={bikeRef} className="bike-step scroll-mt-4">
+        <BikeInput key={`input-${starts}`} lang={lang} onRead={handleRead} onManual={handleManual} gate={readGate} />
+      </div>
 
       <p role="status" className="sr-only">
         {readNote !== null ? readAnnouncement(lang, readNote) : ""}
@@ -487,13 +551,21 @@ export function Checker() {
               </span>
               {t(lang, "results")}
             </h2>
-            <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />
-            {summary ? <BottomLineCard line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null}
-            <p className="section-label">{t(lang, "byPlace")}</p>
-            <VerdictCard verdict={result.state} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} showLocalNotice={result.localNotice} />
-            {result.local.map((v) => (
-              <VerdictCard key={v.id} verdict={v} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} />
-            ))}
+            {/* One keyed list, so the questions card moves when the answer comes first and keeps its state. */}
+            {(() => {
+              const questionsCard = <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />;
+              const answer = [
+                summary ? <BottomLineCard key="bottom-line" line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null,
+                <h3 key="by-place" className="section-label">
+                  {t(lang, "byPlace")}
+                </h3>,
+                <VerdictCard key={`card-${result.state.id}`} verdict={result.state} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} showLocalNotice={result.localNotice} />,
+                ...result.local.map((v) => (
+                  <VerdictCard key={`card-${v.id}`} verdict={v} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} />
+                )),
+              ];
+              return questionsFirst ? [questionsCard, ...answer] : [...answer, questionsCard];
+            })()}
           </>
         ) : (
           <LaterStep title={t(lang, "results")} step={4} hint={t(lang, "stepLater4")} />
@@ -506,7 +578,7 @@ export function Checker() {
         {result ? (
           <div className="actions no-print">
             <button type="button" className="btn btn-quiet" onClick={goToFacts}>
-              {t(lang, "editFacts")}
+              {t(lang, checkCounts(bike.checks).read > 0 ? "editFacts" : "editFactsTyped")}
             </button>
             <button
               type="button"
@@ -519,7 +591,8 @@ export function Checker() {
                 setReadNote(null);
                 setEvidence({});
                 setFlags([]);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                focusBike.current = true;
+                scrollTo(bikeRef);
               }}
             >
               {t(lang, "startOver")}

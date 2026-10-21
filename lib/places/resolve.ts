@@ -60,13 +60,3 @@ export function resolvePlace(entry: PlaceEntry): PlaceResolution {
       return stateOnly(entry);
   }
 }
-
-/**
- * The index entry that stands for a checked record in an old share link, like ?place=carlsbad, so
- * those links keep working. Null for the SDUHSD campus record, which stays its own choice.
- */
-export function entryIdForRecord(record: PlaceId): string | null {
-  if (record === UNINCORPORATED) return `c-${SD_COUNTY_FIPS}`;
-  const city = CHECKED_CITIES.find((c) => c.record === record);
-  return city ? `p-${city.geoid}` : null;
-}

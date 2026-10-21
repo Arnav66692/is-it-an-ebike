@@ -85,7 +85,7 @@ describe("the City of San Diego neighborhoods", () => {
     }
   });
 
-  it("gives each neighborhood an id the share link can carry", () => {
+  it("gives each neighborhood a plain id", () => {
     expect(neighborhoodId("carmel-valley")).toBe("n-carmel-valley");
     for (const n of SD_NEIGHBORHOODS) expect(neighborhoodId(n.slug)).toMatch(/^n-[a-z-]+$/);
   });

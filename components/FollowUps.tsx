@@ -70,7 +70,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
   };
 
   return (
-    <Card title={t(lang, "questionsTitle")}>
+    <Card title={t(lang, "questionsTitle")} level={3}>
       <p className="help">{t(lang, "questionsHelp")}</p>
 
       {questions.includes("wheels") ? (
@@ -100,7 +100,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           <label className="check">
             <input
               type="checkbox"
-              aria-label={`${t(lang, "front")} / ${t(lang, "rear")}`}
+              aria-label={t(lang, "wheelsDiffer")}
               checked={!sameSize}
               onChange={(e) => {
                 const one = !e.target.checked;
@@ -109,9 +109,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
                 if (one && facts.wheelRearIn !== facts.wheelFrontIn) onChange(withOneWheelSize(facts));
               }}
             />
-            <span>
-              {t(lang, "front")} / {t(lang, "rear")}
-            </span>
+            <span>{t(lang, "wheelsDiffer")}</span>
           </label>
           <Choice
             legend={t(lang, "wheelCount")}

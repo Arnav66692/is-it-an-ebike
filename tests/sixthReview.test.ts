@@ -229,7 +229,8 @@ describe("tapping the input tab that is already open changes nothing", () => {
 
   it("is what the tabs use", () => {
     const source = readFileSync(join(__dirname, "..", "components", "BikeInput.tsx"), "utf8");
-    expect(source).toContain("const tap = tabTap(tab, x.id);");
+    expect(source).toContain("const tap = tabTap(tab, next);");
+    expect(source).toContain("onClick={() => open(x.id)}");
     expect(source).toContain("if (!tap.change) return;");
     expect(source).not.toMatch(/if \(x\.id === "type"\) onManual\(\)/);
   });
