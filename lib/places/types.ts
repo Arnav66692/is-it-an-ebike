@@ -42,6 +42,8 @@ export interface PlaceEntry {
   city?: string;
   /** A school district's NCES LEA type, 1 to 9. Types 1 and 2 are regular districts. */
   districtType?: number;
+  /** True when another district has the same name, office city, county and type, so its label adds the NCES ID. */
+  sharesLabel?: boolean;
 }
 
 export interface PlaceDataSource {

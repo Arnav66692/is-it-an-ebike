@@ -27,6 +27,8 @@ interface Form {
   state: string | null;
   /** Only places in a county whose name starts with this key. */
   county: string | null;
+  /** Only school districts whose office city starts with this key, like "Encinitas". */
+  city?: string | null;
 }
 
 /**
@@ -100,6 +102,8 @@ function formsOf(index: PlaceIndex, text: string): Form[] {
       const exact = stateFor(index, qualifier);
       if (exact) return [...forms, { variants: name, state: exact, county: null }];
       forms.push({ variants: name, state: null, county: qualifier });
+      // A district's label names its office city after the comma, so that is searched too.
+      forms.push({ variants: name, state: null, county: null, city: qualifier });
       for (const state of statesFor(index, qualifier, 1)) forms.push({ variants: name, state, county: null });
     }
     return forms;
@@ -183,7 +187,8 @@ export function searchResults(index: PlaceIndex, text: string, limit: number = D
     for (const entry of index.entries) {
       if (form.state && entry.state !== form.state) continue;
       if (form.county && !inCounty(index, entry, form.county)) continue;
-      const tier = matchTier(entry, form.variants, form.state === null && form.county === null);
+      if (form.city && !(entry.kind === "district" && normalizeName(entry.city ?? "").startsWith(form.city))) continue;
+      const tier = matchTier(entry, form.variants, form.state === null && form.county === null && !form.city);
       if (tier === null) continue;
       const group = groupOf(entry, tier);
       const seen = best.get(entry.id);
@@ -267,7 +272,7 @@ export function placeLabel(index: CountyNames, entry: PlaceEntry, lang: Lang): P
   if (entry.kind === "district") {
     // A district's office city, then its county. The county is blank for a district new since the NCES geocodes.
     const county = entry.counties.length > 0 ? countyText(index, entry, lang) : "";
-    const where = [entry.city ?? "", county].filter(Boolean).join(", ");
+    const where = [entry.city ?? "", county, entry.sharesLabel ? `NCES ID ${entry.geoid ?? ""}` : ""].filter(Boolean).join(", ");
     return { name: entry.name, where, state: entry.state, text: [entry.name, where, entry.state].filter(Boolean).join(", ") };
   }
   const county = countyText(index, entry, lang);

@@ -90,7 +90,13 @@ export function parseDistricts(file: DistrictIndexFile, states: readonly string[
   if (file.checked?.length !== 1 || file.checked[0] !== SDUHSD_LEAID) throw new Error("The district file says a district other than SDUHSD is checked");
   const countyNames = new Map(file.counties);
   const stateSet = new Set(states);
-  const entries = file.rows.map((row, n) => districtEntry(row, n, stateSet, countyNames));
+  const parsed = file.rows.map((row, n) => districtEntry(row, n, stateSet, countyNames));
+  // Two districts, like the Excel Academy Charter Districts in Irvine, can read the same in every
+  // way NCES gives. Their labels add the NCES ID, so a family can tell them apart.
+  const labelKey = (e: PlaceEntry) => [e.name, e.state, e.counties[0] ?? "", e.city ?? "", e.districtType ?? 0].join("|");
+  const seen = new Map<string, number>();
+  for (const e of parsed) seen.set(labelKey(e), (seen.get(labelKey(e)) ?? 0) + 1);
+  const entries = parsed.map((e) => ((seen.get(labelKey(e)) ?? 0) > 1 ? { ...e, sharesLabel: true } : e));
   const sduhsd = entries.find((e) => e.geoid === SDUHSD_LEAID);
   if (!sduhsd || sduhsd.state !== SD_STATE || sduhsd.counties[0] !== SD_COUNTY_FIPS) throw new Error("The district file has no San Dieguito Union High in San Diego County");
   return { entries, countyNames };

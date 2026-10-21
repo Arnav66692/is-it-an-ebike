@@ -170,7 +170,8 @@ interface Props {
  */
 export function uncheckedLine(line: BottomLine, lang: Lang, names: readonly string[] = [], districts: readonly string[] = []): string | null {
   if (line.citiesChecked && !line.uncheckedPlaces) return null;
-  const districtLine = districts.length > 0 ? t(lang, "blDistrictUnchecked", { list: joinList([...districts], lang) }) : null;
+  // Two picked districts can share a name, so each name is said once.
+  const districtLine = districts.length > 0 ? t(lang, "blDistrictUnchecked", { list: joinList([...new Set(districts)], lang) }) : null;
   const placeLine =
     names.length > 0
       ? t(lang, "blLocalUnchecked", { list: joinList([...names], lang) })

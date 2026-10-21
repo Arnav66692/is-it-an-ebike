@@ -12,6 +12,7 @@ import { Checker } from "@/components/Checker";
 import { FactsCard } from "@/components/FactsCard";
 import { PlaceSearch } from "@/components/PlaceSearch";
 import { pickLabels } from "@/lib/places/linked";
+import { placeLabel, searchResults } from "@/lib/places/search";
 import { elements, mount, one, textOf, type El } from "./hooks";
 import { ModAnswerCard, modsAge, overallReason } from "@/components/ModsCheck";
 import { answerMod, modApplies, outcomesFor, type ModChoice } from "@/lib/mods/answer";
@@ -325,5 +326,24 @@ describe("pages with places picked", () => {
     const card = one(m.tree(), (e) => e.type === BottomLineCard, "bottom line");
     const html = renderToStaticMarkup(card);
     expect(html).toMatch(/were not checked/);
+  });
+});
+
+describe("district search and labels", () => {
+  it("finds a district by the office city its label shows after a comma", () => {
+    expect(searchResults(INDEX, "san dieguito union high, encinitas").map((r) => r.entry.id)).toContain("d-0634380");
+    expect(searchResults(INDEX, "poway unified, san diego").map((r) => r.entry.id)).toContain("d-0631530");
+    expect(searchResults(INDEX, "san dieguito union high, san diego county").map((r) => r.entry.id)).toContain("d-0634380");
+  });
+
+  it("tells two districts with the same name, city, county and type apart, and names them once", () => {
+    const a = placeLabel(INDEX, entry("d-0602487"), "en").text;
+    const b = placeLabel(INDEX, entry("d-0602500"), "en").text;
+    expect(a).not.toBe(b);
+    expect(a).toContain("NCES ID 0602487");
+    expect(placeLabel(INDEX, entry("d-0631530"), "en").text).not.toContain("NCES ID");
+    const line = bottomLine(evaluate({ state: "CA", riderAge: 16, rideDate: TODAY, facts: classBike(1), places: [], otherPlaces: true }), TODAY);
+    const said = uncheckedLine(line, "en", [], ["Excel Academy Charter District", "Excel Academy Charter District"]) ?? "";
+    expect(said.match(/Excel Academy/g)).toHaveLength(1);
   });
 });
