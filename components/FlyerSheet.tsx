@@ -30,16 +30,16 @@ export function FlyerSheet({ qr, url }: Props) {
         </div>
       ) : (
         <div className="qr-frame">
-          <div className="h-64 w-64 max-w-full bg-sunk" aria-hidden="true" />
+          <div className="aspect-square w-64 max-w-full bg-sunk" aria-hidden="true" />
         </div>
       )}
       <div className="space-y-2">
         <p className="flyer-line text-lg font-semibold">Scan to check one bike for one rider and get a plain YES or NO.</p>
-        <p className="help">Class label, product link or type it in.</p>
+        <p className="help">Label photo, product link or typed-in facts.</p>
       </div>
       <div className="space-y-2" lang="es">
         <p className="flyer-line text-lg font-semibold">Escanea para revisar una bicicleta para una persona y recibir un SÍ o un NO claro.</p>
-        <p className="help">Etiqueta, enlace o escribe los datos.</p>
+        <p className="help">Foto de la etiqueta, enlace o datos escritos.</p>
       </div>
       <p className="url-pill" data-empty={url === "" ? "true" : undefined}>
         {url}

@@ -117,7 +117,7 @@ describe("the wheel size question", () => {
     expect(html).toContain('aria-label="Front and rear wheels are different sizes"');
     expect(html).not.toContain('aria-label="Front (inches) / Rear (inches)"');
     // The questions card sits inside step 4, so its heading is an h3, under "The answer".
-    expect(html).toMatch(/<h3[^>]*>A few quick questions<\/h3>/);
+    expect(html).toMatch(/<h3[^>]*>Questions about this bike<\/h3>/);
   });
 });
 

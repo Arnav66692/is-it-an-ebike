@@ -215,7 +215,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
           <>
             <p>{t(lang, "photoCheckSize", { mb: PEDAL_MODEL_MB })}</p>
             <p className="meta">{t(lang, "photoCheckTested")}</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="actions">
               <button ref={startButton} type="button" className="btn" onClick={() => void accept()}>
                 {t(lang, "photoCheckStart")}
               </button>

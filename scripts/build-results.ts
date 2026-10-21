@@ -9,6 +9,7 @@ import { join } from "node:path";
 import { DATES, runBottomLineMatrix, runMatrix, SHAPES, VARIANTS, type ReadVariant } from "../tests/matrix";
 import { stateCheckedThrough } from "../lib/rules/bottomLine";
 import { getState, STATE_CODES } from "../lib/rules/compile";
+import { PLACE_IDS } from "../lib/rules/local";
 
 const root = join(__dirname, "..");
 const read = <T>(path: string): T | null => {
@@ -90,8 +91,8 @@ const accuracy = {
   generated_at: new Date().toISOString(),
   commit: commit(),
   engine: {
-    states: 51,
-    san_diego_places: 7,
+    states: STATE_CODES.length,
+    san_diego_places: PLACE_IDS.length,
     cases: matrix.cases,
     state_cases: matrix.stateCases,
     local_cases: matrix.localCases,

@@ -201,7 +201,6 @@ a:hover {
 .eyebrow,
 .section-label,
 .check-count,
-.bl-where,
 .badge,
 .tabs button,
 .lang-btn,
@@ -226,10 +225,12 @@ a:hover {
   text-transform: uppercase;
 }
 
-/* Detail lines under a name: mono, sentence case, muted. */
+/* Detail lines under a name: mono, sentence case, muted. The places a bottom-line item is about
+   use this voice too, since that list grows with every place picked. */
 .chip-where,
 .combo-where,
-.source-date {
+.source-date,
+.bl-where {
   color: var(--muted);
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.8125rem;
@@ -450,18 +451,17 @@ html[lang="es"] .hero .app-title {
     overflow: hidden;
   }
 
+  /* The layer spans the whole band, so its 16 px grid sits exactly on the band's own dots. The mask
+     shows it only right of the column, solid at the edge and gone 1.5rem before the text. */
   .hero::after {
+    --field: calc((100% - 48rem) / 2 - 1.5rem);
     content: "";
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: calc((100% - 48rem) / 2 - 1.5rem);
-    background-image: radial-gradient(circle at 1px 1px, var(--accent-solid) 1px, transparent 0);
-    background-size: 8px 8px;
-    opacity: 0.6;
-    -webkit-mask-image: linear-gradient(to left, #000 30%, transparent);
-    mask-image: linear-gradient(to left, #000 30%, transparent);
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--accent-solid) 1.5px, transparent 0);
+    background-size: 16px 16px;
+    -webkit-mask-image: linear-gradient(to left, #000 calc(var(--field) * 0.35), transparent var(--field));
+    mask-image: linear-gradient(to left, #000 calc(var(--field) * 0.35), transparent var(--field));
     pointer-events: none;
   }
 }
@@ -509,15 +509,10 @@ html:not([lang="es"]) .sk-es {
   color: var(--muted);
 }
 
-/* The bike step's three tabs, as their track. */
-.sk-tabs {
-  min-height: 70px;
-}
-
-@media (min-width: 640px) {
-  .sk-tabs {
-    min-height: 58px;
-  }
+/* The bike step's three tabs, the first one open, as on the real page. */
+.sk-tabs button[data-on="true"] {
+  background: var(--primary);
+  color: var(--primary-ink);
 }
 
 /* ---------- Cards and steps ---------- */
@@ -751,8 +746,12 @@ textarea.field {
   transform: translateY(1px);
 }
 
+/* A button that can't be used yet recedes into a pale gray block, so it never outweighs the one
+   that works. The words stay readable (muted text on --sunk is 5.79 to 1 light, 6.76 dark). */
 .btn:disabled {
-  opacity: 0.4;
+  border-color: var(--line-strong);
+  background: var(--sunk);
+  color: var(--muted);
   cursor: not-allowed;
 }
 
@@ -959,10 +958,14 @@ textarea.field {
   background: var(--sunk);
 }
 
+/* On a phone the icon sits above the label. The group starts at the top of each tab, so every
+   icon shares one line even when one label wraps to fewer lines than the others (Spanish at
+   375 px). */
 .tabs button {
   display: grid;
   place-items: center;
-  place-content: center;
+  align-content: start;
+  justify-content: center;
   gap: 0.375rem;
   min-height: 4rem;
   padding: 0.5rem 0.375rem;
@@ -1016,17 +1019,23 @@ textarea.field {
 @media (min-width: 640px) {
   .tabs button {
     grid-auto-flow: column;
+    align-content: center;
     gap: 0.625rem;
     min-height: 3.25rem;
   }
 }
 
-/* The open tab's panel: a soft blue wash that fades into the card. */
-.tabs + [role="tabpanel"] {
+/* The open tab's panel: a soft blue wash that fades into the card. The panel runs to the card's
+   bottom edge, and the wash is gone by 9rem or by the panel's end, whichever comes first, so a
+   short panel like "Type it in" never stops in a hard line above a white strip. */
+.tabs + [role="tabpanel"],
+.tabs + .sk-panel {
   margin-inline: calc(-1 * var(--pad));
-  padding: 1.25rem var(--pad) 0;
+  margin-bottom: calc(-1 * var(--pad));
+  padding: 1.25rem var(--pad) var(--pad);
   border-top: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--accent-soft) 0, var(--card) 9rem);
+  border-radius: 0 0 var(--r-panel) var(--r-panel);
+  background: linear-gradient(180deg, var(--accent-soft) 0, var(--card) min(9rem, 100%));
 }
 
 /* ---------- Place search ---------- */
@@ -1148,9 +1157,11 @@ textarea.field {
 }
 
 /* A picked place: its name and detail, then its remove button in a cell of its own. */
+/* Each chip is a full-width row, so every remove cell lines up on the right edge. */
 .chip {
   display: flex;
   align-items: stretch;
+  width: 100%;
   min-height: 3.25rem;
   max-width: 100%;
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -1160,6 +1171,7 @@ textarea.field {
 
 .chip-text {
   display: grid;
+  flex: 1 1 auto;
   align-content: center;
   min-width: 0;
   padding: 7px 12px;
@@ -1270,9 +1282,11 @@ div.fact-group.fact-grid {
   list-style: square;
 }
 
-/* The words a fact was read from, as a quote. */
+/* The words a fact was read from, as a quote. One rectangle that wraps inside itself, never a
+   stair of separately bordered pieces. */
 .quote {
-  display: inline;
+  display: inline-block;
+  max-width: 100%;
   padding: 1px 6px;
   border: 1px solid var(--line);
   border-radius: var(--r-ctl);
@@ -1819,48 +1833,45 @@ div.fact-group.fact-grid {
   padding: 0.5rem 0 0.75rem;
 }
 
-/* The sources under "Rules, sources and dates": the kind of source and its date on one line, then
-   its link as a block at least 44 px tall. */
+/* The sources under "Rules, sources and dates": the kind of source and its date on one line when
+   both fit, the date on the next line when they don't, then the link as a block at least 44 px
+   tall. A flex row, so a long tag can never squeeze the date into a column one letter wide. */
 .sources {
   display: grid;
   gap: 0.75rem;
 }
 
 .source {
-  display: grid;
-  grid-template-areas:
-    "kind date"
-    "link link";
-  grid-template-columns: auto 1fr;
-  justify-content: start;
-  column-gap: 0.625rem;
-  overflow-wrap: anywhere;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.625rem;
 }
 
 .source-kind {
-  grid-area: kind;
-  justify-self: start;
   padding: 2px 6px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-ctl);
   color: var(--muted);
+  overflow-wrap: break-word;
 }
 
 .source-date {
-  grid-area: date;
-  align-self: center;
+  order: 1;
+  overflow-wrap: break-word;
 }
 
 .source-link {
-  grid-area: link;
+  order: 2;
+  flex-basis: 100%;
   display: block;
   min-height: 2.75rem;
   padding: 0.6rem 0;
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 a.source-link {
-  justify-self: start;
   color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -1885,8 +1896,9 @@ a.source-link::after {
   gap: 0.5rem;
 }
 
+/* Equal halves when two buttons fit side by side, full-width rows when they don't. */
 .actions > .btn {
-  flex: 1 1 auto;
+  flex: 1 1 12rem;
 }
 
 /* ---------- Footer ---------- */
@@ -2025,8 +2037,10 @@ a.source-link::after {
 /* ---------- QR flyer ---------- */
 
 /* The flyer in a 1 px ink frame, like a window, which prints without any fill. */
+/* One column that never grows past the sheet, so the QR frame shrinks on a 320 px phone. */
 .card.flyer {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   max-width: 36rem;
   margin-inline: auto;
@@ -2042,6 +2056,7 @@ a.source-link::after {
 
 .qr-frame {
   justify-self: center;
+  max-width: 100%;
   padding: 1rem;
   border: 1px solid var(--ink);
   border-radius: 0;
@@ -2206,6 +2221,13 @@ a.source-link::after {
   .hero::after {
     display: none;
   }
+
+  /* These themes drop box-shadows and fills, so the answer card and the step numerals get real
+     edges. */
+  .bottom-line,
+  .step {
+    border: 1px solid CanvasText;
+  }
 }
 
 /* Print always uses the light colors, even from a device in dark mode, so every line prints dark
@@ -2309,5 +2331,44 @@ a.source-link::after {
   .check-bar {
     position: static;
     box-shadow: none;
+  }
+  /* Printers drop fills, so a ticked box prints as the browser's own checkbox, and the open tab
+     prints its label in black. */
+  .check input {
+    appearance: auto;
+  }
+  .check input::before {
+    content: none;
+  }
+  .tabs button[aria-selected="true"] {
+    color: #000;
+  }
+  /* The same for every control drawn as white words on an ink fill: picked choices, pressed
+     buttons, main buttons and the step numerals print as black words in a black edge. */
+  .choice input:checked + span,
+  .btn,
+  .btn[aria-pressed="true"],
+  .step {
+    color: #000;
+    border: 2px solid #000;
+  }
+  .btn:disabled {
+    color: #333333;
+    border: 1px solid #999999;
+  }
+  .step {
+    border-width: 1px;
+  }
+  /* Small icons drawn as a masked fill keep their ink on paper. */
+  .more > summary::before,
+  .line-details > summary::before,
+  .link-icon::before,
+  a.source-link::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* No bottom padding, so the flyer fits on one sheet. */
+  .page {
+    padding-bottom: 0;
   }
 }
