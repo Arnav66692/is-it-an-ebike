@@ -4,6 +4,7 @@ import { useId } from "react";
 import type { BottomLine, BottomLineItem, CardRef } from "@/lib/rules/bottomLine";
 import { capitalize, cardWhere, formatDate, joinList, placeNameCovered, placeNameInList, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
+import { keepWords } from "@/lib/i18n/keep";
 import { renderLine, renderShortLine } from "@/lib/i18n/verdicts";
 
 /** YES or NO, never a maybe. A ride we can't confirm is legal is a NO, with the reason under it. */
@@ -137,11 +138,11 @@ function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
           return (
             <li key={`${item.line.code}-${i}`} className="bl-item">
               <span className="bl-where">{whereLabel(item.where, lang, stateCode)}</span>
-              <span className="bl-short">{short ?? full}</span>
+              <span className="bl-short">{keepWords(short ?? full)}</span>
               {short ? (
                 <details className="line-details bl-more">
                   <summary>{t(lang, "blMore")}</summary>
-                  <p className="mt-1">{full}</p>
+                  <p className="mt-1">{keepWords(full)}</p>
                 </details>
               ) : null}
             </li>
@@ -192,7 +193,7 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
           <span>{yes ? t(lang, "blYes") : t(lang, "blNo")}</span>
         </p>
         <p className="bl-reason" data-answer-line="">
-          {subtitle(line, lang)}
+          {keepWords(subtitle(line, lang))}
         </p>
         <p>
           {t(lang, "blRideDate", { date: formatDate(line.rideDate, lang) })} {coversSentence(line, lang, stateCode)}
@@ -207,7 +208,7 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
       <div className="bl-body">
         <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
         {/* The reason under a not-an-e-bike NO is one short line. What that means for other vehicles is here. */}
-        {line.kind === "no_illegal" && line.notEbikeOnly ? <p>{t(lang, "blNotEbikeNote")}</p> : null}
+        {line.kind === "no_illegal" && line.notEbikeOnly ? <p>{keepWords(t(lang, "blNotEbikeNote"))}</p> : null}
         <ItemList title={t(lang, "blToCheck")} items={toCheck} lang={lang} state={state} stateCode={stateCode} />
         <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
 
@@ -216,7 +217,7 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: 
             <h4 className="eyebrow text-muted">{t(lang, "blMustDo")}</h4>
             <ul className="list-disc space-y-1 pl-5">
               {line.requirements.map((l, i) => (
-                <li key={`${l.code}-${i}`}>{renderLine(l, lang, state)}</li>
+                <li key={`${l.code}-${i}`}>{keepWords(renderLine(l, lang, state))}</li>
               ))}
             </ul>
           </div>

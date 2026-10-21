@@ -252,7 +252,7 @@ describe("the new words", () => {
   it("says check only once in the photo mark", () => {
     expect(t("en", "readMarkPhoto").match(/check/gi)).toHaveLength(1);
     expect(t("es", "readMarkPhoto").match(/revis/gi)).toHaveLength(1);
-    expect(t("en", "readMarkPhoto")).toBe("Read by the photo check. Compare it with the bike.");
+    expect(t("en", "readMarkPhoto")).toBe("Read by the photo check");
   });
 
   it("says the family used the pedals box, not picked an answer, when a tick dropped the photo call", () => {

@@ -96,7 +96,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
   return (
     <Card title={t(lang, "step3")} step={3}>
       <p className="help">{t(lang, "step3Help")}</p>
-      {counts.read > 0 ? <p className="read-mark rounded-2xl bg-[var(--maybe-bg)] p-3">{t(lang, "readIntro")}</p> : null}
+      {counts.read > 0 ? <p className="read-intro">{t(lang, "readIntro")}</p> : null}
       {flags.length > 0 ? (
         <ul className="flags">
           {[...new Set(flags)].map((f) => {

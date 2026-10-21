@@ -21,6 +21,7 @@ function line(state: string, age: number, facts: BikeFacts, places: PlaceId[], o
 function render(bl: BottomLine, lang: Lang, stateCode = "CA"): string {
   return renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode }))
     .replace(/<[^>]+>/g, "\n")
+    .replace(/\u2011/g, "-")
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .split("\n")

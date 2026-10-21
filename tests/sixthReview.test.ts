@@ -267,7 +267,7 @@ describe("a class-unknown NO says each sentence once and names a shared reason",
     ...emptyFacts(), hasPedals: true, ratedWatts: 500, hasThrottle: false, motorOver20: false, assistOver28: false, ...over,
   });
   const cardText = (verdict: Verdict, lang: "en" | "es", stateCode: string) =>
-    renderToStaticMarkup(createElement(VerdictCard, { verdict, lang, stateCode, rideDate: DATE })).replace(/<[^>]+>/g, "\n");
+    renderToStaticMarkup(createElement(VerdictCard, { verdict, lang, stateCode, rideDate: DATE })).replace(/<[^>]+>/g, "\n").replace(/\u2011/g, "-");
   const count = (haystack: string, needle: string) => haystack.split(needle).length - 1;
 
   it("Oregon at 13 names its license rule once, as the headline", () => {

@@ -242,7 +242,7 @@ describe("Utah's supervision rule names a parent or guardian, not any adult", ()
 /** The bottom-line card's visible text. */
 function cardText(result: ReturnType<typeof evaluate>, state: string, lang: "en" | "es" = "en"): string {
   const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bottomLine(result, DATE), lang, stateCode: state }));
-  return html.replace(/<[^>]+>/g, " ").replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ");
+  return html.replace(/<[^>]+>/g, " ").replace(/\u2011/g, "-").replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ");
 }
 
 /** A field of a state record, by a dotted path like "where_allowed.quote". */

@@ -90,6 +90,18 @@ export function whereNoteShown(note: WhereNote | null): boolean {
   return note !== null && (note.to !== undefined || note.campusRemoved === true);
 }
 
+/**
+ * How the page scrolls to a step: smoothly, or at once when the device asks for reduced motion.
+ * Browsers don't turn a script's smooth scroll off for that setting on their own.
+ */
+export function scrollBehavior(media: ((query: string) => { matches: boolean }) | undefined = typeof window === "undefined" ? undefined : window.matchMedia?.bind(window)): ScrollBehavior {
+  try {
+    return media?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  } catch {
+    return "smooth";
+  }
+}
+
 function storeLang(lang: Lang): void {
   try {
     window.localStorage.setItem("lang", lang);
@@ -258,7 +270,7 @@ export function Checker() {
   const sortedStates = [...STATE_CODES].sort((a, b) => stateName(a, lang).localeCompare(stateName(b, lang), lang));
 
   function scrollTo(ref: React.RefObject<HTMLDivElement | null>) {
-    requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: scrollBehavior(), block: "start" }));
   }
 
   /**
@@ -288,7 +300,7 @@ export function Checker() {
       if (!card) return;
       const box = card.querySelector<HTMLInputElement>('input[data-read-check="unchecked"]');
       const target = box ?? card.querySelector<HTMLElement>("h2");
-      (box ?? card).scrollIntoView({ behavior: "smooth", block: box ? "center" : "start" });
+      (box ?? card).scrollIntoView({ behavior: scrollBehavior(), block: box ? "center" : "start" });
       target?.focus({ preventScroll: true });
     });
   }

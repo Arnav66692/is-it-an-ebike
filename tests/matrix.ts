@@ -488,6 +488,7 @@ function expectedCaveat(state: string, places: PlaceId[], otherPlaces: boolean, 
 function cardText(bl: BottomLine, lang: "en" | "es", state: string): string {
   return renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: state }))
     .replace(/<[^>]+>/g, "\n")
+    .replace(/\u2011/g, "-")
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, "&");

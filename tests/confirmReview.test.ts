@@ -173,8 +173,8 @@ describe("the pedals evidence after the photo check changes the answer", () => {
       expect(pedals, lang).toContain(`${t(lang, "readFromBefore")}:`);
       expect(pedals, lang).not.toContain(`${t(lang, "readFrom")}:`);
       expect(pedals, lang).toContain(t(lang, "readMarkPhoto"));
-      // Other facts still say where they were read.
-      expect(html.slice(html.indexOf(t(lang, "photoCheckOpen"))), lang).toContain(`${t(lang, "readFrom")}:`);
+      // Other facts still say where they were read, in the mark next to their words.
+      expect(html.slice(html.indexOf(t(lang, "photoCheckOpen"))), lang).toContain(`<span>${t(lang, "readMarkText")}</span>`);
     }
   });
 

@@ -4,6 +4,7 @@ import { cardGaps, type BottomLineGap } from "@/lib/rules/bottomLine";
 import type { Line, ReadField, Source, Status, Verdict } from "@/lib/rules/types";
 import { cardWhere, citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
+import { keepWords } from "@/lib/i18n/keep";
 import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
 
 /**
@@ -79,7 +80,7 @@ function safeHref(url: string | null): string | undefined {
 function LineItem({ line, lang, state }: { line: Line; lang: Lang; state: string }) {
   return (
     <li>
-      {renderLine(line, lang, state)}
+      {keepWords(renderLine(line, lang, state))}
       {line.detail ? (
         <details className="line-details meta">
           <summary>{t(lang, "details")}</summary>
@@ -100,17 +101,20 @@ function SourceItem({ source, lang }: { source: Source; lang: Lang }) {
   const effective = source.effective && /^\d{4}-\d{2}-\d{2}$/.test(source.effective)
     ? ` (${t(lang, "effective", { date: formatDate(source.effective, lang) })})`
     : "";
+  // Each source is its own block, and its link is a tap target at least 44 px tall.
   return (
-    <li className="break-words">
-      <span className="font-semibold">{kind}.</span>{" "}
+    <li className="source">
+      <span className="source-kind">{kind}</span>
       {href ? (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="underline" lang="en">
+        <a href={href} target="_blank" rel="noopener noreferrer" className="source-link" lang="en">
           {label}
         </a>
       ) : (
-        <span lang="en">{label}</span>
+        <span className="source-link" lang="en">
+          {label}
+        </span>
       )}
-      {effective}
+      {effective ? <span className="source-date">{effective.trim()}</span> : null}
     </li>
   );
 }
@@ -167,9 +171,9 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
         </p>
       </header>
       <p className="font-semibold leading-snug" data-answer-line="">
-        {lead ?? reason}
+        {keepWords(lead ?? reason)}
       </p>
-      {held ? heldLines.map((l) => <p key={l}>{l}</p>) : lead ? <p>{reason}</p> : null}
+      {held ? heldLines.map((l) => <p key={l}>{keepWords(l)}</p>) : lead ? <p>{keepWords(reason)}</p> : null}
 
       {/* Everything else about this place opens on tap: the rules, the notes, the sources and the dates. */}
       <details className="more">
@@ -178,7 +182,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
           {held ? (
             <div className="space-y-2">
               <h5 className="eyebrow text-muted">{t(lang, "cardRuleSays")}</h5>
-              <p>{reason}</p>
+              <p>{keepWords(reason)}</p>
             </div>
           ) : null}
           {verdict.reason.detail ? (
@@ -199,7 +203,8 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
           {verdict.sources.length > 0 ? (
             <div className="space-y-2">
               <h5 className="eyebrow text-muted">{t(lang, "sources")}</h5>
-              <ul className="space-y-2 text-[0.95rem]">
+              {/* role="list" keeps the list for VoiceOver, which drops it from a list with no bullets. */}
+              <ul className="sources" role="list">
                 {verdict.sources.map((s, i) => (
                   <SourceItem key={`${s.citation}-${i}`} source={s} lang={lang} />
                 ))}

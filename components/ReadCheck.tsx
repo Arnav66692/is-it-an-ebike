@@ -24,15 +24,32 @@ interface CheckProps {
   matchesKey?: UiKey;
   /** Set to the box while it is on the page, so the page can move keyboard focus to it. */
   boxRef?: Ref<HTMLInputElement>;
+  /** The words the fact was read from, shown in the same row as its mark. */
+  quotes?: string[];
+}
+
+/** The words a fact was read from, as quotes, at most two. */
+function Quotes({ texts }: { texts: string[] }) {
+  return (
+    <>
+      {texts.slice(0, 2).map((text, i) => (
+        <span key={i}>
+          {i > 0 ? " " : null}
+          <q className="quote">{text}</q>
+        </span>
+      ))}
+    </>
+  );
 }
 
 /**
  * Nothing for a fact the family typed. A short line for a read fact they changed or answered,
- * since it is theirs now. For any other read fact, the mark and the box. Ticking the box turns
- * the mark into a "checked" line in the same place, at the same height, so the box never moves
- * under the finger and a quick second tap still lands on it.
+ * since it is theirs now. For any other read fact, one tinted row: a short mark that says where
+ * it was read, the words it was read from, and the box. Ticking the box turns the mark into
+ * "Checked against the bike" in the same place, at the same size, so the box never moves under the
+ * finger and a quick second tap still lands on it.
  */
-export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef }: CheckProps) {
+export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef, quotes = [] }: CheckProps) {
   const noteId = useId();
   if (!check) return null;
   if (check.status === "theirs") {
@@ -43,20 +60,30 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef }:
     );
   }
   const ticked = check.status === "ticked";
+  const photo = check.source === "photo";
   const words = matchesKey ? t(lang, matchesKey) : t(lang, "readMatches");
-  const markText = t(lang, check.source === "photo" ? "readMarkPhoto" : "readMarkText");
+  const markText = t(lang, photo ? "readMarkPhoto" : "readMarkText");
   return (
     <div className="read-check" data-confirmed={ticked ? "true" : "false"}>
-      <p id={noteId} className={ticked ? "read-mark read-mark-done" : "read-mark"} data-read-mark={check.status}>
-        <span aria-hidden="true" className="read-mark-icon">
-          {ticked ? "\u2713" : "!"}
+      <p id={noteId} className="read-line">
+        <span className={ticked ? "read-mark read-mark-done" : "read-mark"} data-read-mark={check.status}>
+          <span aria-hidden="true" className="read-mark-icon">
+            {ticked ? "\u2713" : "!"}
+          </span>
+          {/* Both words share one grid cell, so the mark keeps the width of the longer one. Only
+              the words for the box's state are visible, and only they are read out. */}
+          <span className="read-mark-words">
+            <span className={ticked ? "invisible" : undefined}>{markText}</span>
+            <span className={ticked ? undefined : "invisible"}>{t(lang, "readMarkChecked")}</span>
+          </span>
         </span>
-        {/* Both lines share one grid cell, so the mark keeps the height of the longer one. Only
-            the line for the box's state is visible, and only it is read out. */}
-        <span className="read-mark-words">
-          <span className={ticked ? "invisible" : undefined}>{markText}</span>
-          <span className={ticked ? undefined : "invisible"}>{t(lang, "readMarkChecked")}</span>
-        </span>
+        {quotes.length > 0 ? (
+          <span className="read-quote">
+            {/* After the photo check, the text's words are what it said before, since they may say the opposite. */}
+            {photo ? `${t(lang, "readFromBefore")}: ` : null}
+            <Quotes texts={quotes} />
+          </span>
+        ) : null}
       </p>
       <label className="check">
         <input
@@ -74,19 +101,23 @@ export function ReadCheck({ lang, field, check, onConfirm, matchesKey, boxRef }:
   );
 }
 
-interface NoteProps extends CheckProps {
+interface NoteProps extends Omit<CheckProps, "quotes"> {
   evidence: Ev[] | undefined;
 }
 
 /**
- * What the text said, then the check for that fact. Once the pedal photo check gave the answer,
- * the text's words are shown as what it said before, since they may say the opposite.
+ * The row for a read fact still to check: its mark, the words it was read from and its box. A fact
+ * the family set themselves keeps the words it was read from, as "Read from", above the line that
+ * says it counts as checked.
  */
 export function ReadNote({ lang, field, check, onConfirm, evidence, matchesKey, boxRef }: NoteProps) {
-  const label = check?.source === "photo" ? t(lang, "readFromBefore") : t(lang, "readFrom");
+  const quotes = evidence?.map(quoteText) ?? [];
+  if (check && check.status !== "theirs") {
+    return <ReadCheck lang={lang} field={field} check={check} onConfirm={onConfirm} matchesKey={matchesKey} boxRef={boxRef} quotes={quotes} />;
+  }
   return (
     <>
-      <Evidence label={label} texts={evidence?.map(quoteText)} />
+      <Evidence label={t(lang, "readFrom")} texts={quotes} />
       <ReadCheck lang={lang} field={field} check={check} onConfirm={onConfirm} matchesKey={matchesKey} boxRef={boxRef} />
     </>
   );

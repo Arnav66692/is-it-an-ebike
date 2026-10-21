@@ -50,6 +50,7 @@ const HEDGE_MARKS = ["?", "…", "¿?"];
 export function visibleLines(html: string): string[] {
   return html
     .replace(/<[^>]+>/g, "\n")
+    .replace(/\u2011/g, "-")
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, "&")

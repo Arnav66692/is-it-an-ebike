@@ -93,6 +93,24 @@ body {
   line-height: 1.55;
 }
 
+/* No word left alone on the last line of a paragraph, and headings and the big answer lines
+   split into even lines, on screen and on the printed flyer. */
+p,
+li,
+legend {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+.bl-reason,
+.flyer-line,
+.tagline {
+  text-wrap: balance;
+}
+
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -266,13 +284,22 @@ html:not([lang="es"]) .sk-es {
   color: var(--muted);
 }
 
+/* The answer step's heading sits on the page, not in a card, so it is indented by a card's padding
+   and border, and its number lines up with the numbers of steps 1 to 3. */
 .step-head {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding-top: 0.75rem;
+  padding-left: calc(1.25rem + 1px);
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .step-head {
+    padding-left: calc(1.75rem + 1px);
+  }
 }
 
 .section-label {
@@ -304,7 +331,7 @@ html:not([lang="es"]) .sk-es {
 
 .meta {
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 /* A status line the family should see, like a start over in another state. */
@@ -422,6 +449,14 @@ textarea.field {
 
 .btn-quiet:hover:not(:disabled) {
   background: var(--sunk);
+}
+
+/* A quiet button that is on, like "Not sure" picked as the answer: it looks picked, like a picked choice. */
+.btn-quiet[aria-pressed="true"],
+.btn-quiet[aria-pressed="true"]:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .link-btn {
@@ -760,9 +795,20 @@ div.fact-group.fact-grid {
   box-decoration-break: clone;
 }
 
-/* A read fact's mark and its "It matches the bike" box, in one soft panel. */
+/* What the facts card asks of read facts, once, above the list. */
+.read-intro {
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: var(--maybe-bg);
+  color: var(--ink);
+}
+
+/* A read fact in one soft row: its short mark, the words it was read from, and its "It matches
+   the bike" box. */
 .read-check {
-  padding: 0.5rem 0.85rem 0.25rem;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.6rem 0.85rem 0.15rem;
   border-radius: 0.9rem;
   background: var(--maybe-bg);
 }
@@ -776,14 +822,26 @@ div.fact-group.fact-grid {
   font-weight: 600;
 }
 
+.read-check .quote {
+  background: var(--card);
+}
+
+/* The mark, then the quoted words, wrapping as one line of text. */
+.read-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+}
+
 /* A fact read from a link or photo that the family has not checked against the bike yet. */
 .read-mark {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  align-self: center;
   color: var(--maybe);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* The same mark once the family ticked the box. It keeps its place and height. */
@@ -806,7 +864,6 @@ div.fact-group.fact-grid {
   flex: none;
   width: 1.2rem;
   height: 1.2rem;
-  margin-top: 0.1rem;
   border: 2px solid currentColor;
   border-radius: 999px;
   font-size: 0.7rem;
@@ -816,7 +873,6 @@ div.fact-group.fact-grid {
 
 .read-theirs {
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
 .bar {
@@ -1076,9 +1132,10 @@ div.fact-group.fact-grid {
   background: var(--no);
 }
 
+/* The YES or NO pill sits on the title's first line, text on text. */
 .place-head {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
 }
@@ -1130,6 +1187,43 @@ div.fact-group.fact-grid {
   display: grid;
   gap: 1rem;
   padding: 0.25rem 0 0.25rem;
+}
+
+/* The sources under "Rules, sources and dates": the kind of source, then its link as a block at
+   least 44 px tall, then its date. */
+.sources {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.source {
+  display: grid;
+  overflow-wrap: anywhere;
+}
+
+.source-kind {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.source-link {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.25rem 0;
+  font-weight: 500;
+}
+
+a.source-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.source-date {
+  color: var(--muted);
+  font-size: 0.9375rem;
 }
 
 

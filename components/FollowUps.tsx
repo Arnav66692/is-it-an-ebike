@@ -48,6 +48,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
   if (questions.length === 0) return null;
 
   const fastFlag = facts.unsure.includes("fast_mode");
+  const wheelsUnsure = facts.unsure.includes("wheels");
   const motorUi: Tri3 | null = triValue(facts.motorOver20) ?? (fastFlag && fastUnsure.motor ? "unsure" : null);
   const assistUi: Tri3 | null = triValue(facts.assistOver28) ?? (fastFlag && fastUnsure.assist ? "unsure" : null);
 
@@ -120,14 +121,20 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
             value={facts.wheelCount === null ? null : (String(facts.wheelCount) as "2" | "3")}
             onChange={(v) => onChange(withWheelCount(facts, v === "3" ? 3 : 2))}
           />
+          {/* A toggle that shows when it is on, like a picked choice. Pressed again, it is off and the question is open again. */}
           <button
             type="button"
             className="btn btn-quiet justify-self-start"
-            aria-pressed={facts.unsure.includes("wheels")}
+            aria-pressed={wheelsUnsure}
             onClick={() =>
-              onChange({ ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) })
+              onChange(
+                wheelsUnsure
+                  ? { ...facts, unsure: withUnsure(facts, "wheels", false) }
+                  : { ...facts, wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: withUnsure(facts, "wheels", true) },
+              )
             }
           >
+            {wheelsUnsure ? <span aria-hidden="true">✓</span> : null}
             {t(lang, "notSure")}
           </button>
         </fieldset>

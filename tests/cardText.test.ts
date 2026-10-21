@@ -19,6 +19,7 @@ const DAY = "2026-10-19";
 function text(html: string): string {
   return html
     .replace(/<[^>]+>/g, "\n")
+    .replace(/\u2011/g, "-")
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .split("\n")

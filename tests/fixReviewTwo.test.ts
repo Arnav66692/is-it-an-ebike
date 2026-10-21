@@ -419,7 +419,7 @@ describe("a NO bottom line reads as one compact answer", () => {
   for (const lang of ["en", "es"] as const) {
     it(`gives each What's missing item one short line, with the full sentence folded under it (${lang})`, () => {
       expect(bl.kind).toBe("no_unconfirmed");
-      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" }));
+      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" })).replace(/\u2011/g, "-");
       const shorts = [...html.matchAll(/<span class="bl-short">([^<]*)<\/span>/g)].map((m) => m[1]);
       expect(shorts.length).toBe(bl.missing.length);
       for (const s of shorts) expect(s.length, s).toBeLessThan(90);
@@ -444,8 +444,78 @@ describe("a NO bottom line reads as one compact answer", () => {
     for (const lang of ["en", "es"] as const) {
       expect(t(lang, "blNotEbikeSub").split(". ").length, lang).toBe(1);
       const r = evaluate({ state: "CA", riderAge: 30, rideDate: "2026-10-20", facts: classBike(2, { hasPedals: false }), places: ["encinitas"] });
-      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bottomLine(r, "2026-10-20"), lang, stateCode: "CA" }));
+      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bottomLine(r, "2026-10-20"), lang, stateCode: "CA" })).replace(/\u2011/g, "-");
       expect(html).toContain(t(lang, "blNotEbikeNote").replace(/'/g, "&#x27;"));
     }
+  });
+});
+
+describe("e-bike never breaks at its hyphen on a card", () => {
+  it("joins the hyphen in e-bike, e-moto and ages, and nothing else", async () => {
+    const { keepWords } = await import("@/lib/i18n/keep");
+    expect(keepWords("Riders under 16 can't ride a Class 3 e-bike in California.")).toBe("Riders under 16 can't ride a Class 3 e\u2011bike in California.");
+    expect(keepWords("Allowed for a 30-year-old. E-bikes and e-motos.")).toBe("Allowed for a 30\u2011year\u2011old. E\u2011bikes and e\u2011motos.");
+    expect(keepWords("Pedal-less, 57-203 and re-check stay as they are.")).toBe("Pedal-less, 57-203 and re-check stay as they are.");
+  });
+
+  it("draws the answer line of a Class 3 NO for a 14-year-old with the hyphen joined", () => {
+    const r = evaluate({ state: "CA", riderAge: 14, rideDate: "2026-10-20", facts: classBike(3), places: ["encinitas", "del_mar"] });
+    for (const v of [r.state, ...r.local]) {
+      const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang: "en", stateCode: "CA", rideDate: "2026-10-20" }));
+      const line = /<p[^>]*data-answer-line=""[^>]*>([^<]*)<\/p>/.exec(html)?.[1] ?? "";
+      expect(line, v.id).toContain("e\u2011bike");
+      expect(line, v.id).not.toContain("e-bike");
+    }
+  });
+});
+
+describe("the smaller visual fixes", () => {
+  it("scrolls at once when the device asks for reduced motion", async () => {
+    const { scrollBehavior } = await import("@/components/Checker");
+    expect(scrollBehavior(() => ({ matches: true }))).toBe("auto");
+    expect(scrollBehavior(() => ({ matches: false }))).toBe("smooth");
+    expect(scrollBehavior(undefined)).toBe("smooth");
+    expect(readFileSync(join(ROOT, "components", "Checker.tsx"), "utf8")).not.toContain('behavior: "smooth"');
+  });
+
+  it("balances the big answer line, the headings and the flyer, and keeps paragraphs free of one-word last lines", () => {
+    expect(CSS).toMatch(/h1,\s*h2,\s*h3,\s*h4,\s*\.bl-reason,\s*\.flyer-line,\s*\.tagline \{\s*text-wrap: balance;/);
+    expect(CSS).toMatch(/p,\s*li,\s*legend \{\s*text-wrap: pretty;/);
+    expect(readFileSync(join(ROOT, "components", "FlyerSheet.tsx"), "utf8").match(/flyer-line/g)?.length).toBe(4);
+  });
+
+  it("lines the YES or NO pill up with the place title, and step 4's number with steps 1 to 3", () => {
+    expect(CSS).toMatch(/\.place-head \{[^}]*align-items: baseline;/);
+    expect(CSS).toMatch(/\.step-head \{[^}]*padding-left: calc\(1\.25rem \+ 1px\);/);
+    expect(CSS).toMatch(/@media \(min-width: 640px\) \{\s*\.step-head \{\s*padding-left: calc\(1\.75rem \+ 1px\);/);
+  });
+
+  it("makes each source link a 44 px block, in a list VoiceOver keeps", () => {
+    const r = evaluate({ state: "CA", riderAge: 30, rideDate: "2026-10-20", facts: classBike(1), places: [] });
+    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: r.state, lang: "en", stateCode: "CA", rideDate: "2026-10-20" }));
+    expect(html).toMatch(/<ul class="sources" role="list">/);
+    expect(html).toMatch(/<a [^>]*class="source-link"/);
+    expect(CSS).toMatch(/\.source-link \{[^}]*min-height: 2\.75rem;/);
+  });
+
+  it("sets the facts step's words at 16 px or more", () => {
+    expect(CSS).toMatch(/\.meta \{\s*color: var\(--muted\);\s*font-size: 1rem;/);
+    const mark = CSS.slice(CSS.indexOf(".read-mark {"), CSS.indexOf("}", CSS.indexOf(".read-mark {")));
+    expect(mark).not.toMatch(/font-size/);
+    expect(CSS).toMatch(/\.read-intro \{[^}]*background: var\(--maybe-bg\)/);
+    expect(CSS.slice(CSS.indexOf(".quote {"), CSS.indexOf("}", CSS.indexOf(".quote {")))).not.toMatch(/font-size/);
+  });
+
+  it("shows the wheels Not sure button as picked when it is, and lets a second press take it back", async () => {
+    const { FollowUps } = await import("@/components/FollowUps");
+    const onChange = vi.fn();
+    const facts = { ...classBike(1), wheelFrontIn: null, wheelRearIn: null, wheelCount: null, unsure: ["wheels" as const] };
+    const m = mount(FollowUps, { lang: "en" as Lang, questions: ["wheels" as const], facts, onChange });
+    const button = one(m.tree(), (e) => e.type === "button" && e.props["aria-pressed"] !== undefined, "Not sure button");
+    expect(button.props["aria-pressed"]).toBe(true);
+    expect(button.props.className).toContain("btn-quiet");
+    m.act(() => call(button, "onClick"));
+    expect(onChange.mock.calls[0][0].unsure).toEqual([]);
+    expect(CSS).toMatch(/\.btn-quiet\[aria-pressed="true"\][^{]*\{[^}]*background: var\(--accent\)/);
   });
 });

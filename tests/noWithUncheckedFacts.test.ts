@@ -29,6 +29,7 @@ const UNDER_12 = { age: 11, facts: classBike(2), places: ["city_of_san_diego"] a
 function render(bl: BottomLine, lang: Lang): string[] {
   return renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" }))
     .replace(/<[^>]+>/g, "\n")
+    .replace(/\u2011/g, "-")
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .split("\n")
