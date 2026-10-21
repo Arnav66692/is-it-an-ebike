@@ -423,7 +423,7 @@ html[lang="es"] .hero .app-title {
   }
 }
 
-/* What the app covers, in three short tags. */
+/* What the app covers, in short tags. */
 .coverage {
   display: flex;
   flex-wrap: wrap;

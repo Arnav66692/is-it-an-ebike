@@ -6,7 +6,8 @@ const en = {
   appName: "Is it an e-bike?",
   tagline: "Check one bike for one rider, with the law behind every answer.",
   coverStates: "50 states + DC",
-  coverPlaces: "20 San Diego County places",
+  coverPlaces: "41,766 cities, towns and counties",
+  coverDistricts: "19,430 school districts",
   coverAccount: "No account",
   switchLang: "Español",
   switchLangLabel: "Ver esta página en español",
@@ -217,7 +218,7 @@ const en = {
   flyerPrint: "Print",
   howTitle: "How it works",
   howBody:
-    "A fixed rules table makes every call. It covers all 50 states and Washington, DC, plus 20 San Diego County places. The app only reads facts from the label or listing. It never guesses a class. Every answer is YES or NO. When the facts or the law can't support a YES, the answer is NO and it says what is missing. Facts it reads are marked, and the answer can't say YES until you check each one against the bike.",
+    "A fixed rules table makes every call. It covers all 50 states and Washington, DC, and any city, town, county or school district in them. Where a place's own rules are not in the table, the answer says so. The app only reads facts from the label or listing. It never guesses a class. Every answer is YES or NO. When the facts or the law can't support a YES, the answer is NO and it says what is missing. Facts it reads are marked, and the answer can't say YES until you check each one against the bike.",
   privacyTitle: "Privacy",
   privacyBody: "No accounts. Label photos never leave your phone. Product links are fetched once and nothing is stored.",
   dataNote:
@@ -256,7 +257,8 @@ const es: Record<UiKey, string> = {
   appName: "¿Es una bicicleta eléctrica?",
   tagline: "Revisa una bicicleta para una persona, con la ley detrás de cada respuesta.",
   coverStates: "50 estados + DC",
-  coverPlaces: "20 lugares del condado de San Diego",
+  coverPlaces: "41,766 ciudades, pueblos y condados",
+  coverDistricts: "19,430 distritos escolares",
   coverAccount: "Sin cuenta",
   switchLang: "English",
   switchLangLabel: "View this page in English",
@@ -467,7 +469,7 @@ const es: Record<UiKey, string> = {
   flyerPrint: "Imprimir",
   howTitle: "Cómo funciona",
   howBody:
-    "Una tabla fija de reglas toma cada decisión. Cubre los 50 estados y el Distrito de Columbia, además de 20 lugares del condado de San Diego. La app solo lee datos de la etiqueta o del anuncio. Nunca adivina una clase. Cada respuesta es SÍ o NO. Cuando los datos o la ley no alcanzan para un SÍ, la respuesta es NO y dice qué falta. Los datos que lee quedan marcados, y la respuesta no puede decir SÍ hasta que compares cada uno con la bicicleta.",
+    "Una tabla fija de reglas toma cada decisión. Cubre los 50 estados y el Distrito de Columbia, y cualquier ciudad, pueblo, condado o distrito escolar en ellos. Cuando las reglas propias de un lugar no están en la tabla, la respuesta lo dice. La app solo lee datos de la etiqueta o del anuncio. Nunca adivina una clase. Cada respuesta es SÍ o NO. Cuando los datos o la ley no alcanzan para un SÍ, la respuesta es NO y dice qué falta. Los datos que lee quedan marcados, y la respuesta no puede decir SÍ hasta que compares cada uno con la bicicleta.",
   privacyTitle: "Privacidad",
   privacyBody: "Sin cuentas. Las fotos de la etiqueta nunca salen de tu teléfono. Los enlaces se abren una vez y no se guarda nada.",
   dataNote:

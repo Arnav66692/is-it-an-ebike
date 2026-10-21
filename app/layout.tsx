@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Is it an e-bike?",
   description:
-    "Check one e-bike for one rider in any US state, with San Diego County local rules. Every answer shows the law behind it. Free, no account.",
+    "Check one e-bike and its mods for one rider in any US state, city, county or school district. Every answer shows the law behind it. Free, no account.",
 };
 
 export const viewport: Viewport = {

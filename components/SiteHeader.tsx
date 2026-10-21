@@ -1,7 +1,7 @@
 "use client";
 
 // The header band and the links between the three parts of the app: the e-bike checker, the
-// California mods check and the bike finder. Each page passes its own title and lines.
+// mods check and the bike finder. Each page passes its own title and lines.
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";

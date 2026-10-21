@@ -1,12 +1,15 @@
 // The mods check in every state: how a mod and the family's answer become the engine's bike facts,
 // each mod's answer from the engine, California's answers kept, and the page's links and words.
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { modsHref } from "@/components/Checker";
 import { linkedRide, ModAnswerCard, withLinkedRide } from "@/components/ModsCheck";
 import { modsText, MODS_TEXT } from "@/lib/i18n/mods";
+import { t } from "@/lib/i18n/ui";
 import { answerMod } from "@/lib/mods/answer";
 import { MODS_DATA, MODS_SOURCE, type ModView } from "@/lib/mods/data";
 import { baseFacts, MOD_FACTS, outcomeFacts, withMod, withMods, type FactChange } from "@/lib/mods/facts";
@@ -208,5 +211,23 @@ describe("links between the checker and the mods check", () => {
   it("picks the state itself when the link names no place", () => {
     const texas = { id: "s-TX", name: "Texas", kind: "state", source: "state", state: "TX", counties: [], geoid: null, rank: 0, keys: ["texas"] } as PlaceEntry;
     expect(withLinkedRide({ state: null, picks: [] }, "TX", [], texas).picks.map((p) => p.id)).toEqual(["s-TX"]);
+  });
+});
+
+describe("the app's header and copy", () => {
+  it("counts the places and school districts the search covers, from the place files", () => {
+    const places = JSON.parse(readFileSync(join(__dirname, "..", "public", "places", "us-places.json"), "utf8")) as { counts: { rows: number } };
+    const districts = JSON.parse(readFileSync(join(__dirname, "..", "public", "places", "us-districts.json"), "utf8")) as { counts: { rows: number } };
+    const n = (x: number) => x.toLocaleString("en-US");
+    for (const lang of ["en", "es"] as const) {
+      expect(t(lang, "coverPlaces")).toContain(n(places.counts.rows));
+      expect(t(lang, "coverDistricts")).toContain(n(districts.counts.rows));
+    }
+  });
+
+  it("no longer heads the app with San Diego or California", () => {
+    for (const lang of ["en", "es"] as const) {
+      for (const key of ["tagline", "coverStates", "coverPlaces", "coverDistricts", "coverAccount", "howBody"] as const) expect(t(lang, key), key).not.toMatch(/San Diego|California/);
+    }
   });
 });

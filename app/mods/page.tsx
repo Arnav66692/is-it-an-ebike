@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: modsText("en", "metaDescription"),
 };
 
-/** The California mods check. The server reads the data files and sends the page only the view it shows. */
+/** The mods check. The server reads the California mods data and sends the page only the view it shows. */
 export default function ModsPage() {
   return (
     <main className="flex-1">

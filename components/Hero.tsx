@@ -15,7 +15,7 @@ export function TitleWords({ text }: { text: string }) {
   );
 }
 
-export type CoverKey = "coverStates" | "coverPlaces" | "coverAccount";
+export type CoverKey = "coverStates" | "coverPlaces" | "coverDistricts" | "coverAccount";
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -25,7 +25,7 @@ function Icon({ children }: { children: ReactNode }) {
   );
 }
 
-/** What the app covers, as three short tags. `words` gives each tag's text in the page's language. */
+/** What the app covers, as short tags. `words` gives each tag's text in the page's language. */
 export function Coverage({ words }: { words: (k: CoverKey) => ReactNode }) {
   return (
     <ul className="coverage" role="list">
@@ -41,6 +41,12 @@ export function Coverage({ words }: { words: (k: CoverKey) => ReactNode }) {
           <rect x="6.5" y="5" width="3" height="3" />
         </Icon>
         {words("coverPlaces")}
+      </li>
+      <li>
+        <Icon>
+          <path d="M1.75 6.25L8 2.75l6.25 3.5 M3.25 6.25v7.5h9.5v-7.5 M6.5 13.75v-3.5h3v3.5" />
+        </Icon>
+        {words("coverDistricts")}
       </li>
       <li>
         <Icon>
