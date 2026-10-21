@@ -13,17 +13,27 @@ export type ModChoice = number | "other" | null;
 /**
  * What the answer's first line says. sd_breaks and sd_unresolved come from the City of San Diego
  * passenger rule. under_16_class_3 is a bike that is Class 3 after the mod with a rider under 16.
+ * The engine kinds are the rules engine's bottom line for the bike after the mod (lib/mods/ride.ts).
  */
-export type AnswerKind = ModResult | "unanswered" | "other" | "sd_breaks" | "sd_unresolved" | "under_16_class_3";
+export type AnswerKind =
+  | ModResult
+  | "unanswered"
+  | "other"
+  | "sd_breaks"
+  | "sd_unresolved"
+  | "under_16_class_3"
+  | "engine_yes"
+  | "engine_illegal"
+  | "engine_unconfirmed";
 
 /** The kinds that leave a legal e-bike. Every other kind is NO. */
-export const YES_KINDS: readonly AnswerKind[] = ["same_class", "becomes_class_2", "becomes_class_3"];
+export const YES_KINDS: readonly AnswerKind[] = ["same_class", "becomes_class_2", "becomes_class_3", "engine_yes"];
 
 /** NO kinds where a rule the ride breaks, or the bike no longer being an e-bike, is settled. */
-export const BREAKS_KINDS: readonly AnswerKind[] = ["not_an_ebike", "breaks_rule", "sd_breaks", "under_16_class_3"];
+export const BREAKS_KINDS: readonly AnswerKind[] = ["not_an_ebike", "breaks_rule", "sd_breaks", "under_16_class_3", "engine_illegal"];
 
 /** NO kinds the sources don't settle. The answer is NO because it can't be confirmed as legal. */
-export const UNSURE_KINDS: readonly AnswerKind[] = ["unresolved", "other", "unclear_until_2027", "depends_on_result", "sd_unresolved"];
+export const UNSURE_KINDS: readonly AnswerKind[] = ["unresolved", "other", "unclear_until_2027", "depends_on_result", "sd_unresolved", "engine_unconfirmed"];
 
 /** The kinds where the bike stays an e-bike, so the penalties for a motor vehicle are left out. */
 const STILL_EBIKE: readonly AnswerKind[] = [...YES_KINDS, "breaks_rule", "sd_breaks", "sd_unresolved", "under_16_class_3"];
@@ -72,7 +82,7 @@ export function outcomesFor(mod: ModView, bikeClass: ClassNum): OutcomeView[] {
 }
 
 /** The outcome the answer is for, or the reason there is none. */
-function pickedOutcome(mod: ModView, bikeClass: ClassNum, choice: ModChoice): OutcomeView | "unanswered" | "other" {
+export function pickedOutcome(mod: ModView, bikeClass: ClassNum, choice: ModChoice): OutcomeView | "unanswered" | "other" {
   const outcomes = outcomesFor(mod, bikeClass);
   if (!mod.ask && outcomes.length === 1) return outcomes[0];
   if (choice === "other") return "other";

@@ -198,7 +198,7 @@ describe("mods answers", () => {
     const ask = answerMod(MODS_DATA, kit, 2, null, TODAY, false);
     const breaks = answerMod(MODS_DATA, modOf("throttle_past_20_mph"), 2, null, TODAY, false);
     expect(overallReason([ask, breaks, unsure], "en")).toBe(
-      "1 of 3 mods stops it being legal to ride as an e-bike. 1 of 3 mods can't be confirmed as legal. 1 of 3 mods needs an answer in step 2.",
+      "1 of 3 mods stops it being legal to ride as an e-bike. 1 of 3 mods can't be confirmed as legal. 1 of 3 mods needs an answer in step 3.",
     );
     expect(ask.penalties).toEqual([]);
   });

@@ -302,7 +302,9 @@ describe("the page's words", () => {
 
   it("keeps the not legal advice line", () => {
     expect(t("en", "notLegalAdvice")).toContain("General information, not legal advice.");
-    expect(modsText("en", "caOnly")).toBe("California law only. Other states are not covered here.");
+    // The mods check covers every state now, so the California-only line is gone.
+    expect(MODS_KEYS as string[]).not.toContain("caOnly");
+    for (const text of [...Object.values(MODS_TEXT.en), ...Object.values(MODS_TEXT.es)]) expect(text).not.toMatch(/California law only|Solo la ley de California/);
   });
 });
 

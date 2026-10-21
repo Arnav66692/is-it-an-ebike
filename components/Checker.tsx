@@ -8,7 +8,7 @@ import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
 import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, unconfirmedFields, type CheckedFacts } from "@/lib/provenance";
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
-import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
+import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
 import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { linkedPickIds, linkedWhere, pickLabels, SD_COUNTY_NAMES, withLinkedPicks, type PickLabels } from "@/lib/places/linked";
@@ -88,6 +88,20 @@ export function scrollBehavior(media: ((query: string) => { matches: boolean }) 
   } catch {
     return "smooth";
   }
+}
+
+/**
+ * The mods check link for this ride: the bike's class when it has one, the rider's age, the state,
+ * the checked places and the picks with no checked record, so the mods page starts where the
+ * checker is.
+ */
+export function modsHref(lang: Lang, state: string, places: readonly PlaceId[], unchecked: readonly PlaceEntry[], facts: BikeFacts, age: number | null): string {
+  const params: Record<string, string> = { state };
+  if (facts.classes.length === 1) params.class = String(facts.classes[0]);
+  if (age !== null) params.age = String(age);
+  if (places.length > 0) params.place = places.join(",");
+  if (unchecked.length > 0) params.pick = unchecked.map((p) => p.id).join(",");
+  return pageHref("/mods", lang, params);
 }
 
 function storeLang(lang: Lang): void {
@@ -683,11 +697,9 @@ export function Checker() {
             >
               {t(lang, "startOver")}
             </button>
-            {stateCode === "CA" ? (
-              <Link className="btn btn-quiet" href={pageHref("/mods", lang, { ...(facts.classes.length === 1 ? { class: String(facts.classes[0]) } : {}), ...(ageValid && age !== null ? { age: String(age) } : {}) })}>
-                {t(lang, "checkMods")}
-              </Link>
-            ) : null}
+            <Link className="btn btn-quiet" href={modsHref(lang, stateCode, ride.places, notChecked, facts, ageValid ? age : null)}>
+              {t(lang, "checkMods")}
+            </Link>
           </div>
         ) : null}
       </div>
