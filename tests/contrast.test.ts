@@ -55,6 +55,8 @@ const PAIRS: [string, string, number][] = [
   ["field-line", "card", UI],
   ["focus", "card", UI],
   ["focus", "bg", UI],
+  // The open input tab's ring and text against the tab track and the tab itself.
+  ["accent", "sunk", UI],
 ];
 
 describe("the page colors meet WCAG AA contrast", () => {

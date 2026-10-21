@@ -86,7 +86,7 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
 
   return (
     <fieldset className="fact-group space-y-4">
-      <legend className="field-label pt-5 text-lg">{t(lang, "shapeTitle")}</legend>
+      <legend className="field-label text-lg">{t(lang, "shapeTitle")}</legend>
       <p className="help">{t(lang, "shapeHelp")}</p>
       <div className="fact-grid">
         {split ? (

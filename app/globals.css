@@ -29,6 +29,8 @@
   --shadow-lift: 0 2px 4px rgb(16 24 40 / 0.06), 0 16px 40px rgb(16 24 40 / 0.14);
   --card-edge: transparent;
   --radius: 1.25rem;
+  /* The select's arrow, a chevron in the muted text color. */
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23555e6e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   color-scheme: light;
 }
 
@@ -55,6 +57,7 @@
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
     --shadow-lift: 0 16px 40px rgb(0 0 0 / 0.5);
     --card-edge: #262b34;
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23a5adbb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     color-scheme: dark;
   }
 }
@@ -320,10 +323,10 @@ a:hover {
 
 select.field {
   appearance: none;
-  padding-right: 2.5rem;
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: calc(100% - 1.25rem) 52%, calc(100% - 0.9rem) 52%;
-  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  padding-right: 2.75rem;
+  background-image: var(--select-arrow);
+  background-position: right 0.9rem center;
+  background-size: 1rem 1rem;
   background-repeat: no-repeat;
 }
 
@@ -483,10 +486,12 @@ textarea.field {
   color: var(--ink);
 }
 
+/* The open tab: a card-colored pill with an accent ring and accent text, so it stands out from the
+   track by more than its shade alone (WCAG 1.4.11 asks 3 to 1 for a state like this). */
 .tabs button[aria-selected="true"] {
   background: var(--card);
-  color: var(--ink);
-  box-shadow: 0 1px 3px rgb(16 24 40 / 0.12);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent), 0 1px 3px rgb(16 24 40 / 0.12);
 }
 
 /* ---------- Place search ---------- */
@@ -561,6 +566,24 @@ textarea.field {
   font-size: 0.9rem;
 }
 
+/* No match, loading or a failed load, shown under the box. */
+.combo-status {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* A 320 px phone fits the whole Spanish placeholder. The text stays 16 px. */
+@media (max-width: 359px) {
+  .combo-input {
+    padding-left: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .combo-icon {
+    left: 0.75rem;
+  }
+}
+
 .combo-checked {
   justify-self: start;
   margin-top: 0.2rem;
@@ -625,7 +648,8 @@ textarea.field {
   border-top: 1px solid var(--line);
 }
 
-/* One fact: its label, its value, the words it was read from and its box. */
+/* One fact: its label, its value, the words it was read from and its box. One column at every
+   width, so every fact and its check panel run the full width of the card. */
 .fact {
   padding: 1.1rem 0;
   border-bottom: 1px solid var(--line);
@@ -635,20 +659,31 @@ textarea.field {
   margin-top: 0.6rem;
 }
 
+/* A fieldset draws its legend in its top border, above its padding. Floated, the legend sits
+   inside the padding like any other label, so it is as close to its own fact as every other label. */
+.fact > legend,
+.fact-group > legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.fact > legend + *,
+.fact-group > legend + * {
+  clear: both;
+}
+
 .fact-grid {
   display: grid;
   gap: 1.1rem;
 }
 
-@media (min-width: 640px) {
-  .fact-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.fact-grid > .fact {
-  border-bottom: 0;
+/* A row of facts that belong together is one fact after another in the list. */
+div.fact-group.fact-grid {
+  display: block;
   padding: 0;
+  border-bottom: 0;
 }
 
 .fact-group {
@@ -764,11 +799,11 @@ textarea.field {
 }
 
 .check-count {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
   font-weight: 600;
+}
+
+.check-count[data-done="true"] {
+  color: var(--yes);
 }
 
 @media (max-width: 639px) {
@@ -777,7 +812,9 @@ textarea.field {
     scroll-padding-bottom: 9.5rem;
   }
 
-  .check-bar {
+  /* Sticky only once the facts list fills enough of the screen (data-sticky, set in FactsCard),
+     so the bar never sits on the card's top edge over the step heading. */
+  .check-bar[data-sticky="true"] {
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -840,9 +877,13 @@ textarea.field {
   color: var(--no);
 }
 
+/* No border, so the tinted header meets the card's edge with no hairline of white around it. The
+   dark theme draws its edge as a ring outside instead. */
 .bottom-line {
   padding: 0;
   overflow: clip;
+  border: 0;
+  box-shadow: 0 0 0 1px var(--card-edge), var(--shadow);
 }
 
 .bl-top {
@@ -979,8 +1020,10 @@ textarea.field {
   line-height: 1.35;
 }
 
-/* Folded detail: a summary with a turning arrow, at least 44 px tall. */
-.more > summary {
+/* Folded detail: a summary with a turning arrow, at least 44 px tall, in the accent color, so it
+   reads as something to open. */
+.more > summary,
+.line-details > summary {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -991,11 +1034,13 @@ textarea.field {
   list-style: none;
 }
 
-.more > summary::-webkit-details-marker {
+.more > summary::-webkit-details-marker,
+.line-details > summary::-webkit-details-marker {
   display: none;
 }
 
-.more > summary::before {
+.more > summary::before,
+.line-details > summary::before {
   content: "";
   flex: none;
   width: 0.5rem;
@@ -1007,7 +1052,8 @@ textarea.field {
   transition: transform 0.15s ease;
 }
 
-.more[open] > summary::before {
+.more[open] > summary::before,
+.line-details[open] > summary::before {
   transform: rotate(45deg);
 }
 
@@ -1017,12 +1063,6 @@ textarea.field {
   padding: 0.25rem 0 0.25rem;
 }
 
-.line-details > summary {
-  min-height: 2.75rem;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
 
 .actions {
   display: flex;
@@ -1158,6 +1198,30 @@ textarea.field {
   }
 }
 
+/* Windows contrast themes drop box shadows and backgrounds. Focus gets a real outline, and the
+   picked choice, the open tab and the progress bars use system colors, so none of them is lost. */
+@media (forced-colors: active) {
+  .field:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .choice input:checked + span,
+  .tabs button[aria-selected="true"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  .bar > div {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}
+
+/* Print always uses the light colors, even from a device in dark mode, so every line prints dark
+   on white, the flyer's address pill included. */
 @media print {
   .no-print {
     display: none !important;
@@ -1167,8 +1231,21 @@ textarea.field {
     --card: #ffffff;
     --ink: #000000;
     --muted: #333333;
+    --line: #d0d4da;
+    --field-line: #8a93a2;
+    --sunk: #eef0f3;
+    --accent: #2251cc;
+    --accent-ink: #ffffff;
+    --accent-soft: #e9effc;
+    --yes: #13753a;
+    --yes-bg: #e3f3e8;
+    --no: #b3261e;
+    --no-bg: #fbe9e7;
+    --maybe: #7a4f00;
+    --maybe-bg: #fff3d1;
     --shadow: none;
     --card-edge: #cccccc;
+    color-scheme: light;
   }
   body {
     background: #fff;

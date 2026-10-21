@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type Ref } from "react";
+import { useEffect, useRef, useState, type Ref } from "react";
 import { withThrottleAnswer } from "@/lib/checkerState";
 import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/parse";
 import { checkCounts, pedalCallNeedsTick, type FactChecks } from "@/lib/provenance";
@@ -17,6 +17,9 @@ type Tri3 = "yes" | "no" | "unsure";
 
 /** The largest motor figure the form takes, the same as the parser's. */
 const MAX_WATTS = 20000;
+
+/** How far above the bottom of the screen the facts list must start before the Check bar sticks, in px. */
+const STICKY_AFTER = 260;
 
 interface Props {
   lang: Lang;
@@ -74,6 +77,21 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
   };
 
   const allChecked = counts.read > 0 && counts.confirmed === counts.read;
+  // On a phone the Check bar stays at the bottom of the screen only once the facts list reaches
+  // well up the screen. Before that it waits at the list's end, so it never sits on the card's
+  // top edge over the step heading, cut off at the bottom of the screen.
+  const listTop = useRef<HTMLDivElement>(null);
+  const [sticky, setSticky] = useState(true);
+  useEffect(() => {
+    const top = listTop.current;
+    if (!top || typeof IntersectionObserver === "undefined") return;
+    const watch = new IntersectionObserver(
+      ([e]) => setSticky(e.isIntersecting || e.boundingClientRect.top < (e.rootBounds?.top ?? 0)),
+      { rootMargin: `0px 0px -${STICKY_AFTER}px 0px` },
+    );
+    watch.observe(top);
+    return () => watch.disconnect();
+  }, []);
 
   return (
     <Card title={t(lang, "step3")} step={3}>
@@ -88,6 +106,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
         </ul>
       ) : null}
 
+      <div ref={listTop} aria-hidden="true" />
       <div className="facts">
         <div className="fact">
           <Choice
@@ -200,12 +219,13 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
       {/* The count's status line is always on the page, empty until a fact is read, so a screen
           reader hears it change when the photo check fills in the pedals on a bike typed in. The
           short count and the bar show the same numbers to the eye. */}
-      <div className="check-bar no-print">
+      <div className="check-bar no-print" data-sticky={sticky ? "true" : "false"}>
         {counts.read > 0 ? (
           <div className="space-y-2" aria-hidden="true">
-            <p className="check-count">
-              <span>{t(lang, "readCountShort", { done: counts.confirmed, total: counts.read })}</span>
-              {allChecked ? <span className="text-[var(--yes)]">✓ {t(lang, "readCountDone")}</span> : null}
+            {/* One short line at every width. Once every read fact is checked it turns green with a mark. */}
+            <p className="check-count" data-done={allChecked ? "true" : "false"}>
+              {allChecked ? "✓ " : ""}
+              {t(lang, "readCountShort", { done: counts.confirmed, total: counts.read })}
             </p>
             <div className="bar" data-done={allChecked ? "true" : "false"}>
               <div style={{ width: `${Math.round((100 * counts.confirmed) / counts.read)}%` }} />

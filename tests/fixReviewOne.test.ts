@@ -27,6 +27,7 @@ import { ACCURACY_TEXT } from "@/lib/i18n/accuracy";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { pickLabels } from "@/lib/places/linked";
+import { fromRead, unconfirmedFields, withConfirmed } from "@/lib/provenance";
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { searchPlaces } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndexFile } from "@/lib/places/types";
@@ -290,5 +291,22 @@ describe("the accuracy page and the flyer", () => {
     expect(flyerLang("?lang=en")).toBe("en");
     expect(flyerLang("")).toBe("en");
     expect([t("es", "flyerBack"), t("es", "flyerPrint")]).toEqual(["Volver", "Imprimir"]);
+  });
+});
+
+describe("the Check bar's count", () => {
+  it("is one short line, and turns green with a mark once every read fact is checked", () => {
+    const facts = classBike(1);
+    const read = fromRead(facts, "text");
+    const all = unconfirmedFields(read.checks).reduce((b, f) => withConfirmed(b, f, true), read);
+    const props = { facts, evidence: {}, flags: [], onChange: () => {}, onConfirm: () => {}, onPedalCall: () => {}, onCheck: () => {} };
+    const half = renderToStaticMarkup(createElement(FactsCard, { ...props, lang: "en", checks: read.checks }));
+    expect(half).toMatch(/<p class="check-count" data-done="false">0 of \d+ read facts checked<\/p>/);
+    expect(half).toContain('data-sticky="true"');
+    for (const lang of ["en", "es"] as const) {
+      const done = renderToStaticMarkup(createElement(FactsCard, { ...props, lang, checks: all.checks }));
+      const n = unconfirmedFields(read.checks).length;
+      expect(done).toContain(`<p class="check-count" data-done="true">✓ ${t(lang, "readCountShort", { done: n, total: n })}</p>`);
+    }
   });
 });
