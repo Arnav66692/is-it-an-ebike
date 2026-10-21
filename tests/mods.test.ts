@@ -164,7 +164,7 @@ describe("the answers the research settles", () => {
     const a = answerMod(MODS_DATA, mod("throttle_past_20_mph"), 2, null, TODAY, false);
     expect(a.yes).toBe(false);
     expect(a.kind).toBe("not_an_ebike");
-    expect(a.reasons[1]).toBe(MODS_DATA.effectWords.not_an_ebike);
+    expect(a.effects).toEqual(["not_an_ebike"]);
     expect(a.penalties.map((p) => p.section)).toContain("VC 22651.08(a)(1), (c)");
     expect(a.notEbike.length).toBeGreaterThan(0);
   });

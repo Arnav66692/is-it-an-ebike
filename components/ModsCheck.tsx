@@ -7,9 +7,9 @@
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { formatDate, type Lang } from "@/lib/i18n/names";
-import { kindText, modsText } from "@/lib/i18n/mods";
+import { kindText, modsText, whoText } from "@/lib/i18n/mods";
 import { t } from "@/lib/i18n/ui";
-import { answerMod, modApplies, outcomesFor, overallYes, type ModAnswer, type ModChoice } from "@/lib/mods/answer";
+import { answerMod, modApplies, outcomesFor, overallCounts, overallYes, type ModAnswer, type ModChoice } from "@/lib/mods/answer";
 import type { ModPenalty, ModRule, ModsData, ModView } from "@/lib/mods/types";
 import { localToday } from "@/lib/rules/dates";
 import type { ClassNum } from "@/lib/rules/types";
@@ -28,6 +28,20 @@ export function linkedClass(search: string): ClassNum | null {
 /** The first ride date the page checks: today, or the day the law was read if the device clock is behind. */
 export function modsToday(deviceToday: string, readOn: string): string {
   return deviceToday > readOn ? deviceToday : readOn;
+}
+
+/** The rider's age, null when the box is blank, or "bad" when it holds anything but a whole age from 3 to 100. */
+export function modsAge(text: string): number | null | "bad" {
+  const v = text.trim();
+  if (v === "") return null;
+  const n = /^\d{1,3}$/.test(v) ? Number(v) : NaN;
+  return n >= 3 && n <= 100 ? n : "bad";
+}
+
+/** The age a link names, like /mods?class=1&age=14 from the checker's answer. */
+export function linkedAge(search: string): string {
+  const age = new URLSearchParams(search).get("age") ?? "";
+  return /^\d{1,3}$/.test(age) ? age : "";
 }
 
 /** The ride date to answer for, or null when a picked date is outside today to the last date. */
@@ -79,10 +93,7 @@ function PenaltyItem({ p, lang }: { p: ModPenalty; lang: Lang }) {
         {p.penaltyAsWritten}
       </p>
       <p className="source-date">
-        {modsText(lang, "who")}{" "}
-        <span data-claim="" lang="en">
-          {p.who}
-        </span>
+        {modsText(lang, "who")} {whoText(lang, p.who)}
       </p>
       <a className="source-link" href={p.url} target="_blank" rel="noopener noreferrer" data-claim="" lang="en">
         {p.section}
@@ -123,6 +134,25 @@ export function answerHead(answer: ModAnswer, lang: Lang): string {
   return kindText(lang, answer.kind, { n: answer.classAfter ?? "", section: answer.breaks?.section ?? "" });
 }
 
+/** The id of a mod's "What does it do now?" question, so an unanswered card can link to it. */
+export function askId(modId: string): string {
+  return `ask-${modId}`;
+}
+
+/** The overall line: how many mods break the law, can't be confirmed, or still need an answer. */
+export function overallReason(answers: readonly ModAnswer[], lang: Lang): string {
+  const total = answers.length;
+  if (overallYes(answers)) {
+    const age = answers.some((a) => a.effects.includes("class_3_age")) ? ` ${modsText(lang, "effect_class_3_age")}` : "";
+    return `${modsText(lang, "overallYes")}${age}`;
+  }
+  const { breaks, unsure, ask } = overallCounts(answers);
+  const part = (n: number, one: Parameters<typeof modsText>[1], many: Parameters<typeof modsText>[1]) => (n === 0 ? null : modsText(lang, n === 1 ? one : many, { n, total }));
+  return [part(breaks, "overallBreaksOne", "overallBreaksMany"), part(unsure, "overallUnsureOne", "overallUnsureMany"), part(ask, "overallAskOne", "overallAskMany")]
+    .filter(Boolean)
+    .join(" ");
+}
+
 /** One mod's answer card. */
 export function ModAnswerCard({ mod, answer, lang }: { mod: ModView; answer: ModAnswer; lang: Lang }) {
   const word = answer.yes ? "yes" : "no";
@@ -138,10 +168,20 @@ export function ModAnswerCard({ mod, answer, lang }: { mod: ModView; answer: Mod
       <p className="font-semibold leading-snug" data-answer-line="">
         {answerHead(answer, lang)}
       </p>
+      {answer.kind === "unanswered" ? (
+        <p>
+          <a className="link-btn" href={`#${askId(mod.id)}`}>
+            {modsText(lang, "answerAbove")}
+          </a>
+        </p>
+      ) : null}
       {answer.reasons.map((r) => (
         <p key={r} data-claim="" lang="en">
           {r}
         </p>
+      ))}
+      {answer.effects.map((e) => (
+        <p key={e}>{modsText(lang, `effect_${e}`)}</p>
       ))}
       {answer.breaks ? <RuleList title={modsText(lang, "law")} rules={[answer.breaks]} lang={lang} /> : null}
       <PenaltyList penalties={answer.penalties} lang={lang} />
@@ -182,10 +222,7 @@ export function ModAnswerCard({ mod, answer, lang }: { mod: ModView; answer: Mod
 function Overall({ answers, lang, rideDate, city }: { answers: readonly ModAnswer[]; lang: Lang; rideDate: string; city: boolean }) {
   const headingId = useId();
   const yes = overallYes(answers) === true;
-  const noCount = answers.filter((a) => !a.yes).length;
-  const reason = yes
-    ? modsText(lang, "overallYes")
-    : modsText(lang, noCount === 1 ? "overallNoOne" : "overallNoMany", { n: noCount, total: answers.length });
+  const reason = overallReason(answers, lang);
   return (
     <section className="card bottom-line" data-kind={yes ? "yes" : "no_illegal"} aria-labelledby={headingId}>
       <header className="bl-top">
@@ -219,7 +256,7 @@ function OutcomePicker({ mod, bikeClass, choice, lang, onChoose }: { mod: ModVie
     { value: "other", label: modsText(lang, "other") },
   ];
   return (
-    <fieldset className="mod-outcomes">
+    <fieldset className="mod-outcomes" id={askId(mod.id)} tabIndex={-1}>
       <legend className="field-label">{modsText(lang, "whatNow")}</legend>
       {options.map((o) => (
         <label key={String(o.value)} className="check">
@@ -241,6 +278,11 @@ export function ModsCheck({ data }: { data: ModsData }) {
   const [pickDate, setPickDate] = useState(false);
   const [dateText, setDateText] = useState(today);
   const [city, setCity] = useState(false);
+  const ageId = useId();
+  const [ageText, setAgeText] = useState(() => linkedAge(window.location.search));
+  const [ageLeft, setAgeLeft] = useState(false);
+  const age = modsAge(ageText);
+  const riderAge = age === "bad" ? null : age;
   const [ticked, setTicked] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, ModChoice>>({});
 
@@ -256,8 +298,8 @@ export function ModsCheck({ data }: { data: ModsData }) {
     if (bikeClass === null || rideDate === null) return [];
     return data.mods
       .filter((m) => ticked.includes(m.id) && modApplies(m, bikeClass))
-      .map((m) => ({ mod: m, answer: answerMod(data, m, bikeClass, choices[m.id] ?? null, rideDate, city) }));
-  }, [data, bikeClass, ticked, choices, rideDate, city]);
+      .map((m) => ({ mod: m, answer: answerMod(data, m, bikeClass, choices[m.id] ?? null, rideDate, city, riderAge) }));
+  }, [data, bikeClass, ticked, choices, rideDate, city, riderAge]);
 
   function toggle(id: string, on: boolean) {
     setTicked((cur) => (on ? [...cur.filter((x) => x !== id), id] : cur.filter((x) => x !== id)));
@@ -328,6 +370,32 @@ export function ModsCheck({ data }: { data: ModsData }) {
             </div>
           )}
         </div>
+        <div className="space-y-2 border-t border-line pt-5">
+          <label htmlFor={ageId} className="field-label">
+            {modsText(lang, "age")}
+          </label>
+          <p id={`${ageId}-help`} className="help">
+            {modsText(lang, "ageHelp")}
+          </p>
+          <input
+            id={ageId}
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            spellCheck={false}
+            value={ageText}
+            onChange={(e) => setAgeText(e.target.value)}
+            onBlur={() => setAgeLeft(true)}
+            aria-invalid={ageLeft && age === "bad"}
+            aria-describedby={ageLeft && age === "bad" ? `${ageId}-help ${ageId}-err` : `${ageId}-help`}
+            className="field w-32"
+          />
+          {ageLeft && age === "bad" ? (
+            <p id={`${ageId}-err`} role="alert" className="field-error">
+              {modsText(lang, "ageError")}
+            </p>
+          ) : null}
+        </div>
         <label className="check border-t border-line pt-5">
           <input type="checkbox" checked={city} onChange={(e) => setCity(e.target.checked)} />
           <span>{modsText(lang, "sdCity")}</span>
@@ -370,6 +438,7 @@ export function ModsCheck({ data }: { data: ModsData }) {
           <p className="note">{modsText(lang, "pickMods")}</p>
         ) : (
           <>
+            {lang === "es" ? <p className="note">{modsText(lang, "englishNote")}</p> : null}
             <Overall answers={answers.map((a) => a.answer)} lang={lang} rideDate={rideDate} city={city} />
             {answers.map(({ mod, answer }) => (
               <ModAnswerCard key={mod.id} mod={mod} answer={answer} lang={lang} />
@@ -384,16 +453,17 @@ export function ModsCheck({ data }: { data: ModsData }) {
       </div>
 
       <footer className="site-foot">
-        {lang === "es" ? <p className="meta">{modsText(lang, "englishNote")}</p> : null}
         <p className="meta">{modsText(lang, "readOn", { date: formatDate(data.readOn, lang) })}</p>
-        <p className="meta">
-          {modsText(lang, "leftOut")}.{" "}
-          {data.leftOut.map((l) => (
-            <span key={l.mod} data-claim="" lang="en">
-              {l.mod}.{" "}
-            </span>
-          ))}
-        </p>
+        <div className="meta">
+          <p>{modsText(lang, "leftOut")}</p>
+          <ul className="list-disc pl-5">
+            {data.leftOut.map((l) => (
+              <li key={l.mod} data-claim="" lang="en">
+                {l.mod}
+              </li>
+            ))}
+          </ul>
+        </div>
         <p className="meta">{t(lang, "notLegalAdvice")}</p>
       </footer>
     </div>

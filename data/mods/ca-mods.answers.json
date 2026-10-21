@@ -1,6 +1,13 @@
 {
  "format": 1,
  "about": "How the mods check reads data/mods/ca-mods.json. For each mod outcome, in the same order as the source, it names the result the app shows, which follows the source's legal_effect and why. A result of breaks_rule names the rule in that mod's rules list the ride breaks. only_for limits an outcome to a starting class. san_diego says what the City of San Diego rule in that mod's san_diego list does to the outcome while it is in effect. ask marks a mod whose one outcome is a condition the family must confirm. Every mod with more than one outcome is asked too. The Spanish names, examples and conditions are the app's own translation. The reasons, rules and penalties are shown only as the source gives them, in English.",
+ "ends_is_repeal_date": {
+  "about": "Sections whose ends date in the source is the day the rule is repealed or becomes inoperative, so the rule is last in effect the day before. VC 21214.5 says it is repealed on Jan 1, 2029, and SDMC 84.21 stays in effect until Jan 1, 2029. Every other ends date in the source is the last day in effect, like VC 312.5(c) on Dec 31, 2026.",
+  "sections": [
+   "VC 21214.5(b)",
+   "SDMC 84.21(b)"
+  ]
+ },
  "made_from": "data/mods/ca-mods.json",
  "mods": {
   "speed_unlock_kit": {

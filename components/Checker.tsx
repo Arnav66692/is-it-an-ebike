@@ -717,7 +717,7 @@ export function Checker() {
               {t(lang, "startOver")}
             </button>
             {stateCode === "CA" ? (
-              <Link className="btn btn-quiet" href={pageHref("/mods", lang, facts.classes.length === 1 ? { class: String(facts.classes[0]) } : {})}>
+              <Link className="btn btn-quiet" href={pageHref("/mods", lang, { ...(facts.classes.length === 1 ? { class: String(facts.classes[0]) } : {}), ...(ageValid && age !== null ? { age: String(age) } : {}) })}>
                 {t(lang, "checkMods")}
               </Link>
             ) : null}

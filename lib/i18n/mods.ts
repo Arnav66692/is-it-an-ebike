@@ -34,8 +34,12 @@ const en = {
   yes: "YES",
   no: "NO",
   overallYes: "Every mod keeps it a legal e-bike.",
-  overallNoOne: "1 of {total} mods stops it being legal to ride as an e-bike.",
-  overallNoMany: "{n} of {total} mods stop it being legal to ride as an e-bike.",
+  overallBreaksOne: "1 of {total} mods stops it being legal to ride as an e-bike.",
+  overallBreaksMany: "{n} of {total} mods stop it being legal to ride as an e-bike.",
+  overallUnsureOne: "1 of {total} mods can't be confirmed as legal.",
+  overallUnsureMany: "{n} of {total} mods can't be confirmed as legal.",
+  overallAskOne: "1 of {total} mods needs an answer in step 2.",
+  overallAskMany: "{n} of {total} mods need an answer in step 2.",
   overallDate: "Ride date {date}. California law.",
   overallCity: "Ride date {date}. California law and the City of San Diego.",
   kind_same_class: "Still Class {n}.",
@@ -50,6 +54,18 @@ const en = {
   kind_sd_breaks: "Still Class {n}, but the City of San Diego bars it.",
   kind_sd_unresolved: "Still Class {n}, but not settled in the City of San Diego.",
   kind_unanswered: "Pick what it does now.",
+  kind_under_16_class_3: "Class {n} after this mod, and the rider is under 16.",
+  effect_different_class: "The class label must be replaced, and that class's rules apply.",
+  effect_not_an_ebike: "It is a motor vehicle, and needs the license, registration and insurance for its type.",
+  effect_unresolved: "The law read does not settle it, so it can't be confirmed as a legal e-bike.",
+  effect_depends_on_result: "It depends on what the change does to the motor-only speed, the assisted speed or the motor power.",
+  effect_unclear_until_2027: "Not settled under the law today, and not an e-bike from Jan 1, 2027.",
+  effect_class_3_age: "A Class 3 e-bike is only for riders 16 and older.",
+  effect_under_16_class_3: "Riders under 16 may not ride a Class 3 e-bike in California.",
+  answerAbove: "Answer it in step 2",
+  age: "Rider's age",
+  ageHelp: "Optional. Class 3 is only for riders 16 and older.",
+  ageError: "Type a whole age from 3 to 100, or leave it blank.",
   why: "Why",
   law: "The law",
   penalties: "Penalties",
@@ -65,8 +81,13 @@ const en = {
   morePenalty: "1 more penalty",
   confidence: "Confidence",
   englishNote: "",
+  who_rider: "rider",
+  who_seller: "seller",
+  who_rider_or_owner: "rider or owner",
+  who_owner_or_rider: "owner or rider",
+  who_rider_or_seller: "rider or seller",
   readOn: "Law read {date} from the California Legislature's official data, CHP, DMV and the City of San Diego.",
-  leftOut: "Not covered",
+  leftOut: "Not covered here",
 };
 
 type ModsKey = keyof typeof en;
@@ -101,8 +122,12 @@ const es: Record<ModsKey, string> = {
   yes: "SÍ",
   no: "NO",
   overallYes: "Ninguna modificación le quita lo legal como bicicleta eléctrica.",
-  overallNoOne: "1 de {total} modificaciones hace que ya no sea legal andar en ella como bicicleta eléctrica.",
-  overallNoMany: "{n} de {total} modificaciones hacen que ya no sea legal andar en ella como bicicleta eléctrica.",
+  overallBreaksOne: "1 de {total} modificaciones hace que ya no sea legal andar en ella como bicicleta eléctrica.",
+  overallBreaksMany: "{n} de {total} modificaciones hacen que ya no sea legal andar en ella como bicicleta eléctrica.",
+  overallUnsureOne: "1 de {total} modificaciones no se puede confirmar como legal.",
+  overallUnsureMany: "{n} de {total} modificaciones no se pueden confirmar como legales.",
+  overallAskOne: "1 de {total} modificaciones necesita una respuesta en el paso 2.",
+  overallAskMany: "{n} de {total} modificaciones necesitan una respuesta en el paso 2.",
   overallDate: "Fecha del viaje {date}. Ley de California.",
   overallCity: "Fecha del viaje {date}. Ley de California y de la ciudad de San Diego.",
   kind_same_class: "Sigue siendo Clase {n}.",
@@ -117,6 +142,18 @@ const es: Record<ModsKey, string> = {
   kind_sd_breaks: "Sigue siendo Clase {n}, pero la ciudad de San Diego lo prohíbe.",
   kind_sd_unresolved: "Sigue siendo Clase {n}, pero no está resuelto en la ciudad de San Diego.",
   kind_unanswered: "Elige qué hace ahora.",
+  kind_under_16_class_3: "Clase {n} después de esta modificación, y quien la maneja tiene menos de 16 años.",
+  effect_different_class: "Hay que cambiar la etiqueta de clase, y aplican las reglas de esa clase.",
+  effect_not_an_ebike: "Es un vehículo motorizado, y necesita la licencia, el registro y el seguro de su tipo.",
+  effect_unresolved: "La ley leída no lo resuelve, así que no se puede confirmar como bicicleta eléctrica legal.",
+  effect_depends_on_result: "Depende de lo que el cambio le hace a la velocidad solo con motor, a la velocidad con asistencia o a la potencia del motor.",
+  effect_unclear_until_2027: "No está resuelto con la ley de hoy, y no es una bicicleta eléctrica desde el 1 de enero de 2027.",
+  effect_class_3_age: "Una bicicleta eléctrica Clase 3 es solo para personas de 16 años o más.",
+  effect_under_16_class_3: "Las personas menores de 16 años no pueden andar en una bicicleta eléctrica Clase 3 en California.",
+  answerAbove: "Respóndelo en el paso 2",
+  age: "Edad de quien la maneja",
+  ageHelp: "Opcional. La Clase 3 es solo para personas de 16 años o más.",
+  ageError: "Escribe una edad entera de 3 a 100, o déjalo en blanco.",
   why: "Por qué",
   law: "La ley",
   penalties: "Multas",
@@ -131,9 +168,14 @@ const es: Record<ModsKey, string> = {
   morePenalties: "{n} multas más",
   morePenalty: "1 multa más",
   confidence: "Confianza",
-  englishNote: "Las razones, las leyes y las multas están en inglés, como las dan las fuentes.",
+  englishNote: "Las razones de las fuentes, las leyes y las multas están en inglés, como las dan las fuentes.",
+  who_rider: "quien la maneja",
+  who_seller: "quien la vende",
+  who_rider_or_owner: "quien la maneja o su dueño",
+  who_owner_or_rider: "su dueño o quien la maneja",
+  who_rider_or_seller: "quien la maneja o quien la vende",
   readOn: "Ley leída el {date} de los datos oficiales de la Legislatura de California, la CHP, el DMV y la ciudad de San Diego.",
-  leftOut: "No cubierto",
+  leftOut: "No cubierto aquí",
 };
 
 const TEXT: Record<Lang, Record<ModsKey, string>> = { en, es };
@@ -145,6 +187,12 @@ export function modsText(lang: Lang, key: ModsKey, params: Record<string, string
 /** The answer's first line for one mod. */
 export function kindText(lang: Lang, kind: AnswerKind, params: Record<string, string | number> = {}): string {
   return modsText(lang, `kind_${kind}` as ModsKey, params);
+}
+
+/** Who a penalty applies to, from the data's five values. Any other value shows as the data gives it. */
+export function whoText(lang: Lang, who: string): string {
+  const key = `who_${who.replace(/ /g, "_")}`;
+  return key in TEXT[lang] ? TEXT[lang][key as ModsKey] : who;
 }
 
 /** Every key, for the tests. */
