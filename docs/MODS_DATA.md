@@ -19,13 +19,15 @@ SB 1167 (ch. 846) and AB 2346 (ch. 842) were chaptered Sep 30, 2026 as non-urgen
 - NO for an outcome that is not an e-bike, that the source doesn't settle, that depends on a speed the family hasn't named, or that breaks a named rule, like a disconnected brake cutoff under VC 24016(a)(2).
 - NO when the family hasn't picked what the change does, or picks "Something else, or not sure".
 - A bike whose pedal assist runs past 28 mph is NO before Jan 1, 2027, since the current text doesn't settle it, and NO as not an e-bike from that date.
-- With "They ride in the City of San Diego" ticked, SDMC 84.21(b) makes an add-on passenger seat or child seat NO while it is in effect, Aug 13, 2026 through Jan 1, 2029, and leaves a child trailer NO as not settled.
+- With "They ride in the City of San Diego" ticked, SDMC 84.21(b) makes an add-on passenger seat or child seat NO while it is in effect, Aug 13, 2026 through Dec 31, 2028, and leaves a child trailer NO as not settled. The City's fine shows only then.
 - The 2027 changes show only for a ride date on or after Jan 1, 2027.
-- A bike that stays an e-bike leaves out the motor vehicle penalties.
+- A bike that stays an e-bike leaves out the motor vehicle penalties. A card waiting for "What does it do now?" shows no penalties and links back to the question.
+- A mod that makes the bike Class 3 is NO when the rider's age, if given, is under 16. With no age, the YES says Class 3 is only for riders 16 and older.
+- A rule's end date is its last day in effect. The source gives VC 21214.5(b) and SDMC 84.21(b) the repeal date, Jan 1, 2029, so `ca-mods.answers.json` lists them under `ends_is_repeal_date` and the app ends them Dec 31, 2028. A rule whose text starts "Until Dec 31, 2026," ends that day.
 
 The whole bike is YES only when every ticked mod is YES.
 
-Every reason, rule, date and penalty on the page is a string from `data/mods/ca-mods.json`, word for word. `tests/mods.test.ts` renders every mod, class, choice, date and place and checks each one. The page's own words are in `lib/i18n/mods.ts`, in English and Spanish. The legal text stays in English on the Spanish page, with a line that says so.
+Every reason, rule, date and penalty on the page is a string from `data/mods/ca-mods.json`, word for word. The one line about what a result means, like "The class label must be replaced, and that class's rules apply.", is the app's own, in English and Spanish, and so is who a penalty applies to. The overall line counts the mods that stop it being legal apart from those that can't be confirmed and those that still need an answer. `tests/mods.test.ts` renders every mod, class, choice, date and place and checks each one. The page's own words are in `lib/i18n/mods.ts`, in English and Spanish. The legal text stays in English on the Spanish page, with a line that says so.
 
 ## Open questions the research names
 

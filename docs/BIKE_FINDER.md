@@ -16,7 +16,7 @@ The research could not read Trek's pages, which load their specs in the browser 
 
 - Pedals, throttle, rated and peak watts, throttle, assist and top speeds, weight and wheel size are taken as the page states them. A wheel line that disagrees with itself is left unknown.
 - The class line is read for every class it names, so "Class 1, 2, or 3" is all three.
-- A bike that names more than one class is checked in every class it names, the way the checker reads a listing. A speed it can be set to, like "adjustable to 25MPH", counts as its top speed.
+- A bike that names more than one class is checked in every class it names, the way the checker reads a listing. A speed it can be set to, like "adjustable to 25MPH", counts as its top speed. A label that names Class 3 next to a throttle can't be confirmed in its Class 3 mode, since no page here says the throttle turns off there, so the Ride1Up Portola and the Rad Radster Trail are NO. The checker reads the same facts the same way.
 - The checker's two speed questions are answered only from the maker's stated top speed. Pedal assist can't pass 28 mph when the fastest stated speed is 28 or less. The motor alone can't pass 20 mph when the bike has no throttle, or its stated throttle or top speed is 20 or less. Otherwise the question stays unanswered, and the answer is NO, the maker's page doesn't settle it.
 
 `lib/bikes/finder.ts` runs the rules engine with those facts for the rider's age, state and checked San Diego places, on today's date, and shows the engine's bottom line. A YES says it is on the maker's specs. A pedal-less e-moto is never YES. `tests/finder.test.ts` runs every bike for every state, 15 ages and every checked San Diego place set, more than 50,000 rides, and checks that no bike is YES where the engine on the page's facts alone says it is not allowed.
@@ -25,4 +25,4 @@ The research could not read Trek's pages, which load their specs in the browser 
 
 ## Ranking
 
-Only bikes in the budget are listed. A YES for this rider in these places comes first, then the closer fit: 3 points for each use that matches, 1 for a color they like, 1 for a height in the maker's fit range, and 10 off for a height outside it or an age outside the maker's own age rule. Ties go to the lower price, then the name. No maker counts for or against a bike. There are no images, and no link earns a fee.
+Only bikes in the budget are listed. A YES for this rider in these places comes first, then the closer fit: 3 points for each use that matches, 1 for a color they like, 1 for a height in the maker's fit range, and 10 off for a height outside it or an age outside the maker's own age rule. Ties go to the lower price, then a fixed number made from the bike's id (FNV-1a), which has no order of its own. No maker's name counts for or against a bike, and a test renames every maker and checks the order stays the same. There are no images, and no link earns a fee.

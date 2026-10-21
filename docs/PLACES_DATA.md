@@ -66,10 +66,11 @@ The same search box also finds every operating public school district in the 50 
 - Each row has the NCES ID (LEAID), name, state, county, office city and NCES type. Names and cities are as NCES publishes them, some in capitals.
 - The county is where the district office was in the 2024-25 geocodes. A district can reach into other counties. It is blank for 141 districts, 133 new since those geocodes and 8 with an office in another state.
 - Types 1 and 2 are regular districts. The search names every other type: supervisory union, service agency, state agency, federal agency, charter district, other education agency or specialized district.
-- 124 districts share a name with another district in the same state, ignoring case, so every result shows its office city and county. Five pairs share a name, city and county too. Four of them differ in type, and both districts of every pair stay in the list.
+- 124 districts share a name with another district in the same state, ignoring case, so every result shows its office city and county. Five pairs share a name, city and county too. Four of them differ in type, and both districts of every pair stay in the list. The fifth pair, the two Excel Academy Charter Districts in Irvine (0602487 and 0602500), match in type as well, so their labels add the NCES ID.
+- A district's office city after a comma finds it, like "San Dieguito Union High, Encinitas".
 - San Dieguito Union High is also found as "SDUHSD". A district whose name doesn't say "district" is also found with "school district" after its name.
 
-The file is about 1.44 MB, 340 KB gzipped. A test keeps it under 1.6 MB.
+The file is about 1.44 MB, 340 KB gzipped. A test keeps it under 1.6 MB. If it fails to load or can't be read, the search keeps working for states, counties and places, and tries the districts again the next time it loads.
 
 ## Sources
 
@@ -86,7 +87,8 @@ Both are public domain, from the National Center for Education Statistics, read 
 
 - San Dieguito Union High School District, LEAID 0634380, turns on the checked SDUHSD campus record. Picking it ticks the SDUHSD campus box instead of adding a chip.
 - Every other district adds a chip and uses its state's law. The answer names it: "Campus rules for Poway Unified were not checked."
-- A district in another state starts over in that state, like any other place.
+- A district in another state starts over in that state, like any other place, and the page says so.
+- "Check this bike" in the bike finder carries every unchecked district and city in `?pick=`, so the checker names them as not checked too. Until the checker finds them in the search file, its answer says city and county rules were not checked.
 - `lib/places/districts.ts` refuses a file that marks any district but SDUHSD as checked, and a test checks all 19,429 others map to no record.
 
 ## Rebuilding

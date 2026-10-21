@@ -11,6 +11,7 @@ import type { CatalogBike } from "@/lib/bikes/facts";
 import type { CatalogMeta } from "@/lib/bikes/catalog";
 import { budgetText, colorText, feetInches, finderText, topicText, purposeText } from "@/lib/i18n/finder";
 import { formatDate, joinList, stateName, type Lang } from "@/lib/i18n/names";
+import { keepWords } from "@/lib/i18n/keep";
 import { t } from "@/lib/i18n/ui";
 import { renderLine } from "@/lib/i18n/verdicts";
 import type { PickLabels } from "@/lib/places/linked";
@@ -146,7 +147,7 @@ export function FinderResultCard({ result, lang, age, state, where, places, unch
         </p>
       </header>
       <p className="font-semibold leading-snug" data-answer-line="">
-        {finderText(lang, yes ? "yesLine" : "noLine", { age, where })}
+        {keepWords(finderText(lang, yes ? "yesLine" : "noLine", { age, where }))}
       </p>
       {reasons.map((r) => (
         <p key={r}>{r}</p>
