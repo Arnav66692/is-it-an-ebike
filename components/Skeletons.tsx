@@ -135,3 +135,34 @@ export function FlyerSkeleton() {
     </div>
   );
 }
+
+/** The frame of the mods check or the bike finder while its script loads: the header band and its title. */
+export function SectionSkeleton({ title }: { title: { en: string; es: string } }) {
+  return (
+    <div className="page" aria-busy="true">
+      <header className="app-head hero">
+        <div className="app-bar">
+          <span className="brand-mark" aria-hidden="true">
+            <BikeIcon />
+          </span>
+          <span className="lang-btn sk-pill" aria-hidden="true">
+            <span className="sk-en" lang="es">
+              {t("en", "switchLang")}
+            </span>
+            <span className="sk-es" lang="en">
+              {t("es", "switchLang")}
+            </span>
+          </span>
+        </div>
+        <h1 className="app-title">
+          <span className="sk-en" lang="en">
+            <TitleWords text={title.en} />
+          </span>
+          <span className="sk-es" lang="es">
+            <TitleWords text={title.es} />
+          </span>
+        </h1>
+      </header>
+    </div>
+  );
+}

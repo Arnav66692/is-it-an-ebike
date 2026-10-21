@@ -1,0 +1,148 @@
+// Words for the mods check page, in English and Spanish. The reasons, rules and penalties come from
+// data/mods/ca-mods.json and stay in English, as the sources give them.
+
+import type { AnswerKind } from "@/lib/mods/answer";
+import type { Lang } from "./names";
+
+const en = {
+  metaTitle: "Mods check | Is it an e-bike?",
+  metaDescription: "Tick the mods on a California e-bike. Each one gets a YES or NO for riding it as an e-bike, with its penalties and the law behind it.",
+  back: "E-bike checker",
+  title: "Mods check",
+  tagline: "Tick each change made to the bike. Each one gets a YES or NO for riding it as an e-bike, with what it can cost.",
+  caOnly: "California law only. Other states are not covered here.",
+  step1: "The bike",
+  classLegend: "Its class before the mods",
+  class1: "Class 1",
+  class2: "Class 2",
+  class3: "Class 3",
+  notSure: "Not sure of the class? Check the bike first.",
+  date: "Ride date",
+  dateToday: "Today",
+  dateOther: "Check a future date",
+  dateHelp: "New California rules start Jan 1, 2027.",
+  dateError: "Pick a date from today through {last}.",
+  sdCity: "They ride in the City of San Diego",
+  step2: "The mods",
+  modsLegend: "Mods on the bike",
+  whatNow: "What does it do now?",
+  other: "Something else, or not sure",
+  step3: "The answer",
+  pickClass: "Pick the class to see the answers.",
+  pickMods: "Tick at least one mod.",
+  overallTitle: "Still legal to ride as an e-bike?",
+  yes: "YES",
+  no: "NO",
+  overallYes: "Every mod keeps it a legal e-bike.",
+  overallNoOne: "1 of {total} mods stops it being legal to ride as an e-bike.",
+  overallNoMany: "{n} of {total} mods stop it being legal to ride as an e-bike.",
+  overallDate: "Ride date {date}. California law.",
+  overallCity: "Ride date {date}. California law and the City of San Diego.",
+  kind_same_class: "Still Class {n}.",
+  kind_becomes_class_2: "Becomes Class 2.",
+  kind_becomes_class_3: "Becomes Class 3.",
+  kind_not_an_ebike: "No longer an e-bike.",
+  kind_unresolved: "Not settled.",
+  kind_other: "Not settled.",
+  kind_unclear_until_2027: "Not settled before Jan 1, 2027.",
+  kind_depends_on_result: "Depends on its speed now.",
+  kind_breaks_rule: "Still Class {n}, but riding it this way breaks {section}.",
+  kind_sd_breaks: "Still Class {n}, but the City of San Diego bars it.",
+  kind_sd_unresolved: "Still Class {n}, but not settled in the City of San Diego.",
+  kind_unanswered: "Pick what it does now.",
+  why: "Why",
+  law: "The law",
+  penalties: "Penalties",
+  notEbike: "If it is no longer an e-bike",
+  from2027: "From Jan 1, 2027",
+  sanDiego: "City of San Diego",
+  selling: "Rules for sellers",
+  more: "Law, penalties and dates",
+  inEffect: "In effect {date}",
+  through: "Through {date}",
+  who: "Who",
+  confidence: "Confidence",
+  englishNote: "",
+  readOn: "Law read {date} from the California Legislature's official data, CHP, DMV and the City of San Diego.",
+  leftOut: "Not covered",
+};
+
+type ModsKey = keyof typeof en;
+
+const es: Record<ModsKey, string> = {
+  metaTitle: "Revisión de modificaciones | ¿Es una bicicleta eléctrica?",
+  metaDescription: "Marca las modificaciones de una bicicleta eléctrica en California. Cada una recibe un SÍ o un NO para andar en ella como bicicleta eléctrica, con sus multas y la ley detrás.",
+  back: "Revisión de bicicletas eléctricas",
+  title: "Revisión de modificaciones",
+  tagline: "Marca cada cambio que se le hizo a la bicicleta. Cada uno recibe un SÍ o un NO para andar en ella como bicicleta eléctrica, con lo que puede costar.",
+  caOnly: "Solo la ley de California. Otros estados no están cubiertos aquí.",
+  step1: "La bicicleta",
+  classLegend: "Su clase antes de las modificaciones",
+  class1: "Clase 1",
+  class2: "Clase 2",
+  class3: "Clase 3",
+  notSure: "¿No sabes la clase? Revisa la bicicleta primero.",
+  date: "Fecha del viaje",
+  dateToday: "Hoy",
+  dateOther: "Revisar una fecha futura",
+  dateHelp: "Nuevas reglas de California empiezan el 1 de enero de 2027.",
+  dateError: "Elige una fecha desde hoy hasta el {last}.",
+  sdCity: "Andan en la ciudad de San Diego",
+  step2: "Las modificaciones",
+  modsLegend: "Modificaciones de la bicicleta",
+  whatNow: "¿Qué hace ahora?",
+  other: "Otra cosa, o no estoy seguro",
+  step3: "La respuesta",
+  pickClass: "Elige la clase para ver las respuestas.",
+  pickMods: "Marca al menos una modificación.",
+  overallTitle: "¿Sigue siendo legal andar en ella como bicicleta eléctrica?",
+  yes: "SÍ",
+  no: "NO",
+  overallYes: "Ninguna modificación le quita lo legal como bicicleta eléctrica.",
+  overallNoOne: "1 de {total} modificaciones hace que ya no sea legal andar en ella como bicicleta eléctrica.",
+  overallNoMany: "{n} de {total} modificaciones hacen que ya no sea legal andar en ella como bicicleta eléctrica.",
+  overallDate: "Fecha del viaje {date}. Ley de California.",
+  overallCity: "Fecha del viaje {date}. Ley de California y de la ciudad de San Diego.",
+  kind_same_class: "Sigue siendo Clase {n}.",
+  kind_becomes_class_2: "Pasa a ser Clase 2.",
+  kind_becomes_class_3: "Pasa a ser Clase 3.",
+  kind_not_an_ebike: "Ya no es una bicicleta eléctrica.",
+  kind_unresolved: "No está resuelto.",
+  kind_other: "No está resuelto.",
+  kind_unclear_until_2027: "No está resuelto antes del 1 de enero de 2027.",
+  kind_depends_on_result: "Depende de su velocidad ahora.",
+  kind_breaks_rule: "Sigue siendo Clase {n}, pero andar así viola {section}.",
+  kind_sd_breaks: "Sigue siendo Clase {n}, pero la ciudad de San Diego lo prohíbe.",
+  kind_sd_unresolved: "Sigue siendo Clase {n}, pero no está resuelto en la ciudad de San Diego.",
+  kind_unanswered: "Elige qué hace ahora.",
+  why: "Por qué",
+  law: "La ley",
+  penalties: "Multas",
+  notEbike: "Si ya no es una bicicleta eléctrica",
+  from2027: "Desde el 1 de enero de 2027",
+  sanDiego: "Ciudad de San Diego",
+  selling: "Reglas para quien vende",
+  more: "Ley, multas y fechas",
+  inEffect: "Vigente desde el {date}",
+  through: "Hasta el {date}",
+  who: "Quién",
+  confidence: "Confianza",
+  englishNote: "Las razones, las leyes y las multas están en inglés, como las dan las fuentes.",
+  readOn: "Ley leída el {date} de los datos oficiales de la Legislatura de California, la CHP, el DMV y la ciudad de San Diego.",
+  leftOut: "No cubierto",
+};
+
+const TEXT: Record<Lang, Record<ModsKey, string>> = { en, es };
+
+export function modsText(lang: Lang, key: ModsKey, params: Record<string, string | number> = {}): string {
+  return TEXT[lang][key].replace(/\{(\w+)\}/g, (_, name: string) => String(params[name] ?? `{${name}}`));
+}
+
+/** The answer's first line for one mod. */
+export function kindText(lang: Lang, kind: AnswerKind, params: Record<string, string | number> = {}): string {
+  return modsText(lang, `kind_${kind}` as ModsKey, params);
+}
+
+/** Every key, for the tests. */
+export const MODS_KEYS = Object.keys(en) as ModsKey[];
+export const MODS_TEXT = TEXT;

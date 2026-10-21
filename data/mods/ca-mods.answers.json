@@ -1,0 +1,308 @@
+{
+ "format": 1,
+ "about": "How the mods check reads data/mods/ca-mods.json. For each mod outcome, in the same order as the source, it names the result the app shows, which follows the source's legal_effect and why. A result of breaks_rule names the rule in that mod's rules list the ride breaks. only_for limits an outcome to a starting class. san_diego says what the City of San Diego rule in that mod's san_diego list does to the outcome while it is in effect. ask marks a mod whose one outcome is a condition the family must confirm. Every mod with more than one outcome is asked too. The Spanish names, examples and conditions are the app's own translation. The reasons, rules and penalties are shown only as the source gives them, in English.",
+ "made_from": "data/mods/ca-mods.json",
+ "mods": {
+  "speed_unlock_kit": {
+   "es": {
+    "name": "Kit o chip para quitar el límite de velocidad",
+    "examples": "Un adaptador en el sensor de velocidad, un chip de ajuste o un controlador cambiado que sube el corte de la asistencia o del acelerador."
+   },
+   "outcomes": [
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor solo puede llevar la bicicleta a más de 20 mph, por ejemplo un acelerador que sigue empujando pasadas las 20."
+    },
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor da más de 750 vatios."
+    },
+    {
+     "result": "unclear_until_2027",
+     "es_if": "Ahora la asistencia al pedalear sigue ayudando pasadas las 28 mph."
+    },
+    {
+     "result": "becomes_class_3",
+     "es_if": "Una bicicleta Clase 1 ahora asiste hasta 28 mph solo al pedalear, no tiene acelerador y tiene velocímetro.",
+     "only_for": [
+      1
+     ]
+    }
+   ]
+  },
+  "speed_unlock_app_or_code": {
+   "es": {
+    "name": "Desbloqueo por app, código de menú o firmware",
+    "examples": "Un ajuste de menú oculto, un código de desbloqueo, un modo todoterreno o una app de teléfono que sube el límite de velocidad."
+   },
+   "outcomes": [
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor solo puede llevar la bicicleta a más de 20 mph, por ejemplo un acelerador que sigue empujando pasadas las 20."
+    },
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor da más de 750 vatios."
+    },
+    {
+     "result": "unclear_until_2027",
+     "es_if": "Ahora la asistencia al pedalear sigue ayudando pasadas las 28 mph."
+    },
+    {
+     "result": "becomes_class_3",
+     "es_if": "Una bicicleta Clase 1 ahora asiste hasta 28 mph solo al pedalear, no tiene acelerador y tiene velocímetro.",
+     "only_for": [
+      1
+     ]
+    },
+    {
+     "result": "not_an_ebike",
+     "es_if": "La bicicleta viene con un modo o código bloqueado que puede subir la velocidad con solo el motor a más de 20 mph o la potencia a más de 750 vatios."
+    }
+   ]
+  },
+  "add_throttle_class1_or_class3": {
+   "es": {
+    "name": "Agregar un acelerador a una bicicleta Clase 1 o Clase 3",
+    "examples": "Un acelerador de pulgar o de puño agregado a una bicicleta que solo asiste al pedalear."
+   },
+   "outcomes": [
+    {
+     "result": "becomes_class_2",
+     "es_if": "La bicicleta Clase 1 recibe un acelerador que deja de ayudar a las 20 mph.",
+     "only_for": [
+      1
+     ]
+    },
+    {
+     "result": "unresolved",
+     "es_if": "La bicicleta Clase 3 recibe un acelerador que se detiene a las 20 mph.",
+     "only_for": [
+      3
+     ]
+    },
+    {
+     "result": "not_an_ebike",
+     "es_if": "El acelerador de cualquiera de las dos sigue funcionando pasadas las 20 mph."
+    }
+   ]
+  },
+  "throttle_past_20_mph": {
+   "es": {
+    "name": "Acelerador que funciona pasadas las 20 mph",
+    "examples": "Un acelerador que sigue empujando hasta 25 o 28 mph, o un modo todoterreno con acelerador completo."
+   },
+   "outcomes": [
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor solo puede llevar la bicicleta a más de 20 mph, por ejemplo un acelerador que sigue empujando pasadas las 20."
+    }
+   ]
+  },
+  "motor_over_750w": {
+   "es": {
+    "name": "Motor más grande, de más de 750 vatios",
+    "examples": "Un motor de buje de 1000 vatios o un kit de motor central de más de 750 vatios."
+   },
+   "outcomes": [
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor da más de 750 vatios."
+    }
+   ]
+  },
+  "higher_voltage_battery": {
+   "es": {
+    "name": "Batería de más voltaje o más grande",
+    "examples": "Cambiar una batería de 36 voltios por una de 48 o 52 voltios, o agregar una segunda batería."
+   },
+   "outcomes": [
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor solo puede llevar la bicicleta a más de 20 mph, por ejemplo un acelerador que sigue empujando pasadas las 20."
+    },
+    {
+     "result": "not_an_ebike",
+     "es_if": "Ahora el motor da más de 750 vatios."
+    },
+    {
+     "result": "unclear_until_2027",
+     "es_if": "Ahora la asistencia al pedalear sigue ayudando pasadas las 28 mph."
+    },
+    {
+     "result": "same_class",
+     "es_if": "La bicicleta sigue dentro de 750 vatios y de los cortes de velocidad de su clase."
+    }
+   ]
+  },
+  "remove_pedals": {
+   "es": {
+    "name": "Quitar los pedales",
+    "examples": "Quitar las bielas o los pedales para andar solo con el motor."
+   },
+   "outcomes": [
+    {
+     "result": "not_an_ebike",
+     "es_if": "Se quitaron los pedales."
+    }
+   ]
+  },
+  "rider_foot_pegs": {
+   "es": {
+    "name": "Reposapiés para quien maneja, con los pedales puestos",
+    "examples": "Reposapiés o plataformas agregadas para descansar los pies mientras usa el acelerador."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Los pedales siguen puestos y funcionan por completo."
+    },
+    {
+     "result": "not_an_ebike",
+     "es_if": "Se quitaron los pedales para poner los reposapiés."
+    }
+   ]
+  },
+  "passenger_seat_or_pegs": {
+   "es": {
+    "name": "Asiento o reposapiés para un pasajero",
+    "examples": "Un asiento en la parrilla trasera o reposapiés para que un amigo vaya también."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "El pasajero va en un asiento aparte sujeto a la bicicleta.",
+     "san_diego": "breaks"
+    },
+    {
+     "result": "breaks_rule",
+     "es_if": "El pasajero va de pie en los reposapiés o sentado en una parrilla sin asiento.",
+     "breaks": "VC 21204(b)"
+    }
+   ]
+  },
+  "kid_seat": {
+   "es": {
+    "name": "Asiento para niños",
+    "examples": "Un asiento infantil en la parrilla trasera o uno delantero para niños pequeños."
+   },
+   "ask": true,
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "El asiento sujeta al niño y lo protege de las piezas en movimiento.",
+     "san_diego": "breaks"
+    }
+   ]
+  },
+  "kid_trailer": {
+   "es": {
+    "name": "Remolque para niños",
+    "examples": "Un remolque infantil de dos ruedas jalado por la bicicleta eléctrica."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Se jala un remolque.",
+     "san_diego": "unresolved"
+    }
+   ]
+  },
+  "lights": {
+   "es": {
+    "name": "Agregar o cambiar luces",
+    "examples": "Una luz delantera más fuerte, una luz trasera intermitente o luces de color de adorno."
+   },
+   "ask": true,
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Tiene las luces y los reflectores que se exigen."
+    }
+   ]
+  },
+  "horn_or_bell": {
+   "es": {
+    "name": "Bocina o timbre",
+    "examples": "Una bocina eléctrica o un timbre."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Se agregó una bocina o un timbre."
+    }
+   ]
+  },
+  "turn_signals": {
+   "es": {
+    "name": "Direccionales",
+    "examples": "Luces direccionales en el manubrio o atrás."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Se agregaron direccionales."
+    }
+   ]
+  },
+  "wheel_or_tire_change": {
+   "es": {
+    "name": "Llantas anchas u otro tamaño de rueda",
+    "examples": "Cambiar a llantas anchas de 4 pulgadas, o de ruedas de 26 a 20 pulgadas."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Los cortes de velocidad siguen igual y la persona puede apoyar un pie en el suelo."
+    },
+    {
+     "result": "depends_on_result",
+     "es_if": "El cambio deja que el motor ayude pasadas las 20 o 28 mph."
+    }
+   ]
+  },
+  "class_label_removed_or_changed": {
+   "es": {
+    "name": "Quitar o cambiar la etiqueta de clase",
+    "examples": "Despegar la etiqueta de clase, o poner una etiqueta de otra clase."
+   },
+   "outcomes": [
+    {
+     "result": "same_class",
+     "es_if": "Se quitó la etiqueta y la bicicleta no cambió."
+    },
+    {
+     "result": "same_class",
+     "es_if": "Se puso una etiqueta de una clase que no corresponde a la bicicleta."
+    }
+   ]
+  },
+  "remove_brake_motor_cutoff": {
+   "es": {
+    "name": "Desconectar el corte del motor al frenar",
+    "examples": "Desconectar los sensores de las manijas de freno para que el motor siga empujando al frenar."
+   },
+   "outcomes": [
+    {
+     "result": "breaks_rule",
+     "es_if": "No hay corte del motor al frenar ni interruptor para apagarlo que funcione.",
+     "breaks": "VC 24016(a)(2)"
+    }
+   ]
+  },
+  "raised_handlebars": {
+   "es": {
+    "name": "Manubrio muy alto",
+    "examples": "Manubrios tipo ape hanger."
+   },
+   "ask": true,
+   "outcomes": [
+    {
+     "result": "breaks_rule",
+     "es_if": "Los puños quedan por encima de los hombros.",
+     "breaks": "VC 21201(b)"
+    }
+   ]
+  }
+ }
+}

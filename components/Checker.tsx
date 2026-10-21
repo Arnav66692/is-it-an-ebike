@@ -22,6 +22,7 @@ import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
 import { Coverage, TitleWords } from "./Hero";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
+import { pageHref, SiteNav } from "./SiteHeader";
 import { VerdictCard } from "./VerdictCard";
 
 type Stage = "input" | "facts" | "result";
@@ -431,6 +432,7 @@ export function Checker() {
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
           </span>
+          <SiteNav lang={lang} current="check" />
           <button type="button" className="lang-btn" onClick={switchLang} aria-label={t(lang, "switchLangLabel")} lang={lang === "en" ? "es" : "en"}>
             {t(lang, "switchLang")}
           </button>
@@ -655,6 +657,11 @@ export function Checker() {
             >
               {t(lang, "startOver")}
             </button>
+            {stateCode === "CA" ? (
+              <Link className="btn btn-quiet" href={pageHref("/mods", lang, facts.classes.length === 1 ? { class: String(facts.classes[0]) } : {})}>
+                {t(lang, "checkMods")}
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>
