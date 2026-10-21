@@ -1,0 +1,187 @@
+/*
+ * The mods check, the bike finder and the links between them and the checker. Kept apart from
+ * globals.css so the look of each part stays in one place. Every color is a token from
+ * globals.css, so the light and dark themes and their contrast hold here too.
+ */
+
+/* ---------- Links between the parts of the app ---------- */
+
+.app-bar {
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+
+/* On a phone the links take their own row under the mark and the language button. */
+.site-nav {
+  order: 3;
+  flex: 1 0 100%;
+}
+
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+}
+
+.site-nav a,
+.site-nav .sk-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--band-muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Three links fit one row at 375 px in Spanish too. */
+@media (max-width: 639px) {
+  .site-nav a,
+  .site-nav .sk-link {
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+  }
+}
+
+.site-nav a:hover {
+  color: var(--band-ink);
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--band-ink);
+  box-shadow: inset 0 -2px 0 var(--accent-solid);
+}
+
+@media (min-width: 640px) {
+  .site-nav {
+    order: 0;
+    flex: 1 1 auto;
+    margin-left: 0.75rem;
+  }
+}
+
+/* One plain line under the tagline, like "California law only." */
+.hero .tagline-note {
+  margin-top: 0.5rem;
+  color: var(--band-ink);
+  font-weight: 500;
+}
+
+/* ---------- Mods check ---------- */
+
+.mod-list {
+  display: grid;
+}
+
+.mod-item + .mod-item {
+  border-top: 1px solid var(--line);
+}
+
+/* The question under a ticked mod, set in from its box. */
+.mod-outcomes {
+  margin: 0 0 1rem 0.6875rem;
+  padding-left: 1.4375rem;
+  border-left: 2px solid var(--line-strong);
+}
+
+.mod-outcomes > legend {
+  padding-top: 0.25rem;
+  float: left;
+  width: 100%;
+}
+
+.mod-outcomes .check {
+  clear: both;
+  font-weight: 400;
+}
+
+.mod-rules {
+  display: grid;
+  gap: 1rem;
+}
+
+.mod-rule {
+  display: grid;
+  gap: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.mod-rule > .source-link,
+.mod-rule > .source-date {
+  grid-area: auto;
+  justify-self: start;
+}
+
+.mod-rule > .source-link {
+  min-height: 2.75rem;
+  padding: 0.6rem 0 0.4rem;
+}
+
+/* ---------- Bike finder ---------- */
+
+/* The maker's name sits above the model on its own short line. */
+.finder-maker {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.finder-price {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* A color or a use the family can turn on and off. */
+.toggle {
+  min-width: 3rem;
+}
+
+/* The maker's specs, a label and its value on each row, stacked on a phone. */
+.specs {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.spec {
+  display: grid;
+  gap: 0.125rem;
+  overflow-wrap: anywhere;
+}
+
+.spec > dt {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .spec {
+    grid-template-columns: 9rem 1fr;
+    gap: 1rem;
+  }
+}
+
+.finder-card .actions > .btn {
+  flex: 1 1 12rem;
+}
+
+/* The mark is a link home on the mods check and the bike finder. Its tap area reaches 44 px. */
+a.brand-mark {
+  position: relative;
+}
+
+a.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+}

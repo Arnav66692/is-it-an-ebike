@@ -1,6 +1,7 @@
 "use client";
 
-// "Where do they ride?": one search box for any US state, county, city, town or community. It is
+// "Where do they ride?": one search box for any US state, county, city, town, community or public
+// school district. It is
 // an ARIA 1.2 combobox with a list of results, so it works with the arrow keys, Enter and Escape,
 // and a screen reader hears how many places matched. The place index loads the first time the
 // box is used. Each pick shows as a chip with a labeled remove button.
@@ -9,7 +10,8 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { placeHint, type Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
 import { pickLabels, type PickLabels } from "@/lib/places/linked";
-import { loadPlaceIndex } from "@/lib/places/load";
+import { REGULAR_DISTRICT_TYPES } from "@/lib/places/districts";
+import { loadSearchIndex } from "@/lib/places/load";
 import { resolvePlace } from "@/lib/places/resolve";
 import { enterChoice, placeLabel, searchResults, type PlaceLabel } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndex } from "@/lib/places/types";
@@ -81,12 +83,22 @@ export function statusVisible(query: string, loading: boolean, failed: boolean, 
   return query.trim() !== "" && (loading || count === 0);
 }
 
-/** The second line of a result: what kind of place it is, then its county and state. */
+/** The NCES type of a district that is not a regular one, like "charter district". Empty for a regular district or a place. */
+export function districtTypeLabel(entry: PlaceEntry, lang: Lang): string {
+  if (entry.kind !== "district" || entry.districtType === undefined || REGULAR_DISTRICT_TYPES.has(entry.districtType)) return "";
+  const key = `districtType_${entry.districtType}`;
+  return isUiKey(key) ? t(lang, key) : "";
+}
+
+/**
+ * The second line of a result: what kind of place it is, then its county and state. A school
+ * district names its NCES type when it is not a regular district, then its office city.
+ */
 export function resultDetail(entry: PlaceEntry, label: PlaceLabel, lang: Lang): string {
   const key = `kind_${entry.kind}`;
   const kind = isUiKey(key) ? t(lang, key) : "";
   if (entry.kind === "state") return kind;
-  return [kind, label.where, label.state].filter(Boolean).join(", ");
+  return [kind, districtTypeLabel(entry, lang), label.where, label.state].filter(Boolean).join(", ");
 }
 
 /**
@@ -95,7 +107,7 @@ export function resultDetail(entry: PlaceEntry, label: PlaceLabel, lang: Lang): 
  */
 export function resultHint(entry: PlaceEntry, lang: Lang): string {
   const r = resolvePlace(entry);
-  if (!r.localRecord || (r.why !== "checked_city" && r.why !== "sd_county")) return "";
+  if (!r.localRecord || (r.why !== "checked_city" && r.why !== "sd_county" && r.why !== "sduhsd_district")) return "";
   return placeHint(r.localRecord, lang);
 }
 
@@ -114,7 +126,7 @@ interface Props {
   picks: ChipPick[];
   onPick: (entry: PlaceEntry, labels: PickLabels) => void;
   onRemove: (id: string) => void;
-  /** Loads the place index. Tests pass their own. */
+  /** Loads the places and school districts. Tests pass their own. */
   loadIndex?: () => Promise<PlaceIndex>;
 }
 
@@ -148,7 +160,7 @@ export function focusAfterRemove(at: number, left: number, touch: boolean): { ch
   return touch ? "label" : "input";
 }
 
-export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = loadPlaceIndex }: Props) {
+export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = loadSearchIndex }: Props) {
   const inputId = useId();
   const helpId = useId();
   const listId = useId();

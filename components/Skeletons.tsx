@@ -64,6 +64,23 @@ function LaterStepFrame({ step, k, hint }: { step: number; k: UiKey; hint: UiKey
   );
 }
 
+/** The links between the parts of the app, in both languages, so the bar keeps its height when the page arrives. */
+function NavFrame() {
+  return (
+    <div className="site-nav" aria-hidden="true">
+      <ul role="list">
+        {(["navCheck", "navMods", "navFind"] as const).map((k) => (
+          <li key={k}>
+            <span className="sk-link">
+              <Both k={k} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function CheckerSkeleton() {
   return (
     <div className="page" aria-busy="true">
@@ -72,6 +89,7 @@ export function CheckerSkeleton() {
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
           </span>
+          <NavFrame />
           {/* The language button's place, so the bar has its full height. The working button comes with the page. */}
           <span className="lang-btn sk-pill" aria-hidden="true">
             <span className="sk-en" lang="es">
@@ -192,6 +210,38 @@ export function FlyerSkeleton() {
         </span>
       </div>
       <FlyerSheet qr="" url="" />
+    </div>
+  );
+}
+
+/** The frame of the mods check or the bike finder while its script loads: the header band and its title. */
+export function SectionSkeleton({ title }: { title: { en: string; es: string } }) {
+  return (
+    <div className="page" aria-busy="true">
+      <header className="app-head hero">
+        <div className="app-bar">
+          <span className="brand-mark" aria-hidden="true">
+            <BikeIcon />
+          </span>
+          <NavFrame />
+          <span className="lang-btn sk-pill" aria-hidden="true">
+            <span className="sk-en" lang="es">
+              {t("en", "switchLang")}
+            </span>
+            <span className="sk-es" lang="en">
+              {t("es", "switchLang")}
+            </span>
+          </span>
+        </div>
+        <h1 className="app-title">
+          <span className="sk-en" lang="en">
+            <TitleWords text={title.en} />
+          </span>
+          <span className="sk-es" lang="es">
+            <TitleWords text={title.es} />
+          </span>
+        </h1>
+      </header>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T08:58:42.069Z",
-  "commit": "4a13f60",
+  "generated_at": "2026-10-21T10:15:31.931Z",
+  "commit": "833874c",
   "engine": {
     "states": 51,
     "san_diego_places": 20,
@@ -8,16 +8,16 @@
     "state_cases": 544680,
     "local_cases": 213600,
     "by_status": {
-      "yes": 341890,
+      "yes": 338230,
       "no": 130108,
       "not_ebike": 93240,
-      "cant_confirm": 171966,
+      "cant_confirm": 175626,
       "need_info": 21076
     },
     "shown_as": {
       "yes": {
-        "yes": 55278,
-        "no": 286612
+        "yes": 54678,
+        "no": 283552
       },
       "no": {
         "yes": 0,
@@ -29,7 +29,7 @@
       },
       "cant_confirm": {
         "yes": 0,
-        "no": 171966
+        "no": 175626
       },
       "need_info": {
         "yes": 0,
@@ -40,21 +40,21 @@
     "false_legal": 0,
     "missed_yes": 0,
     "hedged": 0,
-    "answer_cards": 2820
+    "answer_cards": 2887
   },
   "bottom_line": {
     "cases": 1003920,
     "bottom_lines": 4015680,
     "by_kind": {
-      "yes": 72674,
+      "yes": 71914,
       "no_illegal": 306244,
-      "no_unconfirmed": 625002
+      "no_unconfirmed": 625762
     },
     "by_read": {
       "typed": {
-        "yes": 72674,
+        "yes": 71914,
         "no_illegal": 306244,
-        "no_unconfirmed": 625002
+        "no_unconfirmed": 625762
       },
       "read_none_checked": {
         "yes": 0,
@@ -67,9 +67,9 @@
         "no_unconfirmed": 697676
       },
       "read_all_checked": {
-        "yes": 72674,
+        "yes": 71914,
         "no_illegal": 306244,
-        "no_unconfirmed": 625002
+        "no_unconfirmed": 625762
       }
     },
     "unchecked_yes": 0,
@@ -87,11 +87,35 @@
     "hedged": 0,
     "answer_cards": 644,
     "card_yes_under_no": 0,
-    "place_cards": 3593
+    "place_cards": 3797
+  },
+  "features": {
+    "districts": {
+      "districts": 19430,
+      "sduhsd_mapped": true,
+      "other_checked": 0
+    },
+    "mods": {
+      "mods": 18,
+      "answers": 1990,
+      "yes": 495,
+      "yes_beyond_source": 0,
+      "yes_unanswered": 0,
+      "claims_not_in_data": 0,
+      "claims": 4972
+    },
+    "finder": {
+      "bikes": 29,
+      "rides": 62640,
+      "yes": 13022,
+      "yes_engine_refuses": 0,
+      "yes_without_pedals": 0,
+      "yes_before_checked": 0
+    }
   },
   "tests": {
-    "total": 893,
-    "passed": 893,
+    "total": 1003,
+    "passed": 1003,
     "failed": 0
   },
   "pilot": {

@@ -29,6 +29,25 @@ export function addPick(current: PlacePicks, entry: PlaceEntry): PickChange {
   return { next: { state: entry.state, picks: [...current.picks, entry] }, startedOver: null };
 }
 
+/**
+ * True when the pick is San Dieguito Union High School District. It turns on the SDUHSD campus
+ * choice instead of adding a chip, so the campus counts once and shows as one ticked box.
+ */
+export function isCampusPick(entry: PlaceEntry): boolean {
+  return resolvePlace(entry).localRecord === "sduhsd_campuses";
+}
+
+/**
+ * The picks after the SDUHSD district is picked. The chips stay when they are in California. Picks
+ * in another state are dropped, the same start-over rule as any other place.
+ */
+export function campusPick(current: PlacePicks, entry: PlaceEntry): PickChange {
+  if (current.state === entry.state) return { next: current, startedOver: null };
+  const next = { state: entry.state, picks: [] };
+  if (current.state !== null && current.picks.length > 0) return { next, startedOver: { from: current.state, to: entry.state } };
+  return { next, startedOver: null };
+}
+
 /** The picks without one chip. The state stays, so the page keeps showing that state's law. */
 export function removePick(current: PlacePicks, id: string): PlacePicks {
   return { state: current.state, picks: current.picks.filter((p) => p.id !== id) };
@@ -53,7 +72,8 @@ export function engineWhere(current: PlacePicks): EngineWhere | null {
 
 /**
  * The picks whose own city or county rules are not in the checked table, so the answer names them
- * as not checked. A state pick is left out, since its law is the one the answer uses.
+ * as not checked. A state pick is left out, since its law is the one the answer uses. A school
+ * district other than SDUHSD is in the list too, and the answer names its campus rules.
  */
 export function uncheckedPicks(current: PlacePicks): PlaceEntry[] {
   return current.picks.filter((p) => p.kind !== "state" && !resolvePlace(p).checked);
@@ -85,6 +105,6 @@ export function rideWhere(current: PlacePicks, stateCode: string, campus: boolea
   const where = current.state === stateCode ? engineWhere(current) : null;
   if (stateCode !== SD_STATE) return { places: [], otherPlaces: where?.otherPlaces ?? false, campusShown: false };
   const campusShown = inSanDiegoCounty(current) || campus || kept;
-  const places: PlaceId[] = [...(where?.places ?? []), ...(campusShown && campus ? (["sduhsd_campuses"] as PlaceId[]) : [])];
+  const places: PlaceId[] = [...new Set<PlaceId>([...(where?.places ?? []), ...(campusShown && campus ? (["sduhsd_campuses"] as PlaceId[]) : [])])];
   return { places, otherPlaces: where?.otherPlaces ?? false, campusShown };
 }

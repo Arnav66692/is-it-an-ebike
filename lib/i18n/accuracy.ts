@@ -63,6 +63,15 @@ export interface AccuracyText {
   v3Intro: string;
   v3Pass: string;
   v3Fail: string;
+  featuresTitle: string;
+  featuresIntro: (districts: string) => string;
+  districtOther: string;
+  modsBeyond: string;
+  modsUnanswered: string;
+  modsClaims: string;
+  finderRefuses: string;
+  finderPedals: string;
+  finderBeforeChecked: string;
 }
 
 const en: AccuracyText = {
@@ -129,6 +138,16 @@ const en: AccuracyText = {
   v3Pass:
     "It passed, so the app offers an optional photo check that looks for pedals. It loads only when tapped, asks you when the photo is a close call, and never decides if a bike is legal. One test of 24 photos can't pin accuracy down closely, so expect it to be right about nine times in ten.",
   v3Fail: "It failed too, so whole-bike photos stay cut.",
+  featuresTitle: "School districts, mods and the bike finder",
+  featuresIntro: (districts) =>
+    `${districts} school districts are in the place search. Only San Dieguito Union High has checked campus rules. Each count below is an answer that must never happen.`,
+  districtOther: "Another district treated as checked",
+  modsBeyond: "Mod YES beyond what the research says",
+  modsUnanswered: "Mod YES with no answer picked",
+  modsClaims: "Mod reason, rule or penalty not in the research's own words",
+  finderRefuses: "Finder YES where the rules say not allowed",
+  finderPedals: "Finder YES for a bike without stated pedals",
+  finderBeforeChecked: "Checker YES before the maker's facts are checked",
 };
 
 const es: AccuracyText = {
@@ -197,6 +216,16 @@ const es: AccuracyText = {
   v3Pass:
     "Cumplió, así que la app ofrece una revisión opcional de la foto que busca pedales. Solo se carga si la tocas, te pregunta cuando la foto no es clara y nunca decide si una bicicleta es legal. Una prueba de 24 fotos no fija la precisión con exactitud, así que espera que acierte unas nueve de cada diez veces.",
   v3Fail: "Tampoco cumplió, así que las fotos de la bicicleta completa siguen fuera.",
+  featuresTitle: "Distritos escolares, modificaciones y buscar bicicleta",
+  featuresIntro: (districts) =>
+    `La búsqueda de lugares tiene ${districts} distritos escolares. Solo San Dieguito Union High tiene reglas de plantel revisadas. Cada número de abajo es una respuesta que nunca debe pasar.`,
+  districtOther: "Otro distrito tratado como revisado",
+  modsBeyond: "SÍ de una modificación más allá de lo que dice la investigación",
+  modsUnanswered: "SÍ de una modificación sin respuesta elegida",
+  modsClaims: "Razón, ley o multa que no son las palabras de la investigación",
+  finderRefuses: "SÍ del buscador donde las reglas dicen que no se permite",
+  finderPedals: "SÍ del buscador para una bicicleta sin pedales declarados",
+  finderBeforeChecked: "SÍ de la revisión antes de revisar los datos del fabricante",
 };
 
 export const ACCURACY_TEXT: Record<Lang, AccuracyText> = { en, es };

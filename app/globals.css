@@ -796,6 +796,15 @@ textarea.field {
   background: var(--sunk);
 }
 
+/* A link drawn as a button keeps its button's words color on hover, not the link accent. */
+a.btn:hover {
+  color: var(--primary-ink);
+}
+
+a.btn-quiet:hover {
+  color: var(--ink);
+}
+
 /* A quiet button that is on, like "Not sure" picked as the answer: it looks picked, like a picked choice. */
 .btn-quiet[aria-pressed="true"],
 .btn-quiet[aria-pressed="true"]:hover:not(:disabled) {
@@ -940,6 +949,19 @@ textarea.field {
 .check input:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* A single choice is round with a dot, so it never reads as one of several boxes to tick. */
+.check input[type="radio"] {
+  border-radius: 50%;
+}
+
+.check input[type="radio"]::before {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  -webkit-mask: none;
+  mask: none;
 }
 
 .check .help {

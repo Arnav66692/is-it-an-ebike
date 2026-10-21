@@ -7,7 +7,7 @@ import type { PlaceId } from "@/lib/rules/types";
 import { CHECKED_CITIES, SD_COUNTY_FIPS, SD_STATE } from "./sanDiego";
 import { normalizeName } from "./normalize";
 import { placeLabel, type CountyNames, type PlaceLabel } from "./search";
-import { NO_PICKS, type PlacePicks } from "./picks";
+import { addPick, isCampusPick, NO_PICKS, type PlacePicks } from "./picks";
 import type { PlaceEntry } from "./types";
 
 /** The only county a linked pick can be in, with its Census name. */
@@ -63,4 +63,29 @@ export function linkedWhere(state: string, places: readonly PlaceId[]): LinkedWh
     labels: Object.fromEntries(entries.map((e) => [e.id, pickLabels(SD_COUNTY_NAMES, e)])),
     campus: state === SD_STATE && places.includes("sduhsd_campuses"),
   };
+}
+
+/** The most picks a link can carry. The search allows no more on one page in practice. */
+const MAX_LINKED_PICKS = 20;
+const PICK_ID = /^[a-z]{1,3}-[A-Za-z0-9_-]{1,40}$/;
+
+/**
+ * The search picks a "Check this bike" link names in ?pick=, like d-0631530 for Poway Unified.
+ * They are the picks with no checked record, which ?place= can't carry, so the checker can name
+ * them as not checked too.
+ */
+export function linkedPickIds(search: string): string[] {
+  const raw = new URLSearchParams(search).get("pick") ?? "";
+  return [...new Set(raw.split(",").filter((id) => PICK_ID.test(id)))].slice(0, MAX_LINKED_PICKS);
+}
+
+/**
+ * The picks once a link's ?pick= entries are found in the search index. Only entries in the link's
+ * state are added, so a link never starts over in another state, and the SDUHSD district stays the
+ * campus choice ?place= already turned on.
+ */
+export function withLinkedPicks(current: PlacePicks, state: string, entries: readonly PlaceEntry[]): PlacePicks {
+  if (current.state !== null && current.state !== state) return current;
+  const adds = entries.filter((e) => e.state === state && e.kind !== "state" && !isCampusPick(e));
+  return adds.reduce((cur, entry) => addPick(cur, entry).next, current);
 }

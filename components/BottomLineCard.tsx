@@ -82,11 +82,11 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
  * that it could change once they are checked. The full card stays out of the live region, so it
  * is never read again on every edit.
  */
-export function announcement(line: BottomLine, lang: Lang, uncheckedPlaces: readonly string[] = []): string {
+export function announcement(line: BottomLine, lang: Lang, uncheckedPlaces: readonly string[] = [], uncheckedDistricts: readonly string[] = []): string {
   const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
   const head = `${t(lang, "blTitle")}: ${word}. ${subtitle(line, lang)}`;
   // A YES covers only what was checked, so it says which city or county rules were not. A NO stays one short sentence.
-  const unchecked = line.kind === "yes" ? uncheckedLine(line, lang, uncheckedPlaces) : null;
+  const unchecked = line.kind === "yes" ? uncheckedLine(line, lang, uncheckedPlaces, uncheckedDistricts) : null;
   return [head, unchecked, line.factsNote ? t(lang, "blFactsCouldChange") : null].filter(Boolean).join(" ");
 }
 
@@ -159,24 +159,36 @@ interface Props {
   stateCode: string;
   /** Picked places whose own city and county rules were not checked, like "Austin". */
   uncheckedPlaces?: readonly string[];
+  /** Picked school districts whose campus rules were not checked, like "Poway Unified". */
+  uncheckedDistricts?: readonly string[];
 }
 
 /**
  * The line that says which local rules were not checked. It names the picked places when there are
- * any, like "City and county rules for Austin were not checked." Null when every place was checked.
+ * any, like "City and county rules for Austin were not checked.", and each picked school district,
+ * like "Campus rules for Poway Unified were not checked." Null when every place was checked.
  */
-export function uncheckedLine(line: BottomLine, lang: Lang, names: readonly string[] = []): string | null {
+export function uncheckedLine(line: BottomLine, lang: Lang, names: readonly string[] = [], districts: readonly string[] = []): string | null {
   if (line.citiesChecked && !line.uncheckedPlaces) return null;
-  if (names.length > 0) return t(lang, "blLocalUnchecked", { list: joinList([...names], lang) });
-  return !line.citiesChecked ? t(lang, "blNoCity") : t(lang, "blOtherPlaces");
+  // Two picked districts can share a name, so each name is said once.
+  const districtLine = districts.length > 0 ? t(lang, "blDistrictUnchecked", { list: joinList([...new Set(districts)], lang) }) : null;
+  const placeLine =
+    names.length > 0
+      ? t(lang, "blLocalUnchecked", { list: joinList([...names], lang) })
+      : !line.citiesChecked
+        ? t(lang, "blNoCity")
+        : districtLine
+          ? null
+          : t(lang, "blOtherPlaces");
+  return [placeLine, districtLine].filter(Boolean).join(" ");
 }
 
 /** The one-word answer for the whole ride, shown after every card. */
-export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [] }: Props) {
+export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [], uncheckedDistricts = [] }: Props) {
   const headingId = useId();
   const state = stateName(stateCode, lang);
   const yes = line.kind === "yes";
-  const unchecked = uncheckedLine(line, lang, uncheckedPlaces);
+  const unchecked = uncheckedLine(line, lang, uncheckedPlaces, uncheckedDistricts);
   // A NO, not allowed names the read facts still unchecked right under its reasons.
   const toCheck: BottomLineItem[] = line.factsNote ? [{ where: [], line: line.factsNote }] : [];
 

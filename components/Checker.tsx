@@ -9,10 +9,11 @@ import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, su
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
 import { emptyFacts, type BikeFacts, type QuestionId, type ReadField } from "@/lib/rules/types";
-import { formatDate, placeHint, placeName, stateLaw, stateName, stateOf, stateWhere, type Lang } from "@/lib/i18n/names";
+import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
-import { linkedWhere, pickLabels, SD_COUNTY_NAMES, type PickLabels } from "@/lib/places/linked";
-import { addPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
+import { linkedPickIds, linkedWhere, pickLabels, SD_COUNTY_NAMES, withLinkedPicks, type PickLabels } from "@/lib/places/linked";
+import { loadSearchIndex } from "@/lib/places/load";
+import { addPick, campusPick, isCampusPick, removePick, rideWhere, uncheckedPicks, type PlacePicks } from "@/lib/places/picks";
 import type { PlaceEntry } from "@/lib/places/types";
 import { BikeIcon } from "./BikeIcon";
 import { BikeInput } from "./BikeInput";
@@ -22,7 +23,11 @@ import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
 import { Coverage, TitleWords } from "./Hero";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
+import { pageHref, SiteNav } from "./SiteHeader";
 import { VerdictCard } from "./VerdictCard";
+import { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
+
+export { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
 
 type Stage = "input" | "facts" | "result";
 
@@ -42,6 +47,22 @@ interface Initial {
   labels: Record<string, PickLabels>;
   campus: boolean;
   today: string;
+  /** A catalog bike the bike finder sent, by id, and the rider's age it was checked for. */
+  bike: string | null;
+  age: string;
+  /** Search picks with no checked record that a "Check this bike" link names, found once the index loads. */
+  pickIds: string[];
+}
+
+/**
+ * The bike and the rider's age a "Check this bike" link from the bike finder names, like
+ * ?bike=rad-radrunner&age=15. The age only fills the box, so it is checked like a typed one.
+ */
+export function finderLink(search: string): { bike: string | null; age: string } {
+  const params = new URLSearchParams(search);
+  const bike = params.get("bike");
+  const age = params.get("age") ?? "";
+  return { bike: bike && /^[a-z0-9-]{1,80}$/.test(bike) ? bike : null, age: /^\d{1,3}$/.test(age) ? age : "" };
 }
 
 /** Reads the QR or shared-link settings once. This component only renders in the browser. */
@@ -52,43 +73,9 @@ function readInitial(): Initial {
     state: link.state,
     ...linkedWhere(link.state, link.places),
     today: checkerToday(localToday()),
+    ...finderLink(window.location.search),
+    pickIds: linkedPickIds(window.location.search),
   };
-}
-
-/**
- * A status line about the places: one added, removed or already there, or a move to another
- * state's law. A move to another state is shown on the page, not only read out, and so is the
- * SDUHSD campus choice it removes.
- */
-export interface WhereNote {
-  key: "whereAdded" | "whereRemoved" | "whereAlready" | "whereStartedOver" | "whereStateSwitched" | "whereAddedNewState" | "whereNewState";
-  place?: PickLabels;
-  from?: string;
-  to?: string;
-  /** The SDUHSD campus was ticked and the move to another state removed it. */
-  campusRemoved?: boolean;
-}
-
-/**
- * The status line's words. States are named the way the answers name them, so Spanish says
- * "en el Distrito de Columbia" and "la ley del Distrito de Columbia", with the article.
- */
-export function whereNoteText(note: WhereNote | null, lang: Lang): string {
-  if (!note) return "";
-  const from = note.from ?? "";
-  const to = note.to ?? "";
-  const main = t(lang, note.key, {
-    place: note.place?.[lang].text ?? "",
-    inTo: stateWhere(to, lang),
-    placesFrom: lang === "es" ? stateOf(from, lang) : stateWhere(from, lang),
-    lawTo: stateLaw(to, lang, "inline"),
-  });
-  return note.campusRemoved ? `${main} ${t(lang, "whereCampusRemoved")}` : main;
-}
-
-/** True when the note says the answer moved to another state's law, so it is shown, not only read out. */
-export function whereNoteShown(note: WhereNote | null): boolean {
-  return note !== null && (note.to !== undefined || note.campusRemoved === true);
 }
 
 /**
@@ -130,7 +117,7 @@ export function Checker() {
   const [initial] = useState(readInitial);
   const [lang, setLang] = useState<Lang>(initial.lang);
   const [stateCode, setStateCode] = useState(initial.state);
-  const [ageText, setAgeText] = useState("");
+  const [ageText, setAgeText] = useState(initial.age);
   const [ageError, setAgeError] = useState(false);
   const [today, setToday] = useState(initial.today);
   const [dateText, setDateText] = useState(initial.today);
@@ -142,6 +129,9 @@ export function Checker() {
   // Set once the family uses the campus box, so unticking it keeps it on the page. A move to another state clears it.
   const [campusKept, setCampusKept] = useState(false);
   const [whereNote, setWhereNote] = useState<WhereNote | null>(null);
+  // True until a link's ?pick= places are found in the search index. Meanwhile, or when the index
+  // can't load, the answer says city and county rules were not checked, so it never drops them.
+  const [linkPicksOpen, setLinkPicksOpen] = useState(initial.pickIds.length > 0);
   const campusId = useId();
   // The facts and where each came from change together. Nothing here is saved, so a reload or a
   // shared link starts with no facts and nothing checked.
@@ -193,6 +183,43 @@ export function Checker() {
     bikeRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }, [starts]);
 
+  // A bike sent from the bike finder comes in as read from its maker's page, every fact not
+  // checked, the same as a product link. The catalog loads only for such a link.
+  useEffect(() => {
+    if (!initial.bike) return;
+    let live = true;
+    void Promise.all([import("@/lib/bikes/catalog"), import("@/lib/bikes/facts")]).then(([{ catalogBike }, { catalogExtraction }]) => {
+      const found = initial.bike ? catalogBike(initial.bike) : null;
+      if (live && found) handleRead(catalogExtraction(found));
+    });
+    return () => {
+      live = false;
+    };
+    // handleRead is the page's own function and the link is read once, on the first draw.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial.bike]);
+
+  // Places with no checked record that the bike finder sent, like a school district, become chips
+  // once the search index loads, so the answer names them as not checked, as the finder did.
+  useEffect(() => {
+    if (initial.pickIds.length === 0) return;
+    let live = true;
+    loadSearchIndex()
+      .then((index) => {
+        if (!live) return;
+        const entries = initial.pickIds.map((id) => index.byId.get(id)).filter((e): e is PlaceEntry => e !== undefined);
+        setLabels((cur) => ({ ...cur, ...Object.fromEntries(entries.map((e) => [e.id, pickLabels(index, e)])) }));
+        setWhere((cur) => withLinkedPicks(cur, initial.state, entries));
+        if (entries.length === initial.pickIds.length) setLinkPicksOpen(false);
+      })
+      .catch(() => {
+        // The answer keeps saying city and county rules were not checked.
+      });
+    return () => {
+      live = false;
+    };
+  }, [initial]);
+
   // Phones keep a tab open for days. "Today" is read again at midnight and whenever the page
   // comes back into view, so an old tab never answers for yesterday.
   useEffect(() => {
@@ -235,11 +262,13 @@ export function Checker() {
       rideDate: date,
       facts,
       places: ride.places,
-      otherPlaces: ride.otherPlaces,
+      otherPlaces: ride.otherPlaces || (linkPicksOpen && stateCode === initial.state),
     });
-  }, [stage, ageValid, age, stateCode, date, facts, ride]);
-  // The picks whose own city and county rules were not checked, named on the bottom line.
-  const unchecked = uncheckedPicks(where).map((p) => labels[p.id]?.[lang].name ?? p.name);
+  }, [stage, ageValid, age, stateCode, date, facts, ride, linkPicksOpen, initial.state]);
+  // The picks whose own city, county or campus rules were not checked, named on the bottom line.
+  const notChecked = uncheckedPicks(where);
+  const unchecked = notChecked.filter((p) => p.kind !== "district").map((p) => labels[p.id]?.[lang].name ?? p.name);
+  const uncheckedDistricts = notChecked.filter((p) => p.kind === "district").map((p) => p.name);
 
   // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
   // Worked out on every draw from the checks on screen, so no list kept from an earlier draw can reach it.
@@ -351,8 +380,32 @@ export function Checker() {
     scrollTo(resultsRef);
   }
 
+  /**
+   * San Dieguito Union High School District picked in the search. It ticks the SDUHSD campus box,
+   * the checked campus record, instead of adding a chip. From another state it starts over in California.
+   */
+  function pickCampus(entry: PlaceEntry, entryLabels: PickLabels) {
+    const change = campusPick(where, entry);
+    const moved = entry.state !== stateCode;
+    if (!moved && campus) {
+      setWhereNote({ key: "whereAlready", place: entryLabels });
+      return;
+    }
+    setWhere(change.next);
+    if (moved) setStateCode(entry.state);
+    setCampus(true);
+    setCampusKept(true);
+    if (change.startedOver) setWhereNote({ key: "whereStartedOver", ...change.startedOver });
+    else if (moved) setWhereNote({ key: "whereAddedNewState", place: entryLabels, to: entry.state });
+    else setWhereNote({ key: "whereAdded", place: entryLabels });
+  }
+
   /** A place picked in the search. A place in another state starts over in that state. */
   function pickPlace(entry: PlaceEntry, entryLabels: PickLabels) {
+    if (isCampusPick(entry)) {
+      pickCampus(entry, entryLabels);
+      return;
+    }
     const change = addPick(where, entry);
     setLabels((cur) => ({ ...cur, [entry.id]: entryLabels }));
     setWhere(change.next);
@@ -405,6 +458,7 @@ export function Checker() {
           <span className="brand-mark" aria-hidden="true">
             <BikeIcon />
           </span>
+          <SiteNav lang={lang} current="check" />
           <button type="button" className="lang-btn" onClick={switchLang} aria-label={t(lang, "switchLangLabel")} lang={lang === "en" ? "es" : "en"}>
             {t(lang, "switchLang")}
           </button>
@@ -587,7 +641,7 @@ export function Checker() {
             {(() => {
               const questionsCard = <FollowUps key={`q-${round}`} lang={lang} questions={questions} facts={facts} onChange={editFacts} />;
               const answer = [
-                summary ? <BottomLineCard key="bottom-line" line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} /> : null,
+                summary ? <BottomLineCard key="bottom-line" line={summary} lang={lang} stateCode={stateCode} uncheckedPlaces={unchecked} uncheckedDistricts={uncheckedDistricts} /> : null,
                 <h3 key="by-place" className="section-label">
                   {t(lang, "byPlace")}
                 </h3>,
@@ -605,7 +659,7 @@ export function Checker() {
         {/* Always in the page. Screen readers hear one short sentence when the answer appears or
             changes, not the whole card on every edit. */}
         <p role="status" className="sr-only">
-          {summary ? announcement(summary, lang, unchecked) : ""}
+          {summary ? announcement(summary, lang, unchecked, uncheckedDistricts) : ""}
         </p>
         {result ? (
           <div className="actions no-print">
@@ -629,6 +683,11 @@ export function Checker() {
             >
               {t(lang, "startOver")}
             </button>
+            {stateCode === "CA" ? (
+              <Link className="btn btn-quiet" href={pageHref("/mods", lang, { ...(facts.classes.length === 1 ? { class: String(facts.classes[0]) } : {}), ...(ageValid && age !== null ? { age: String(age) } : {}) })}>
+                {t(lang, "checkMods")}
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>

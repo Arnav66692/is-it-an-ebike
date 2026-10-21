@@ -255,6 +255,10 @@ function evaluateDevice(
   if (watts?.status === "not_ebike") return watts;
 
   let unclear: Line | null = watts?.reason ?? (noThrottleUnconfirmed ? line("throttle_unknown", { cls }) : null);
+  // A label that names Class 3 next to Class 2 is read in each class on the same facts. Nothing in
+  // them says the throttle turns off in the Class 3 mode, and a Class 3 bike may only help while
+  // the rider pedals, so that mode can't be confirmed.
+  if (cls === 3 && throttleLikely(f)) unclear = unclear ?? line("class3_throttle_unclear");
   const questions = new Set<QuestionId>();
   const cautions: Line[] = [];
 

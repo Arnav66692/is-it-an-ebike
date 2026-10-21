@@ -3,7 +3,7 @@
 
 import type { NotCountyLand } from "./sanDiego";
 
-/** What kind of place an entry is. "community" is a Census CDP, an unincorporated community. */
+/** What kind of place an entry is. "community" is a Census CDP, an unincorporated community. "district" is a public school district. */
 export type PlaceKind =
   | "state"
   | "county"
@@ -15,13 +15,14 @@ export type PlaceKind =
   | "community"
   | "township"
   | "plantation"
-  | "neighborhood";
+  | "neighborhood"
+  | "district";
 
 /** Where an entry comes from, which also fixes the shape of its id. */
-export type PlaceSourceKind = "state" | "county" | "place" | "cousub" | "neighborhood";
+export type PlaceSourceKind = "state" | "county" | "place" | "cousub" | "neighborhood" | "district";
 
 export interface PlaceEntry {
-  /** Stable id, unique in the index: "s-CA", "c-06073", "p-0611194", "m-3400112345" or "n-carmel-valley". The share link names checked records, not these ids (lib/places/linked.ts). */
+  /** Stable id, unique in the index: "s-CA", "c-06073", "p-0611194", "m-3400112345", "n-carmel-valley" or "d-0634380". The share link names checked records, not these ids (lib/places/linked.ts). */
   id: string;
   /** The name without the Census suffix, like "Carlsbad" for "Carlsbad city". */
   name: string;
@@ -31,12 +32,18 @@ export interface PlaceEntry {
   state: string;
   /** Five-digit county FIPS codes, the county with the most people first. Empty for a state. */
   counties: string[];
-  /** The Census GEOID for a county, place or county subdivision. Null for a state or neighborhood. */
+  /** The Census GEOID for a county, place or county subdivision, or the NCES LEAID for a school district. Null for a state or neighborhood. */
   geoid: string | null;
   /** Position by population, 0 for the most people. States sort first with ranks below 0, and neighborhoods share the City of San Diego's. */
   rank: number;
   /** Normalized names the search matches, the display name first. */
   keys: string[];
+  /** A school district's office city, as NCES publishes it. */
+  city?: string;
+  /** A school district's NCES LEA type, 1 to 9. Types 1 and 2 are regular districts. */
+  districtType?: number;
+  /** True when another district has the same name, office city, county and type, so its label adds the NCES ID. */
+  sharesLabel?: boolean;
 }
 
 export interface PlaceDataSource {
