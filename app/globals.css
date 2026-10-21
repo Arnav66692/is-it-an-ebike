@@ -2184,6 +2184,17 @@ a.source-link::after {
     forced-color-adjust: auto;
   }
 
+  /* Room inside the block's edge for the text's backplate, so the edge stays whole. */
+  .bl-head {
+    padding: 0.16em 0.26em;
+  }
+
+  /* The plus and minus inside the summary boxes are drawn with gradients, which these themes drop. */
+  .more > summary::before,
+  .line-details > summary::before {
+    forced-color-adjust: none;
+  }
+
   .check input {
     appearance: auto;
   }
