@@ -227,7 +227,7 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
 
   return (
     <div className="space-y-3">
-      <div className="space-y-1">
+      <div className="space-y-2">
         {/* tabIndex -1 lets focus land here after the last chip is removed by touch, with no keyboard popping up. */}
         <label ref={label} htmlFor={inputId} className="field-label" tabIndex={-1}>
           {t(lang, "whereLabel")}

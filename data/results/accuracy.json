@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-21T07:52:19.436Z",
-  "commit": "a8d7160",
+  "generated_at": "2026-10-21T08:45:29.043Z",
+  "commit": "25287c1",
   "engine": {
     "states": 51,
-    "san_diego_places": 7,
+    "san_diego_places": 20,
     "cases": 758280,
     "state_cases": 544680,
     "local_cases": 213600,
@@ -90,8 +90,8 @@
     "place_cards": 3593
   },
   "tests": {
-    "total": 871,
-    "passed": 871,
+    "total": 892,
+    "passed": 892,
     "failed": 0
   },
   "pilot": {

@@ -174,7 +174,9 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
       <p className="font-semibold leading-snug" data-answer-line="">
         {keepWords(lead ?? reason)}
       </p>
-      {held ? heldLines.map((l) => <p key={l}>{keepWords(l)}</p>) : lead ? <p>{keepWords(reason)}</p> : null}
+      {/* A card waiting on the questions says so in its lead. Its reason, that a label can't show the
+          answers, would repeat the questions card's own line, so it is left out here. */}
+      {held ? heldLines.map((l) => <p key={l}>{keepWords(l)}</p>) : lead && verdict.status !== "need_info" ? <p>{keepWords(reason)}</p> : null}
 
       {/* Everything else about this place opens on tap: the rules, the notes, the sources and the dates. */}
       <details className="more">
