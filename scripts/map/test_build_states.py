@@ -1,12 +1,14 @@
 """Checks the merge rules in build_states.py. Run: python3 -m unittest scripts/map/test_build_states.py"""
 
+import json
 import os
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from build_states import merge_places, osm_rows, same_place, us_phone  # noqa: E402
+from build_states import area_jobs, merge_places, osm_rows, overture_rows, same_place, us_phone  # noqa: E402
 
 
 def place(name, y, x, kind="s", source="o", **extra):
@@ -52,6 +54,35 @@ class MergeRules(unittest.TestCase):
         ])
         self.assertEqual(racks, [[32.12346, -117.1, 8, 5]])
         self.assertEqual([(p["k"], p["f"]) for p in places], [("s", 1), ("r", 0), ("st", 0)])
+
+    def test_a_state_without_osm_gets_a_shops_only_file_and_the_seed_box_its_own_full_file(self):
+        box = (32.5, -124.5, 42.0, -114.1)
+        seed = {"box": (32.53, -117.6, 33.51, -116.08), "elements": [{"type": "node"}], "read": "2026-10-22"}
+        inside, outside = place("In", 32.8, -117.1, source="v"), place("Out", 34.0, -118.2, source="v")
+        jobs = area_jobs("CA", box, None, [inside, outside], seed, True)
+        self.assertEqual([(j["id"], j["racksSaved"], [p["n"] for p in j["overture"]]) for j in jobs],
+                         [("CA-sd", True, ["In"]), ("CA", False, ["Out"])])
+        self.assertEqual(jobs[1]["elements"], [])
+        self.assertEqual([j["id"] for j in area_jobs("TX", box, None, [], None, False)], [])
+        full = area_jobs("TX", box, {"elements": [], "read": "2026-10-22"}, [outside], None, True)
+        self.assertEqual([(j["id"], j["racksSaved"]) for j in full], [("TX", True)])
+
+    def test_overture_rows_drop_other_countries_low_confidence_and_closed(self):
+        rows = [
+            {"name": "Tijuana Bikes", "lat": 32.52, "lon": -117.0, "confidence": 0.9, "cat": "bike_store", "addr": {"country": "MX"}},
+            {"name": "Low", "lat": 32.7, "lon": -117.1, "confidence": 0.2, "cat": "bike_store", "addr": {"country": "US"}},
+            {"name": "Shut", "lat": 32.7, "lon": -117.1, "confidence": 0.9, "cat": "bike_store", "status": "closed"},
+            {"name": "San Juan Bikes", "lat": 18.4, "lon": -66.1, "confidence": 0.9, "cat": "bike_store", "addr": {"country": "PR"}},
+            {"name": "Kept", "lat": 32.7, "lon": -117.1, "confidence": 0.8, "cat": "bike_repair_maintenance", "addr": {"country": "US", "region": "CA"}},
+        ]
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+            f.write("".join(json.dumps(r) + "\n" for r in rows))
+        try:
+            kept, dropped = overture_rows(f.name)
+        finally:
+            os.unlink(f.name)
+        self.assertEqual([(p["n"], p["k"]) for p in kept], [("San Juan Bikes", "s"), ("Kept", "r")])
+        self.assertEqual(dropped, {"low_confidence": 1, "closed": 1, "no_name": 0, "outside_us": 1})
 
     def test_us_phone(self):
         self.assertEqual(us_phone("+18589976783"), "(858) 997-6783")

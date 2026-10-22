@@ -4,10 +4,12 @@ public/map/states/, plus index.json, from OpenStreetMap answers and Overture Map
 Usage: python3 build_states.py --osm DIR --overture FILE --overture-region sd|ca|us
            --overture-release 2026-10-21.0 --seed public/map/san-diego.json --out public/map/states
 
-A state gets a file when OpenStreetMap was read for it (racks and public repair stations come only
-from there). Overture shops and repair shops are merged in where the Overture read covered.
-When a state has no OpenStreetMap answer but the seed snapshot lies in it, the seed's box becomes
-its own area. Every other state is listed as missing, so the page asks the live route there.
+A state read from OpenStreetMap gets a full file (racks and public repair stations come only from
+there), with Overture shops and repair shops merged in. A state the Overture read covered but
+OpenStreetMap did not gets a shops-only file, marked racksSaved false, so the page shows its shops
+at once and asks the live route for racks. The seed snapshot's box becomes its own full area inside
+its state, and that state's shops-only file leaves the box out. A state neither read covered is
+listed as missing, so the page asks the live route for everything there.
 
 Compact format, version 1:
   r: racks as [lat, lon, capacity or 0, flags], flags 1 covered, 2 not covered, 4 private or customers
@@ -38,6 +40,9 @@ RESTRICTED = {"private", "no", "customers", "permissive_customers", "residents"}
 FILLER = {"bike", "bikes", "bicycle", "bicycles", "shop", "store", "cycle", "cycles", "cycling", "co", "company",
           "the", "inc", "llc", "and", "of", "repair", "service", "services", "e", "ebike", "ebikes", "electric"}
 OVERTURE_KIND = {"bike_store": "s", "bike_repair_maintenance": "r"}
+# State boxes reach over the borders, into Tijuana, Ciudad Juarez and Toronto, so rows whose address
+# names another country are dropped.
+US_COUNTRIES = {"US", "PR"}
 
 
 def r5(v):
@@ -181,11 +186,18 @@ def overture_place(row):
     }
 
 
+def country_of(row):
+    addr = row.get("addr")
+    return addr.get("country") if isinstance(addr, dict) else None
+
+
 def overture_rows(path):
-    kept, dropped = [], {"low_confidence": 0, "closed": 0, "no_name": 0}
+    kept, dropped = [], {"low_confidence": 0, "closed": 0, "no_name": 0, "outside_us": 0}
     for line in open(path):
         row = json.loads(line)
-        if (row.get("confidence") or 0) < MIN_CONFIDENCE:
+        if country_of(row) not in (None, *US_COUNTRIES):
+            dropped["outside_us"] += 1
+        elif (row.get("confidence") or 0) < MIN_CONFIDENCE:
             dropped["low_confidence"] += 1
         elif row.get("status") in CLOSED:
             dropped["closed"] += 1
@@ -312,6 +324,25 @@ def osm_by_state(osm_dir):
     return found
 
 
+def area_jobs(st, box, osm_state, ov, seed_area, covered):
+    """The files one state gets. osm_state is its OpenStreetMap answer or None, ov its Overture
+    places, seed_area the seed snapshot when it lies in this state, covered whether the Overture
+    read covered the whole state. Each job is one area: its id, box, OpenStreetMap elements and
+    read date, Overture places, and whether its racks are saved."""
+    if osm_state is not None:
+        return [{"id": st, "box": box, "elements": osm_state["elements"], "osmRead": osm_state["read"],
+                 "overture": ov, "racksSaved": True}]
+    jobs = []
+    if seed_area is not None:
+        sb = seed_area["box"]
+        jobs.append({"id": st + "-sd", "box": sb, "elements": seed_area["elements"], "osmRead": seed_area["read"],
+                     "overture": [p for p in ov if in_box(p["y"], p["x"], sb)], "racksSaved": True})
+        ov = [p for p in ov if not in_box(p["y"], p["x"], sb)]
+    if covered:
+        jobs.append({"id": st, "box": box, "elements": [], "osmRead": None, "overture": ov, "racksSaved": False})
+    return jobs
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--osm", required=True)
@@ -333,31 +364,30 @@ def main():
     seed_state = next(st for st, box in STATES.items() if in_box((sb["south"] + sb["north"]) / 2, (sb["west"] + sb["east"]) / 2, box))
 
     os.makedirs(args.out, exist_ok=True)
-    for old in glob.glob(os.path.join(args.out, "*.json")):
-        os.remove(old)
+    stale = glob.glob(os.path.join(args.out, "*.json"))
+    if stale:
+        raise SystemExit("%s already has %d .json files. Build into an empty folder, then copy the files over." % (args.out, len(stale)))
     areas, missing, totals = [], [], {}
+    seed_area = {"box": seed_box, "elements": seed["elements"], "read": seed["read"]}
     for st, box in STATES.items():
-        ov = ov_by_state.get(st, [])
-        if st in osm:
-            elements, osm_read, area_box, area_id = osm[st]["elements"], osm[st]["read"], box, st
-        elif st == seed_state:
-            elements, osm_read, area_box, area_id = seed["elements"], seed["read"], seed_box, st + "-sd"
-            ov = [p for p in ov if in_box(p["y"], p["x"], seed_box)]
+        covered = args.overture_region == "us" or (args.overture_region == "ca" and st == "CA")
+        jobs = area_jobs(st, box, osm.get(st), ov_by_state.get(st, []), seed_area if st == seed_state else None, covered)
+        if not any(job["id"] == st for job in jobs):
             missing.append({"id": st, "bbox": list(box)})
-        else:
-            missing.append({"id": st, "bbox": list(box)})
-            continue
-        racks, osm_places = osm_rows(elements)
-        places, merge_stats = merge_places(osm_places, ov)
-        read = {"osm": osm_read, "overture": args.overture_release if ov else None}
-        for part_id, part_box, pr, pp in split(area_id, area_box, racks, places, read):
-            text = dumps(payload(part_id, pr, pp, read))
-            with open(os.path.join(args.out, part_id + ".json"), "w") as f:
-                f.write(text)
-            c = counts(pr, pp)
-            areas.append({"id": part_id, "state": st, "bbox": [round(v, 4) for v in part_box], "file": part_id + ".json",
-                          "counts": c, "sources": ["osm"] + (["overture"] if ov else []), "read": read, "bytes": len(text.encode())})
-        totals[area_id] = {"osm_places": len(osm_places), "overture_places": len(ov), **merge_stats}
+        for job in jobs:
+            ov = job["overture"]
+            racks, osm_places = osm_rows(job["elements"])
+            places, merge_stats = merge_places(osm_places, ov)
+            read = {"osm": job["osmRead"], "overture": args.overture_release if ov else None}
+            sources = (["osm"] if job["racksSaved"] else []) + (["overture"] if ov else [])
+            for part_id, part_box, pr, pp in split(job["id"], job["box"], racks, places, read):
+                text = dumps(payload(part_id, pr, pp, read))
+                with open(os.path.join(args.out, part_id + ".json"), "w") as f:
+                    f.write(text)
+                areas.append({"id": part_id, "state": st, "bbox": [round(v, 4) for v in part_box], "file": part_id + ".json",
+                              "counts": counts(pr, pp), "sources": sources, "racksSaved": job["racksSaved"], "read": read,
+                              "bytes": len(text.encode())})
+            totals[job["id"]] = {"osm_places": len(osm_places), "overture_places": len(ov), **merge_stats}
     index = {
         "v": 1,
         "built": time.strftime("%Y-%m-%d"),
