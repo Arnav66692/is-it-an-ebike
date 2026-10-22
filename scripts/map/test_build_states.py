@@ -18,6 +18,8 @@ class MergeRules(unittest.TestCase):
         self.assertTrue(same_place(place("Bike Bling", 32.0, -117.0), place("BikeBling", 32.0001, -117.0001)))
         self.assertTrue(same_place(place("The Bike Shop", 32.0, -117.0), place("The Bike Shop Temecula Valley", 32.0001, -117.0)))
         self.assertTrue(same_place(place("Chainline Bikes", 32.0, -117.0), place("Chainline Bikes", 32.0007, -117.0)))
+        moved = place("North of the Border Bicycle", 32.917, -117.237, p="(858) 452-1230")
+        self.assertTrue(same_place(place("North of the Border Bike Shop", 32.905, -117.215, p="+1 858 452 1230"), moved))
 
     def test_different_shops_or_far_apart_stay_apart(self):
         self.assertFalse(same_place(place("Moment Bicycles", 32.0, -117.0), place("Electric Bike Central", 32.0003, -117.0)))
@@ -27,10 +29,18 @@ class MergeRules(unittest.TestCase):
         osm = [place("Spoke", 32.0, -117.0, p="555"), place(None, 32.5, -117.5, kind="st")]
         ov = [place("Spoke Shop", 32.0001, -117.0, kind="r", source="v", a="1 Main St", p="(858) 555-0100"),
               place("Far Away Bikes", 33.0, -118.0, source="v")]
-        merged, matched = merge_places(osm, ov)
-        self.assertEqual(matched, 1)
+        merged, stats = merge_places(osm, ov)
+        self.assertEqual(stats, {"matched": 1, "duplicate": 0})
         self.assertEqual(len(merged), 3)
         self.assertEqual(merged[0], {"k": "s", "y": 32.0, "x": -117.0, "n": "Spoke", "a": "1 Main St", "p": "555", "f": 1, "s": "ov"})
+
+    def test_a_second_overture_copy_at_an_old_address_folds_into_the_osm_shop(self):
+        osm = [place("North of the Border Bike Shop", 32.905, -117.215)]
+        ov = [place("North of the Border Bicycle", 32.917, -117.237, source="v", p="(858) 452-1230", a="11855 Sorrento Valley Rd"),
+              place("North Of The Border Bike Shop", 32.9051, -117.215, source="v", p="(858) 452-1230", a="4204 Sorrento Valley Blvd")]
+        merged, stats = merge_places(osm, ov)
+        self.assertEqual(len(merged), 1)
+        self.assertEqual((merged[0]["a"], merged[0]["s"], stats["matched"]), ("4204 Sorrento Valley Blvd", "ov", 2))
 
     def test_osm_rows_sort_racks_shops_repair_shops_and_stands(self):
         racks, places = osm_rows([

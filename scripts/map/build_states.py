@@ -31,6 +31,8 @@ MIN_CONFIDENCE = 0.5
 DEDUPE_M = 75
 UNNAMED_DEDUPE_M = 25
 CLOSE_M = 30
+SAME_PHONE_M = 5000
+NEAR_DEG = 0.05
 CLOSED = {"permanently_closed", "temporarily_closed", "closed"}
 RESTRICTED = {"private", "no", "customers", "permissive_customers", "residents"}
 FILLER = {"bike", "bikes", "bicycle", "bicycles", "shop", "store", "cycle", "cycles", "cycling", "co", "company",
@@ -68,6 +70,11 @@ def similar_names(a, b):
     return len(ta & tb) / len(ta | tb) >= 0.5 or ta <= tb or tb <= ta
 
 
+def phone_key(raw):
+    digits = re.sub(r"\D", "", raw or "")
+    return digits[-10:] if len(digits) >= 10 else None
+
+
 def same_place(a, b):
     d = meters((a["y"], a["x"]), (b["y"], b["x"]))
     na, nb = a.get("n"), b.get("n")
@@ -76,6 +83,9 @@ def same_place(a, b):
     if d <= 2 * DEDUPE_M and compact(na) and compact(na) == compact(nb):
         return True
     if d <= CLOSE_M and name_tokens(na) & name_tokens(nb):
+        return True
+    # One shop listed at an old and a new address shares its phone number.
+    if d <= SAME_PHONE_M and phone_key(a.get("p")) and phone_key(a.get("p")) == phone_key(b.get("p")):
         return True
     return d <= UNNAMED_DEDUPE_M and (not na or not nb)
 
@@ -183,14 +193,9 @@ def overture_rows(path):
             dropped["no_name"] += 1
         else:
             kept.append(overture_place(row))
-    # Overture can list one shop twice. The surer row stays.
+    # Surer rows first, so when Overture lists one shop twice the surer row is the one kept.
     kept.sort(key=lambda p: -p["_conf"])
-    unique = []
-    for p in kept:
-        if not any(same_place(p, q) for q in unique if abs(q["y"] - p["y"]) < 0.002):
-            unique.append(p)
-    dropped["duplicate"] = len(kept) - len(unique)
-    return unique, dropped
+    return kept, dropped
 
 
 def merge_into(osm_place, ov):
@@ -209,18 +214,35 @@ def merge_into(osm_place, ov):
     return merged
 
 
+def find_same(places, ov, osm_only):
+    return next((i for i, p in enumerate(places) if p["k"] != "st" and (not osm_only or "o" in p["s"])
+                 and abs(p["y"] - ov["y"]) < NEAR_DEG and same_place(p, ov)), None)
+
+
 def merge_places(osm_places, ov_places):
+    """Two passes. First each Overture row that matches an OpenStreetMap shop fills its gaps, so
+    that shop picks up a phone number. Then the other Overture rows are added unless they repeat
+    a shop already listed, which also catches a shop Overture lists at an old and a new address."""
     out = list(osm_places)
-    matched = 0
+    stats = {"matched": 0, "duplicate": 0}
+    leftover = []
     for ov in ov_places:
-        hit = next((i for i, p in enumerate(out) if p["k"] != "st" and p["s"] == "o"
-                    and abs(p["y"] - ov["y"]) < 0.002 and same_place(p, ov)), None)
+        hit = find_same(out, ov, osm_only=True)
         if hit is None:
-            out.append(ov)
+            leftover.append(ov)
         else:
             out[hit] = merge_into(out[hit], ov)
-            matched += 1
-    return [clean({k: v for k, v in p.items() if not k.startswith("_")}) for p in out], matched
+            stats["matched"] += 1
+    for ov in leftover:
+        hit = find_same(out, ov, osm_only=False)
+        if hit is None:
+            out.append(ov)
+        elif "o" in out[hit]["s"]:
+            out[hit] = merge_into(out[hit], ov)
+            stats["matched"] += 1
+        else:
+            stats["duplicate"] += 1
+    return [clean({k: v for k, v in p.items() if not k.startswith("_")}) for p in out], stats
 
 
 # Areas and files
@@ -326,7 +348,7 @@ def main():
             missing.append({"id": st, "bbox": list(box)})
             continue
         racks, osm_places = osm_rows(elements)
-        places, matched = merge_places(osm_places, ov)
+        places, merge_stats = merge_places(osm_places, ov)
         read = {"osm": osm_read, "overture": args.overture_release if ov else None}
         for part_id, part_box, pr, pp in split(area_id, area_box, racks, places, read):
             text = dumps(payload(part_id, pr, pp, read))
@@ -335,7 +357,7 @@ def main():
             c = counts(pr, pp)
             areas.append({"id": part_id, "state": st, "bbox": [round(v, 4) for v in part_box], "file": part_id + ".json",
                           "counts": c, "sources": ["osm"] + (["overture"] if ov else []), "read": read, "bytes": len(text.encode())})
-        totals[area_id] = {"osm_places": len(osm_places), "overture_places": len(ov), "matched": matched}
+        totals[area_id] = {"osm_places": len(osm_places), "overture_places": len(ov), **merge_stats}
     index = {
         "v": 1,
         "built": time.strftime("%Y-%m-%d"),
