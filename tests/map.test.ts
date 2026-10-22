@@ -173,7 +173,7 @@ function reply(status: number, body: unknown): Response {
 describe("fetching", () => {
   beforeEach(() => clearSpotCache());
 
-  it("posts once per view and answers the same view from memory", async () => {
+  it("asks our /api/map route once per view and answers the same view from memory", async () => {
     const fetcher = vi.fn(async () => reply(200, ANSWER));
     const first = await fetchSpots(VIEW, undefined, fetcher as unknown as typeof fetch);
     const again = await fetchSpots({ ...VIEW, south: 32.7052 }, undefined, fetcher as unknown as typeof fetch);
@@ -181,12 +181,12 @@ describe("fetching", () => {
     expect(again).toBe(first);
     expect(first.capped).toBe(false);
     const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("https://overpass-api.de/api/interpreter");
-    expect(init.method).toBe("POST");
+    expect(url).toBe("/api/map?south=32.70&west=-117.17&north=32.73&east=-117.14");
+    expect(init.method).toBe("GET");
   });
 
   it("says the service is busy on a 429 or a full queue, and failed on anything else", async () => {
-    for (const status of [429, 504]) {
+    for (const status of [429, 503, 504]) {
       clearSpotCache();
       await expect(fetchSpots(VIEW, undefined, (async () => reply(status, {})) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "rate" });
     }

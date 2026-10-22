@@ -58,9 +58,9 @@ const en = {
   nearestEmpty: "Nothing to list yet. Zoom in or pick a place.",
   nearestFrom: "{d} from the middle",
   dataNote: "Data from OpenStreetMap volunteers. It can be incomplete, and some racks are private, so check signs.",
-  privacy: "Your location and searches go to OpenStreetMap services only when you ask, and nothing is stored.",
+  privacy: "The map asks our own server for the area on screen, and our server asks OpenStreetMap's Overpass servers and mirrors. Place searches go to OpenStreetMap only when you ask, and nothing is stored beyond a cache of map areas.",
   aboutTitle: "About this map",
-  about1: "Racks, shops and repair stations come from OpenStreetMap through the public Overpass API, only for the part of the map on screen.",
+  about1: "Racks, shops and repair stations come from OpenStreetMap. Our server asks the public Overpass servers and mirrors, only for the part of the map on screen.",
   about2: "Place search uses OpenStreetMap's Nominatim. Map tiles come from OpenStreetMap too. No accounts, no keys and no tracking.",
 };
 
@@ -120,9 +120,9 @@ const es: Record<MapKey, string> = {
   nearestEmpty: "Aún no hay nada que mostrar. Acerca el mapa o busca un lugar.",
   nearestFrom: "A {d} del centro",
   dataNote: "Datos de voluntarios de OpenStreetMap. Pueden estar incompletos, y algunos racks son privados, así que revisa los letreros.",
-  privacy: "Tu ubicación y tus búsquedas van a los servicios de OpenStreetMap solo cuando lo pides, y no se guarda nada.",
+  privacy: "El mapa le pide a nuestro propio servidor la zona en pantalla, y nuestro servidor se la pide a los servidores Overpass de OpenStreetMap y sus espejos. Las búsquedas de lugares van a OpenStreetMap solo cuando lo pides, y no se guarda nada aparte de una caché de zonas del mapa.",
   aboutTitle: "Sobre este mapa",
-  about1: "Los racks, tiendas y estaciones de reparación vienen de OpenStreetMap por la API pública de Overpass, solo para la parte del mapa en pantalla.",
+  about1: "Los racks, tiendas y estaciones de reparación vienen de OpenStreetMap. Nuestro servidor se los pide a los servidores públicos de Overpass y sus espejos, solo para la parte del mapa en pantalla.",
   about2: "La búsqueda de lugares usa Nominatim de OpenStreetMap. Los mosaicos del mapa también vienen de OpenStreetMap. Sin cuentas, sin claves y sin rastreo.",
 };
 

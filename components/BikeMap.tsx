@@ -1,8 +1,8 @@
 "use client";
 
 // The map of bike racks, bike shops and repair stations. The rider picks where to look, by place
-// name or by their own location, and the page asks OpenStreetMap's Overpass API for what is in
-// view once the map is close enough. A list under the map names the nearest ones, so the page
+// name or by their own location, and the page asks our own server, which asks OpenStreetMap's
+// Overpass servers, for what is in view once the map is close enough. A list under the map names the nearest ones, so the page
 // works without seeing the map. Nothing the rider types or where they are is stored.
 
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";

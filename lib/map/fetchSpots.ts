@@ -1,17 +1,17 @@
 // The two network calls the map page makes, each only when the rider moves the map close enough
-// or submits a place. Answers for a view are kept in memory for this visit only, so panning back
-// and forth doesn't ask Overpass again. Nothing is written to storage.
+// or submits a place. Racks and shops come from our own /api/map route, which asks the public
+// Overpass servers and mirrors (lib/map/overpassServer.ts). Answers for a view are kept in memory
+// for this visit only, so panning back and forth doesn't ask again. Nothing is written to storage.
 
 import {
   boundsKey,
   countSpots,
   MAX_RACKS,
   nominatimUrl,
-  OVERPASS_URL,
-  overpassBody,
   overpassRemarkError,
   parseNominatim,
   parseOverpass,
+  roundBounds,
   type Bounds,
   type FoundPlace,
   type Spot,
@@ -37,8 +37,11 @@ export interface SpotAnswer {
 }
 
 const CACHE_LIMIT = 40;
-/** A busy Overpass can hold a query for a long time. Past this the page says it is busy and stops waiting. */
-export const OVERPASS_WAIT_MS = 35_000;
+/**
+ * Our server tries up to four Overpass servers at 12 seconds each, so it can take a while.
+ * Past this the page says the service is busy and stops waiting.
+ */
+export const OVERPASS_WAIT_MS = 50_000;
 const cache = new Map<string, SpotAnswer>();
 
 /** For tests. */
@@ -54,11 +57,23 @@ function remember(key: string, answer: SpotAnswer): void {
   cache.set(key, answer);
 }
 
-/** 429 is the rate limit. Overpass also answers 502, 503 or 504 when every worker is busy. */
+/** 429 is the rate limit. Our route answers 503 when every Overpass server is busy, and a gateway can answer 502 or 504. */
 const BUSY_STATUSES = new Set([429, 502, 503, 504]);
 
 function failureOf(status: number): FetchFailure {
   return BUSY_STATUSES.has(status) ? "rate" : "failed";
+}
+
+/** Our route's URL for a view, rounded to two decimals so the CDN sees the same key for nearby views. */
+export function mapApiUrl(bounds: Bounds): string {
+  const r = roundBounds(bounds);
+  const params = new URLSearchParams({
+    south: r.south.toFixed(2),
+    west: r.west.toFixed(2),
+    north: r.north.toFixed(2),
+    east: r.east.toFixed(2),
+  });
+  return `/api/map?${params.toString()}`;
 }
 
 /** The racks, shops and repair stations in a view, from the cache when this view was asked before. */
@@ -77,12 +92,7 @@ export async function fetchSpots(bounds: Bounds, signal?: AbortSignal, fetcher: 
   }, waitMs);
   let json: unknown;
   try {
-    const res = await fetcher(OVERPASS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: overpassBody(bounds),
-      signal: controller.signal,
-    });
+    const res = await fetcher(mapApiUrl(bounds), { method: "GET", signal: controller.signal });
     if (!res.ok) throw new MapFetchError(failureOf(res.status));
     json = await res.json();
   } catch (err) {
