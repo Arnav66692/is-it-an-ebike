@@ -2394,3 +2394,34 @@ a.source-link::after {
     padding-bottom: 0;
   }
 }
+
+/* A split ZIP code's places, listed under the search box so the family picks the exact one. */
+.zip-choice {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.zip-options {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid var(--raised-edge);
+  border-radius: var(--r-panel);
+  background: var(--raised);
+}
+
+.zip-option {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+}
+
+.zip-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}

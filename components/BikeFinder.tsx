@@ -24,6 +24,7 @@ import { localToday } from "@/lib/rules/dates";
 import { isQuestionId, type PlaceId } from "@/lib/rules/types";
 import { uncheckedLine } from "./BottomLineCard";
 import { Card, Choice } from "./controls";
+import { uncheckedName } from "@/lib/places/search";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { pageHref, SiteHeader, useLang } from "./SiteHeader";
 import { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
@@ -282,7 +283,7 @@ export function BikeFinder({ catalog, meta }: { catalog: readonly CatalogBike[];
 
 
   const notChecked = uncheckedPicks(where);
-  const uncheckedNames = notChecked.filter((p) => p.kind !== "district").map((p) => labels[p.id]?.[lang].name ?? p.name);
+  const uncheckedNames = notChecked.filter((p) => p.kind !== "district").map((p) => uncheckedName(p, labels[p.id]?.[lang], lang));
   const uncheckedDistricts = notChecked.filter((p) => p.kind === "district").map((p) => p.name);
   const whereText = state ? whereWords(where.picks, labels, lang, state) : "";
   const makers = new Set(catalog.map((b) => b.maker)).size;

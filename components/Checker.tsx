@@ -22,6 +22,7 @@ import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
 import { Coverage, TitleWords } from "./Hero";
+import { uncheckedName } from "@/lib/places/search";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { pageHref, SiteNav } from "./SiteHeader";
 import { VerdictCard } from "./VerdictCard";
@@ -281,7 +282,7 @@ export function Checker() {
   }, [stage, ageValid, age, stateCode, date, facts, ride, linkPicksOpen, initial.state]);
   // The picks whose own city, county or campus rules were not checked, named on the bottom line.
   const notChecked = uncheckedPicks(where);
-  const unchecked = notChecked.filter((p) => p.kind !== "district").map((p) => labels[p.id]?.[lang].name ?? p.name);
+  const unchecked = notChecked.filter((p) => p.kind !== "district").map((p) => uncheckedName(p, labels[p.id]?.[lang], lang));
   const uncheckedDistricts = notChecked.filter((p) => p.kind === "district").map((p) => p.name);
 
   // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.

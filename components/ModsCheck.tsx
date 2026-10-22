@@ -28,6 +28,7 @@ import { uncheckedLine } from "./BottomLineCard";
 import { Card, Choice, NumberField } from "./controls";
 import { FollowUps } from "./FollowUps";
 import { askId, ModAnswerCard, Overall } from "./ModsAnswer";
+import { uncheckedName } from "@/lib/places/search";
 import { PlaceSearch, resultDetail } from "./PlaceSearch";
 import { pageHref, SiteHeader, useLang } from "./SiteHeader";
 import { whereNoteShown, whereNoteText, type WhereNote } from "./whereNote";
@@ -216,7 +217,7 @@ export function ModsCheck({ data }: { data: ModsData }) {
   if (questions.length !== asked.length) setAsked(questions);
 
   const notChecked = uncheckedPicks(where);
-  const uncheckedNames = notChecked.filter((p) => p.kind !== "district").map((p) => labels[p.id]?.[lang].name ?? p.name);
+  const uncheckedNames = notChecked.filter((p) => p.kind !== "district").map((p) => uncheckedName(p, labels[p.id]?.[lang], lang));
   const uncheckedDistricts = notChecked.filter((p) => p.kind === "district").map((p) => p.name);
   const pickNames = where.picks.filter((p) => p.kind !== "state").map((p) => labels[p.id]?.[lang].name ?? p.name);
 

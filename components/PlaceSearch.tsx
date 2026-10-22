@@ -1,10 +1,11 @@
 "use client";
 
-// "Where do they ride?": one search box for any US state, county, city, town, community or public
-// school district. It is
+// "Where do they ride?": one search box for any US state, county, city, town, community, ZIP code
+// or public school district. It is
 // an ARIA 1.2 combobox with a list of results, so it works with the arrow keys, Enter and Escape,
 // and a screen reader hears how many places matched. The place index loads the first time the
-// box is used. Each pick shows as a chip with a labeled remove button.
+// box is used. Each pick shows as a chip with a labeled remove button. A ZIP code adds the place
+// it covers, or, when it is split across places, lists them so the family picks the exact one.
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { placeHint, type Lang } from "@/lib/i18n/names";
@@ -15,6 +16,7 @@ import { loadSearchIndex } from "@/lib/places/load";
 import { resolvePlace } from "@/lib/places/resolve";
 import { enterChoice, placeLabel, searchResults, type PlaceLabel } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndex } from "@/lib/places/types";
+import { zipTarget, type ZipOption } from "@/lib/places/zips";
 
 /** Where the list's highlight is. -1 means no option is highlighted. */
 export interface ComboState {
@@ -111,6 +113,25 @@ export function resultHint(entry: PlaceEntry, lang: Lang): string {
   return placeHint(r.localRecord, lang);
 }
 
+/** A split ZIP code waiting for the family to pick the place they ride in. */
+interface ZipChoice {
+  zip: PlaceEntry;
+  options: ZipOption[];
+}
+
+/**
+ * What a picked result adds. A place adds itself. A ZIP adds the place that holds at least 99
+ * percent of its land, or itself when it is split and touches no county with checked records.
+ * A split ZIP in a checked county asks which place instead, so nothing is added until the family picks one.
+ */
+export function pickFor(index: Pick<PlaceIndex, "byId">, entry: PlaceEntry): { add: PlaceEntry } | { choose: ZipOption[] } {
+  if (entry.kind !== "zip") return { add: entry };
+  const target = zipTarget(index, entry);
+  if (target.kind === "place") return { add: target.entry };
+  if (target.kind === "choose" && target.options.length > 0) return { choose: target.options };
+  return { add: entry };
+}
+
 export interface ChipPick {
   id: string;
   label: PlaceLabel;
@@ -178,6 +199,9 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
   const [index, setIndex] = useState<PlaceIndex | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [zipChoice, setZipChoice] = useState<ZipChoice | null>(null);
+  const choiceId = useId();
+  const firstChoice = useRef<HTMLButtonElement>(null);
 
   /** Starts loading the index the first time the box is used, and again after a failed load. */
   function ensureIndex() {
@@ -222,14 +246,33 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
     option?.scrollIntoView?.({ block: "nearest" });
   }, [expanded, combo.active]);
 
-  function pick(i: number) {
-    const entry = results[i];
-    if (!entry || !index) return;
+  // A split ZIP's list takes focus when it opens, so a keyboard or screen reader lands on its first place.
+  useEffect(() => {
+    if (zipChoice) firstChoice.current?.focus();
+  }, [zipChoice]);
+
+  /** Adds one place as a chip and clears the box. */
+  function add(entry: PlaceEntry) {
+    if (!index) return;
     onPick(entry, pickLabels(index, entry));
     lastChange.current = Date.now();
     setQuery("");
     setCombo(CLOSED);
+    setZipChoice(null);
     input.current?.focus();
+  }
+
+  function pick(i: number) {
+    const entry = results[i];
+    if (!entry || !index) return;
+    const next = pickFor(index, entry);
+    if ("add" in next) {
+      add(next.add);
+      return;
+    }
+    setQuery("");
+    setCombo(CLOSED);
+    setZipChoice({ zip: entry, options: next.choose });
   }
 
   /** Opens the list again for the text still in the box, when it was closed by a tap elsewhere. */
@@ -310,6 +353,7 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
             onClick={reopen}
             onChange={(e) => {
               ensureIndex();
+              setZipChoice(null);
               setQuery(e.target.value);
               setCombo({ open: true, active: -1 });
             }}
@@ -352,6 +396,37 @@ export function PlaceSearch({ lang, state, picks, onPick, onRemove, loadIndex = 
           })}
         </ul>
       </div>
+      {zipChoice && index ? (
+        <div className="zip-choice" role="group" aria-labelledby={choiceId}>
+          <p id={choiceId} className="help">
+            {t(lang, "whereZipChoose", { zip: zipChoice.zip.name })}
+          </p>
+          <ul className="zip-options" role="list" aria-label={t(lang, "whereZipChoices", { zip: zipChoice.zip.name })}>
+            {zipChoice.options.map((option, i) => {
+              const label = placeLabel(index, option.entry, lang);
+              return (
+                <li key={`${option.entry.id}-${option.unincorporated}`}>
+                  <button type="button" ref={i === 0 ? firstChoice : undefined} className="combo-option zip-option" onClick={() => add(option.entry)}>
+                    <span className="combo-name">{option.unincorporated ? t(lang, "whereZipUnincorporated") : label.name}</span>
+                    <span className="combo-where">{option.unincorporated ? label.text : resultDetail(option.entry, label, lang)}</span>
+                    {resolvePlace(option.entry).checked ? <span className="combo-checked">{t(lang, "whereChecked")}</span> : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <button
+            type="button"
+            className="btn btn-quiet"
+            onClick={() => {
+              setZipChoice(null);
+              input.current?.focus();
+            }}
+          >
+            {t(lang, "whereZipCancel")}
+          </button>
+        </div>
+      ) : null}
       {/* Always on the page, so a screen reader hears each change in the count. */}
       <p role="status" className={statusShown ? "combo-status" : "sr-only"} data-shown={statusShown ? "true" : "false"}>
         {status}
