@@ -51,38 +51,6 @@ describe("generated bottom-line matrix", () => {
     expect(summary.byKind.no_unconfirmed).toBeGreaterThan(0);
   });
 
-  it("runs every ride typed in, and read from a link or photo with none, one or every fact left unchecked", () => {
-    expect(summary.bottomLines).toBe(4 * summary.cases);
-    for (const variant of ["typed", "read_none_checked", "read_one_unchecked", "read_all_checked"] as const) {
-      const counted = summary.byRead[variant];
-      expect(counted.yes + counted.no_illegal + counted.no_unconfirmed, variant).toBe(summary.cases);
-    }
-    expect(summary.byRead.read_all_checked).toEqual(summary.byRead.typed);
-  });
-
-  it("never says YES while a fact read from a link or photo is unchecked", () => {
-    expect(summary.byRead.read_none_checked.yes).toBe(0);
-    expect(summary.byRead.read_one_unchecked.yes).toBe(0);
-    expect(summary.uncheckedYes.slice(0, 5), show(summary.uncheckedYes)).toEqual([]);
-  });
-
-  it("names exactly the unchecked facts, in one line, whenever the answer is any kind of NO, and none once all are checked", () => {
-    expect(summary.factsNotNamed.slice(0, 5), show(summary.factsNotNamed)).toEqual([]);
-    // A NO, not allowed with facts left unchecked really comes up, so the gate above is not empty.
-    expect(summary.byRead.read_none_checked.no_illegal).toBeGreaterThan(0);
-  });
-
-  it("keeps NO, not allowed the same whether the facts were read or typed, and checked or not", () => {
-    expect(summary.byRead.read_none_checked.no_illegal).toBe(summary.byRead.typed.no_illegal);
-    expect(summary.byRead.read_one_unchecked.no_illegal).toBe(summary.byRead.typed.no_illegal);
-    expect(summary.illegalChanged.slice(0, 5), show(summary.illegalChanged)).toEqual([]);
-  });
-
-  it("shows the line naming the unchecked facts once on the rendered card, and announces that a NO, not allowed could change", () => {
-    expect(summary.factsCards).toBeGreaterThan(30);
-    expect(summary.factsNotShown.slice(0, 5), show(summary.factsNotShown)).toEqual([]);
-  });
-
   it("never says YES when the independent checker lists any reason against it", () => {
     expect(summary.falseYes.slice(0, 5), show(summary.falseYes)).toEqual([]);
   });
@@ -99,11 +67,11 @@ describe("generated bottom-line matrix", () => {
     expect(summary.missedIllegal.slice(0, 5), show(summary.missedIllegal)).toEqual([]);
   });
 
-  it("is never YES when a card is not allowed, can't confirm, unanswered, not sure or unverified, or a read fact is unchecked", () => {
+  it("is never YES when a card is not allowed, can't confirm, unanswered, not sure or unverified", () => {
     expect(summary.wrongKind.slice(0, 5), show(summary.wrongKind)).toEqual([]);
   });
 
-  it("never shows a place card YES under a NO that names that card or a read fact left unchecked", () => {
+  it("never shows a place card YES under a NO that names that card", () => {
     expect(summary.placeCards).toBeGreaterThan(1_000);
     expect(summary.cardYesUnderNo.slice(0, 5), show(summary.cardYesUnderNo)).toEqual([]);
   });

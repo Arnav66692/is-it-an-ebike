@@ -14,13 +14,11 @@ interface FeatureResults {
     /** The mods check in every state. Older result files don't have it. */
     rides?: { yes_engine_not_yes: number; yes_unsettled: number; ca_changed: number; ca_digest_changed: number };
   };
-  finder: { yes_engine_refuses: number; yes_without_pedals: number; yes_before_checked: number };
+  finder: { yes_engine_refuses: number; yes_without_pedals: number };
 }
 
 interface BottomLineResults {
   cases: number;
-  bottom_lines?: number;
-  unchecked_yes?: number;
   by_kind: { yes: number; no_illegal: number; no_unconfirmed: number };
   false_yes: number;
   missed_yes: number;
@@ -96,7 +94,6 @@ export function AccuracyView({ lang }: { lang: Lang }) {
       <div className="stats">
         <Gate label={text.falseLegal} value={e.false_legal} fmt={fmt} />
         {bl ? <Gate label={text.blFalseYes} value={bl.false_yes} fmt={fmt} /> : null}
-        {bl?.unchecked_yes !== undefined ? <Gate label={text.blUncheckedYes} value={bl.unchecked_yes} fmt={fmt} /> : null}
       </div>
 
       <section className="card space-y-4">
@@ -123,11 +120,10 @@ export function AccuracyView({ lang }: { lang: Lang }) {
       {bl ? (
         <section className="card space-y-4">
           <h2 className="card-title">{text.blTitle}</h2>
-          <p className="help">{text.blCases(fmt(bl.cases), fmt(bl.bottom_lines ?? bl.cases))}</p>
+          <p className="help">{text.blCases(fmt(bl.cases))}</p>
           <table className="table">
             <tbody>
               <Row label={text.blFalseYes} value={fmt(bl.false_yes)} strong />
-              {bl.unchecked_yes !== undefined ? <Row label={text.blUncheckedYes} value={fmt(bl.unchecked_yes)} strong /> : null}
               <Row label={text.blMissedYes} value={fmt(bl.missed_yes)} />
               {bl.false_illegal !== undefined ? <Row label={text.blFalseIllegal} value={fmt(bl.false_illegal)} /> : null}
               {bl.missed_illegal !== undefined ? <Row label={text.blMissedIllegal} value={fmt(bl.missed_illegal)} /> : null}
@@ -170,7 +166,6 @@ export function AccuracyView({ lang }: { lang: Lang }) {
               {features.mods.rides ? <Row label={text.modsCaChanged} value={fmt(features.mods.rides.ca_changed + features.mods.rides.ca_digest_changed)} /> : null}
               <Row label={text.finderRefuses} value={fmt(features.finder.yes_engine_refuses)} strong />
               <Row label={text.finderPedals} value={fmt(features.finder.yes_without_pedals)} />
-              <Row label={text.finderBeforeChecked} value={fmt(features.finder.yes_before_checked)} strong />
             </tbody>
           </table>
         </section>

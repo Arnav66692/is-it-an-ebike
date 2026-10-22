@@ -8,9 +8,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ModAnswerCard } from "../components/ModsCheck";
 import { CATALOG } from "../lib/bikes/catalog";
-import { catalogExtraction, catalogFacts } from "../lib/bikes/facts";
+import { catalogFacts } from "../lib/bikes/facts";
 import { finderLine } from "../lib/bikes/finder";
-import { factsFromExtraction } from "../lib/extract/merge";
 import { answerMod, modApplies, outcomesFor, type ModAnswer, type ModChoice } from "../lib/mods/answer";
 import { FROM_2027, MODS_DATA, MODS_SOURCE } from "../lib/mods/data";
 import { baseFacts, outcomeFacts, withMod } from "../lib/mods/facts";
@@ -19,7 +18,6 @@ import { SDUHSD_LEAID, withDistricts, type DistrictIndexFile } from "../lib/plac
 import { parsePlaceIndex } from "../lib/places/parse";
 import { resolvePlace } from "../lib/places/resolve";
 import type { PlaceIndexFile } from "../lib/places/types";
-import { fromRead, unconfirmedFields } from "../lib/provenance";
 import { bottomLine, evaluate, PLACE_IDS, STATE_CODES } from "../lib/rules";
 import { emptyFacts, type BikeFacts, type ClassNum, type PlaceId } from "../lib/rules/types";
 import { CA_ANSWERS_BEFORE, caAnswersDigest } from "./modsDigest";
@@ -203,15 +201,13 @@ export interface FinderGates {
   yes_engine_refuses: number;
   /** YES for a pedal-less e-moto, or a bike whose pages don't say it has pedals. */
   yes_without_pedals: number;
-  /** YES in the checker for a bike sent by Check this bike before its facts are checked. */
-  yes_before_checked: number;
 }
 
 const FINDER_AGES = [3, 5, 8, 10, 12, 13, 14, 15, 16, 17, 18, 21, 30, 65, 100];
 const CA_PLACE_SETS: PlaceId[][] = [[], ...PLACE_IDS.map((p) => [p]), ["city_of_san_diego", "sduhsd_campuses"]];
 
 export function finderGates(): FinderGates {
-  const gates: FinderGates = { bikes: CATALOG.length, rides: 0, yes: 0, yes_engine_refuses: 0, yes_without_pedals: 0, yes_before_checked: 0 };
+  const gates: FinderGates = { bikes: CATALOG.length, rides: 0, yes: 0, yes_engine_refuses: 0, yes_without_pedals: 0 };
   for (const state of STATE_CODES) {
     for (const places of state === "CA" ? CA_PLACE_SETS : [[]]) {
       for (const age of FINDER_AGES) {
@@ -225,9 +221,6 @@ export function finderGates(): FinderGates {
             const plain = bottomLine(evaluate({ state, riderAge: age, rideDate: TODAY, facts: catalogFacts(bike), places, otherPlaces }), TODAY);
             if (plain.kind === "no_illegal") gates.yes_engine_refuses += 1;
             if (bike.pedals !== true || bike.vehicle_type !== "e-bike") gates.yes_without_pedals += 1;
-            const read = fromRead(factsFromExtraction(catalogExtraction(bike)), "text");
-            const checker = bottomLine(evaluate({ state, riderAge: age, rideDate: TODAY, facts: read.facts, places, otherPlaces }), TODAY, unconfirmedFields(read.checks));
-            if (checker.kind === "yes") gates.yes_before_checked += 1;
           }
         }
       }

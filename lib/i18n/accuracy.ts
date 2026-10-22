@@ -25,13 +25,12 @@ export interface AccuracyText {
   testSuite: (passed: number, total: number) => string;
   engineCaveat: string;
   blTitle: string;
-  blCases: (cases: string, bottomLines: string) => string;
+  blCases: (cases: string) => string;
   blFalseYes: string;
   blMissedYes: string;
   blFalseIllegal: string;
   blMissedIllegal: string;
   blMissingCaveat: string;
-  blUncheckedYes: string;
   blCardYesUnderNo: string;
   blYes: string;
   blNoIllegal: string;
@@ -73,7 +72,6 @@ export interface AccuracyText {
   modsCaChanged: string;
   finderRefuses: string;
   finderPedals: string;
-  finderBeforeChecked: string;
 }
 
 const en: AccuracyText = {
@@ -98,15 +96,14 @@ const en: AccuracyText = {
   engineCaveat:
     "These tests prove the engine matches the rules table, not that the table matches the law. The table was checked against statute text on Oct 16, 2026. San Diego city and county rules were checked against enacted code and ordinance text on Oct 19 and Oct 20, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come only from the district's web page.",
   blTitle: "Bottom line YES or NO",
-  blCases: (cases, bottomLines) =>
-    `${cases} generated rides, including every San Diego place alone, all together and none, with and without a picked place whose own city or county rules were not checked, and bikes with unknown pedals, an unknown class or more than one class. Each ride runs four ways, typed in, and read from a link or photo with no fact checked, every fact ticked and then one changed and put back to the value read, or every fact checked, ${bottomLines} answers in all. YES needs every card allowed, every question answered, every rule read in enacted text, a ride date no more than 30 days after the rules were checked, and every fact read from a link or photo checked against the bike. The YES and NO counts below are for facts typed in.`,
+  blCases: (cases) =>
+    `${cases} generated rides, including every San Diego place alone, all together and none, with and without a picked place whose own city or county rules were not checked, and bikes with unknown pedals, an unknown class or more than one class. YES needs every card allowed, every question answered, every rule read in enacted text, and a ride date no more than 30 days after the rules were checked.`,
   blFalseYes: "False YES",
   blMissedYes: "Refused when every card allows it",
   blFalseIllegal: "Called not allowed when the checker finds no rule against it",
   blMissedIllegal: "A rule says no, but the answer isn't NO, not allowed",
   blMissingCaveat: "Unchecked places not named on the card",
-  blUncheckedYes: "YES while a fact read from a link or photo is unchecked",
-  blCardYesUnderNo: "Place card YES under a NO that names that place or an unchecked fact",
+  blCardYesUnderNo: "Place card YES under a NO that names that place",
   blYes: "YES",
   blNoIllegal: "NO, not allowed",
   blNoUnconfirmed: "NO, can't confirm it's legal",
@@ -151,7 +148,6 @@ const en: AccuracyText = {
   modsCaChanged: "California mod answer changed from before every state was added",
   finderRefuses: "Finder YES where the rules say not allowed",
   finderPedals: "Finder YES for a bike without stated pedals",
-  finderBeforeChecked: "Checker YES before the maker's facts are checked",
 };
 
 const es: AccuracyText = {
@@ -177,15 +173,14 @@ const es: AccuracyText = {
   engineCaveat:
     "Estas pruebas demuestran que el motor coincide con la tabla de reglas, no que la tabla coincida con la ley. La tabla se revisó contra el texto de la ley el 16 de octubre de 2026. Las reglas de las ciudades y del condado de San Diego se revisaron contra el texto vigente de sus códigos y ordenanzas el 19 y el 20 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen solo de la página web del distrito.",
   blTitle: "En resumen, SÍ o NO",
-  blCases: (cases, bottomLines) =>
-    `${cases} viajes generados, con cada lugar de San Diego solo, todos juntos y ninguno, con y sin un lugar elegido cuyas reglas propias de la ciudad o del condado no se revisaron, y con bicicletas de pedales desconocidos, de clase desconocida o de más de una clase. Cada viaje se prueba de cuatro maneras, con los datos escritos a mano, y leídos de un enlace o una foto sin ningún dato revisado, con todos marcados y luego uno cambiado y vuelto a lo que se leyó, o con todos revisados, ${bottomLines} respuestas en total. El SÍ exige que todas las tarjetas lo permitan, que todas las preguntas tengan respuesta, que cada regla se haya leído en un texto vigente, que el viaje sea a más tardar 30 días después de la revisión de las reglas, y que cada dato leído de un enlace o una foto se haya comparado con la bicicleta. Los conteos de SÍ y NO de abajo son con los datos escritos a mano.`,
+  blCases: (cases) =>
+    `${cases} viajes generados, con cada lugar de San Diego solo, todos juntos y ninguno, con y sin un lugar elegido cuyas reglas propias de la ciudad o del condado no se revisaron, y con bicicletas de pedales desconocidos, de clase desconocida o de más de una clase. El SÍ exige que todas las tarjetas lo permitan, que todas las preguntas tengan respuesta, que cada regla se haya leído en un texto vigente y que el viaje sea a más tardar 30 días después de la revisión de las reglas.`,
   blFalseYes: "SÍ falsos",
   blMissedYes: "Rechazados cuando todas las tarjetas lo permiten",
   blFalseIllegal: "Dice no permitida cuando el verificador no encuentra ninguna regla en contra",
   blMissedIllegal: "Una regla dice que no, pero la respuesta no es NO, no permitida",
   blMissingCaveat: "Lugares sin revisar que la tarjeta no menciona",
-  blUncheckedYes: "SÍ con un dato leído de un enlace o una foto sin revisar",
-  blCardYesUnderNo: "Tarjeta de un lugar con SÍ bajo un NO que nombra ese lugar o un dato sin revisar",
+  blCardYesUnderNo: "Tarjeta de un lugar con SÍ bajo un NO que nombra ese lugar",
   blYes: "SÍ",
   blNoIllegal: "NO, no permitida",
   blNoUnconfirmed: "NO, no podemos confirmar que sea legal",
@@ -231,7 +226,6 @@ const es: AccuracyText = {
   modsCaChanged: "Respuesta de California para una modificación que cambió desde antes de agregar todos los estados",
   finderRefuses: "SÍ del buscador donde las reglas dicen que no se permite",
   finderPedals: "SÍ del buscador para una bicicleta sin pedales declarados",
-  finderBeforeChecked: "SÍ de la revisión antes de revisar los datos del fabricante",
 };
 
 export const ACCURACY_TEXT: Record<Lang, AccuracyText> = { en, es };

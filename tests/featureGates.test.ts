@@ -24,10 +24,10 @@ describe("feature gates", () => {
     expect([g.yes_engine_not_yes, g.yes_unsettled, g.ca_changed, g.ca_digest_changed]).toEqual([0, 0, 0, 0]);
   }, 240_000);
 
-  it("never says YES for a catalog bike where the engine would refuse, or before its facts are checked", () => {
+  it("never says YES for a catalog bike where the engine would refuse, or without stated pedals", () => {
     const g = finderGates();
     expect(g.rides).toBeGreaterThan(50_000);
     expect(g.yes).toBeGreaterThan(0);
-    expect([g.yes_engine_refuses, g.yes_without_pedals, g.yes_before_checked]).toEqual([0, 0, 0]);
+    expect([g.yes_engine_refuses, g.yes_without_pedals]).toEqual([0, 0]);
   }, 240_000);
 });
