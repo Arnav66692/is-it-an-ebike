@@ -1,57 +1,79 @@
-// What is known about one rack, shop or repair station, shown in its map popup and in the list
-// under the map. Only tags that are there are shown.
+// What is known about one rack, shop or repair station: its name and kind, then its facts as a
+// short definition list and an Open in Maps button. The map popup shows all of it, and the list
+// under the map shows the facts under the picked row. Only tags that are there are shown.
 
 import type { Lang } from "@/lib/i18n/names";
 import { kindText, mapText } from "@/lib/i18n/map";
 import { osmLink, type Spot } from "@/lib/map/osm";
 
-function facts(spot: Spot, lang: Lang): string[] {
-  const out: string[] = [];
-  if (spot.capacity !== null) out.push(spot.capacity === 1 ? mapText(lang, "capacityOne") : mapText(lang, "capacityMany", { n: spot.capacity }));
-  if (spot.covered !== null) out.push(mapText(lang, spot.covered ? "coveredYes" : "coveredNo"));
+interface Fact {
+  key: string;
+  label: string;
+  value: React.ReactNode;
+  /** Opening hours are written in OpenStreetMap's own English shorthand. */
+  lang?: string;
+}
+
+function factsOf(spot: Spot, lang: Lang, distance?: string): Fact[] {
+  const out: Fact[] = [];
+  if (distance) out.push({ key: "d", label: mapText(lang, "distanceLabel"), value: distance });
+  if (spot.capacity !== null) {
+    out.push({ key: "c", label: mapText(lang, "capacityLabel"), value: spot.capacity === 1 ? mapText(lang, "bikesOne") : mapText(lang, "bikesMany", { n: spot.capacity }) });
+  }
+  if (spot.covered !== null) out.push({ key: "r", label: mapText(lang, "coverLabel"), value: mapText(lang, spot.covered ? "coveredYes" : "coveredNo") });
+  if (spot.hours) out.push({ key: "h", label: mapText(lang, "hours"), value: spot.hours, lang: "en" });
+  if (spot.phone) out.push({ key: "p", label: mapText(lang, "phone"), value: <a href={`tel:${spot.phone.replace(/[^\d+]/g, "")}`}>{spot.phone}</a> });
+  if (spot.website) {
+    out.push({
+      key: "w",
+      label: mapText(lang, "website"),
+      value: (
+        <a href={spot.website} target="_blank" rel="noopener noreferrer nofollow" className="spot-web">
+          {new URL(spot.website).hostname.replace(/^www\./, "")}
+        </a>
+      ),
+    });
+  }
   return out;
 }
 
-export function SpotFacts({ spot, lang, distance }: { spot: Spot; lang: Lang; distance?: string }) {
-  const short = facts(spot, lang);
+/** The spot's facts, its access warning and its Open in Maps button. */
+export function SpotDetails({ spot, lang, distance }: { spot: Spot; lang: Lang; distance?: string }) {
+  const facts = factsOf(spot, lang, distance);
   return (
     <>
-      <p className="spot-kind">{kindText(lang, spot.kind)}</p>
-      <p className="spot-name">{spot.name ?? mapText(lang, "noName")}</p>
-      {distance ? <p className="spot-line">{mapText(lang, "nearestFrom", { d: distance })}</p> : null}
-      {short.length > 0 ? <p className="spot-line">{short.join(", ")}</p> : null}
-      {spot.restricted ? <p className="spot-line spot-warn">{mapText(lang, "restricted")}</p> : null}
-      {spot.hours || spot.phone || spot.website ? (
-        <dl className="spot-tags">
-          {spot.hours ? (
-            <div>
-              <dt>{mapText(lang, "hours")}</dt>
-              <dd lang="en">{spot.hours}</dd>
+      {facts.length > 0 ? (
+        <dl className="spot-facts">
+          {facts.map((f) => (
+            <div key={f.key}>
+              <dt>{f.label}</dt>
+              <dd lang={f.lang}>{f.value}</dd>
             </div>
-          ) : null}
-          {spot.phone ? (
-            <div>
-              <dt>{mapText(lang, "phone")}</dt>
-              <dd>
-                <a href={`tel:${spot.phone.replace(/[^\d+]/g, "")}`}>{spot.phone}</a>
-              </dd>
-            </div>
-          ) : null}
-          {spot.website ? (
-            <div>
-              <dt>{mapText(lang, "website")}</dt>
-              <dd>
-                <a href={spot.website} target="_blank" rel="noopener noreferrer nofollow" className="spot-web">
-                  {new URL(spot.website).hostname.replace(/^www\./, "")}
-                </a>
-              </dd>
-            </div>
-          ) : null}
+          ))}
         </dl>
       ) : null}
-      <a className="spot-open" href={osmLink(spot)} target="_blank" rel="noopener noreferrer">
+      {spot.restricted ? <p className="spot-warn">{mapText(lang, "restricted")}</p> : null}
+      <a className="btn btn-quiet spot-open" href={osmLink(spot)} target="_blank" rel="noopener noreferrer">
         {mapText(lang, "openInMaps")}
       </a>
     </>
+  );
+}
+
+/** The name a spot goes by: its own, or its kind when the mappers gave it none. */
+export function spotTitle(spot: Spot, lang: Lang): string {
+  return spot.name ?? kindText(lang, spot.kind);
+}
+
+/** The popup: title, a kind chip when the title is a name, then the details. */
+export function SpotCard({ spot, lang }: { spot: Spot; lang: Lang }) {
+  return (
+    <div className="spot-card" lang={lang}>
+      <div className="spot-head">
+        <p className="spot-name">{spotTitle(spot, lang)}</p>
+        {spot.name ? <span className={`spot-type spot-type-${spot.kind}`}>{kindText(lang, spot.kind)}</span> : null}
+      </div>
+      <SpotDetails spot={spot} lang={lang} />
+    </div>
   );
 }
