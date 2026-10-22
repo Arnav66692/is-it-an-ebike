@@ -67,3 +67,7 @@ Each popup and list row shows the kind, the name if tagged, `capacity`, `covered
 | `tests/map.test.ts` | The query, the parser, the sort, the fetch errors and the header link |
 | `tests/mapState.test.ts` | The filters and chip counts, the clusters, the list and the picked spot, and "Search this area" |
 | `tests/mapRoute.test.ts` | The route's bounds check, the fallback order, all-busy and rounding |
+
+## San Diego County snapshot
+
+Views inside San Diego County load from `public/map/san-diego.json`, a snapshot of 1,361 OpenStreetMap bike racks, bike shops and repair stations read Oct 22, 2026 through overpass.kumi.systems (ODbL, © OpenStreetMap contributors). They never wait on the live Overpass servers. Views elsewhere still ask `/api/map`.

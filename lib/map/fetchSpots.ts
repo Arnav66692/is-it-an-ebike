@@ -76,8 +76,51 @@ export function mapApiUrl(bounds: Bounds): string {
   return `/api/map?${params.toString()}`;
 }
 
+/**
+ * San Diego County's racks, shops and repair stations, saved from OpenStreetMap on Oct 22, 2026
+ * (public/map/san-diego.json). A view inside the county is answered from this file at once, so the
+ * home area never waits on the free Overpass servers. Views elsewhere ask our /api/map route.
+ */
+export const SNAPSHOT_URL = "/map/san-diego.json";
+export const SNAPSHOT_BOUNDS: Bounds = { south: 32.53, west: -117.6, north: 33.51, east: -116.08 };
+let snapshot: Promise<Spot[] | null> | null = null;
+
+/** For tests. */
+export function clearSnapshot(): void {
+  snapshot = null;
+}
+
+export function insideSnapshot(b: Bounds): boolean {
+  return b.south >= SNAPSHOT_BOUNDS.south && b.north <= SNAPSHOT_BOUNDS.north && b.west >= SNAPSHOT_BOUNDS.west && b.east <= SNAPSHOT_BOUNDS.east;
+}
+
+function loadSnapshot(fetcher: typeof fetch): Promise<Spot[] | null> {
+  snapshot ??= fetcher(SNAPSHOT_URL)
+    .then((res) => (res.ok ? res.json() : null))
+    .then((json) => (json ? parseOverpass(json) : null))
+    .catch(() => null)
+    .then((spots) => {
+      // A failed load is tried again on the next view instead of being kept.
+      if (spots === null) snapshot = null;
+      return spots;
+    });
+  return snapshot;
+}
+
+/** The snapshot's spots in a view, with racks capped the same way a live answer is. */
+export function spotsInView(all: readonly Spot[], b: Bounds): SpotAnswer {
+  const inView = all.filter((s) => s.lat >= b.south && s.lat <= b.north && s.lon >= b.west && s.lon <= b.east);
+  let racks = 0;
+  const spots = inView.filter((s) => s.kind !== "rack" || ++racks <= MAX_RACKS);
+  return { spots, capped: racks > MAX_RACKS };
+}
+
 /** The racks, shops and repair stations in a view, from the cache when this view was asked before. */
 export async function fetchSpots(bounds: Bounds, signal?: AbortSignal, fetcher: typeof fetch = fetch, waitMs = OVERPASS_WAIT_MS): Promise<SpotAnswer> {
+  if (insideSnapshot(bounds)) {
+    const all = await loadSnapshot(fetcher);
+    if (all) return spotsInView(all, bounds);
+  }
   const key = boundsKey(bounds);
   const hit = cache.get(key);
   if (hit) return hit;
