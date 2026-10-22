@@ -14,6 +14,8 @@ export interface StateArea {
   state: string;
   bounds: Bounds;
   file: string;
+  /** False when the file holds shops only, so racks there come from the live route. */
+  racksSaved: boolean;
 }
 
 /** A state with no saved file yet, so views there ask the live route. */
@@ -56,7 +58,7 @@ export function parseStateIndex(json: unknown): StateIndex | null {
     const id = str(row?.id);
     const file = str(row?.file);
     if (!bounds || !id || !file || !SAFE_FILE.test(file)) continue;
-    areas.push({ id, state: str(row.state) ?? id, bounds, file });
+    areas.push({ id, state: str(row.state) ?? id, bounds, file, racksSaved: row.racksSaved !== false });
   }
   const missing: MissingState[] = [];
   for (const row of (Array.isArray(root.missing) ? root.missing : []) as Record<string, unknown>[]) {
@@ -80,20 +82,35 @@ export interface AreaChoice {
   areas: StateArea[];
   /** True when the view sits in a state with no saved file, so the live route answers instead. */
   live: boolean;
+  /** True when the saved files show shops at once and the live route adds the racks. */
+  liveRacks: boolean;
 }
 
 /**
  * Which saved files answer a view. The view's center decides: inside a saved area, every saved
  * area the view touches is loaded. Inside a state with no saved file, the live route answers.
  * Off every state's box, such as out at sea, whatever saved areas the view touches answer, and
- * the live route only when there are none.
+ * the live route only when there are none. Racks come from the live route too when a file the view
+ * touches holds shops only, unless the center sits in an area whose racks are saved.
  */
 export function chooseAreas(index: StateIndex, view: Bounds): AreaChoice {
   const center = { lat: (view.south + view.north) / 2, lon: (view.west + view.east) / 2 };
   const touching = index.areas.filter((a) => overlaps(a.bounds, view));
-  if (index.areas.some((a) => contains(a.bounds, center))) return { areas: touching, live: false };
-  if (index.missing.some((m) => contains(m.bounds, center))) return { areas: [], live: true };
-  return { areas: touching, live: touching.length === 0 };
+  const liveRacks = touching.some((a) => !a.racksSaved) && !index.areas.some((a) => a.racksSaved && contains(a.bounds, center));
+  if (index.areas.some((a) => contains(a.bounds, center))) return { areas: touching, live: false, liveRacks };
+  if (index.missing.some((m) => contains(m.bounds, center))) return { areas: [], live: true, liveRacks: false };
+  return { areas: touching, live: touching.length === 0, liveRacks };
+}
+
+/**
+ * The live spots a view of shops-only files still needs: racks and public repair stations, which
+ * only OpenStreetMap has. Live shops are left out, since the saved files list them already, and so
+ * is anything inside an area whose racks are saved.
+ */
+export function liveFill(live: readonly Spot[], areas: readonly StateArea[]): Spot[] {
+  const saved = areas.filter((a) => a.racksSaved);
+  // A live repair spot is always a public stand, since the live query reads no repair shops.
+  return live.filter((s) => s.kind !== "shop" && !saved.some((a) => contains(a.bounds, s)));
 }
 
 const RACK_COVERED = 1;

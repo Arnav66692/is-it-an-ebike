@@ -1,7 +1,8 @@
 // The network calls the map page makes, each only when the rider moves the map close enough or
 // submits a place. Racks, shops and repair shops come first from the saved state files in
-// public/map/states/ (lib/map/stateData.ts), so a view answers at once. Only a view in a state
-// with no saved file asks our own /api/map route, which asks the public Overpass servers and
+// public/map/states/ (lib/map/stateData.ts), so a view answers at once. A state whose file holds
+// shops only shows them at once and then asks our own /api/map route for the racks, and a state
+// with no saved file asks it for everything. The route asks the public Overpass servers and
 // mirrors (lib/map/overpassServer.ts). Answers are kept in memory for this visit only, so panning
 // back and forth doesn't ask again. Nothing is written to storage.
 
@@ -18,7 +19,17 @@ import {
   type FoundPlace,
   type Spot,
 } from "./osm";
-import { chooseAreas, parseStateFile, parseStateIndex, STATE_DIR, STATE_INDEX_URL, type StateArea, type StateIndex } from "./stateData";
+import {
+  chooseAreas,
+  liveFill,
+  parseStateFile,
+  parseStateIndex,
+  STATE_DIR,
+  STATE_INDEX_URL,
+  type AreaChoice,
+  type StateArea,
+  type StateIndex,
+} from "./stateData";
 
 /** Why a call failed, in the words the page picks a message by. */
 export type FetchFailure = "rate" | "failed";
@@ -124,26 +135,50 @@ export function spotsInView(all: readonly Spot[], b: Bounds): SpotAnswer {
   return { spots, capped: racks > MAX_RACKS };
 }
 
+interface SavedView {
+  spots: Spot[];
+  choice: AreaChoice;
+}
+
 /**
- * The view's spots from the saved state files, or null when the view needs the live route: no
- * index, a state with no saved file, or a file that didn't load.
+ * Every spot in the saved files a view needs, or null when the view needs the live route for
+ * everything: no index, a state with no saved file, or a file that didn't load.
  */
-export async function savedSpots(bounds: Bounds, fetcher: typeof fetch = fetch): Promise<SpotAnswer | null> {
+async function savedView(bounds: Bounds, fetcher: typeof fetch): Promise<SavedView | null> {
   const index = await loadIndex(fetcher);
   if (!index) return null;
   const choice = chooseAreas(index, bounds);
   if (choice.live) return null;
   const loaded = await Promise.all(choice.areas.map((a) => loadArea(a, fetcher)));
   if (loaded.some((spots) => spots === null)) return null;
-  return spotsInView(loaded.flatMap((spots) => spots ?? []), bounds);
+  return { spots: loaded.flatMap((spots) => spots ?? []), choice };
 }
 
-/** The racks, shops and repair spots in a view: saved files first, then the live route, from the cache when asked before. */
-export async function fetchSpots(bounds: Bounds, signal?: AbortSignal, fetcher: typeof fetch = fetch, waitMs = OVERPASS_WAIT_MS): Promise<SpotAnswer> {
-  const saved = await savedSpots(bounds, fetcher);
-  if (saved) return saved;
+/**
+ * The racks, shops and repair spots in a view: saved files first, then the live route, from the
+ * cache when asked before. Where the saved files hold shops only, onShops gets the saved shops at
+ * once, and the answer adds the live racks when they arrive.
+ */
+export async function fetchSpots(
+  bounds: Bounds,
+  signal?: AbortSignal,
+  fetcher: typeof fetch = fetch,
+  waitMs = OVERPASS_WAIT_MS,
+  onShops?: (answer: SpotAnswer) => void,
+): Promise<SpotAnswer> {
+  const saved = await savedView(bounds, fetcher);
+  if (saved && !saved.choice.liveRacks) return spotsInView(saved.spots, bounds);
+  if (saved) onShops?.(spotsInView(saved.spots, bounds));
   // The page may have moved on while the saved files loaded.
   if (signal?.aborted) throw new DOMException("aborted", "AbortError");
+  const live = await liveSpots(bounds, signal, fetcher, waitMs);
+  if (!saved) return live;
+  const both = spotsInView([...saved.spots, ...liveFill(live.spots, saved.choice.areas)], bounds);
+  return { spots: both.spots, capped: both.capped || live.capped };
+}
+
+/** The live route's answer for a view, from the cache when asked before. */
+async function liveSpots(bounds: Bounds, signal: AbortSignal | undefined, fetcher: typeof fetch, waitMs: number): Promise<SpotAnswer> {
   const key = boundsKey(bounds);
   const hit = cache.get(key);
   if (hit) return hit;

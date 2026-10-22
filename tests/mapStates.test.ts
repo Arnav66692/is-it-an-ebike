@@ -1,6 +1,6 @@
 // The saved state files the map reads first (public/map/states/), their parser, the choice of
-// files for a view, the repair flag, the fall back to the live route, and a sanity check of the
-// data itself. scripts/map/build_states.py writes the files.
+// files for a view, the repair flag, shops-only files with live racks, the fall back to the live
+// route, and a sanity check of the data itself. scripts/map/build_states.py writes the files.
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { clearSpotCache, clearStateData, fetchSpots } from "@/lib/map/fetchSpots";
 import { ALL_KINDS, chipCounts, filterSpots, toggleKind } from "@/lib/map/mapState";
 import { countSpots, isBusiness, parseOverpass, showsAs, type Spot } from "@/lib/map/osm";
-import { chooseAreas, parseStateFile, parseStateIndex, type StateIndex } from "@/lib/map/stateData";
+import { chooseAreas, liveFill, parseStateFile, parseStateIndex, type StateIndex } from "@/lib/map/stateData";
 
 const PUBLIC = join(process.cwd(), "public");
 const INDEX_JSON = JSON.parse(readFileSync(join(PUBLIC, "map/states/index.json"), "utf8"));
@@ -34,8 +34,8 @@ function reply(status: number, body: unknown): Response {
 const box = (south: number, west: number, north: number, east: number) => ({ south, west, north, east });
 const TEST_INDEX: StateIndex = {
   areas: [
-    { id: "AA", state: "AA", bounds: box(10, 10, 20, 20), file: "AA.json" },
-    { id: "BB", state: "BB", bounds: box(10, 19, 20, 30), file: "BB.json" },
+    { id: "AA", state: "AA", bounds: box(10, 10, 20, 20), file: "AA.json", racksSaved: true },
+    { id: "BB", state: "BB", bounds: box(10, 19, 20, 30), file: "BB.json", racksSaved: true },
   ],
   missing: [{ id: "CC", bounds: box(30, 10, 40, 20) }],
 };
@@ -92,13 +92,71 @@ describe("choosing files for a view", () => {
   it("loads every saved area the view touches when its middle is in a saved area", () => {
     expect(chooseAreas(TEST_INDEX, box(14, 14, 16, 16)).areas.map((a) => a.id)).toEqual(["AA"]);
     const border = chooseAreas(TEST_INDEX, box(14, 18.5, 16, 19.8));
-    expect(border).toEqual({ areas: TEST_INDEX.areas, live: false });
+    expect(border).toEqual({ areas: TEST_INDEX.areas, live: false, liveRacks: false });
   });
 
   it("goes live in a state with no saved file, and out at sea only when nothing is saved there", () => {
-    expect(chooseAreas(TEST_INDEX, box(34, 14, 36, 16))).toEqual({ areas: [], live: true });
-    expect(chooseAreas(TEST_INDEX, box(50, 50, 51, 51))).toEqual({ areas: [], live: true });
+    expect(chooseAreas(TEST_INDEX, box(34, 14, 36, 16))).toEqual({ areas: [], live: true, liveRacks: false });
+    expect(chooseAreas(TEST_INDEX, box(50, 50, 51, 51))).toEqual({ areas: [], live: true, liveRacks: false });
     expect(chooseAreas(TEST_INDEX, box(19, 5, 21, 11)).live).toBe(false);
+  });
+});
+
+describe("shops-only files with live racks", () => {
+  // EE holds shops only. EE-sd sits inside it with its racks saved, like San Diego County in California.
+  const SHOPS_INDEX: StateIndex = {
+    areas: [
+      { id: "EE-sd", state: "EE", bounds: box(50, 50, 52, 52), file: "EE-sd.json", racksSaved: true },
+      { id: "EE", state: "EE", bounds: box(45, 45, 60, 60), file: "EE.json", racksSaved: false },
+    ],
+    missing: [],
+  };
+  const spot = (id: string, kind: Spot["kind"], lat: number, lon: number, extra: Partial<Spot> = {}): Spot => ({
+    id, kind, lat, lon, name: null, capacity: null, covered: null, restricted: false, hours: null, phone: null, website: null, ...extra,
+  });
+
+  it("asks the live route for racks in a shops-only state, but not where the racks are saved", () => {
+    expect(chooseAreas(SHOPS_INDEX, box(55, 55, 56, 56))).toMatchObject({ live: false, liveRacks: true });
+    expect(chooseAreas(SHOPS_INDEX, box(50.5, 50.5, 51.5, 51.5))).toMatchObject({ live: false, liveRacks: false });
+    expect(chooseAreas(SHOPS_INDEX, box(50.5, 50.5, 51.5, 51.5)).areas.map((a) => a.id)).toEqual(["EE-sd", "EE"]);
+    expect(chooseAreas(TEST_INDEX, box(14, 14, 16, 16)).liveRacks).toBe(false);
+  });
+
+  it("takes only racks and public stands from the live answer, and none inside an area with saved racks", () => {
+    const live = [spot("r1", "rack", 55, 55), spot("r2", "rack", 51, 51), spot("s1", "shop", 55, 55), spot("st", "repair", 55.1, 55.1)];
+    expect(liveFill(live, SHOPS_INDEX.areas).map((s) => s.id)).toEqual(["r1", "st"]);
+  });
+
+  it("shows the saved shops without waiting on the racks, then adds the live racks", async () => {
+    clearSpotCache();
+    clearStateData();
+    const index = { areas: [{ id: "EE", state: "EE", bbox: [45, 45, 60, 60], file: "EE.json", racksSaved: false }], missing: [] };
+    const file = { r: [], p: [{ k: "s", y: 55.001, x: 55.001, n: "Saved Shop", s: "v" }] };
+    const liveAnswer = {
+      elements: [
+        { type: "node", id: 1, lat: 55.002, lon: 55.002, tags: { amenity: "bicycle_parking" } },
+        { type: "node", id: 2, lat: 55.003, lon: 55.003, tags: { shop: "bicycle", name: "Live Shop" } },
+      ],
+    };
+    let release: (r: Response) => void = () => {};
+    const liveReply = new Promise<Response>((resolve) => {
+      release = resolve;
+    });
+    const fetcher = vi.fn(async (url: string | URL | Request) => {
+      const u = String(url);
+      if (u.startsWith("/api/map")) return liveReply;
+      if (u === "/map/states/index.json") return reply(200, index);
+      return u === "/map/states/EE.json" ? reply(200, file) : reply(404, {});
+    });
+    const shops = vi.fn();
+    const answer = fetchSpots(box(54.9, 54.9, 55.1, 55.1), undefined, fetcher as unknown as typeof fetch, 60_000, shops);
+    await vi.waitFor(() => expect(shops).toHaveBeenCalledTimes(1));
+    expect(shops.mock.calls[0][0].spots.map((s: Spot) => s.name)).toEqual(["Saved Shop"]);
+    expect(fetcher.mock.calls.some((c) => String(c[0]).startsWith("/api/map"))).toBe(true);
+    release(reply(200, liveAnswer));
+    const done = await answer;
+    expect(countSpots(done.spots)).toEqual({ rack: 1, shop: 1, repair: 0 });
+    expect(done.spots.find((s) => s.kind === "shop")?.name).toBe("Saved Shop");
   });
 });
 

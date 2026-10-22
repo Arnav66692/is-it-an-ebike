@@ -11,7 +11,7 @@
 import { useEffect, useId, useMemo, useReducer, useRef, useState, type FormEvent } from "react";
 import { t } from "@/lib/i18n/ui";
 import { mapCountLine, mapText } from "@/lib/i18n/map";
-import { fetchSpots, MapFetchError, searchPlaces } from "@/lib/map/fetchSpots";
+import { fetchSpots, MapFetchError, searchPlaces, type SpotAnswer } from "@/lib/map/fetchSpots";
 import {
   ALL_KINDS,
   AREA_START,
@@ -31,7 +31,8 @@ import { SiteHeader, useLang } from "./SiteHeader";
 import MapView, { prefersReducedMotion, type MapCommand, type MapViewState } from "./MapView";
 import { FilterChips, MapControls, MapStateCard, NearestList, type MapCardTone } from "./MapParts";
 
-type DataStatus = "idle" | "loading" | "ready" | "rate" | "failed";
+/** "racks" means the saved shops are shown while the live racks load, and "racksFailed" that they didn't come. */
+type DataStatus = "idle" | "loading" | "ready" | "racks" | "rate" | "failed" | "racksFailed";
 
 /** How many of the nearest spots the list names. */
 const LIST_SIZE = 10;
@@ -67,12 +68,18 @@ function useSpots(area: AreaState): { spots: Spot[]; capped: boolean; status: Da
   useEffect(() => {
     if (!searched) return;
     const controller = new AbortController();
-    fetchSpots(searched, controller.signal)
+    const showShops = (got: SpotAnswer) => {
+      if (!controller.signal.aborted) setAnswer({ nonce, spots: got.spots, capped: got.capped, status: "racks" });
+    };
+    fetchSpots(searched, controller.signal, undefined, undefined, showShops)
       .then((got) => setAnswer({ nonce, spots: got.spots, capped: got.capped, status: "ready" }))
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
         const status = err instanceof MapFetchError && err.failure === "rate" ? "rate" : "failed";
-        setAnswer((cur) => ({ nonce, spots: cur?.spots ?? NO_SPOTS, capped: false, status }));
+        setAnswer((cur) => {
+          const shopsShown = cur?.nonce === nonce && cur.status === "racks";
+          return { nonce, spots: cur?.spots ?? NO_SPOTS, capped: false, status: shopsShown ? "racksFailed" : status };
+        });
       });
     return () => controller.abort();
   }, [searched, nonce]);
@@ -196,22 +203,27 @@ export function BikeMap() {
   }
 
   const zoomedOut = !view || view.zoom < MIN_DATA_ZOOM;
-  const problem = status === "rate" || status === "failed";
+  const problem = status === "rate" || status === "failed" || status === "racksFailed";
+  const waiting = status === "loading" || status === "racks";
   const tone: MapCardTone | null =
-    status === "idle" ? "empty" : status === "loading" ? "loading" : problem ? "busy" : shownInView.length === 0 && !zoomedOut ? "none" : null;
+    status === "idle" ? "empty" : waiting ? "loading" : problem ? "busy" : shownInView.length === 0 && !zoomedOut ? "none" : null;
   const stateText =
     status === "idle"
       ? mapText(lang, "emptyState")
       : status === "loading"
         ? mapText(lang, "loading")
-        : status === "rate"
-          ? mapText(lang, "rateLimited")
-          : status === "failed"
-            ? mapText(lang, "failed")
-            : mapText(lang, "noneHere");
+        : status === "racks"
+          ? mapText(lang, "loadingRacks")
+          : status === "rate"
+            ? mapText(lang, "rateLimited")
+            : status === "failed"
+              ? mapText(lang, "failed")
+              : status === "racksFailed"
+                ? mapText(lang, "racksFailed")
+                : mapText(lang, "noneHere");
   const statusLine = tone === null ? mapCountLine(lang, countSpots(shownInView)) : stateText;
   const showCapped = status === "ready" && capped;
-  const offerSearch = status !== "loading" && canSearchArea(area, view, capped);
+  const offerSearch = !waiting && canSearchArea(area, view, capped);
   const offerZoom = zoomedOut && area.searched !== null;
 
   return (
