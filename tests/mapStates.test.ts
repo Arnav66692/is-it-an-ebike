@@ -224,10 +224,14 @@ describe("the saved data", () => {
     clearStateData();
   });
 
-  it("lists every state, DC and Puerto Rico as a saved area or as missing, and every listed file is there", () => {
-    const listed = new Set([...INDEX.areas.map((a) => a.state), ...INDEX.missing.map((m) => m.id)]);
-    expect([...listed].sort()).toEqual([...US_CODES].sort());
-    expect(INDEX.areas.length).toBeGreaterThan(0);
+  it("has a saved shop file for every state, DC and Puerto Rico, and every listed file is there", () => {
+    const saved = new Set(INDEX.areas.map((a) => a.state));
+    expect([...saved].sort()).toEqual([...US_CODES].sort());
+    expect(INDEX.missing).toEqual([]);
+    for (const code of US_CODES) {
+      const own = INDEX_JSON.areas.filter((a: { state: string; sources: string[] }) => a.state === code && a.sources.includes("overture"));
+      expect(own.length, code).toBeGreaterThan(0);
+    }
     for (const area of INDEX_JSON.areas) {
       const text = readFileSync(join(PUBLIC, "map/states", area.file), "utf8");
       expect(text.length, area.file).toBeLessThan(3_000_000);
@@ -258,27 +262,47 @@ describe("the saved data", () => {
 
   it("lists a shop seen in both sources once", () => {
     for (const area of INDEX_JSON.areas) {
-      const places = parseStateFile(JSON.parse(readFileSync(join(PUBLIC, "map/states", area.file), "utf8")), area.id).filter(isBusiness);
+      const places = parseStateFile(JSON.parse(readFileSync(join(PUBLIC, "map/states", area.file), "utf8")), area.id)
+        .filter(isBusiness)
+        .sort((x, y) => x.lat - y.lat);
       const key = (s: Spot) => (s.name ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const twice: string[] = [];
+      // Sorted by latitude, so only the rows within 0.0007 degrees north of each one need a look.
       for (let i = 0; i < places.length; i += 1) {
-        for (let j = i + 1; j < places.length; j += 1) {
+        for (let j = i + 1; j < places.length && places[j].lat - places[i].lat < 0.0007; j += 1) {
           const a = places[i];
           const b = places[j];
-          const near = Math.abs(a.lat - b.lat) < 0.0007 && Math.abs(a.lon - b.lon) < 0.0008;
-          expect(near && key(a) !== "" && key(a) === key(b), `${a.name} twice in ${area.id}`).toBe(false);
+          if (Math.abs(a.lon - b.lon) < 0.0008 && key(a) !== "" && key(a) === key(b)) twice.push(`${a.name}`);
         }
       }
+      expect(twice, `twice in ${area.id}`).toEqual([]);
     }
   });
 
-  it("asks the live route for a view in a state with no saved file yet", async () => {
-    const austinSaved = INDEX.areas.some((a) => a.state === "TX");
-    const fetcher = vi.fn(async (url: string | URL | Request) => {
-      const u = String(url);
-      if (u.startsWith("/api/map")) return reply(200, { elements: [] });
-      return diskFetch(u);
+  it("has a sane number of shops and repair shops in California, Texas and New York", () => {
+    // Ranges set before the national build, wide on purpose: a count outside them means a broken read.
+    const ranges: Record<string, [number, number]> = { CA: [1000, 10000], TX: [300, 5000], NY: [300, 5000] };
+    for (const [code, [low, high]] of Object.entries(ranges)) {
+      const areas = INDEX_JSON.areas.filter((a: { state: string }) => a.state === code);
+      const sum = (k: string) => areas.reduce((n: number, a: { counts: Record<string, number> }) => n + a.counts[k], 0);
+      expect(sum("shop"), code).toBeGreaterThanOrEqual(low);
+      expect(sum("shop"), code).toBeLessThanOrEqual(high);
+      expect(sum("repair"), code).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  it("shows Austin's saved shops without waiting on the live racks", async () => {
+    let release: (r: Response) => void = () => {};
+    const liveReply = new Promise<Response>((resolve) => {
+      release = resolve;
     });
-    await fetchSpots(AUSTIN, undefined, fetcher as unknown as typeof fetch);
-    expect(fetcher.mock.calls.some((c) => String(c[0]).startsWith("/api/map"))).toBe(!austinSaved);
+    const fetcher = vi.fn(async (url: string | URL | Request) => (String(url).startsWith("/api/map") ? liveReply : diskFetch(url)));
+    const shops = vi.fn();
+    const answer = fetchSpots(AUSTIN, undefined, fetcher as unknown as typeof fetch, 60_000, shops);
+    await vi.waitFor(() => expect(shops).toHaveBeenCalledTimes(1));
+    expect(countSpots(shops.mock.calls[0][0].spots).shop).toBeGreaterThanOrEqual(1);
+    expect(fetcher.mock.calls.some((c) => String(c[0]).startsWith("/api/map"))).toBe(true);
+    release(reply(200, { elements: [{ type: "node", id: 9, lat: 30.27, lon: -97.74, tags: { amenity: "bicycle_parking" } }] }));
+    expect(countSpots((await answer).spots).rack).toBe(1);
   });
 });
