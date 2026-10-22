@@ -38,8 +38,6 @@ export const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 
 /** The map asks for data only this close in, so one query covers a few square miles at most. */
 export const MIN_DATA_ZOOM = 13;
-/** Wait this long after the map stops moving before asking. */
-export const MOVE_DEBOUNCE_MS = 700;
 export const MAX_RACKS = 500;
 export const MAX_SHOPS = 100;
 export const MAX_REPAIRS = 100;
