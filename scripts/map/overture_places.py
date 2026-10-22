@@ -2,11 +2,11 @@
 
 Usage: python3 overture_places.py RELEASE OUT_FILE [REGION] [MAX_MB]   (needs: pip install duckdb)
 RELEASE is a folder under s3://overturemaps-us-west-2/release/, such as 2026-10-21.0.
-REGION is "us" (default), "ca" or "sd". MAX_MB stops the read past that many megabytes (default 1500).
+REGION is "us" (default), "ca" or "sd". MAX_MB stops the read past that many megabytes (default 2000).
 
 The read is anonymous and free, but it is not small. Measured on Oct 22, 2026: the file footers
 cost about 40 MB, San Diego County about 20 MB more, and the whole US is estimated at about
-1.3 GB from the row group sizes. Each box is its own query with a plain range filter, so DuckDB
+1.3 to 1.6 GB from the row group sizes. Each box is its own query with a plain range filter, so DuckDB
 skips row groups outside it by their bbox statistics (an OR of boxes defeats that and reads the
 world). Prefetching is off, so only the columns we keep are read. Rows go to OUT_FILE as one
 JSON object per line.
@@ -52,7 +52,7 @@ def sql(release, box):
 def main():
     release, out = sys.argv[1], sys.argv[2]
     region = sys.argv[3] if len(sys.argv) > 3 else "us"
-    max_bytes = int(sys.argv[4] if len(sys.argv) > 4 else 1500) * 1_000_000
+    max_bytes = int(sys.argv[4] if len(sys.argv) > 4 else 2000) * 1_000_000
     con = duckdb.connect()
     con.sql("INSTALL httpfs; LOAD httpfs; SET s3_region='us-west-2';")
     con.sql("SET disable_parquet_prefetching = true; SET parquet_metadata_cache = true;")
