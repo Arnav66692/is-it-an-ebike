@@ -689,8 +689,12 @@ function parseWeight(text: string, out: Extraction): void {
     const to = (n: number) => Math.min(stop, end + n);
     const before = slice(text, from(22), m.index);
     const after = slice(text, end, to(16));
-    const adjacent = slice(text, from(12), m.index) + " " + slice(text, end, to(12));
-    if (/(payload|load|capacity|rider|carry|max|maximum|up to|supports?|rack|limit)/.test(adjacent)) continue;
+    // A load word right after the figure usually labels it ("90 lbs max load"), but a load label with
+    // its own number after it, as in "Weight 90 lbs Max Load 400 lbs", belongs to that next figure.
+    const LOAD_WORDS = /(payload|load|capacity|rider|carry|max|maximum|up to|supports?|rack|limit)/;
+    const afterNear = slice(text, end, to(12));
+    const nextFigureLabel = /^\W*(?:max(?:imum)?\s+)?(?:load|payload|capacity|rider\s+weight|weight\s+limit)\b[^\d]{0,12}\d/.test(slice(text, end, end + 32));
+    if (LOAD_WORDS.test(slice(text, from(12), m.index)) || (LOAD_WORDS.test(afterNear) && !nextFigureLabel)) continue;
     const withBattery = WITH_BATTERY_BEFORE.test(before) || WITH_BATTERY_AFTER.test(after);
     if (!withBattery && !/(weight|weighs|weighing|this\s*$)/.test(before) && !/^\s*(machine|bike|e-?bike)/.test(after)) continue;
     if (weightIsForPart(text, m.index, start)) continue;
