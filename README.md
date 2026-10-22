@@ -138,7 +138,7 @@ The dark header band links the checker, the mods check and the bike finder, and 
 
 ## Privacy
 
-No accounts and no database. Label photos are read on the device and never uploaded. The optional pedal photo check also runs on the device, and its model comes once from Hugging Face and jsDelivr. A product link is fetched once and nothing is stored. The listing route refuses private and internal addresses. The map sends a place search to Nominatim and the view on screen to Overpass, both OpenStreetMap services, and reads the device's location only when the user taps "Use my location". None of it is stored.
+No accounts and no database. Label photos are read on the device and never uploaded. The optional pedal photo check also runs on the device, and its model comes once from Hugging Face and jsDelivr. A product link is fetched once and nothing is stored. The listing route refuses private and internal addresses. The map sends a place search to OpenStreetMap's Nominatim, and asks our own server for the view on screen, which asks OpenStreetMap's Overpass servers and mirrors. It reads the device's location only when the user taps "Use my location". Nothing is stored beyond a cache of map areas.
 
 ## AI disclosure
 
