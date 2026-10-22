@@ -7,7 +7,7 @@ The map at `/map` shows bike racks, bike shops and repair stations, so a rider c
 | What | Service | When it is asked |
 | --- | --- | --- |
 | Map tiles | OpenStreetMap standard tiles, `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | Whenever the map is drawn |
-| Racks, shops, repair stations | Our route `GET /api/map?south=..&west=..&north=..&east=..`, which POSTs to the Overpass servers below | After the map rests for 0.7 seconds at zoom 13 or closer |
+| Racks, shops, repair stations | Our route `GET /api/map?south=..&west=..&north=..&east=..`, which POSTs to the Overpass servers below | On the first view at zoom 13 or closer, on landing after a place pick or "Use my location", and when the rider taps "Search this area" or "Try again". A pan or zoom never asks on its own |
 | Place search | Nominatim, `https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&limit=5&q=...` | Only when the rider submits the place box, never on each key |
 | Rider's location | The browser's own geolocation | Only when the rider taps "Use my location" |
 
@@ -49,7 +49,7 @@ Each popup and list row shows the kind, the name if tagged, `capacity`, `covered
 - **Volunteer data.** OpenStreetMap is mapped by volunteers. Racks are often missing, and a mapped rack can be gone or private. The page says so in one line under the map.
 - **Zoom 13 or closer.** Wider views would make one query too big for a free shared service, so the page asks the rider to zoom in or pick a place first.
 - **Caps.** Over 500 racks in view, the page shows the first 500 and says to zoom in. Shops and repair stations are capped at 100 each.
-- **Busy service.** The public Overpass servers are shared and are sometimes full. When our route says busy (503), a 429 rate limit, a 502 or 504 from a gateway, or no answer after 50 seconds, the page shows "The free map data service is busy. Wait a minute, then move the map a little to try again." Any other failure shows a plain "didn't load" line. On Oct 22, 2026 the main server was often at capacity, which is why the route falls back to mirrors.
+- **Busy service.** The public Overpass servers are shared and are sometimes full. When our route says busy (503), a 429 rate limit, a 502 or 504 from a gateway, or no answer after 50 seconds, the page shows "The free map data service is busy. Wait a minute, then try again." on the map with a Try again button, and keeps the last marks on screen. Any other failure shows a plain "didn't load" line. On Oct 22, 2026 the main server was often at capacity, which is why the route falls back to mirrors.
 - **Cache only.** The page keeps answers in memory by rounded view for this visit, up to 40 views, so panning back doesn't ask again. Vercel's CDN keeps each rounded view's answer for a day. Nothing else is written anywhere, and the rider's location and searches are never saved. Our server sees only the box on screen, not the rider's location.
 - **US only.** The place search and our map route are limited to the US, like the rest of the app. Outside the US the map still draws, but racks and shops don't load.
 
@@ -61,7 +61,9 @@ Each popup and list row shows the kind, the name if tagged, `capacity`, `covered
 | `lib/map/fetchSpots.ts` | The page's two network calls (our `/api/map` route and Nominatim), the in-memory cache and the busy and failed errors |
 | `app/api/map/route.ts`, `lib/map/overpassServer.ts` | The server route, the bounds check, the mirror fallback, the cache header and the rate limit |
 | `lib/map/pins.ts` | The marks as inline SVG, a square for a rack, a circle for a shop and a diamond for a repair station |
-| `components/BikeMap.tsx`, `components/MapView.tsx`, `components/SpotFacts.tsx` | The page, the Leaflet map and what one spot shows |
+| `lib/map/mapState.ts` | The filter chips and their counts, the grid clusters, the nearest list, the picked spot and when "Search this area" shows |
+| `components/BikeMap.tsx`, `components/MapView.tsx`, `components/MapParts.tsx`, `components/SpotFacts.tsx` | The page, the Leaflet map with its clusters, the chips, floating buttons, state card and list, and what one spot shows |
 | `lib/i18n/map.ts` | Every line on the page in English and Spanish |
 | `tests/map.test.ts` | The query, the parser, the sort, the fetch errors and the header link |
+| `tests/mapState.test.ts` | The filters and chip counts, the clusters, the list and the picked spot, and "Search this area" |
 | `tests/mapRoute.test.ts` | The route's bounds check, the fallback order, all-busy and rounding |
