@@ -7,6 +7,7 @@ import { capitalize, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { normalizeName, queryVariants } from "./normalize";
 import { resolvePlace } from "./resolve";
 import type { PlaceEntry, PlaceIndex } from "./types";
+import { searchZips, zipQuery } from "./zips";
 
 export const DEFAULT_RESULTS = 8;
 
@@ -180,6 +181,11 @@ export function enterChoice(results: readonly SearchResult[], state: string): nu
 
 /** The same as searchPlaces, with whether each name is an exact match. */
 export function searchResults(index: PlaceIndex, text: string, limit: number = DEFAULT_RESULTS): SearchResult[] {
+  // Digits find ZIP codes, in number order. Without the ZIP file, they search names as before.
+  const digits = zipQuery(text);
+  if (digits !== null && index.zips && index.zips.length > 0 && limit > 0) {
+    return searchZips(index.zips, digits, limit).map((entry) => ({ entry, exact: entry.name === digits }));
+  }
   const forms = formsOf(index, text);
   if (forms.length === 0 || limit <= 0) return [];
   const best = new Map<string, { entry: PlaceEntry; group: number; tier: Tier }>();
@@ -259,6 +265,17 @@ function countyText(index: CountyNames, entry: PlaceEntry, lang: Lang): string {
 /** The part of the index a label needs, so a pick from an old share link can be labeled before the index loads. */
 export type CountyNames = Pick<PlaceIndex, "countyNames">;
 
+/** "ZIP code" in the page's language, for a ZIP's label and the answer's not-checked line. */
+function zipWord(lang: Lang): string {
+  return lang === "es" ? "código postal" : "ZIP code";
+}
+
+/** How the answer names a pick whose local rules were not checked, like "Encinitas" or "ZIP code 59001". */
+export function uncheckedName(entry: PlaceEntry, label: PlaceLabel | undefined, lang: Lang): string {
+  if (entry.kind === "zip") return `${lang === "es" ? "el código postal" : "ZIP code"} ${entry.name}`;
+  return label?.name ?? entry.name;
+}
+
 /** The result's label, always with its county and state. */
 export function placeLabel(index: CountyNames, entry: PlaceEntry, lang: Lang): PlaceLabel {
   if (entry.kind === "state") {
@@ -274,6 +291,12 @@ export function placeLabel(index: CountyNames, entry: PlaceEntry, lang: Lang): P
     const county = entry.counties.length > 0 ? countyText(index, entry, lang) : "";
     const where = [entry.city ?? "", county, entry.sharesLabel ? `NCES ID ${entry.geoid ?? ""}` : ""].filter(Boolean).join(", ");
     return { name: entry.name, where, state: entry.state, text: [entry.name, where, entry.state].filter(Boolean).join(", ") };
+  }
+  if (entry.kind === "zip") {
+    // A ZIP's label says it is a ZIP code, so "92130, ZIP code, San Diego County, CA" never reads as a city.
+    const county = entry.counties.length > 0 ? countyText(index, entry, lang) : "";
+    const where = [zipWord(lang), county].filter(Boolean).join(", ");
+    return { name: entry.name, where: county, state: entry.state, text: `${entry.name}, ${where}, ${entry.state}` };
   }
   const county = countyText(index, entry, lang);
   const where = entry.kind === "neighborhood" ? `${placeName("city_of_san_diego", lang)}, ${county}` : county;

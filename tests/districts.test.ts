@@ -14,6 +14,7 @@ import { placeName } from "@/lib/i18n/names";
 import { DISTRICT_INDEX_URL, parseDistricts, SDUHSD_LEAID, withDistricts, type DistrictIndexFile } from "@/lib/places/districts";
 import { pickLabels } from "@/lib/places/linked";
 import { loadSearchIndex, PLACE_INDEX_URL, resetSearchIndex } from "@/lib/places/load";
+import { ZIP_INDEX_URL } from "@/lib/places/zips";
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { addPick, campusPick, engineWhere, isCampusPick, NO_PICKS, rideWhere, uncheckedPicks } from "@/lib/places/picks";
 import { resolvePlace } from "@/lib/places/resolve";
@@ -263,7 +264,8 @@ describe("loading the places and districts together", () => {
     };
     const [a, b] = await Promise.all([loadSearchIndex(fetcher), loadSearchIndex(fetcher)]);
     expect(a).toBe(b);
-    expect(urls.sort()).toEqual([PLACE_INDEX_URL, DISTRICT_INDEX_URL].sort());
+    // The ZIP file loads with them too. tests/zips.test.ts covers it.
+    expect(urls.sort()).toEqual([PLACE_INDEX_URL, DISTRICT_INDEX_URL, ZIP_INDEX_URL].sort());
     expect(a.entries.length).toBe(PLACES.entries.length + 19430);
     expect(searchPlaces(a, "SDUHSD")[0].id).toBe(SDUHSD.id);
   });

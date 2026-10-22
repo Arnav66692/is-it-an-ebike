@@ -16,7 +16,7 @@ import type { PlaceEntry } from "./types";
  * sd_county: San Diego County itself, so the county's record for unincorporated land.
  * base_or_reservation: a San Diego County community that is mostly base or reservation land, which county ordinances don't govern, so state law only.
  * sduhsd_district: San Dieguito Union High School District, by its NCES LEAID, so the SDUHSD campus record.
- * state_only: everything else. State law applies, and the place's own rules were not checked. Every
+ * state_only: everything else, every ZIP code among them. State law applies, and the place's own rules were not checked. Every
  * other school district is here, so its campus rules are named as not checked.
  */
 export type ResolveWhy = "checked_city" | "sd_neighborhood" | "sd_community" | "sd_county" | "base_or_reservation" | "sduhsd_district" | "state_only";
@@ -47,6 +47,10 @@ function stateOnly(entry: PlaceEntry, why: ResolveWhy = "state_only"): PlaceReso
 }
 
 export function resolvePlace(entry: PlaceEntry): PlaceResolution {
+  // A ZIP never has a checked record of its own. Picking one picks the place it covers when one
+  // place holds at least 99 percent of its land (zipTarget in lib/places/zips.ts), and that place
+  // resolves here on its own. A ZIP kept as a pick uses its state's law.
+  if (entry.kind === "zip" || entry.source === "zip") return stateOnly(entry);
   // A school district maps by its NCES LEAID only. Just one has checked campus rules.
   if (entry.kind === "district" || entry.source === "district") {
     return isSduhsd(entry) && onlyInSanDiegoCounty(entry) ? local(entry, "sduhsd_campuses", "sduhsd_district") : stateOnly(entry);

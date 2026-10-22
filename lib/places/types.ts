@@ -16,10 +16,11 @@ export type PlaceKind =
   | "township"
   | "plantation"
   | "neighborhood"
-  | "district";
+  | "district"
+  | "zip";
 
 /** Where an entry comes from, which also fixes the shape of its id. */
-export type PlaceSourceKind = "state" | "county" | "place" | "cousub" | "neighborhood" | "district";
+export type PlaceSourceKind = "state" | "county" | "place" | "cousub" | "neighborhood" | "district" | "zip";
 
 export interface PlaceEntry {
   /** Stable id, unique in the index: "s-CA", "c-06073", "p-0611194", "m-3400112345", "n-carmel-valley" or "d-0634380". The share link names checked records, not these ids (lib/places/linked.ts). */
@@ -44,6 +45,26 @@ export interface PlaceEntry {
   districtType?: number;
   /** True when another district has the same name, office city, county and type, so its label adds the NCES ID. */
   sharesLabel?: boolean;
+  /** What a ZIP code covers, for a "zip" entry only (lib/places/zips.ts). */
+  zip?: ZipCover;
+}
+
+/**
+ * What a ZIP code (a Census ZCTA) covers, measured by land area in the Census 2020 relationship
+ * files. A ZIP is never a place of its own. Picking it picks the place it covers, or asks which one.
+ */
+export interface ZipCover {
+  /** The id of the incorporated place or CDP that holds at least 99 percent of the ZIP's land, or null. */
+  place: string | null;
+  /**
+   * For a ZIP with no such place that touches a county with checked records: the places it
+   * covers, by id, most land first. Empty for every other ZIP.
+   */
+  places: string[];
+  /** For the same ZIPs: the counties, by FIPS, where some of the ZIP's land is in no place. */
+  unincorporated: string[];
+  /** True when less than 99 percent of the ZIP's land is in one state. */
+  manyStates: boolean;
 }
 
 export interface PlaceDataSource {
@@ -103,4 +124,6 @@ export interface PlaceIndex {
   byId: Map<string, PlaceEntry>;
   /** County FIPS to its Census name, like "06073" to "San Diego County". */
   countyNames: Map<string, string>;
+  /** Every US ZIP code, in number order, when the ZIP file loaded. They are kept out of `entries`, since only digits find them. */
+  zips?: readonly PlaceEntry[];
 }
