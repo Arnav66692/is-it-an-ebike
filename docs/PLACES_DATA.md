@@ -1,6 +1,6 @@
 # Place search data
 
-The "Where do they ride?" search box loads one file, `public/places/us-places.json`, the first time it is used. `lib/places/load.ts` fetches it from the app's own origin, so the page makes no outside request. Every count below is read from that file's `counts`, `states`, `aliases` and `notCountyLand` fields, build of 2026-10-20.
+The "Where do they ride?" search box loads `public/places/us-places.json` the first time it is used, with the school districts and ZIP codes described at the end of this page. `lib/places/load.ts` fetches it from the app's own origin, so the page makes no outside request. Every count below is read from that file's `counts`, `states`, `aliases` and `notCountyLand` fields, build of 2026-10-20.
 
 ## What is in it
 
@@ -100,3 +100,45 @@ node scripts/build-districts.mjs <folder> --built YYYY-MM-DD
 ```
 
 The build checks every county against `public/places/us-places.json` and stops when SDUHSD is no longer LEAID 0634380 in San Diego County. Then run `npm test`.
+
+# ZIP codes
+
+The same search box also finds every US ZIP code in the 50 states and DC. Typing digits, like `92130` or just `921`, lists the ZIP codes that start with them. `lib/places/load.ts` fetches `public/places/us-zips.json` with the place index and the districts, the first time the box is used, from the app's own origin. `scripts/build-zips.ts` builds it, build of 2026-10-22. Every count below is read from that file's `counts`.
+
+## What is in it
+
+- 33,642 ZIP Code Tabulation Areas (ZCTAs), the Census areas that stand for ZIP codes. 149 in Puerto Rico and the other territories were left out, because the rules table doesn't cover them. A ZCTA is close to a ZIP code but not the same, and a ZIP used only for PO boxes or one building has no ZCTA, so it is not in the search.
+- Each row has the ZIP, its counties with the most land first, and the place it maps to when there is one.
+- 288 Connecticut ZIPs name only their state, since Connecticut's 2020 counties are planning regions in the place index.
+- Each result reads like "92130, ZIP code, San Diego County, CA".
+
+The file is about 620 KB, 140 KB gzipped. A test keeps it under 700 KB. If it fails to load or can't be read, the search keeps working for names, and tries the ZIP file again the next time it loads.
+
+## Sources
+
+| File | Vintage | Used for |
+| --- | --- | --- |
+| [tab20_zcta520_county20_natl.txt](https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt) | 2020 Census relationship files | The counties each ZIP lies in, by land area |
+| [tab20_zcta520_place20_natl.txt](https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_place20_natl.txt) | 2020 Census relationship files | The cities, towns and CDPs each ZIP lies in, by land area, and its land in no place |
+
+Both are from the US Census Bureau and are public domain, read Oct 22, 2026. They are not in the repo.
+
+## How a ZIP maps to the rules
+
+A ZIP never guesses a city. `lib/places/zips.ts` decides, and `placeHolding` there is the only way a ZIP gets a place.
+
+- When one incorporated place or CDP holds at least 99 percent of the ZIP's land, picking the ZIP adds that place, so its checked record applies when it has one. 4,502 ZIPs map this way, 52 of them to a checked San Diego County record. 92130 maps to the City of San Diego. 5 more ZIPs had such a place in 2020 that is not in the place index, so they don't map to one.
+- When the ZIP is split across places and touches San Diego County, the only county with checked records, picking it adds nothing. It lists the places it covers, each with its county and state, and "The unincorporated parts" of each county where some of its land is in no place, so the family picks the exact one. 92067 lists Rancho Santa Fe, Fairbanks Ranch, the City of San Diego and the unincorporated parts of San Diego County. 64 ZIPs work this way.
+- When less than 99 percent of the ZIP's land is in one state, picking it lists its counties in each state, so the family picks the state too. 117 ZIPs work this way.
+- Every other split ZIP is entirely outside San Diego County. Picking it adds the ZIP itself, which uses its state's law, and the answer says "City and county rules for ZIP code 59001 were not checked." 28,959 ZIPs work this way.
+- A ZIP itself never has a checked record. A test checks every ZIP against these rules.
+
+## Rebuilding
+
+Put the two files above in one folder outside the repo, check that `df -h ~` shows at least 5 GB free first, then run:
+
+```bash
+npx tsx scripts/build-zips.ts <folder> --built YYYY-MM-DD
+```
+
+The build checks every county and place against `public/places/us-places.json`, so rebuild the place index first when it changes. It stops when a county is one the index doesn't list, when a split ZIP in San Diego County covers a place the index doesn't list, or when 92130 or 92067 no longer map the way this page says. Then run `npm test`.
