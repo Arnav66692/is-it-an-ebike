@@ -196,6 +196,21 @@ describe("fetching", () => {
     await expect(fetchSpots(VIEW, undefined, (async () => { throw new TypeError("offline"); }) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "failed" });
   });
 
+  it("stops waiting on a slow answer and says the service is busy", async () => {
+    const slow = ((_url: string, init: RequestInit) =>
+      new Promise((_, reject) => init.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))))) as unknown as typeof fetch;
+    await expect(fetchSpots(VIEW, undefined, slow, 10)).rejects.toMatchObject({ failure: "rate" });
+  });
+
+  it("passes the page's abort through, so a newer move cancels the old request", async () => {
+    const slow = ((_url: string, init: RequestInit) =>
+      new Promise((_, reject) => init.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))))) as unknown as typeof fetch;
+    const page = new AbortController();
+    const pending = fetchSpots(VIEW, page.signal, slow, 60_000);
+    page.abort();
+    await expect(pending).rejects.not.toBeInstanceOf(MapFetchError);
+  });
+
   it("marks a full set of racks as capped", async () => {
     const many = { elements: Array.from({ length: MAX_RACKS }, (_, i) => ({ type: "node", id: i + 1, lat: 32.71, lon: -117.16, tags: { amenity: "bicycle_parking" } })) };
     const answer = await fetchSpots(VIEW, undefined, (async () => reply(200, many)) as unknown as typeof fetch);

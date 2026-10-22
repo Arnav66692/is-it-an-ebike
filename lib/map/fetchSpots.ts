@@ -37,6 +37,8 @@ export interface SpotAnswer {
 }
 
 const CACHE_LIMIT = 40;
+/** A busy Overpass can hold a query for a long time. Past this the page says it is busy and stops waiting. */
+export const OVERPASS_WAIT_MS = 35_000;
 const cache = new Map<string, SpotAnswer>();
 
 /** For tests. */
@@ -60,28 +62,36 @@ function failureOf(status: number): FetchFailure {
 }
 
 /** The racks, shops and repair stations in a view, from the cache when this view was asked before. */
-export async function fetchSpots(bounds: Bounds, signal?: AbortSignal, fetcher: typeof fetch = fetch): Promise<SpotAnswer> {
+export async function fetchSpots(bounds: Bounds, signal?: AbortSignal, fetcher: typeof fetch = fetch, waitMs = OVERPASS_WAIT_MS): Promise<SpotAnswer> {
   const key = boundsKey(bounds);
   const hit = cache.get(key);
   if (hit) return hit;
-  let res: Response;
+  // One controller for the page's abort and the wait limit, so both cancel the request.
+  const controller = new AbortController();
+  const stop = () => controller.abort();
+  signal?.addEventListener("abort", stop);
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, waitMs);
+  let json: unknown;
   try {
-    res = await fetcher(OVERPASS_URL, {
+    const res = await fetcher(OVERPASS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: overpassBody(bounds),
-      signal,
+      signal: controller.signal,
     });
-  } catch (err) {
-    if (signal?.aborted) throw err;
-    throw new MapFetchError("failed");
-  }
-  if (!res.ok) throw new MapFetchError(failureOf(res.status));
-  let json: unknown;
-  try {
+    if (!res.ok) throw new MapFetchError(failureOf(res.status));
     json = await res.json();
-  } catch {
-    throw new MapFetchError("failed");
+  } catch (err) {
+    if (err instanceof MapFetchError) throw err;
+    if (signal?.aborted) throw err;
+    throw new MapFetchError(timedOut ? "rate" : "failed");
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", stop);
   }
   if (overpassRemarkError(json)) throw new MapFetchError("failed");
   const spots = parseOverpass(json);
