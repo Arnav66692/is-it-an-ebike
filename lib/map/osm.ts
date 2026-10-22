@@ -31,6 +31,29 @@ export interface Spot extends LatLon {
   hours: string | null;
   phone: string | null;
   website: string | null;
+  /** A short street address, when a source has one. */
+  address?: string | null;
+  /** A bike shop that also fixes bikes, so the Repair filter shows it too. */
+  repairs?: boolean;
+  /** A public fix-it stand rather than a repair shop. */
+  stand?: boolean;
+  /** Where the spot came from. Live answers are OpenStreetMap only. */
+  source?: SpotSource;
+}
+
+export type SpotSource = "osm" | "overture" | "both";
+
+/** True when a spot shows under a kind's chip: its own kind, or Repair for a shop that also fixes bikes. */
+export function showsAs(spot: Spot, kind: SpotKind): boolean {
+  return spot.kind === kind || (kind === "repair" && spot.repairs === true);
+}
+
+/**
+ * A shop or repair shop, whose hours and phone can change, as opposed to a rack or a public stand.
+ * A live repair spot is always a public stand, so only the saved files mark a repair shop.
+ */
+export function isBusiness(spot: Spot): boolean {
+  return spot.kind === "shop" || (spot.kind === "repair" && spot.stand === false);
 }
 
 export const OVERPASS_URL = "https://overpass-api.de/api/interpreter";

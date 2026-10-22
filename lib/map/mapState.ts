@@ -2,7 +2,7 @@
 // "Search this area" rule are tested without a browser. components/BikeMap.tsx and
 // components/MapView.tsx call these.
 
-import { countSpots, distanceMeters, MIN_DATA_ZOOM, nearestSpots, SPOT_KINDS, type Bounds, type LatLon, type NearSpot, type Spot, type SpotCounts, type SpotKind } from "./osm";
+import { distanceMeters, MIN_DATA_ZOOM, nearestSpots, showsAs, SPOT_KINDS, type Bounds, type LatLon, type NearSpot, type Spot, type SpotKind } from "./osm";
 
 // ---------- Filters ----------
 
@@ -16,21 +16,21 @@ export function toggleKind(filter: KindFilter, kind: SpotKind): KindFilter {
   return { ...filter, [kind]: !filter[kind] };
 }
 
+/** A shop that also fixes bikes shows when either Bike shops or Repair is on. */
 export function filterSpots(spots: readonly Spot[], filter: KindFilter): Spot[] {
-  return spots.filter((s) => filter[s.kind]);
+  return spots.filter((s) => SPOT_KINDS.some((kind) => filter[kind] && showsAs(s, kind)));
 }
 
 export interface ChipCount {
   kind: SpotKind;
   on: boolean;
-  /** How many of this kind are in view, shown or hidden, or null before any search. */
+  /** How many in view show under this chip, shown or hidden, or null before any search. A shop that repairs counts under Repair too. */
   count: number | null;
 }
 
-/** One chip per kind, in the map key's order, with how many of that kind are in view. */
+/** One chip per kind, in the map key's order, with how many in view show under it. */
 export function chipCounts(inView: readonly Spot[], filter: KindFilter, searched: boolean): ChipCount[] {
-  const counts: SpotCounts = countSpots(inView);
-  return SPOT_KINDS.map((kind) => ({ kind, on: filter[kind], count: searched ? counts[kind] : null }));
+  return SPOT_KINDS.map((kind) => ({ kind, on: filter[kind], count: searched ? inView.filter((s) => showsAs(s, kind)).length : null }));
 }
 
 // ---------- Clusters ----------

@@ -1,7 +1,9 @@
-// The two network calls the map page makes, each only when the rider moves the map close enough
-// or submits a place. Racks and shops come from our own /api/map route, which asks the public
-// Overpass servers and mirrors (lib/map/overpassServer.ts). Answers for a view are kept in memory
-// for this visit only, so panning back and forth doesn't ask again. Nothing is written to storage.
+// The network calls the map page makes, each only when the rider moves the map close enough or
+// submits a place. Racks, shops and repair shops come first from the saved state files in
+// public/map/states/ (lib/map/stateData.ts), so a view answers at once. Only a view in a state
+// with no saved file asks our own /api/map route, which asks the public Overpass servers and
+// mirrors (lib/map/overpassServer.ts). Answers are kept in memory for this visit only, so panning
+// back and forth doesn't ask again. Nothing is written to storage.
 
 import {
   boundsKey,
@@ -16,6 +18,7 @@ import {
   type FoundPlace,
   type Spot,
 } from "./osm";
+import { chooseAreas, parseStateFile, parseStateIndex, STATE_DIR, STATE_INDEX_URL, type StateArea, type StateIndex } from "./stateData";
 
 /** Why a call failed, in the words the page picks a message by. */
 export type FetchFailure = "rate" | "failed";
@@ -32,7 +35,7 @@ export class MapFetchError extends Error {
 
 export interface SpotAnswer {
   spots: Spot[];
-  /** True when Overpass sent as many racks as the cap allows, so some may be left out. */
+  /** True when the view holds more racks than the cap allows, so some are left out. */
   capped: boolean;
 }
 
@@ -76,38 +79,44 @@ export function mapApiUrl(bounds: Bounds): string {
   return `/api/map?${params.toString()}`;
 }
 
-/**
- * San Diego County's racks, shops and repair stations, saved from OpenStreetMap on Oct 22, 2026
- * (public/map/san-diego.json). A view inside the county is answered from this file at once, so the
- * home area never waits on the free Overpass servers. Views elsewhere ask our /api/map route.
- */
-export const SNAPSHOT_URL = "/map/san-diego.json";
-export const SNAPSHOT_BOUNDS: Bounds = { south: 32.53, west: -117.6, north: 33.51, east: -116.08 };
-let snapshot: Promise<Spot[] | null> | null = null;
+let stateIndex: Promise<StateIndex | null> | null = null;
+const stateFiles = new Map<string, Promise<Spot[] | null>>();
 
-/** For tests. */
-export function clearSnapshot(): void {
-  snapshot = null;
+/** For tests: forget the saved data, or start from a given index without loading one. */
+export function clearStateData(index?: StateIndex): void {
+  stateFiles.clear();
+  stateIndex = index ? Promise.resolve(index) : null;
 }
 
-export function insideSnapshot(b: Bounds): boolean {
-  return b.south >= SNAPSHOT_BOUNDS.south && b.north <= SNAPSHOT_BOUNDS.north && b.west >= SNAPSHOT_BOUNDS.west && b.east <= SNAPSHOT_BOUNDS.east;
-}
-
-function loadSnapshot(fetcher: typeof fetch): Promise<Spot[] | null> {
-  snapshot ??= fetcher(SNAPSHOT_URL)
+/** Loads JSON once, and forgets a failed load so the next view tries again. */
+function loadOnce<T>(fetcher: typeof fetch, url: string, parse: (json: unknown) => T | null, forget: () => void): Promise<T | null> {
+  return fetcher(url)
     .then((res) => (res.ok ? res.json() : null))
-    .then((json) => (json ? parseOverpass(json) : null))
+    .then((json) => (json === null ? null : parse(json)))
     .catch(() => null)
-    .then((spots) => {
-      // A failed load is tried again on the next view instead of being kept.
-      if (spots === null) snapshot = null;
-      return spots;
+    .then((value) => {
+      if (value === null) forget();
+      return value;
     });
-  return snapshot;
 }
 
-/** The snapshot's spots in a view, with racks capped the same way a live answer is. */
+function loadIndex(fetcher: typeof fetch): Promise<StateIndex | null> {
+  stateIndex ??= loadOnce(fetcher, STATE_INDEX_URL, parseStateIndex, () => {
+    stateIndex = null;
+  });
+  return stateIndex;
+}
+
+function loadArea(area: StateArea, fetcher: typeof fetch): Promise<Spot[] | null> {
+  let file = stateFiles.get(area.id);
+  if (!file) {
+    file = loadOnce(fetcher, STATE_DIR + area.file, (json) => parseStateFile(json, area.id), () => stateFiles.delete(area.id));
+    stateFiles.set(area.id, file);
+  }
+  return file;
+}
+
+/** Saved spots in a view, with racks capped the same way a live answer is. */
 export function spotsInView(all: readonly Spot[], b: Bounds): SpotAnswer {
   const inView = all.filter((s) => s.lat >= b.south && s.lat <= b.north && s.lon >= b.west && s.lon <= b.east);
   let racks = 0;
@@ -115,12 +124,26 @@ export function spotsInView(all: readonly Spot[], b: Bounds): SpotAnswer {
   return { spots, capped: racks > MAX_RACKS };
 }
 
-/** The racks, shops and repair stations in a view, from the cache when this view was asked before. */
+/**
+ * The view's spots from the saved state files, or null when the view needs the live route: no
+ * index, a state with no saved file, or a file that didn't load.
+ */
+export async function savedSpots(bounds: Bounds, fetcher: typeof fetch = fetch): Promise<SpotAnswer | null> {
+  const index = await loadIndex(fetcher);
+  if (!index) return null;
+  const choice = chooseAreas(index, bounds);
+  if (choice.live) return null;
+  const loaded = await Promise.all(choice.areas.map((a) => loadArea(a, fetcher)));
+  if (loaded.some((spots) => spots === null)) return null;
+  return spotsInView(loaded.flatMap((spots) => spots ?? []), bounds);
+}
+
+/** The racks, shops and repair spots in a view: saved files first, then the live route, from the cache when asked before. */
 export async function fetchSpots(bounds: Bounds, signal?: AbortSignal, fetcher: typeof fetch = fetch, waitMs = OVERPASS_WAIT_MS): Promise<SpotAnswer> {
-  if (insideSnapshot(bounds)) {
-    const all = await loadSnapshot(fetcher);
-    if (all) return spotsInView(all, bounds);
-  }
+  const saved = await savedSpots(bounds, fetcher);
+  if (saved) return saved;
+  // The page may have moved on while the saved files loaded.
+  if (signal?.aborted) throw new DOMException("aborted", "AbortError");
   const key = boundsKey(bounds);
   const hit = cache.get(key);
   if (hit) return hit;
