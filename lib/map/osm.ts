@@ -1,6 +1,6 @@
-// Bike racks, bike shops and repair stations from OpenStreetMap. The map page asks the public
-// Overpass API for the part of the map on screen, and the public Nominatim API for a place the
-// rider names. Everything here is plain functions, so the query, the parser and the sort are
+// Bike racks, bike shops and repair stations from OpenStreetMap. The map page asks our /api/map
+// route for the part of the map on screen, and that route asks the public Overpass servers. The
+// page asks the public Nominatim API for a place the rider names. Everything here is plain functions, so the query, the parser and the sort are
 // tested without a browser. docs/MAP_DATA.md lists the sources, licenses and limits.
 
 export type SpotKind = "rack" | "shop" | "repair";
@@ -54,16 +54,19 @@ export const PLACE_ZOOM = 15;
 /** The grid step that bounds are rounded out to, about 1 km, so a small pan reuses the last answer. */
 const GRID = 0.01;
 
-const fixed = (n: number) => Number(n.toFixed(4));
+/** A sliver of a grid step, so a value already on the grid (32.94 / 0.01 is 3293.9999 in floats) stays put. */
+const GRID_EPS = 1e-6;
 
-/** The view rounded out to the grid, so the query covers the whole view and nearby views share one key. */
+const fixed = (n: number) => Number(n.toFixed(4));
+const down = (n: number) => fixed(Math.floor(n / GRID + GRID_EPS) * GRID);
+const up = (n: number) => fixed(Math.ceil(n / GRID - GRID_EPS) * GRID);
+
+/**
+ * The view rounded out to the grid, so the query covers the whole view and nearby views share one
+ * key. Rounding twice gives the same box, so the server can round what the page already rounded.
+ */
 export function roundBounds(b: Bounds): Bounds {
-  return {
-    south: fixed(Math.floor(b.south / GRID) * GRID),
-    west: fixed(Math.floor(b.west / GRID) * GRID),
-    north: fixed(Math.ceil(b.north / GRID) * GRID),
-    east: fixed(Math.ceil(b.east / GRID) * GRID),
-  };
+  return { south: down(b.south), west: down(b.west), north: up(b.north), east: up(b.east) };
 }
 
 export function boundsKey(b: Bounds): string {
@@ -89,7 +92,7 @@ export function overpassQuery(b: Bounds): string {
   ].join("\n");
 }
 
-/** The POST body Overpass reads. A form body keeps the request simple, so the browser sends no preflight. */
+/** The POST body Overpass reads, as a plain form body. */
 export function overpassBody(b: Bounds): string {
   return `data=${encodeURIComponent(overpassQuery(b))}`;
 }
