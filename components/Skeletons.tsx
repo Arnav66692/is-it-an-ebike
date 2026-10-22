@@ -69,7 +69,7 @@ function NavFrame() {
   return (
     <div className="site-nav" aria-hidden="true">
       <ul role="list">
-        {(["navCheck", "navMods", "navFind"] as const).map((k) => (
+        {(["navCheck", "navMods", "navFind", "navMap"] as const).map((k) => (
           <li key={k}>
             <span className="sk-link">
               <Both k={k} />

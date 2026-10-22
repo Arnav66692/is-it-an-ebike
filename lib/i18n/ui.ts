@@ -15,6 +15,7 @@ const en = {
   navCheck: "Check a bike",
   navMods: "Mods",
   navFind: "Find a bike",
+  navMap: "Map",
   checkMods: "Check its mods",
   step1: "Where and who",
   state: "State",
@@ -220,7 +221,7 @@ const en = {
   howBody:
     "A fixed rules table makes every call. It covers all 50 states and Washington, DC, and any city, town, county or school district in them. Where a place's own rules are not in the table, the answer says so. The app only reads facts from the label or listing. It never guesses a class. Every answer is YES or NO. When the facts or the law can't support a YES, the answer is NO and it says what is missing. Facts it reads are marked, and the answer can't say YES until you check each one against the bike.",
   privacyTitle: "Privacy",
-  privacyBody: "No accounts. Label photos never leave your phone. Product links are fetched once and nothing is stored.",
+  privacyBody: "No accounts. Label photos never leave your phone. Product links are fetched once and nothing is stored. The map sends your location or a place search to OpenStreetMap only when you ask.",
   dataNote:
     "State rules checked against statute text on Oct 16, 2026. San Diego city and county rules checked against enacted code and ordinance text on Oct 19 and Oct 20, 2026. SDUHSD's class, tag, course, walk-on-campus, passenger-seat and e-moto rules come from the district's web page. Its helmet rule is in AR 5142.",
   source_statute: "Statute",
@@ -266,6 +267,7 @@ const es: Record<UiKey, string> = {
   navCheck: "Revisar",
   navMods: "Modificaciones",
   navFind: "Buscar bicicleta",
+  navMap: "Mapa",
   checkMods: "Revisar sus modificaciones",
   step1: "Dónde y quién",
   state: "Estado",
@@ -471,7 +473,7 @@ const es: Record<UiKey, string> = {
   howBody:
     "Una tabla fija de reglas toma cada decisión. Cubre los 50 estados y el Distrito de Columbia, y cualquier ciudad, pueblo, condado o distrito escolar en ellos. Cuando las reglas propias de un lugar no están en la tabla, la respuesta lo dice. La app solo lee datos de la etiqueta o del anuncio. Nunca adivina una clase. Cada respuesta es SÍ o NO. Cuando los datos o la ley no alcanzan para un SÍ, la respuesta es NO y dice qué falta. Los datos que lee quedan marcados, y la respuesta no puede decir SÍ hasta que compares cada uno con la bicicleta.",
   privacyTitle: "Privacidad",
-  privacyBody: "Sin cuentas. Las fotos de la etiqueta nunca salen de tu teléfono. Los enlaces se abren una vez y no se guarda nada.",
+  privacyBody: "Sin cuentas. Las fotos de la etiqueta nunca salen de tu teléfono. Los enlaces se abren una vez y no se guarda nada. El mapa envía tu ubicación o una búsqueda de lugar a OpenStreetMap solo cuando lo pides.",
   dataNote:
     "Reglas estatales revisadas contra el texto de la ley el 16 de octubre de 2026. Reglas de las ciudades y del condado de San Diego revisadas contra el texto vigente de sus códigos y ordenanzas el 19 y el 20 de octubre de 2026. Las reglas de SDUHSD de clase, etiqueta, curso, caminar con la bicicleta en la escuela, asiento de pasajero y motos eléctricas vienen de la página web del distrito. Su regla del casco está en el AR 5142.",
   source_statute: "Ley",

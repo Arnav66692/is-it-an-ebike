@@ -1,7 +1,7 @@
 "use client";
 
-// The header band and the links between the three parts of the app: the e-bike checker, the
-// mods check and the bike finder. Each page passes its own title and lines.
+// The header band and the links between the parts of the app: the e-bike checker, the mods
+// check, the bike finder and the map of racks and shops. Each page passes its own title and lines.
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
@@ -10,12 +10,13 @@ import { t } from "@/lib/i18n/ui";
 import { BikeIcon } from "./BikeIcon";
 import { TitleWords } from "./Hero";
 
-export type NavPage = "check" | "mods" | "find";
+export type NavPage = "check" | "mods" | "find" | "map";
 
-const NAV: readonly { page: NavPage; path: string; key: "navCheck" | "navMods" | "navFind" }[] = [
+const NAV: readonly { page: NavPage; path: string; key: "navCheck" | "navMods" | "navFind" | "navMap" }[] = [
   { page: "check", path: "/", key: "navCheck" },
   { page: "mods", path: "/mods", key: "navMods" },
   { page: "find", path: "/find", key: "navFind" },
+  { page: "map", path: "/map", key: "navMap" },
 ];
 
 /** A link to one part of the app that keeps the page's language. */
@@ -83,7 +84,7 @@ interface HeaderProps {
   children?: ReactNode;
 }
 
-/** The dark header band of the mods check and the bike finder. */
+/** The dark header band of the mods check, the bike finder and the map. */
 export function SiteHeader({ lang, current, title, onSwitchLang, children }: HeaderProps) {
   return (
     <header className="app-head hero">
