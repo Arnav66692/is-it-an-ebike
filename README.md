@@ -2,11 +2,12 @@
 
 A free phone page that checks one e-bike for one rider. Type where they ride, any US state, county, city or town, and the rider's age, then show it the bike's class label, paste the product link, or type the facts in. It answers a plain YES or NO in English or Spanish, with the law behind every line. In San Diego County it also checks 18 cities (San Diego, Carlsbad, Chula Vista, Coronado, Del Mar, El Cajon, Encinitas, Escondido, Imperial Beach, La Mesa, Lemon Grove, National City, Oceanside, Poway, San Marcos, Santee, Solana Beach and Vista), unincorporated county areas and SDUHSD campuses.
 
-Three more parts sit beside the checker, linked from the header.
+Four more parts sit beside the checker, linked from the header.
 
 - **Every school district.** The place search also finds all 19,430 US public school districts. Picking San Dieguito Union High turns on the checked SDUHSD campus record. Any other district is named in the answer, like "Campus rules for Poway Unified were not checked."
 - **Mods check** (`/mods`). Pick where the bike is ridden, any state, county, city, town or school district, then tick the changes made to it, like a speed unlock, a bigger motor or a passenger seat. Each one gets a YES or NO from the rules engine for that state and those places, with the reason. In California each answer also shows the penalties, the law and the changes that start Jan 1, 2027.
 - **Find a bike** (`/find`). A short quiz on the rider's age and height, where they ride, what the bike is for, the budget and colors. It lists 29 bikes read from their makers' pages, ranked by fit alone, each with a YES or NO from the rules engine for this rider in these places.
+- **Map** (`/map`). Bike racks to lock up an e-bike, bike shops and repair stations, from OpenStreetMap, for the part of the map on screen. Search a place or tap "Use my location", then tap a mark or read the nearest ones in a list under the map. `docs/MAP_DATA.md` lists the sources, licenses and limits.
 
 Built for Neighborhood Hacks 2026 (Oct 16 to 23, 2026).
 
@@ -130,13 +131,14 @@ The dark header band links the checker, the mods check and the bike finder, and 
 | `scripts/build-districts.mjs`, `lib/places/districts.ts` | Rebuilds the school district file from the NCES files, and reads it into the search |
 | `data/mods/`, `lib/mods/` | The California mods research, how the app reads it, and each mod's YES or NO (`docs/MODS_DATA.md`) |
 | `data/bikes/`, `lib/bikes/` | The maker catalog, how its facts reach the engine, and the finder's ranking (`docs/BIKE_FINDER.md`) |
-| `components/`, `app/` | The phone interface, mods check, bike finder, accuracy page and QR flyer |
+| `lib/map/` | The map's OpenStreetMap queries, parser and distance sort (`docs/MAP_DATA.md`) |
+| `components/`, `app/` | The phone interface, mods check, bike finder, map, accuracy page and QR flyer |
 | `tests/` | Golden cases, the generated matrix, the independent checker, parser and translation tests |
 | `PILOT.md`, `pilot/` | Pass bars committed before each pilot run, and the results |
 
 ## Privacy
 
-No accounts and no database. Label photos are read on the device and never uploaded. The optional pedal photo check also runs on the device, and its model comes once from Hugging Face and jsDelivr. A product link is fetched once and nothing is stored. The listing route refuses private and internal addresses.
+No accounts and no database. Label photos are read on the device and never uploaded. The optional pedal photo check also runs on the device, and its model comes once from Hugging Face and jsDelivr. A product link is fetched once and nothing is stored. The listing route refuses private and internal addresses. The map sends a place search to Nominatim and the view on screen to Overpass, both OpenStreetMap services, and reads the device's location only when the user taps "Use my location". None of it is stored.
 
 ## AI disclosure
 
@@ -145,8 +147,8 @@ This project was built during Neighborhood Hacks 2026 with AI help, as the rules
 - **Claude (Anthropic), through Claude Code**, wrote the code, tests and Spanish text, and ran the research that gathered and double-checked the state rules table. I didn't hand-write the code.
 - **My part.** I picked the problem from what I've seen around my school, chose the scope (every state, with a San Diego layer), and made the policy calls recorded in `data/overlay.json` and `PILOT.md`, including the Class 2 caution and using no paid AI. The pilot pass bars come from the research report and were committed before any run.
 - **Inside the product**, the only AI is open-source and free. Tesseract OCR reads label photos on the phone. For whole-bike photos, CLIP models failed two preregistered tests, then OWLv2 passed a third. OWLv2 runs on the phone only when the user taps it, and it only answers whether the bike has pedals. No paid AI API is used.
-- **Data.** State e-bike statutes (linked on every card), San Diego County city and county codes, ordinances and council records, SDUHSD board regulations and its Bike Safety page. The NCES school district directory and geocodes. California Vehicle Code, Health and Safety Code and 2026 bill text from the Legislature's bulk data, CHP and DMV pages, and the San Diego Municipal Code, for the mods check. Makers' own product pages, for the bike finder.
-- **Libraries.** Next.js, React, Tailwind CSS, tesseract.js, transformers.js (loaded from jsDelivr only for the photo check), qrcode, Vitest.
+- **Data.** State e-bike statutes (linked on every card), San Diego County city and county codes, ordinances and council records, SDUHSD board regulations and its Bike Safety page. The NCES school district directory and geocodes. California Vehicle Code, Health and Safety Code and 2026 bill text from the Legislature's bulk data, CHP and DMV pages, and the San Diego Municipal Code, for the mods check. Makers' own product pages, for the bike finder. OpenStreetMap data, © OpenStreetMap contributors under the ODbL, for the map.
+- **Libraries.** Next.js, React, Tailwind CSS, tesseract.js, transformers.js (loaded from jsDelivr only for the photo check), qrcode, Leaflet and react-leaflet, Vitest.
 
 The Spanish text still needs a check by a fluent speaker.
 
