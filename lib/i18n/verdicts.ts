@@ -179,7 +179,7 @@ const EN = {
     `A mode over 20 mph on the motor alone, or a setting that unlocks it, puts it outside ${c.state}'s e-bike definition.`,
   caution_assist_fast_mode: (_p, c) => `Pedal assist past 28 mph in any mode puts it outside ${c.state}'s e-bike definition.`,
   caution_class_not_recognized: (p, c) =>
-    `${c.state} doesn't recognize Class ${cls(p)} e-bikes, so the law treats this one as a motor vehicle.`,
+    `${c.state}'s law has no Class ${cls(p)} e-bike, so this bike is ridden under its motor vehicle rules, not as an e-bike.`,
   caution_class_unclear: (p, c) => `${c.state}'s law doesn't clearly cover a Class ${cls(p)} e-bike.`,
   caution_class_age_unclear: (p, c) => `${c.state}'s law is unclear for Class ${cls(p)} riders this young.`,
   unsure_wheel_size: (_p, c) => `We need the wheel size to confirm this in ${c.state}.`,
@@ -493,7 +493,7 @@ const ES = {
     `Un modo de más de 20 mph solo con el motor, o un ajuste que lo desbloquea, la deja fuera de la definición ${esOf(c)}.`,
   caution_assist_fast_mode: (_p, c) => `La asistencia al pedalear de más de 28 mph en algún modo la deja fuera de la definición ${esOf(c)}.`,
   caution_class_not_recognized: (p, c) =>
-    `${esSubj(c)} no reconoce las bicicletas eléctricas Clase ${cls(p)}, así que la ley la trata como un vehículo motorizado.`,
+    `La ley ${esOf(c)} no tiene bicicletas eléctricas Clase ${cls(p)}, así que esta se usa bajo sus reglas de vehículos motorizados, no como bicicleta eléctrica.`,
   caution_class_unclear: (p, c) => `La ley ${esOf(c)} no cubre con claridad una bicicleta eléctrica Clase ${cls(p)}.`,
   caution_class_age_unclear: (p, c) => `La ley ${esOf(c)} no es clara para conductores tan jóvenes en una Clase ${cls(p)}.`,
   unsure_wheel_size: (_p, c) => `Necesitamos el tamaño de las ruedas para confirmarlo en ${esName(c)}.`,

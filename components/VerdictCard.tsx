@@ -177,6 +177,11 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
       {/* A card waiting on the questions says so in its lead. Its reason, that a label can't show the
           answers, would repeat the questions card's own line, so it is left out here. */}
       {held ? heldLines.map((l) => <p key={l}>{keepWords(l)}</p>) : lead && verdict.status !== "need_info" ? <p>{keepWords(reason)}</p> : null}
+      {/* When a bike falls outside the state's e-bike law, what it takes to ride it under the state's
+          other vehicle rules (a license, registration, insurance) is shown, not folded away. */}
+      {verdict.status === "not_ebike" && verdict.reason.detail ? (
+        <p lang={lang !== "en" ? "en" : undefined}>{verdict.reason.detail}</p>
+      ) : null}
 
       {/* Everything else about this place opens on tap: the rules, the notes, the sources and the dates. */}
       <details className="more">
@@ -188,7 +193,7 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
               <p>{keepWords(reason)}</p>
             </div>
           ) : null}
-          {verdict.reason.detail ? (
+          {verdict.reason.detail && verdict.status !== "not_ebike" ? (
             <details className="line-details meta">
               <summary>{t(lang, "details")}</summary>
               <p lang="en" className="mt-1">

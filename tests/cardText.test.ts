@@ -98,7 +98,7 @@ describe("headlines in English and Spanish", () => {
     const dc = stateName("DC", "es");
     expect(renderLine(result("DC", 30, classBike(1)).state.reason, "es", dc)).toBe("Bicicleta eléctrica Clase 1. Permitida para alguien de 30 años en el Distrito de Columbia.");
     expect(renderLine(result("DC", 30, classBike(3)).state.reason, "es", dc)).toBe(
-      "El Distrito de Columbia no reconoce las bicicletas eléctricas Clase 3, así que la ley la trata como un vehículo motorizado.",
+      "La ley del Distrito de Columbia no tiene bicicletas eléctricas Clase 3, así que esta se usa bajo sus reglas de vehículos motorizados, no como bicicleta eléctrica.",
     );
     const codes = ["allowed", "under_min_age", "no_pedals", "no_pedals_unclear", "over_watts", "watts_750_strict", "caution_trike", "caution_class_unclear", "unsure_weight", "caution_helmet_unknown", "bl_unverified_state"];
     for (const code of codes) {
