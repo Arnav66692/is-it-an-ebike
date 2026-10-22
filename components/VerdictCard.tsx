@@ -1,7 +1,7 @@
 "use client";
 
 import { cardGaps, type BottomLineGap } from "@/lib/rules/bottomLine";
-import type { Line, ReadField, Source, Status, Verdict } from "@/lib/rules/types";
+import type { Line, Source, Status, Verdict } from "@/lib/rules/types";
 import { capitalize, cardWhere, citationText, formatDate, placeName, stateLaw, stateName, type Lang } from "@/lib/i18n/names";
 import { t, isUiKey } from "@/lib/i18n/ui";
 import { keepWords } from "@/lib/i18n/keep";
@@ -10,19 +10,16 @@ import { renderLine, uniqueRendered } from "@/lib/i18n/verdicts";
 /**
  * Why an allowed card still answers NO. `gaps` are what the bottom line names on this card: a
  * "not sure" fast-mode answer, a record not read in enacted text, or a ride date past the state
- * check. `facts` is true while a fact read from a link or photo is not checked against the bike.
- * Null when the card is not allowed, or allowed with nothing held back.
+ * check. Null when the card is not allowed, or allowed with nothing held back.
  */
 export interface HeldBack {
   gaps: BottomLineGap[];
-  facts: boolean;
 }
 
-export function heldBack(verdict: Verdict, rideDate: string, stateCode: string, unconfirmed: readonly ReadField[] = []): HeldBack | null {
+export function heldBack(verdict: Verdict, rideDate: string, stateCode: string): HeldBack | null {
   if (verdict.status !== "yes") return null;
   const gaps = cardGaps(verdict, rideDate, stateCode);
-  const facts = unconfirmed.length > 0;
-  return gaps.length > 0 || facts ? { gaps, facts } : null;
+  return gaps.length > 0 ? { gaps } : null;
 }
 
 /**
@@ -32,8 +29,8 @@ export function heldBack(verdict: Verdict, rideDate: string, stateCode: string, 
  * under a bottom line that says NO because of that same card. The engine's status is not
  * changed, only how it reads.
  */
-export function cardAnswer(verdict: Verdict, rideDate: string, stateCode: string, unconfirmed: readonly ReadField[] = []): "yes" | "no" {
-  return verdict.status === "yes" && heldBack(verdict, rideDate, stateCode, unconfirmed) === null ? "yes" : "no";
+export function cardAnswer(verdict: Verdict, rideDate: string, stateCode: string): "yes" | "no" {
+  return verdict.status === "yes" && heldBack(verdict, rideDate, stateCode) === null ? "yes" : "no";
 }
 
 type Lead = ((v: Verdict, lang: Lang, stateCode: string) => string) | null;
@@ -55,14 +52,12 @@ const LEAD: Record<Status, Lead> = {
 /**
  * The line right under the YES or NO when the card needs one, for example "Not an e-bike under
  * Vermont state law." or "We can't confirm it's legal in South Carolina." An allowed card held
- * back says "We can't confirm it's legal in Texas." for a gap on the card, or that the read facts
- * must be checked first. The card's own reason comes next. Null when the card's own reason is the
+ * back says "We can't confirm it's legal in Texas." for a gap on the card. The card's own reason
+ * comes next. Null when the card's own reason is the
  * line under the answer.
  */
 export function answerLead(verdict: Verdict, lang: Lang, stateCode: string, held: HeldBack | null = null): string | null {
-  if (held) {
-    return held.gaps.length > 0 ? t(lang, "answerCantConfirm", { where: cardWhere(verdict.scope, verdict.id, lang) }) : t(lang, "blFactsSub");
-  }
+  if (held) return t(lang, "answerCantConfirm", { where: cardWhere(verdict.scope, verdict.id, lang) });
   const lead = LEAD[verdict.status];
   return lead ? lead(verdict, lang, stateCode) : null;
 }
@@ -141,12 +136,10 @@ interface Props {
   stateCode: string;
   /** The ride date the bottom line uses, so a card past its state check answers NO with it. */
   rideDate: string;
-  /** Facts read from a link or photo that the family has not checked yet. Any one holds a YES back. */
-  unconfirmed?: readonly ReadField[];
   showLocalNotice?: boolean;
 }
 
-export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = [], showLocalNotice }: Props) {
+export function VerdictCard({ verdict, lang, stateCode, rideDate, showLocalNotice }: Props) {
   const state = stateName(stateCode, lang);
   const title =
     verdict.scope === "state" ? stateLaw(stateCode, lang, "title") : placeName(verdict.id, lang);
@@ -155,11 +148,11 @@ export function VerdictCard({ verdict, lang, stateCode, rideDate, unconfirmed = 
   const verifiedKey =
     verdict.scope === "state" ? `state_verified_${verdict.verified}` : verdict.level ? `level_${verdict.level}` : `verified_${verdict.verified}`;
   const verified = isUiKey(verifiedKey) ? t(lang, verifiedKey) : "";
-  const held = heldBack(verdict, rideDate, stateCode, unconfirmed);
-  const answer = cardAnswer(verdict, rideDate, stateCode, unconfirmed);
+  const held = heldBack(verdict, rideDate, stateCode);
+  const answer = cardAnswer(verdict, rideDate, stateCode);
   const lead = answerLead(verdict, lang, stateCode, held);
   const reason = renderLine(verdict.reason, lang, state);
-  // What holds an allowed card back, each sentence once. Read facts are named on the bottom line.
+  // What holds an allowed card back, each sentence once.
   const heldLines = held ? [...new Set(held.gaps.map((g) => renderLine(g.line, lang, state)))] : [];
 
   return (

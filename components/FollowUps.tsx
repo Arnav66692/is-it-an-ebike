@@ -11,7 +11,7 @@ import {
   withWheelCount,
   withWheelSize,
 } from "@/lib/checkerState";
-import type { BikeFacts, QuestionId, ReadField } from "@/lib/rules/types";
+import type { BikeFacts, QuestionId } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { Card, Choice, NumberField, triValue } from "./controls";
@@ -22,13 +22,8 @@ interface Props {
   lang: Lang;
   questions: QuestionId[];
   facts: BikeFacts;
-  /**
-   * The family answered. `answered` names the read facts the answer covers, which count as theirs
-   * even when the answer matches what was read. The wheel boxes and the wheel count show the facts
-   * as they are, the same as the facts card, so they name none. An arrow key that moves the wheel
-   * count away and back then leaves it as read, still to check.
-   */
-  onChange: (next: BikeFacts, answered?: readonly ReadField[]) => void;
+  /** The family answered. */
+  onChange: (next: BikeFacts) => void;
 }
 
 function withUnsure(f: BikeFacts, q: QuestionId, unsure: boolean): QuestionId[] {
@@ -164,15 +159,12 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           options={tri}
           value={weightShown(facts)}
           onChange={(v) => {
-            onChange(
-              {
-                ...facts,
-                weightLb: null,
-                weightOver100: v === "yes" ? true : v === "no" ? false : null,
-                unsure: withUnsure(facts, "weight", v === "unsure"),
-              },
-              ["weightLb"],
-            );
+            onChange({
+              ...facts,
+              weightLb: null,
+              weightOver100: v === "yes" ? true : v === "no" ? false : null,
+              unsure: withUnsure(facts, "weight", v === "unsure"),
+            });
           }}
         />
       ) : null}
@@ -184,10 +176,7 @@ export function FollowUps({ lang, questions, facts, onChange }: Props) {
           value={pegsKitShown(facts)}
           onChange={(v) => {
             const value = v === "yes" ? true : v === "no" ? false : null;
-            // An answer here is the family's own foot pegs answer, even when it matches what was read.
-            onChange({ ...facts, hasFootPegs: value, needsPedalKit: value === true ? null : value, unsure: withUnsure(facts, "pegs_kit", v === "unsure") }, [
-              "hasFootPegs",
-            ]);
+            onChange({ ...facts, hasFootPegs: value, needsPedalKit: value === true ? null : value, unsure: withUnsure(facts, "pegs_kit", v === "unsure") });
           }}
         />
       ) : null}

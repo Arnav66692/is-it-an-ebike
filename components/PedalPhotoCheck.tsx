@@ -3,7 +3,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n/names";
 import { t, type UiKey } from "@/lib/i18n/ui";
-import { callIfCurrent, PEDAL_MODEL_MB, type AnswerChange, type AnswerWatch, type PedalCall } from "@/lib/photo/pedalRule";
+import { callIfCurrent, PEDAL_MODEL_MB, type AnswerWatch, type PedalCall } from "@/lib/photo/pedalRule";
 
 export type Step = "closed" | "confirm" | "choose" | "working";
 
@@ -12,27 +12,6 @@ const RESULT_KEY: Record<PedalCall, UiKey> = {
   no_pedals: "photoCheckNoPedals",
   ask: "photoCheckAsk",
 };
-
-/**
- * The same result, for when the pedals answer still has to be ticked before the answer can say YES.
- * A close call leaves the answer as it was, so when that answer was read from text and is still
- * unchecked, the message says to tick it rather than to pick an answer. Picking the answer already
- * shown changes nothing, so it would leave the answer unchecked.
- */
-const TICK_KEY: Partial<Record<UiKey, UiKey>> = {
-  photoCheckPedals: "photoCheckPedalsTick",
-  photoCheckNoPedals: "photoCheckNoPedalsTick",
-  photoCheckAsk: "photoCheckAskTick",
-};
-
-/**
- * The message for a call. When the pedals answer still needs the family's tick after the call,
- * the message says so. It is picked once, when the call lands, so a later tick never changes the
- * words and a screen reader doesn't hear them again.
- */
-export function photoMessage(message: UiKey, tick: boolean): UiKey {
-  return tick ? (TICK_KEY[message] ?? message) : message;
-}
 
 /** A message about something that went wrong. It is an alert, not a status. */
 function isProblem(message: UiKey | null): boolean {
@@ -48,45 +27,35 @@ export function photoStatus(step: Step, progress: number, message: UiKey | null)
   return message !== null && !isProblem(message) ? message : null;
 }
 
-/** Where keyboard focus goes once the check moves to a step: the open button, the start button, the photo input or the pedals box. */
-export type FocusTarget = "open" | "start" | "choose" | "tick";
-
-const NEEDS_TICK: ReadonlySet<UiKey> = new Set(Object.values(TICK_KEY));
+/** Where keyboard focus goes once the check moves to a step: the open button, the start button or the photo input. */
+export type FocusTarget = "open" | "start" | "choose";
 
 /**
  * Where keyboard focus goes after the check moves to `step`. Each step draws different controls,
  * so the one just used leaves the page, and focus must move or it drops to the page itself. While
- * a photo is checked, the photo input stays on the page, so focus stays on it. A result that says
- * to tick the pedals box moves focus to that box.
+ * a photo is checked, the photo input stays on the page, so focus stays on it.
  */
-export function focusAfter(step: Step, message: UiKey | null): FocusTarget {
+export function focusAfter(step: Step): FocusTarget {
   if (step === "closed") return "open";
   if (step === "confirm") return "start";
-  return message !== null && NEEDS_TICK.has(message) ? "tick" : "choose";
-}
-
-/** The message for a call dropped because the family changed the pedals answer while the check ran. */
-export function keptMessage(change: AnswerChange | null): UiKey {
-  return change === "ticked" ? "photoCheckKeptTick" : "photoCheckKept";
+  return "choose";
 }
 
 /**
  * Runs one photo check and returns the message to show when it ends, or null once the card has
  * left the page. The call fills the pedals answer only while the card is on the page and the
- * family hasn't picked a pedals answer or used the pedals box since the check started. Otherwise
- * the call is dropped and the message says why. The message is picked here, once, so a later
- * tick never changes the words a screen reader already heard. A failed run throws.
+ * family hasn't picked a pedals answer since the check started. Otherwise the call is dropped and
+ * the message says why. A failed run throws.
  */
 export async function photoCheckMessage(
   run: () => Promise<{ call: PedalCall }>,
   watch: AnswerWatch,
   onPage: () => boolean,
   onCall: (call: PedalCall) => void,
-  tickAfter: (call: PedalCall) => boolean,
 ): Promise<UiKey | null> {
   const call = await callIfCurrent(run, () => onPage() && watch.untouched(), onCall);
-  if (call !== null) return photoMessage(RESULT_KEY[call], tickAfter(call));
-  return onPage() ? keptMessage(watch.change()) : null;
+  if (call !== null) return RESULT_KEY[call];
+  return onPage() ? "photoCheckKept" : null;
 }
 
 interface Props {
@@ -94,19 +63,15 @@ interface Props {
   /** Called as a check starts. What it returns tracks the family's pedals answer while the check runs. */
   startCheck: () => AnswerWatch;
   onCall: (call: PedalCall) => void;
-  /** True when the pedals answer will still have to be ticked once this call is applied. */
-  tickAfter: (call: PedalCall) => boolean;
   /**
    * Goes up each time the family picks a pedals answer. The message is about the answer before
    * that pick, so it is cleared rather than left saying something like "the answer above is now no".
    */
   picks: number;
-  /** Moves keyboard focus to the pedals box. False when the box isn't on the page. */
-  focusTick: () => boolean;
 }
 
 /** Optional whole-bike photo check. It loads nothing until tapped and only ever fills the pedals answer. */
-export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, focusTick }: Props) {
+export function PedalPhotoCheck({ lang, startCheck, onCall, picks }: Props) {
   const id = useId();
   const [step, setStep] = useState<Step>("closed");
   const [progress, setProgress] = useState(0);
@@ -117,8 +82,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
     setMessage(null);
   }
   // A language switch draws the message again in the other language, and a screen reader would
-  // read it out long after it was true, like a tick instruction for a box already ticked. So the
-  // switch clears it, the same as the checker's read count.
+  // read it out long after it was true. So the switch clears it.
   const [seenLang, setSeenLang] = useState(lang);
   if (lang !== seenLang) {
     setSeenLang(lang);
@@ -151,9 +115,7 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
     // A family that moved on to another part of the page while a photo was checked keeps their place.
     const active = document.activeElement;
     if (active && active !== document.body && !panel.current?.contains(active)) return;
-    const target = focusAfter(step, message);
-    if (target === "tick" && focusTick()) return;
-    const to = { open: openButton, start: startButton, choose: photoInput, tick: photoInput }[target];
+    const to = { open: openButton, start: startButton, choose: photoInput }[focusAfter(step)];
     to.current?.focus();
   });
 
@@ -186,7 +148,6 @@ export function PedalPhotoCheck({ lang, startCheck, onCall, tickAfter, picks, fo
         watch,
         () => onPage.current,
         (call) => latestCall.current(call),
-        tickAfter,
       );
       if (next !== null) setMessage(next);
     } catch {

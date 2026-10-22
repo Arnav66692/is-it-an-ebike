@@ -23,19 +23,14 @@ const SUBTITLE = {
 /**
  * The line under YES or NO. When the only "no" is that the bike is not an e-bike, it says that,
  * not that a rule bars the ride, since the bike may be legal as another vehicle, like Vermont's
- * motor-assisted bicycle. When the only thing missing is checking the facts read from a link or
- * photo, it says that, so the family knows the next step is on the facts card.
+ * motor-assisted bicycle.
  */
-export function subtitleKey(line: BottomLine): (typeof SUBTITLE)[BottomLine["kind"]] | "blNotEbikeSub" | "blFactsSub" {
+export function subtitleKey(line: BottomLine): (typeof SUBTITLE)[BottomLine["kind"]] | "blNotEbikeSub" {
   if (line.kind === "no_illegal" && line.notEbikeOnly) return "blNotEbikeSub";
-  if (line.kind === "no_unconfirmed" && line.missing.every((m) => m.kind === "facts")) return "blFactsSub";
   return SUBTITLE[line.kind];
 }
 
-/**
- * The one card a NO rests on when every gap it names, apart from the read facts, is about that
- * card. Null when the gaps are about more than one card, or only about the facts.
- */
+/** The one card a NO rests on when every gap it names is about that card. Null when the gaps are about more than one card. */
 function onlyOpenCard(line: BottomLine): CardRef | null {
   const refs = line.missing.flatMap((m) => m.where);
   const first = refs[0];
@@ -56,11 +51,9 @@ export function subtitle(line: BottomLine, lang: Lang): string {
 
 /**
  * The places one item applies to, as a label: "City of San Diego and an SDUHSD campus".
- * Each place uses its list form, and only the first word is capitalized. An item about the bike's
- * facts names no place, since every card rests on them.
+ * Each place uses its list form, and only the first word is capitalized.
  */
 export function whereLabel(where: CardRef[], lang: Lang, stateCode: string): string {
-  if (where.length === 0) return t(lang, "blFactsWhere");
   const names = where.map((r) => (r.scope === "state" ? stateLaw(stateCode, lang, "list") : placeNameInList(r.id, lang)));
   return capitalize(joinList(names, lang));
 }
@@ -78,16 +71,15 @@ export function coversSentence(line: BottomLine, lang: Lang, stateCode: string):
  * line: NO. We can't confirm it's legal in South Carolina." It always says YES or NO first.
  * A YES also says which city or county rules were not checked, like "City and county rules for
  * Austin were not checked.", as the card does, so a YES under state law alone is never heard as
- * more than that. A NO, not allowed that still rests on unchecked read facts adds
- * that it could change once they are checked. The full card stays out of the live region, so it
- * is never read again on every edit.
+ * more than that. The full card stays out of the live region, so it is never read again on every
+ * edit.
  */
 export function announcement(line: BottomLine, lang: Lang, uncheckedPlaces: readonly string[] = [], uncheckedDistricts: readonly string[] = []): string {
   const word = line.kind === "yes" ? t(lang, "blYes") : t(lang, "blNo");
   const head = `${t(lang, "blTitle")}: ${word}. ${subtitle(line, lang)}`;
   // A YES covers only what was checked, so it says which city or county rules were not. A NO stays one short sentence.
   const unchecked = line.kind === "yes" ? uncheckedLine(line, lang, uncheckedPlaces, uncheckedDistricts) : null;
-  return [head, unchecked, line.factsNote ? t(lang, "blFactsCouldChange") : null].filter(Boolean).join(" ");
+  return [head, unchecked].filter(Boolean).join(" ");
 }
 
 /**
@@ -121,8 +113,8 @@ interface ItemListProps {
 }
 
 /**
- * Each item is one short line under the places it names, like "Tick the 7 facts we read, in step
- * 3.", so the card reads as one compact answer. When the full sentence says more, it is folded
+ * Each item is one short line under the places it names, like "District rules are only on a web
+ * page.", so the card reads as one compact answer. When the full sentence says more, it is folded
  * under the line and opens on tap, so nothing it says is lost.
  */
 function ItemList({ title, items, lang, state, stateCode }: ItemListProps) {
@@ -189,8 +181,6 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [], un
   const state = stateName(stateCode, lang);
   const yes = line.kind === "yes";
   const unchecked = uncheckedLine(line, lang, uncheckedPlaces, uncheckedDistricts);
-  // A NO, not allowed names the read facts still unchecked right under its reasons.
-  const toCheck: BottomLineItem[] = line.factsNote ? [{ where: [], line: line.factsNote }] : [];
 
   return (
     <section className="card bottom-line" data-kind={line.kind} aria-labelledby={headingId}>
@@ -221,7 +211,6 @@ export function BottomLineCard({ line, lang, stateCode, uncheckedPlaces = [], un
         <ItemList title={t(lang, "blWhy")} items={line.blocked} lang={lang} state={state} stateCode={stateCode} />
         {/* The reason under a not-an-e-bike NO is one short line. What that means for other vehicles is here. */}
         {line.kind === "no_illegal" && line.notEbikeOnly ? <p>{keepWords(t(lang, "blNotEbikeNote"))}</p> : null}
-        <ItemList title={t(lang, "blToCheck")} items={toCheck} lang={lang} state={state} stateCode={stateCode} />
         <ItemList title={t(lang, "blMissing")} items={line.missing} lang={lang} state={state} stateCode={stateCode} />
 
         {yes && line.requirements.length > 0 ? (

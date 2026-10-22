@@ -184,8 +184,8 @@ export interface ThrottleAnswer {
  * The facts after the throttle answer on the facts card. A bike with no throttle has no throttle
  * speed, so "No" clears the speed and sets it aside. Any other answer puts it back. In a radio
  * group the arrow keys pick each answer they pass, so moving through Yes, No and Not sure just to
- * hear them must leave the speed as it was. A speed read from a link or photo is then as read
- * again and still needs a tick (lib/provenance.ts), rather than counting as one the family set.
+ * hear them must leave the speed as it was, and a speed read from a link or photo keeps the words
+ * it was read from (lib/provenance.ts).
  */
 export function withThrottleAnswer(facts: BikeFacts, answer: Tri, setAside: number | null): ThrottleAnswer {
   if (answer === false) return { facts: { ...facts, hasThrottle: false, throttleMph: null }, setAside: facts.throttleMph ?? setAside };

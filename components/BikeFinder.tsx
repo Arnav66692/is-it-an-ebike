@@ -3,7 +3,8 @@
 // The bike finder. A short quiz about the rider, where they ride and what the bike is for, then
 // the catalog bikes in the budget, best fit first. Each one gets a YES or NO from the rules engine
 // for this rider in these places, read from the maker's stated specs only. "Check this bike" opens
-// the checker with those facts as read facts, so the family still checks each one there.
+// the checker with those facts as read facts, each with the maker's words it came from, so the
+// family can change any that differ on the bike.
 
 import { useId, useMemo, useState } from "react";
 import { findBikes, BUDGETS, COLOR_FAMILIES, USES, type Budget, type ColorFamily, type FinderResult, type FitReason, type Use } from "@/lib/bikes/finder";

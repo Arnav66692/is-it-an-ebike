@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type Ref } from "react";
+import { useEffect, useRef, useState } from "react";
 import { withThrottleAnswer } from "@/lib/checkerState";
 import { MAX_READ_MPH, type Evidence as Ev, type FactKey } from "@/lib/extract/parse";
-import { checkCounts, pedalCallNeedsTick, type FactChecks } from "@/lib/provenance";
+import type { FactChecks } from "@/lib/provenance";
 import type { BikeFacts, ClassNum, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
 import { isUiKey, t } from "@/lib/i18n/ui";
-import { answerGate, confirmThroughGate, type PedalCall } from "@/lib/photo/pedalRule";
+import { answerGate, type PedalCall } from "@/lib/photo/pedalRule";
 import { Card, Choice, fromTri, NumberField, triValue } from "./controls";
 import { PedalPhotoCheck } from "./PedalPhotoCheck";
-import { ReadNote, type OnConfirm } from "./ReadCheck";
+import { ReadNote } from "./ReadCheck";
 import { ShapeFacts } from "./ShapeFacts";
 
 type Tri3 = "yes" | "no" | "unsure";
@@ -21,20 +21,15 @@ const MAX_WATTS = 20000;
 /** How far above the bottom of the screen the facts list must start before the Check bar sticks, in px. */
 const STICKY_AFTER = 260;
 
-/** Up to this many read facts, the progress shows one segment per fact. Past it, one bar. */
-const MAX_SEGMENTS = 12;
-
 interface Props {
   lang: Lang;
   facts: BikeFacts;
-  /** Which facts were read from a link or photo, and which of those the family has checked. */
+  /** Which facts were read from a link or photo, and from where. */
   checks: FactChecks;
   evidence: Partial<Record<FactKey, Ev[]>>;
   flags: string[];
-  /** The family changed the facts. A read fact they change counts as checked. */
+  /** The family changed the facts. */
   onChange: (next: BikeFacts) => void;
-  /** The family ticked or cleared "It matches the bike" on a read fact. */
-  onConfirm: OnConfirm;
   /**
    * The whole-bike photo check made a call. It only fills the pedals answer. It is called from
    * the newest card drawn, so it can check the call against the facts on screen as it lands.
@@ -43,7 +38,7 @@ interface Props {
   onCheck: () => void;
 }
 
-export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onConfirm, onPedalCall, onCheck }: Props) {
+export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onPedalCall, onCheck }: Props) {
   // The answers shown are read from the facts every time, so the pedals answer always shows what
   // the facts hold, even after the photo check fills it. Only a "not sure" pick is kept here, since
   // the facts store it as unknown, the same as no answer.
@@ -53,20 +48,13 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
   const [throttleSetAside, setThrottleSetAside] = useState<number | null>(null);
   const pedalsUi: Tri3 | null = triValue(facts.hasPedals) ?? (pedalsUnsure ? "unsure" : null);
   const throttleUi: Tri3 | null = triValue(facts.hasThrottle) ?? (throttleUnsure ? "unsure" : null);
-  // A pedals answer the family picks, or ticks, while a photo check runs must not be replaced by the photo's call.
+  // A pedals answer the family picks while a photo check runs must not be replaced by the photo's call.
   const [pedalAnswers] = useState(answerGate);
   // Goes up with each pedals answer the family picks, so the photo check's message about the old answer is cleared.
   const [pedalPicks, setPedalPicks] = useState(0);
-  // The pedals box, so the photo check can move keyboard focus to it when its call needs a tick.
-  const pedalsBox = useRef<HTMLInputElement>(null);
   const set = (patch: Partial<BikeFacts>) => onChange({ ...facts, ...patch });
   const rangeError = (min: number, max: number) => t(lang, "rangeError", { min, max });
-  // Ticking the pedals box is the family's own pedals answer, newer than a photo check still running.
-  const confirm: OnConfirm = confirmThroughGate(pedalAnswers, onConfirm);
-  const ev = (key: ReadField, boxRef?: Ref<HTMLInputElement>) => (
-    <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={confirm} evidence={evidence[key]} boxRef={boxRef} />
-  );
-  const counts = checkCounts(checks);
+  const ev = (key: ReadField) => <ReadNote lang={lang} field={key} facts={facts} check={checks[key]} evidence={evidence[key]} />;
   const triOptions = [
     { value: "yes" as const, label: t(lang, "yes") },
     { value: "no" as const, label: t(lang, "no") },
@@ -79,7 +67,6 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
     set({ classes: next as ClassNum[] });
   };
 
-  const allChecked = counts.read > 0 && counts.confirmed === counts.read;
   // On a phone the Check bar stays at the bottom of the screen only once the facts list reaches
   // well up the screen. Before that it waits at the list's end, so it never sits on the card's
   // top edge over the step heading, cut off at the bottom of the screen.
@@ -121,21 +108,13 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
               set({ hasPedals: fromTri(v) });
             }}
           />
-          {ev("hasPedals", pedalsBox)}
-          {/* tickAfter sees the facts on screen as the check started. Only a pedals pick or tick
-              could change the pedals answer before the call lands, and either one drops the call. */}
+          {ev("hasPedals")}
           <PedalPhotoCheck
             lang={lang}
             startCheck={pedalAnswers.start}
-            tickAfter={(call) => pedalCallNeedsTick({ facts, checks }, call)}
             picks={pedalPicks}
             onCall={(call) => {
               if (call !== "ask") onPedalCall(call);
-            }}
-            focusTick={() => {
-              const box = pedalsBox.current;
-              box?.focus();
-              return box !== null;
             }}
           />
         </div>
@@ -204,7 +183,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
           ) : null}
         </div>
 
-        <ShapeFacts lang={lang} facts={facts} checks={checks} evidence={evidence} onChange={onChange} onConfirm={confirm} />
+        <ShapeFacts lang={lang} facts={facts} checks={checks} evidence={evidence} onChange={onChange} />
 
         {facts.switchable === true || evidence.switchable ? (
           <div className="fact">
@@ -217,33 +196,7 @@ export function FactsCard({ lang, facts, checks, evidence, flags, onChange, onCo
         ) : null}
       </div>
 
-      {/* The count's status line is always on the page, empty until a fact is read, so a screen
-          reader hears it change when the photo check fills in the pedals on a bike typed in. The
-          short count and the bar show the same numbers to the eye. */}
       <div className="check-bar no-print" data-sticky={sticky ? "true" : "false"}>
-        {counts.read > 0 ? (
-          <div className="space-y-2" aria-hidden="true">
-            {/* One short line at every width. Once every read fact is checked it turns green with a mark. */}
-            <p className="check-count" data-done={allChecked ? "true" : "false"}>
-              {allChecked ? "✓ " : ""}
-              {t(lang, "readCountShort", { done: counts.confirmed, total: counts.read })}
-            </p>
-            {counts.read <= MAX_SEGMENTS ? (
-              <div className="segs" data-done={allChecked ? "true" : "false"}>
-                {Array.from({ length: counts.read }, (_, i) => (
-                  <i key={i} data-on={i < counts.confirmed ? "true" : "false"} />
-                ))}
-              </div>
-            ) : (
-              <div className="bar" data-done={allChecked ? "true" : "false"}>
-                <div style={{ width: `${Math.round((100 * counts.confirmed) / counts.read)}%` }} />
-              </div>
-            )}
-          </div>
-        ) : null}
-        <p role="status" className="sr-only">
-          {counts.read > 0 ? t(lang, "readCount", { done: counts.confirmed, total: counts.read }) : ""}
-        </p>
         <button type="button" className="btn btn-go w-full" onClick={onCheck}>
           {t(lang, "check")}
         </button>

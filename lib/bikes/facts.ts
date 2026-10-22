@@ -136,8 +136,7 @@ function sourceLines(bike: CatalogBike, facts: BikeFacts): Partial<Record<FactKe
 
 /**
  * The maker's facts as a read, the same shape a product link gives the checker. Every fact comes in
- * as read and not checked, so the checker still asks the family to check each one against the bike
- * before it can say YES.
+ * as read, with the maker's words it came from, so the family can change any that differ on the bike.
  */
 export function catalogExtraction(bike: CatalogBike): Extraction {
   const facts = catalogFacts(bike);

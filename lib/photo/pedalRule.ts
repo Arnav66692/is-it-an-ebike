@@ -4,7 +4,7 @@
 // It never gives a verdict.
 
 import method from "@/pilot/v3/method.json";
-import type { BikeFacts, ReadField } from "@/lib/rules/types";
+import type { BikeFacts } from "@/lib/rules/types";
 
 export const PEDAL_MODEL = {
   id: method.model,
@@ -63,28 +63,27 @@ export function applyPedalCall(facts: BikeFacts, call: PedalCall): BikeFacts {
   return { ...facts, hasPedals: call === "pedals" };
 }
 
-/** How the family changed the pedals answer: picked an answer, or ticked or unticked its box. */
-export type AnswerChange = "picked" | "ticked";
+/** How the family changed the pedals answer. They picked an answer. */
+export type AnswerChange = "picked";
 
 /** What one photo check knows about the family's pedals answer since it started. */
 export interface AnswerWatch {
-  /** True until the family picks a pedals answer or uses the pedals box. */
+  /** True until the family picks a pedals answer. */
   untouched: () => boolean;
-  /** How they changed the pedals answer since the check started, or null. A pick counts over a tick. */
+  /** How they changed the pedals answer since the check started, or null. */
   change: () => AnswerChange | null;
 }
 
 /** Tracks the family's own pedals answers, so a photo check never replaces one given while it ran. */
 export interface AnswerGate {
-  /** Call each time the family picks a pedals answer, or ticks or unticks the pedals box. */
+  /** Call each time the family picks a pedals answer. */
   edited: (how: AnswerChange) => void;
   /** Call when a photo check starts. */
   start: () => AnswerWatch;
 }
 
 /**
- * A photo check can take about 10 seconds. If the family picks a pedals answer or uses the pedals
- * box in that time, their answer is newer than the photo, so it wins and the photo's call is
+ * A photo check can take about 10 seconds. If the family picks a pedals answer in that time, their answer is newer than the photo, so it wins and the photo's call is
  * dropped. An answer given before the check started is not guarded, since the family then asked
  * the photo for an answer.
  */
@@ -99,20 +98,9 @@ export function answerGate(): AnswerGate {
       const since = () => changes.slice(at);
       return {
         untouched: () => changes.length === at,
-        change: () => (since().includes("picked") ? "picked" : since().length > 0 ? "ticked" : null),
+        change: () => (since().includes("picked") ? "picked" : null),
       };
     },
-  };
-}
-
-/**
- * The facts card's tick handler. A tick or untick on the pedals box is the family's own pedals
- * answer, so it tells the gate before it is passed on, and a photo check still running is dropped.
- */
-export function confirmThroughGate(gate: AnswerGate, onConfirm: (field: ReadField, confirmed: boolean) => void): (field: ReadField, confirmed: boolean) => void {
-  return (field, confirmed) => {
-    if (field === "hasPedals") gate.edited("ticked");
-    onConfirm(field, confirmed);
   };
 }
 

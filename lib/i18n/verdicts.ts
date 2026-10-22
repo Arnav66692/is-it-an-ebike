@@ -2,7 +2,7 @@
 // code and the numbers. These templates are the only legal text in the app.
 
 import type { BottomLineCode } from "@/lib/rules/bottomLine";
-import { isQuestionId, QUESTION_IDS, READ_FIELDS, type Line, type QuestionId, type ReadField } from "@/lib/rules/types";
+import { isQuestionId, QUESTION_IDS, type Line, type QuestionId } from "@/lib/rules/types";
 import { formatDate, joinList, placeName, placeNameInline, type Lang } from "./names";
 
 type Params = Record<string, string | number>;
@@ -64,66 +64,6 @@ function questionList(ids: string, lang: Lang): string {
   const names = QUESTION_IDS.filter((id) => asked.includes(id)).map((id) => QUESTION_NAMES[lang][id]);
   if (names.length === 0) return lang === "es" ? "la bicicleta" : "the bike";
   return joinList(names, lang);
-}
-
-/** Keyed by ReadField, so a fact the readers can fill in can't ship without a plain name in both languages. */
-export const READ_FIELD_NAMES: Record<Lang, Record<ReadField, string>> = {
-  en: {
-    hasPedals: "the pedals",
-    classes: "the class",
-    ratedWatts: "the rated motor watts",
-    peakWatts: "the peak watts",
-    wattsUpTo: "the watts listed",
-    hasThrottle: "the throttle",
-    throttleMph: "the throttle top speed",
-    assistMph: "the top assisted speed",
-    topSpeedMph: "the top speed",
-    wheelSize: "the wheel size",
-    weightLb: "the weight",
-    wheelCount: "the number of wheels",
-    hasFootPegs: "the foot pegs",
-    switchable: "the unlock or off-road mode",
-  },
-  es: {
-    hasPedals: "los pedales",
-    classes: "la clase",
-    ratedWatts: "los vatios nominales del motor",
-    peakWatts: "los vatios máximos",
-    wattsUpTo: "los vatios del anuncio",
-    hasThrottle: "el acelerador",
-    throttleMph: "la velocidad máxima con acelerador",
-    assistMph: "la velocidad máxima con asistencia",
-    topSpeedMph: "la velocidad máxima",
-    wheelSize: "el tamaño de las ruedas",
-    weightLb: "el peso",
-    wheelCount: "el número de ruedas",
-    hasFootPegs: "los reposapiés",
-    switchable: "el modo desbloqueado o todoterreno",
-  },
-};
-
-function namedReadFields(ids: string): ReadField[] {
-  const named = ids.split(",");
-  return READ_FIELDS.filter((f) => named.includes(f));
-}
-
-/**
- * True when the list names one read fact, so the sentence says "under that fact", not "under each
- * one". It never says "under it", since many fact names are plural, like "the pedals", and "it"
- * would read as the bike.
- */
-function oneReadField(ids: string): boolean {
-  return namedReadFields(ids).length === 1;
-}
-
-/** "classes,wheelSize" becomes "the class and the wheel size", in the order the facts card shows them. */
-export function readFieldList(ids: string, lang: Lang): string {
-  const fields = namedReadFields(ids);
-  if (fields.length === 0) return lang === "es" ? "los datos leídos" : "the facts that were read";
-  return joinList(
-    fields.map((f) => READ_FIELD_NAMES[lang][f]),
-    lang,
-  );
 }
 
 /** Every bottom-line code must have a sentence. Other codes are checked by tests/i18n.test.ts. */
@@ -416,12 +356,6 @@ const EN = {
   city_warning_period: (p, c) => `Warnings only until ${formatDate(n(p.from), c.lang)}. Fines start then.`,
   city_age_12: () => "This city's ban covers only riders under 12. A 12-year-old may ride Class 1 or 2.",
   city_emoto_state_law: (p, c) => `${placeName(n(p.place), c.lang)} has no e-moto rule of its own that we found. Under state law, ${EMOTO_REMOVAL_EN}`,
-  bl_unconfirmed_facts: (p, c) =>
-    `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so look at the bike and tick "It matches the bike" ${oneReadField(n(p.fields)) ? `under that fact in "Check the facts" above, or fix that fact` : `under each one in "Check the facts" above, or fix any that are wrong`}.`,
-  bl_no_unchecked_facts: (p, c) =>
-    oneReadField(n(p.fields))
-      ? `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. A fact read from a link or photo can be wrong, so this answer could change once you check it. Look at the bike and tick "It matches the bike" under that fact in "Check the facts" above, or fix that fact.`
-      : `You haven't checked ${readFieldList(n(p.fields), c.lang)} against the bike yet. Facts read from a link or photo can be wrong, so this answer could change once you check them. Look at the bike and tick "It matches the bike" under each one in "Check the facts" above, or fix any that are wrong.`,
   bl_unanswered: (p, c) => `Answer the questions above about ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({
@@ -734,12 +668,6 @@ const ES = {
   city_age_12: () => "La prohibición de esta ciudad solo cubre a menores de 12 años. Alguien de 12 años puede usar una Clase 1 o 2.",
   city_emoto_state_law: (p, c) =>
     `${placeName(n(p.place), c.lang)} no tiene una regla propia sobre motos eléctricas que hayamos encontrado. Según la ley estatal, ${EMOTO_REMOVAL_ES}`,
-  bl_unconfirmed_facts: (p, c) =>
-    `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que mira la bicicleta y marca "Coincide con la bicicleta" ${oneReadField(n(p.fields)) ? `debajo de ese dato en "Revisa los datos", arriba, o corrige el dato` : `debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal`}.`,
-  bl_no_unchecked_facts: (p, c) =>
-    oneReadField(n(p.fields))
-      ? `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Un dato leído de un enlace o una foto puede estar mal, así que esta respuesta podría cambiar cuando lo compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de ese dato en "Revisa los datos", arriba, o corrige el dato.`
-      : `Todavía no comparaste con la bicicleta ${readFieldList(n(p.fields), c.lang)}. Los datos leídos de un enlace o una foto pueden estar mal, así que esta respuesta podría cambiar cuando los compares. Mira la bicicleta y marca "Coincide con la bicicleta" debajo de cada uno en "Revisa los datos", arriba, o corrige los que estén mal.`,
   bl_unanswered: (p, c) => `Responde las preguntas de arriba sobre ${questionList(n(p.questions), c.lang)}.`,
   bl_unsure_fast_mode: (p) =>
     ({
@@ -788,20 +716,12 @@ const CHANGES: Record<Lang, Record<string, string>> = {
 const TEMPLATES: Record<Lang, Record<string, Template>> = { en: EN, es: ES satisfies Templates };
 
 /**
- * One short line for a What's missing or Still to check item whose full sentence runs long, like
- * "Tick the 7 facts we read, in step 3." The full sentence stays on the card, folded under it.
+ * One short line for a What's missing item whose full sentence runs long, like "Rules confirmed
+ * only through Nov 19, 2026." The full sentence stays on the card, folded under it.
  * Codes not listed here are already one short sentence.
  */
 const SHORT: Record<Lang, Partial<Record<BottomLineCode, Template>>> = {
   en: {
-    bl_unconfirmed_facts: (p) => {
-      const count = namedReadFields(n(p.fields)).length;
-      return count === 1 ? "Tick the fact we read, in step 3." : `Tick the ${count} facts we read, in step 3.`;
-    },
-    bl_no_unchecked_facts: (p) => {
-      const count = namedReadFields(n(p.fields)).length;
-      return count === 1 ? "Tick the fact we read, in step 3. The answer could change." : `Tick the ${count} facts we read, in step 3. The answer could change.`;
-    },
     bl_unsure_fast_mode: (p) =>
       ({
         both: "You answered \"not sure\" about fast modes.",
@@ -813,14 +733,6 @@ const SHORT: Record<Lang, Partial<Record<BottomLineCode, Template>>> = {
     bl_state_after_check: (p, c) => `Rules confirmed only through ${formatDate(n(p.through), c.lang)}.`,
   },
   es: {
-    bl_unconfirmed_facts: (p) => {
-      const count = namedReadFields(n(p.fields)).length;
-      return count === 1 ? "Marca el dato que leímos, en el paso 3." : `Marca los ${count} datos que leímos, en el paso 3.`;
-    },
-    bl_no_unchecked_facts: (p) => {
-      const count = namedReadFields(n(p.fields)).length;
-      return count === 1 ? "Marca el dato que leímos, en el paso 3. La respuesta podría cambiar." : `Marca los ${count} datos que leímos, en el paso 3. La respuesta podría cambiar.`;
-    },
     bl_unsure_fast_mode: (p) =>
       ({
         both: "Respondiste \"no sé\" sobre los modos rápidos.",

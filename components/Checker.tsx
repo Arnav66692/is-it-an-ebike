@@ -5,10 +5,10 @@ import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "re
 import { checkerToday, focusGate, LAST_RIDE_DATE, msUntilNextDay, nextAsked, parseShareLink, readMayMoveFocus, rideDateFor, type AskedQuestions } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Evidence as Ev, Extraction, FactKey } from "@/lib/extract/parse";
-import { checkCounts, confirmOn, editOn, emptyChecked, fromRead, pedalCallOn, summaryFor, unconfirmedFields, type CheckedFacts } from "@/lib/provenance";
+import { editOn, emptyChecked, fromRead, pedalCallOn, readCount, summaryFor, type CheckedFacts } from "@/lib/provenance";
 import { evaluate, MAX_AGE_INPUT, MIN_AGE_INPUT, STATE_CODES } from "@/lib/rules";
 import { localToday } from "@/lib/rules/dates";
-import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId, type ReadField } from "@/lib/rules/types";
+import { emptyFacts, type BikeFacts, type PlaceId, type QuestionId } from "@/lib/rules/types";
 import { formatDate, placeHint, placeName, stateName, type Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
 import { linkedPickIds, linkedWhere, pickLabels, SD_COUNTY_NAMES, withLinkedPicks, type PickLabels } from "@/lib/places/linked";
@@ -149,7 +149,7 @@ export function Checker() {
   const [linkPicksOpen, setLinkPicksOpen] = useState(initial.pickIds.length > 0);
   const campusId = useId();
   // The facts and where each came from change together. Nothing here is saved, so a reload or a
-  // shared link starts with no facts and nothing checked.
+  // shared link starts with no facts.
   const [bike, setBike] = useState<CheckedFacts>(emptyChecked);
   const facts = bike.facts;
   const [evidence, setEvidence] = useState<Partial<Record<FactKey, Ev[]>>>({});
@@ -163,7 +163,7 @@ export function Checker() {
   // each read started from, so a read that lands late takes focus only from that control.
   const [readGate] = useState(() => focusGate(() => document.activeElement));
   // How many facts the last read gave, for the status line a screen reader hears. Null clears it.
-  // It is cleared once the family edits or ticks a fact, or switches the language, so it is never
+  // It is cleared once the family edits a fact, or switches the language, so it is never
   // drawn again in the other language and read out long after it was true.
   const [readNote, setReadNote] = useState<number | null>(null);
   // Set by a read that gave facts, so focus moves to the new facts card once it is on the page.
@@ -174,7 +174,7 @@ export function Checker() {
   }, [lang]);
 
   // After a read, keyboard and screen reader focus moves to the heading of the new facts card, so
-  // the family lands on the marked facts instead of staying on the button they pressed. A family
+  // the family lands on the read facts instead of staying on the button they pressed. A family
   // who moved on to another control while the label or link was read keeps their place.
   useEffect(() => {
     if (!focusFacts.current) return;
@@ -198,8 +198,8 @@ export function Checker() {
     bikeRef.current?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }, [starts]);
 
-  // A bike sent from the bike finder comes in as read from its maker's page, every fact not
-  // checked, the same as a product link. The catalog loads only for such a link.
+  // A bike sent from the bike finder comes in as read from its maker's page, the same as a
+  // product link. The catalog loads only for such a link.
   useEffect(() => {
     if (!initial.bike) return;
     let live = true;
@@ -285,11 +285,7 @@ export function Checker() {
   const unchecked = notChecked.filter((p) => p.kind !== "district").map((p) => uncheckedName(p, labels[p.id]?.[lang], lang));
   const uncheckedDistricts = notChecked.filter((p) => p.kind === "district").map((p) => p.name);
 
-  // Every fact read from a link or photo that the family hasn't checked keeps the answer from a YES.
-  // Worked out on every draw from the checks on screen, so no list kept from an earlier draw can reach it.
-  const summary = summaryFor(result, date, bike.checks);
-  // The same unchecked facts hold every allowed place card back from a YES too.
-  const unconfirmed = unconfirmedFields(bike.checks);
+  const summary = summaryFor(result, date);
 
   const pending: QuestionId[] = result
     ? [...new Set([...result.state.questions, ...result.local.flatMap((v) => v.questions)])]
@@ -319,39 +315,27 @@ export function Checker() {
   }
 
   /**
-   * A change the family makes by hand. A read fact they change or answer counts as checked. The
-   * change was built from the facts on screen, so it is dropped if a link, label or photo call
-   * replaced them first (editOn in lib/provenance.ts).
+   * A change the family makes by hand. The change was built from the facts on screen, so it is
+   * dropped if a link, label or photo call replaced them first (editOn in lib/provenance.ts).
    */
-  function editFacts(next: BikeFacts, answered?: readonly ReadField[]) {
+  function editFacts(next: BikeFacts) {
     answerFocus.current = typeof document === "undefined" ? null : document.activeElement;
     setReadNote(null);
-    setBike(editOn(facts, next, answered));
+    setBike(editOn(facts, next));
   }
 
-  /** A tick on a read fact, dropped the same way if the facts on screen were replaced first. */
-  function confirmFact(field: ReadField, confirmed: boolean) {
-    setReadNote(null);
-    setBike(confirmOn(facts, field, confirmed));
-  }
-
-  /**
-   * Takes the family back to the facts card. Keyboard focus goes to the first read fact still to
-   * be ticked, or to the card's heading, so a screen reader user lands where the next step is.
-   */
+  /** Takes the family back to the facts card. Keyboard focus goes to the card's heading. */
   function goToFacts() {
     requestAnimationFrame(() => {
       const card = factsRef.current;
       if (!card) return;
-      const box = card.querySelector<HTMLInputElement>('input[data-read-check="unchecked"]');
-      const target = box ?? card.querySelector<HTMLElement>("h2");
-      (box ?? card).scrollIntoView({ behavior: scrollBehavior(), block: box ? "center" : "start" });
-      target?.focus({ preventScroll: true });
+      card.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+      card.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
     });
   }
 
   function handleRead(extraction: Extraction) {
-    // A new link, pasted text or label photo is a new bike. Every value it gives comes in not checked.
+    // A new link, pasted text or label photo is a new bike.
     const next = fromRead(factsFromExtraction(extraction, emptyFacts()), "text");
     setBike(next);
     setEvidence(extraction.evidence);
@@ -362,7 +346,7 @@ export function Checker() {
     // The status line lives here, outside the card, so it is already on the page when it changes
     // and a screen reader reads it out. It is cleared first, so a second read with the same count
     // is read out again.
-    const total = checkCounts(next.checks).read;
+    const total = readCount(next.checks);
     focusFacts.current = total > 0;
     setReadNote(null);
     if (total > 0) requestAnimationFrame(() => setReadNote(total));
@@ -634,7 +618,6 @@ export function Checker() {
             evidence={evidence}
             flags={flags}
             onChange={editFacts}
-            onConfirm={confirmFact}
             onPedalCall={(call) => setBike(pedalCallOn(facts, call))}
             onCheck={handleCheck}
           />
@@ -660,9 +643,9 @@ export function Checker() {
                 <h3 key="by-place" className="section-label">
                   {t(lang, "byPlace")}
                 </h3>,
-                <VerdictCard key={`card-${result.state.id}`} verdict={result.state} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} showLocalNotice={result.localNotice} />,
+                <VerdictCard key={`card-${result.state.id}`} verdict={result.state} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} showLocalNotice={result.localNotice} />,
                 ...result.local.map((v) => (
-                  <VerdictCard key={`card-${v.id}`} verdict={v} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} unconfirmed={unconfirmed} />
+                  <VerdictCard key={`card-${v.id}`} verdict={v} lang={lang} stateCode={stateCode} rideDate={summary?.rideDate ?? today} />
                 )),
               ];
               return questionsFirst ? [questionsCard, ...answer] : [...answer, questionsCard];
@@ -679,7 +662,7 @@ export function Checker() {
         {result ? (
           <div className="actions no-print">
             <button type="button" className="btn btn-quiet" onClick={goToFacts}>
-              {t(lang, checkCounts(bike.checks).read > 0 ? "editFacts" : "editFactsTyped")}
+              {t(lang, readCount(bike.checks) > 0 ? "editFacts" : "editFactsTyped")}
             </button>
             <button
               type="button"

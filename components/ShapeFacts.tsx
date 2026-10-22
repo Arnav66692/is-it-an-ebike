@@ -1,8 +1,8 @@
 "use client";
 
 // Wheels, number of wheels, weight and foot pegs, as read from a label or listing. Several state
-// rules turn on these alone, so a value read from the text is always shown with its source, marked
-// until the family checks it, and can be changed. Nothing here is hidden from the family.
+// rules turn on these alone, so a value read from the text is always shown with the words it was
+// read from, and can be changed. Nothing here is hidden from the family.
 
 import { useState } from "react";
 import {
@@ -17,12 +17,12 @@ import {
   withWheelSize,
 } from "@/lib/checkerState";
 import type { Evidence as Ev, FactKey } from "@/lib/extract/parse";
-import { wheelsLeftAsRead, type FactCheck, type FactChecks } from "@/lib/provenance";
+import type { FactChecks } from "@/lib/provenance";
 import type { BikeFacts, ReadField } from "@/lib/rules/types";
 import type { Lang } from "@/lib/i18n/names";
-import { t, type UiKey } from "@/lib/i18n/ui";
+import { t } from "@/lib/i18n/ui";
 import { Choice, NumberField, triValue } from "./controls";
-import { ReadNote, type OnConfirm } from "./ReadCheck";
+import { ReadNote } from "./ReadCheck";
 
 interface Props {
   lang: Lang;
@@ -30,17 +30,6 @@ interface Props {
   checks: FactChecks;
   evidence: Partial<Record<FactKey, Ev[]>>;
   onChange: (next: BikeFacts) => void;
-  onConfirm: OnConfirm;
-}
-
-/**
- * The words next to the wheel size box when the card shows Front and Rear boxes. They name the
- * sizes the box still covers, so once the family changed one size the box no longer claims both.
- */
-export function wheelMatchesKey(check: FactCheck | undefined, facts: BikeFacts): UiKey {
-  const left = check ? wheelsLeftAsRead(check, facts) : [];
-  if (left.length === 1) return left[0] === "front" ? "readMatchesFront" : "readMatchesRear";
-  return "readMatchesBoth";
 }
 
 /** True when the text gave any of these facts, or the facts already hold one. */
@@ -56,7 +45,7 @@ export function hasShapeFacts(facts: BikeFacts, evidence: Partial<Record<FactKey
   );
 }
 
-export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm }: Props) {
+export function ShapeFacts({ lang, facts, checks, evidence, onChange }: Props) {
   // Front and Rear boxes, once shown, stay until a new read draws a new card, so the box being
   // typed in is never removed mid-number (twoWheelBoxes in lib/checkerState.ts).
   const [split, setSplit] = useState(() => twoWheelBoxes(false, facts));
@@ -66,9 +55,7 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
   // the same "not sure" the follow-up stores.
   const pegsUi = triValue(facts.hasFootPegs) ?? (facts.unsure.includes("pegs_kit") ? "unsure" : null);
 
-  const ev = (key: ReadField, matchesKey?: UiKey) => (
-    <ReadNote lang={lang} field={key} check={checks[key]} onConfirm={onConfirm} evidence={evidence[key]} matchesKey={matchesKey} />
-  );
+  const ev = (key: ReadField) => <ReadNote lang={lang} field={key} facts={facts} check={checks[key]} evidence={evidence[key]} />;
   const wheelError = t(lang, "rangeError", { min: WHEEL_MIN_IN, max: WHEEL_MAX_IN });
   const wheelField = (label: string, value: number | null, set: (v: number | null) => void, withEvidence: boolean) => (
     <NumberField
@@ -93,8 +80,8 @@ export function ShapeFacts({ lang, facts, checks, evidence, onChange, onConfirm 
           <>
             {wheelField(t(lang, "front"), facts.wheelFrontIn, (v) => onChange(withWheelSize(facts, v, false)), false)}
             {wheelField(t(lang, "rear"), facts.wheelRearIn, (v) => onChange({ ...facts, wheelRearIn: v }), false)}
-            {/* Both sizes share one check, so its words and its box sit under both boxes and say which sizes it covers. */}
-            <div className="space-y-1 sm:col-span-2">{ev("wheelSize", wheelMatchesKey(checks.wheelSize, facts))}</div>
+            {/* Both sizes were read from one place in the text, so its words sit under both boxes. */}
+            <div className="space-y-1 sm:col-span-2">{ev("wheelSize")}</div>
           </>
         ) : (
           wheelField(t(lang, "wheelSizeIn"), facts.wheelFrontIn, (v) => onChange(withWheelSize(facts, v, true)), true)
