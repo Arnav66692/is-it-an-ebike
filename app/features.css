@@ -192,7 +192,25 @@ a.brand-mark::after {
 
 /* ---------- Map of racks and shops ---------- */
 
+/* Icons for the buttons on the map. Black strokes, used only as mask images. */
+:root {
+  --icon-locate: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='4.25' fill='none' stroke='black' stroke-width='1.5'/%3E%3Ccircle cx='8' cy='8' r='1.5' fill='black'/%3E%3Cpath d='M8 .75v3M8 12.25v3M.75 8h3M12.25 8h3' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E");
+  --icon-recenter: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1.75 5.5V1.75H5.5M10.5 1.75h3.75V5.5M14.25 10.5v3.75H10.5M5.5 14.25H1.75V10.5' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='square'/%3E%3Crect x='6' y='6' width='4' height='4' fill='black'/%3E%3C/svg%3E");
+}
+
+/* On a wide screen the map page runs wider than the reading column, so the map and the list sit side by side. */
+@media (min-width: 1024px) {
+  .page-map > *:not(.sr-only):not(.hero),
+  .page-map > .hero > * {
+    width: min(72rem, calc(100% - 3rem));
+  }
+}
+
 /* The place box and its button on one row, the button under the box on a narrow phone. */
+.map-find > * + * {
+  margin-top: 1rem;
+}
+
 .map-search {
   display: flex;
   flex-wrap: wrap;
@@ -206,16 +224,6 @@ a.brand-mark::after {
 
 .map-search > .btn {
   flex: 0 0 auto;
-}
-
-.map-locate {
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-  .map-locate {
-    width: auto;
-  }
 }
 
 /* Places that match a search, each a full-width row at least 44 px tall. */
@@ -251,8 +259,103 @@ a.brand-mark::after {
   gap: 0.75rem;
 }
 
-.map-status {
+/* A phone gets the map from edge to edge. The chips, the list and the notes keep the 16 px gutter. */
+@media (max-width: 639px) {
+  .page-map > .map-block {
+    width: 100%;
+  }
+
+  .map-block > :not(.map-main):not(.sr-only),
+  .map-main > .map-near {
+    margin-inline: 1rem;
+  }
+}
+
+/* ---------- Filter chips ---------- */
+
+.map-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* A chip that is on has a solid edge and its mark in color. One that is off has a dashed edge and a gray mark. */
+.map-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+  padding: 0 0.375rem 0 0.25rem;
+  border: 1px solid var(--field-line);
+  border-radius: var(--r-ctl);
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition:
+    border-color 120ms var(--ease),
+    background-color 120ms var(--ease),
+    color 120ms var(--ease);
+}
+
+.map-chip:hover {
+  border-color: var(--ink);
+}
+
+/* The mark's own box is mostly air, so it tucks into the chip's padding. */
+.map-chip-pin svg {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin-inline: -3px;
+}
+
+@media (min-width: 640px) {
+  .map-chip {
+    padding: 0 0.5rem 0 0.375rem;
+    font-size: 0.8125rem;
+  }
+}
+
+.map-chip-count {
+  min-width: 1.375rem;
+  margin-left: 0.125rem;
+  padding: 0 0.25rem;
+  border-radius: var(--r-ctl);
+  background: var(--sunk);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5rem;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.map-chip[aria-pressed="false"] {
+  border-style: dashed;
+  background: transparent;
+  color: var(--muted);
+}
+
+.map-chip[aria-pressed="false"] .map-chip-pin {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+/* ---------- The map and the list ---------- */
+
+.map-main {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .map-main {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    align-items: stretch;
+  }
 }
 
 /* Leaflet's own rules are matched with .map-canvas.leaflet-container, so these win whatever order the two style sheets load in. */
@@ -262,12 +365,21 @@ a.brand-mark::after {
   position: relative;
   z-index: 0;
   isolation: isolate;
-  height: min(62vh, 560px);
+  height: 62vh;
+  height: 62svh;
   min-height: 320px;
+  max-height: 720px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-panel);
   overflow: hidden;
   background: var(--sunk);
+}
+
+@media (max-width: 639px) {
+  .map-frame {
+    border-inline: 0;
+    border-radius: 0;
+  }
 }
 
 .map-canvas.leaflet-container {
@@ -282,15 +394,75 @@ a.brand-mark::after {
   outline-offset: -2px;
 }
 
+/* In the dark theme the tiles are inverted and dimmed, so the map doesn't glare. The marks sit in their own pane and keep their colors. */
+@media (prefers-color-scheme: dark) {
+  .map-canvas.leaflet-container .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.55);
+  }
+}
+
 /* A divIcon's own box is drawn by the SVG inside it. */
 .leaflet-div-icon.map-pin,
-.map-pin {
+.map-pin,
+.leaflet-div-icon.map-cluster {
   border: 0;
   background: transparent;
 }
 
 .map-pin svg {
+  position: relative;
   display: block;
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.35));
+}
+
+/* The picked mark: a square accent frame behind it, and the mark a little bigger. */
+.map-pin.is-picked::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border: 2px solid var(--accent-solid);
+  border-radius: var(--r-ctl);
+  background: color-mix(in srgb, var(--accent-solid) 20%, transparent);
+}
+
+.map-pin.is-picked svg {
+  transform: scale(1.15);
+}
+
+/* A bubble for marks that crowd together: a square with the count, in the main button colors. */
+.map-cluster span {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--card);
+  border-radius: var(--r-ctl);
+  background: var(--primary);
+  box-shadow:
+    0 0 0 1px var(--primary),
+    0 2px 6px rgb(0 0 0 / 0.3);
+  color: var(--primary-ink);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 120ms var(--ease);
+}
+
+.map-cluster-m span {
+  font-size: 0.9375rem;
+}
+
+.map-cluster-l span {
+  font-size: 1rem;
+}
+
+.map-cluster:hover span {
+  background: var(--accent-solid);
+  box-shadow:
+    0 0 0 1px var(--accent-solid),
+    0 2px 6px rgb(0 0 0 / 0.3);
+  color: var(--accent-solid-ink);
 }
 
 /* Zoom buttons as square mono controls, 44 px. */
@@ -331,6 +503,208 @@ a.brand-mark::after {
   color: var(--accent);
 }
 
+/* ---------- Buttons and cards floating on the map ---------- */
+
+/* Above Leaflet's panes and popups, level with its zoom buttons. */
+.map-float,
+.map-ctls,
+.map-state {
+  position: absolute;
+  z-index: 1000;
+}
+
+.map-float {
+  top: 0.625rem;
+  left: 50%;
+  max-width: calc(100% - 8.5rem);
+  transform: translateX(-50%);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.map-search-area {
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--primary);
+  border-radius: var(--r-ctl);
+  background: var(--primary);
+  box-shadow: var(--shadow-pop);
+  color: var(--primary-ink);
+  transition: background-color 120ms var(--ease);
+}
+
+.map-search-area:hover {
+  background: var(--primary-hover);
+}
+
+.map-search-area:focus-visible {
+  outline-offset: 3px;
+}
+
+.map-zoom-hint {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-ctl);
+  background: var(--card);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* My location and recenter: one square bar at the top right, icons only on a phone. */
+.map-ctls {
+  top: 0.625rem;
+  right: 0.625rem;
+  display: grid;
+  border: 1px solid var(--field-line);
+  border-radius: var(--r-ctl);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.map-ctl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.map-ctl + .map-ctl {
+  border-top: 1px solid var(--line-strong);
+}
+
+.map-ctl:hover {
+  background: var(--sunk);
+}
+
+.map-ctl:focus-visible {
+  outline-offset: -3px;
+}
+
+.map-ctl-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+}
+
+.map-ctl-locate {
+  -webkit-mask: var(--icon-locate) center / contain no-repeat;
+  mask: var(--icon-locate) center / contain no-repeat;
+}
+
+.map-ctl-recenter {
+  -webkit-mask: var(--icon-recenter) center / contain no-repeat;
+  mask: var(--icon-recenter) center / contain no-repeat;
+}
+
+@media (max-width: 767px) {
+  .map-ctl {
+    width: 44px;
+    padding: 0;
+  }
+
+  .map-ctl-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 768px) {
+  .map-ctl {
+    justify-content: flex-start;
+  }
+
+  .map-float {
+    max-width: calc(100% - 22rem);
+  }
+}
+
+/* The empty, loading and busy card. Empty sits in the middle of the map, the others near the bottom. */
+.map-state {
+  left: 50%;
+  bottom: 2rem;
+  display: grid;
+  gap: 0.625rem;
+  width: min(22rem, calc(100% - 2rem));
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-panel);
+  background: var(--card);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+  transform: translateX(-50%);
+}
+
+.map-state[data-tone="empty"] {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+}
+
+.map-state p {
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.map-state[data-tone="busy"] {
+  border-left: 3px solid var(--no-solid);
+}
+
+.map-retry {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+}
+
+/* A thin bar that slides while the data loads. It holds still when the rider asked for less motion. */
+.map-state-bar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.map-state-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 35%;
+  background: var(--accent-solid);
+  animation: map-load 1.2s var(--ease) infinite;
+}
+
+@keyframes map-load {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+/* ---------- Popups and spot details ---------- */
+
 /* Popups take the page's card colors in both themes. */
 .map-canvas.leaflet-container .leaflet-popup-content-wrapper,
 .map-canvas.leaflet-container .leaflet-popup-tip {
@@ -361,55 +735,92 @@ a.brand-mark::after {
   color: var(--ink);
 }
 
-.spot-pop {
-  display: grid;
-  gap: 0.25rem;
-  min-width: 12rem;
-}
-
-.map-canvas.leaflet-container .spot-pop p {
+.map-canvas.leaflet-container .spot-card p {
   margin: 0;
 }
 
-/* What one rack or shop is: the kind as a mono label, then its name. */
-.spot-kind {
+.spot-card {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.spot-head {
+  display: grid;
+  justify-items: start;
+  gap: 0.375rem;
+}
+
+.spot-name {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+/* The kind as a small square tag, with a dot in its mark's color. */
+.spot-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.4375rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-ctl);
   color: var(--muted);
   font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.spot-name {
-  font-weight: 600;
-  overflow-wrap: anywhere;
+.spot-type::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
 }
 
-.spot-warn {
-  color: var(--maybe);
-  font-weight: 500;
+.spot-type-rack::before {
+  background: #2433ff;
 }
 
-.spot-tags {
+.spot-type-repair::before {
+  background: #0f7a3a;
+}
+
+/* Facts as two columns: a mono label, then the value. */
+.spot-facts {
   display: grid;
-  gap: 0.125rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.25rem 0.875rem;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
-.spot-tags > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 0.5rem;
+.spot-facts > div {
+  display: contents;
+}
+
+.spot-facts dt {
+  align-self: center;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.spot-facts dd {
+  align-self: center;
+  margin: 0;
   overflow-wrap: anywhere;
 }
 
-.spot-tags dt {
-  color: var(--muted);
-}
-
-.spot-tags a,
-.spot-open,
-.map-canvas.leaflet-container .spot-tags a,
-.map-canvas.leaflet-container .spot-open {
+.spot-facts a,
+.map-canvas.leaflet-container .spot-facts a {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
@@ -419,56 +830,155 @@ a.brand-mark::after {
   text-underline-offset: 0.2em;
 }
 
+.spot-warn {
+  padding: 0.5rem 0.625rem;
+  border-left: 2px solid var(--maybe);
+  background: var(--maybe-bg);
+  color: var(--maybe);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Open in Maps as a square quiet button, with the leave-the-site arrow. */
+.btn.spot-open,
+.map-canvas.leaflet-container a.spot-open {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.875rem;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+
+.map-canvas.leaflet-container a.spot-open:hover {
+  color: var(--ink);
+}
+
 .spot-open::after {
   content: "";
   flex: none;
   width: 12px;
   height: 12px;
-  margin-left: 6px;
   background: currentColor;
   -webkit-mask: var(--icon-ext) center / contain no-repeat;
   mask: var(--icon-ext) center / contain no-repeat;
 }
 
-/* The map key, one row of marks and their names. */
-.map-legend ul {
+/* ---------- The nearest list ---------- */
+
+.map-near {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1.25rem;
-  margin-top: 0.25rem;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  background: var(--card);
 }
 
-.map-legend li {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.125rem;
+.map-near-title {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.map-legend-pin svg {
-  display: block;
-  width: 32px;
-  height: 32px;
+/* The list scrolls in its own box, so a picked mark can bring its row into sight without moving the page. */
+.map-near-box {
+  position: relative;
+  max-height: 24rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-/* The nearest spots, one row each, split by hairlines. */
+@media (min-width: 1024px) {
+  .map-near {
+    height: 62vh;
+    height: 62svh;
+    min-height: 320px;
+    max-height: 720px;
+  }
+
+  .map-near-box {
+    flex: 1 1 auto;
+    max-height: none;
+  }
+}
+
+.map-near-empty {
+  padding: 1rem;
+}
+
 .map-list {
   display: grid;
-}
-
-.map-row {
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.875rem 0;
 }
 
 .map-row + .map-row {
   border-top: 1px solid var(--line);
 }
 
-.map-row > p {
-  margin: 0;
+.map-row[data-picked] {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent-solid);
 }
 
-.map-show {
-  justify-self: start;
+.map-row-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.375rem 1rem 0.375rem 0.375rem;
+  color: var(--ink);
+  text-align: left;
+}
+
+.map-row-pick:hover {
+  background: var(--sunk);
+}
+
+.map-row[data-picked] .map-row-pick:hover {
+  background: transparent;
+}
+
+.map-row-pick:focus-visible {
+  outline-offset: -2px;
+}
+
+.map-row-pin svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.map-row-text {
+  display: grid;
+  min-width: 0;
+}
+
+.map-row-name {
+  font-weight: 500;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.map-row-meta {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.map-row-details {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 1rem 0.875rem 2.875rem;
+}
+
+.map-note {
+  font-size: 0.875rem;
 }
