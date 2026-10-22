@@ -35,7 +35,9 @@ export interface MapCommand {
 }
 
 const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+/** Map tiles and racks come from OpenStreetMap (ODbL), and many shops from Overture Maps (CDLA Permissive 2.0). */
+const ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://docs.overturemaps.org/attribution/">Overture Maps Foundation</a>';
 const MAX_ZOOM = 19;
 const FLY_SECONDS = 0.6;
 /** An opened popup stays below the zoom buttons, the search button and the control bar. */

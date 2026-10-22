@@ -1,8 +1,9 @@
 "use client";
 
 // The map of bike racks, bike shops and repair stations. The rider picks where to look, by place
-// name or by their own location, and the page asks our own server, which asks OpenStreetMap's
-// Overpass servers, for what is in view. After that first look the page waits for "Search this
+// name or by their own location, and the page reads the saved state files for what is in view.
+// Only where no file is saved does it ask our own server, which asks OpenStreetMap's Overpass
+// servers. After that first look the page waits for "Search this
 // area", so a pan never fires a request on its own. Chips above the map show or hide each kind,
 // and a list beside it names the nearest ones, so the page works without seeing the map. Nothing
 // the rider types or where they are is stored.

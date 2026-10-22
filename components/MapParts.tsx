@@ -5,7 +5,7 @@
 
 import { useEffect, useId, useRef } from "react";
 import type { Lang } from "@/lib/i18n/names";
-import { kindText, mapText } from "@/lib/i18n/map";
+import { mapText, spotKindText } from "@/lib/i18n/map";
 import type { ChipCount } from "@/lib/map/mapState";
 import { formatDistance, type NearSpot, type Spot, type SpotKind } from "@/lib/map/osm";
 import { pinSvg } from "@/lib/map/pins";
@@ -123,7 +123,7 @@ export function NearestList({ lang, rows, selectedId, onPick }: ListProps) {
                     <span className="map-row-text">
                       <span className="map-row-name">{spotTitle(spot, lang)}</span>
                       <span className="map-row-meta">
-                        {spot.name ? `${kindText(lang, spot.kind)}, ` : ""}
+                        {spot.name ? `${spotKindText(lang, spot)}, ` : ""}
                         {formatDistance(meters)}
                       </span>
                     </span>
