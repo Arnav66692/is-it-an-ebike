@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-22T16:47:22.486Z",
-  "commit": "ae3a0ce",
+  "generated_at": "2026-10-22T17:33:44.806Z",
+  "commit": "b2daed7",
   "engine": {
     "states": 51,
     "san_diego_places": 20,
@@ -44,39 +44,11 @@
   },
   "bottom_line": {
     "cases": 1003920,
-    "bottom_lines": 4015680,
     "by_kind": {
       "yes": 71914,
       "no_illegal": 306244,
       "no_unconfirmed": 625762
     },
-    "by_read": {
-      "typed": {
-        "yes": 71914,
-        "no_illegal": 306244,
-        "no_unconfirmed": 625762
-      },
-      "read_none_checked": {
-        "yes": 0,
-        "no_illegal": 306244,
-        "no_unconfirmed": 697676
-      },
-      "read_one_unchecked": {
-        "yes": 0,
-        "no_illegal": 306244,
-        "no_unconfirmed": 697676
-      },
-      "read_all_checked": {
-        "yes": 71914,
-        "no_illegal": 306244,
-        "no_unconfirmed": 625762
-      }
-    },
-    "unchecked_yes": 0,
-    "facts_not_named": 0,
-    "illegal_changed": 0,
-    "facts_not_shown": 0,
-    "facts_cards": 64,
     "false_yes": 0,
     "missed_yes": 0,
     "false_illegal": 0,
@@ -85,9 +57,9 @@
     "missing_caveat": 0,
     "rendered_cards": 273,
     "hedged": 0,
-    "answer_cards": 644,
+    "answer_cards": 391,
     "card_yes_under_no": 0,
-    "place_cards": 3797
+    "place_cards": 1908
   },
   "features": {
     "districts": {
@@ -118,13 +90,12 @@
       "rides": 62640,
       "yes": 13022,
       "yes_engine_refuses": 0,
-      "yes_without_pedals": 0,
-      "yes_before_checked": 0
+      "yes_without_pedals": 0
     }
   },
   "tests": {
-    "total": 1094,
-    "passed": 1094,
+    "total": 1032,
+    "passed": 1032,
     "failed": 0
   },
   "pilot": {
