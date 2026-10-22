@@ -27,7 +27,7 @@ import { ACCURACY_TEXT } from "@/lib/i18n/accuracy";
 import type { Lang } from "@/lib/i18n/names";
 import { t } from "@/lib/i18n/ui";
 import { pickLabels } from "@/lib/places/linked";
-import { fromRead, unconfirmedFields, withConfirmed } from "@/lib/provenance";
+import { fromRead } from "@/lib/provenance";
 import { parsePlaceIndex } from "@/lib/places/parse";
 import { searchPlaces } from "@/lib/places/search";
 import type { PlaceEntry, PlaceIndexFile } from "@/lib/places/types";
@@ -282,7 +282,7 @@ describe("the accuracy page and the flyer", () => {
 
   it("describe the test rides without the old Somewhere else choice", () => {
     for (const lang of ["en", "es"] as const) {
-      const text = ACCURACY_TEXT[lang].blCases("1", "4");
+      const text = ACCURACY_TEXT[lang].blCases("1");
       expect(text).not.toMatch(/Somewhere else|Otro lugar/);
     }
   });
@@ -295,19 +295,16 @@ describe("the accuracy page and the flyer", () => {
   });
 });
 
-describe("the Check bar's count", () => {
-  it("is one short line, and turns green with a mark once every read fact is checked", () => {
+describe("the Check bar", () => {
+  it("holds only the Check button, with no count of checked facts", () => {
     const facts = classBike(1);
     const read = fromRead(facts, "text");
-    const all = unconfirmedFields(read.checks).reduce((b, f) => withConfirmed(b, f, true), read);
-    const props = { facts, evidence: {}, flags: [], onChange: () => {}, onConfirm: () => {}, onPedalCall: () => {}, onCheck: () => {} };
-    const half = renderToStaticMarkup(createElement(FactsCard, { ...props, lang: "en", checks: read.checks }));
-    expect(half).toMatch(/<p class="check-count" data-done="false">0 of \d+ read facts checked<\/p>/);
-    expect(half).toContain('data-sticky="true"');
+    const props = { facts, evidence: {}, flags: [], onChange: () => {}, onPedalCall: () => {}, onCheck: () => {} };
     for (const lang of ["en", "es"] as const) {
-      const done = renderToStaticMarkup(createElement(FactsCard, { ...props, lang, checks: all.checks }));
-      const n = unconfirmedFields(read.checks).length;
-      expect(done).toContain(`<p class="check-count" data-done="true">✓ ${t(lang, "readCountShort", { done: n, total: n })}</p>`);
+      const html = renderToStaticMarkup(createElement(FactsCard, { ...props, lang, checks: read.checks }));
+      expect(html).toContain('data-sticky="true"');
+      expect(html).not.toContain("check-count");
+      expect(html).toContain(t(lang, "check"));
     }
   });
 });

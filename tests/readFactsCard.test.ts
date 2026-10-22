@@ -1,33 +1,27 @@
-// The facts card marks each fact read from a link or photo with a box to tick, the bottom-line
-// card names what is left to check, and nothing carries a check over to a reload or shared link.
+// The facts card shows each fact read from a link or photo with the words it was read from, and no
+// box to tick. Nothing carries a read over to a reload or a shared link.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { announcement, BottomLineCard, subtitleKey, whereLabel } from "@/components/BottomLineCard";
 import { FactsCard } from "@/components/FactsCard";
 import { photoCheckMessage } from "@/components/PedalPhotoCheck";
-import { answerGate, confirmThroughGate, type AnswerGate, type PedalCall } from "@/lib/photo/pedalRule";
+import { answerGate, type PedalCall } from "@/lib/photo/pedalRule";
 import { parseShareLink } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText } from "@/lib/extract/parse";
-import { emptyChecked, fromRead, unconfirmedFields, withConfirmed, withEdit, withPedalCall, type CheckedFacts } from "@/lib/provenance";
-import { evaluate } from "@/lib/rules";
-import { bottomLine } from "@/lib/rules/bottomLine";
-import { emptyFacts, type ReadField } from "@/lib/rules/types";
-import { t } from "@/lib/i18n/ui";
-import { READ_FIELD_NAMES, renderLine } from "@/lib/i18n/verdicts";
+import { editOn, emptyChecked, fromRead, withPedalCall, type CheckedFacts } from "@/lib/provenance";
+import { emptyFacts } from "@/lib/rules/types";
+import { t, UI_KEYS } from "@/lib/i18n/ui";
 import { classBike } from "./helpers";
-
-const DAY = "2026-10-19";
 
 /** A listing for a plain Class 2 kids' e-bike, the kind a family pastes in. */
 const CLASS_2_LISTING =
   "Class 2 electric bike with pedals. 500W rated motor. Thumb throttle up to 20 mph. Pedal assist up to 20 mph. 20 x 4.0 tires. Weight 62 lbs with battery.";
 
-/** How many times `text` is shown, not counting a copy kept hidden to hold the mark's height. */
+/** How many times `text` is shown as a mark's words. */
 function shown(html: string, text: string): number {
   return html.split(`<span>${text}</span>`).length - 1;
 }
@@ -36,167 +30,117 @@ function read(text: string): CheckedFacts {
   return fromRead(factsFromExtraction(parseSpecText(text, "listing"), emptyFacts()));
 }
 
-describe("the words a family reads", () => {
-  it("quotes the card's own words, so the family can find the box and the card", () => {
-    for (const lang of ["en", "es"] as const) {
-      const text = renderLine({ code: "bl_unconfirmed_facts", params: { fields: "classes" } }, lang, "California");
-      expect(text).toContain(`"${t(lang, "readMatches")}"`);
-      expect(text).toContain(`"${t(lang, "step3")}"`);
-    }
-  });
+const EVIDENCE = parseSpecText(CLASS_2_LISTING, "listing").evidence;
 
-  it("labels the facts item and says the next step is on the facts card, in both languages", () => {
-    const result = evaluate({ state: "CA", riderAge: 11, rideDate: DAY, facts: classBike(2), places: ["encinitas"] });
-    const bl = bottomLine(result, DAY, ["classes", "ratedWatts"]);
-    expect(subtitleKey(bl)).toBe("blFactsSub");
-    expect(whereLabel([], "en", "CA")).toBe("The facts we read");
-    expect(whereLabel([], "es", "CA")).toBe("Los datos que leímos");
-    for (const lang of ["en", "es"] as const) {
-      const html = renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: "CA" })).replace(/&#x27;/g, "'");
-      expect(html).toContain(t(lang, "blFactsWhere"));
-      expect(html).toContain(t(lang, "blFactsSub"));
-      expect(html).toContain(READ_FIELD_NAMES[lang].ratedWatts);
-      expect(html).not.toContain(">" + t(lang, "blYes") + "<");
-      expect(announcement(bl, lang)).toContain(t(lang, "blNo"));
-    }
-    // With another gap too, the usual line stays.
-    const campus = evaluate({ state: "CA", riderAge: 15, rideDate: DAY, facts: classBike(1), places: ["sduhsd_campuses"] });
-    expect(subtitleKey(bottomLine(campus, DAY, ["classes"]))).toBe("blUnconfirmedSub");
-  });
+function render(b: CheckedFacts, lang: "en" | "es", evidence = EVIDENCE): string {
+  return renderToStaticMarkup(
+    createElement(FactsCard, {
+      lang,
+      facts: b.facts,
+      checks: b.checks,
+      evidence,
+      flags: [],
+      onChange: () => undefined,
+      onPedalCall: () => undefined,
+      onCheck: () => undefined,
+    }),
+  )
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'");
+}
 
-  it("marks each read fact on the facts card with a box to tick, in both languages", () => {
+describe("the facts card", () => {
+  it("marks each read fact with where it was read and quotes the words, with no box to tick, in both languages", () => {
     const bike = read(CLASS_2_LISTING);
-    const e = parseSpecText(CLASS_2_LISTING, "listing");
-    const render = (b: CheckedFacts, lang: "en" | "es") =>
-      renderToStaticMarkup(
-        createElement(FactsCard, {
-          lang,
-          facts: b.facts,
-          checks: b.checks,
-          evidence: e.evidence,
-          flags: [],
-          onChange: () => undefined,
-          onConfirm: () => undefined,
-          onPedalCall: () => undefined,
-          onCheck: () => undefined,
-        }),
-      ).replace(/&quot;/g, '"').replace(/&#x27;/g, "'");
     for (const lang of ["en", "es"] as const) {
       const html = render(bike, lang);
       expect(shown(html, t(lang, "readMarkText")), lang).toBe(8);
-      expect(html.split('data-read-mark="unchecked"').length - 1, lang).toBe(8);
-      expect(html.match(/type="checkbox"[^>]*aria-label="[^"]*"/g)?.filter((m) => m.includes(t(lang, "readMatches"))).length, lang).toBe(8);
-      for (const f of unconfirmedFields(bike.checks)) {
-        expect(html, `${lang} ${f}`).toContain(`aria-label="${t(lang, "readMatchesFor", { field: READ_FIELD_NAMES[lang][f] })}"`);
-      }
-      expect(html, lang).not.toContain('class="read-intro"');
-      expect(html).toContain(t(lang, "readCount", { done: 0, total: 8 }));
+      expect(html.split('data-read-mark="text"').length - 1, lang).toBe(8);
+      expect(html.split('class="quote"').length - 1, lang).toBeGreaterThanOrEqual(8);
+      expect(html, lang).not.toMatch(/data-read-check|It matches the bike|Coincide con la bicicleta/);
+      expect(html, lang).not.toMatch(/check-count|class="segs"/);
+      // The Check button is still at the end of the card.
+      expect(html).toContain(t(lang, "check"));
     }
-    const checked = render(withConfirmed(bike, "classes", true), "en");
-    expect(shown(checked, t("en", "readMarkText"))).toBe(7);
-    expect(shown(checked, t("en", "readMarkChecked"))).toBe(1);
-    expect(checked).toContain(t("en", "readCount", { done: 1, total: 8 }));
-    const photo = render(withPedalCall(withEdit(emptyChecked(), { ...classBike(2), hasPedals: null }), "pedals"), "en");
-    expect(shown(photo, t("en", "readMarkPhoto"))).toBe(1);
-    expect(photo).not.toContain(t("en", "readMarkText"));
-    // Typed facts show no marks at all.
-    const typed = render(withEdit(emptyChecked(), classBike(2)), "en");
-    expect(typed).not.toContain(t("en", "readMarkText"));
-    expect(typed).not.toContain(t("en", "readMatches"));
   });
 
-  it("keeps the new interface text in Arnav's style", () => {
-    const keys = [
-      "readAnnounceOne",
-      "readAnnounceMany",
-      "readMarkText",
-      "readMarkChecked",
-      "readMatchesFront",
-      "readMatchesRear",
-      "photoCheckKeptTick",
-      "readMarkPhoto",
-      "readMatches",
-      "readMatchesFor",
-      "readMatchesBoth",
-      "readTheirs",
-      "readFromBefore",
-      "readCount",
-      "blFactsSub",
-      "blFactsWhere",
-      "photoCheckPedalsTick",
-      "photoCheckNoPedalsTick",
-      "unlock",
-    ] as const;
-    for (const key of keys) {
+  it("keeps the words a fact was read from, as Read from, once the family changes it", () => {
+    const bike = read(CLASS_2_LISTING);
+    const changed = editOn(bike.facts, { ...bike.facts, weightLb: 64 })(bike);
+    const html = render(changed, "en");
+    expect(shown(html, t("en", "readMarkText"))).toBe(7);
+    expect(html).toContain(t("en", "readFrom"));
+    expect(html).toContain("Weight 62 lbs");
+  });
+
+  it("marks a pedals answer from the photo check as read by the photo", () => {
+    const typed = editOn(emptyChecked().facts, { ...classBike(2), hasPedals: null })(emptyChecked());
+    const photo = render(withPedalCall(typed, "pedals"), "en", {});
+    expect(shown(photo, t("en", "readMarkPhoto"))).toBe(1);
+    expect(photo).not.toContain(t("en", "readMarkText"));
+  });
+
+  it("shows no marks for typed facts", () => {
+    const typed = render(editOn(emptyChecked().facts, classBike(2))(emptyChecked()), "en", {});
+    expect(typed).not.toContain(t("en", "readMarkText"));
+    expect(typed).not.toContain(t("en", "readMarkPhoto"));
+  });
+
+  it("keeps the read words in Arnav's style, and no text asks for a tick", () => {
+    for (const key of ["readAnnounceOne", "readAnnounceMany", "readMarkText", "readMarkPhoto", "readFromBefore", "unlock"] as const) {
       for (const lang of ["en", "es"] as const) expect(t(lang, key), `${lang}.${key}`).not.toMatch(/[—;:]/);
       expect(t("es", key), key).not.toBe(t("en", key));
     }
+    for (const key of UI_KEYS) {
+      for (const lang of ["en", "es"] as const) expect(t(lang, key), `${lang}.${key}`).not.toMatch(/"It matches the bike"|"Coincide con la bicicleta"|\btick\b/i);
+    }
   });
+});
 
-  it("never replaces a pedals answer picked while the check ran, and a pedals tick counts as that answer", async () => {
-    // The gate, the tick handler and the photo check's drop path, run together the way the card wires them.
-    const run = async (during: (gate: AnswerGate, confirm: (field: ReadField, confirmed: boolean) => void) => void) => {
+describe("the pedal photo check guard", () => {
+  it("never replaces a pedals answer picked while the check ran", async () => {
+    const run = async (pick: boolean) => {
       const gate = answerGate();
-      const ticks: [ReadField, boolean][] = [];
       const calls: PedalCall[] = [];
-      const confirm = confirmThroughGate(gate, (field, confirmed) => ticks.push([field, confirmed]));
       let finish: (v: { call: PedalCall }) => void = () => undefined;
       const pending = photoCheckMessage(
         () => new Promise((resolve) => (finish = resolve)),
         gate.start(),
         () => true,
         (call) => calls.push(call),
-        () => true,
       );
-      during(gate, confirm);
+      if (pick) gate.edited("picked");
       finish({ call: "no_pedals" });
-      return { message: await pending, calls, ticks };
+      return { message: await pending, calls };
     };
-    const picked = await run((gate) => gate.edited("picked"));
-    expect(picked).toEqual({ message: "photoCheckKept", calls: [], ticks: [] });
-    const ticked = await run((_, confirm) => confirm("hasPedals", true));
-    expect(ticked).toEqual({ message: "photoCheckKeptTick", calls: [], ticks: [["hasPedals", true]] });
-    const unticked = await run((_, confirm) => confirm("hasPedals", false));
-    expect(unticked.calls).toEqual([]);
-    // A pick counts over a tick for the words.
-    expect((await run((gate, confirm) => (confirm("hasPedals", true), gate.edited("picked")))).message).toBe("photoCheckKept");
-    // A tick on another fact leaves the call to land.
-    const other = await run((_, confirm) => confirm("classes", true));
-    expect(other).toEqual({ message: "photoCheckNoPedalsTick", calls: ["no_pedals"], ticks: [["classes", true]] });
+    expect(await run(true)).toEqual({ message: "photoCheckKept", calls: [] });
+    expect(await run(false)).toEqual({ message: "photoCheckNoPedals", calls: ["no_pedals"] });
     // Nothing is shown once the card has left the page.
-    const gone = await photoCheckMessage(async () => ({ call: "pedals" }), answerGate().start(), () => false, () => undefined, () => true);
-    expect(gone).toBeNull();
+    expect(await photoCheckMessage(async () => ({ call: "pedals" }), answerGate().start(), () => false, () => undefined)).toBeNull();
   });
 
-  it("only guards a pick made while the check runs, so a pick before it is replaced and needs a tick", async () => {
+  it("only guards a pick made while the check runs, so a pick before it is replaced by the photo's call", async () => {
     const gate = answerGate();
     gate.edited("picked");
     const calls: PedalCall[] = [];
-    const message = await photoCheckMessage(async () => ({ call: "pedals" }), gate.start(), () => true, (call) => calls.push(call), () => true);
+    const message = await photoCheckMessage(async () => ({ call: "pedals" }), gate.start(), () => true, (call) => calls.push(call));
     expect(calls).toEqual(["pedals"]);
-    expect(message).toBe("photoCheckPedalsTick");
-    // The family's No, picked before the check, becomes the photo's Yes, unchecked, so it can't give a YES.
-    const bike = withEdit(read(CLASS_2_LISTING), { ...read(CLASS_2_LISTING).facts, hasPedals: false });
-    expect(bike.checks.hasPedals?.status).toBe("theirs");
-    expect(withPedalCall(bike, "pedals").checks.hasPedals?.status).toBe("unchecked");
+    expect(message).toBe("photoCheckPedals");
   });
 });
 
-describe("nothing carries a check over", () => {
-  it("a shared link holds only the language, state and places, never facts or checks", () => {
+describe("nothing carries a read over", () => {
+  it("a shared link holds only the language, state and places, never facts", () => {
     const link = parseShareLink("?lang=es&state=CA&place=encinitas&confirmed=classes,ratedWatts&checks=all&facts=x");
     expect(Object.keys(link).sort()).toEqual(["lang", "places", "state"]);
   });
 
-  it("the checker starts with nothing checked, keeps the facts and checks together, and saves neither", () => {
+  it("the checker starts with no facts, keeps the facts and their notes together, and saves neither", () => {
     const source = readFileSync(join(__dirname, "..", "components", "Checker.tsx"), "utf8");
     expect(source).toContain("useState<CheckedFacts>(emptyChecked)");
     expect(source).not.toMatch(/setFacts\(/);
     expect(source).toContain('const next = fromRead(factsFromExtraction(extraction, emptyFacts()), "text");');
-    expect(source).toContain("setBike(next);");
-    expect(source.match(/setBike\(emptyChecked\(\)\);/g)?.length).toBe(2);
-    // The bottom line itself is checked through the running page in confirmFifthReview.test.ts.
-    expect(source).toContain("summaryFor(result, date, bike.checks)");
+    expect(source).toContain("summaryFor(result, date)");
     expect(source).not.toMatch(/(local|session)Storage\.setItem\((?!"lang")/);
     expect(source).not.toMatch(/indexedDB|sessionStorage/);
   });

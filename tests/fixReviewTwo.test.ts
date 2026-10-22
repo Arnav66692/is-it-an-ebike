@@ -413,9 +413,9 @@ describe("the first paint has the page's frame, in the page's language", () => {
 });
 
 describe("a NO bottom line reads as one compact answer", () => {
-  const unconfirmed = ["hasPedals", "classes", "ratedWatts", "hasThrottle", "assistMph", "wheelSize", "weightLb"] as const;
-  const result = evaluate({ state: "CA", riderAge: 15, rideDate: "2026-10-20", facts: classBike(1), places: ["city_of_san_diego", "encinitas", "sduhsd_campuses"] });
-  const bl = bottomLine(result, "2026-10-20", [...unconfirmed]);
+  // Past the state check, with an SDUHSD campus: two items under What's missing, each with a long sentence.
+  const result = evaluate({ state: "CA", riderAge: 15, rideDate: "2026-12-20", facts: classBike(1), places: ["city_of_san_diego", "encinitas", "sduhsd_campuses"] });
+  const bl = bottomLine(result, "2026-12-20");
 
   for (const lang of ["en", "es"] as const) {
     it(`gives each What's missing item one short line, with the full sentence folded under it (${lang})`, () => {
@@ -424,7 +424,7 @@ describe("a NO bottom line reads as one compact answer", () => {
       const shorts = [...html.matchAll(/<span class="bl-short">([^<]*)<\/span>/g)].map((m) => m[1]);
       expect(shorts.length).toBe(bl.missing.length);
       for (const s of shorts) expect(s.length, s).toBeLessThan(90);
-      expect(shorts[0]).toBe(lang === "en" ? "Tick the 7 facts we read, in step 3." : "Marca los 7 datos que leímos, en el paso 3.");
+      expect(shorts[0]).toBe(lang === "en" ? "District rules are only on a web page." : "Las reglas del distrito solo están en una página web.");
       // Every full sentence is still on the card, inside a details element that opens on tap.
       for (const item of bl.missing) {
         const full = renderLine(item.line, lang, "California").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");

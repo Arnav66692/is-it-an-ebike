@@ -14,7 +14,7 @@ import { colorsIn, findBikes, finderLine, heightsIn, inBudget, makerAges, maxHei
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { quoteText } from "@/lib/extract/parse";
 import { FINDER_KEYS, FINDER_TEXT } from "@/lib/i18n/finder";
-import { fromRead, unconfirmedFields } from "@/lib/provenance";
+import { fromRead, readCount } from "@/lib/provenance";
 import { bottomLine, evaluate, PLACE_IDS, STATE_CODES } from "@/lib/rules";
 import type { PlaceId } from "@/lib/rules/types";
 import { shownAnswer } from "./answerWords";
@@ -177,16 +177,15 @@ describe("Check this bike", () => {
     expect(finderLink("?bike=<x>&age=abc")).toEqual({ bike: null, age: "" });
   });
 
-  it("loads the maker's facts as read facts, each with its line, so the checker can't say YES until they are checked", () => {
+  it("loads the maker's facts as read facts, each with its line, and the checker answers the same as for the maker's facts", () => {
     for (const b of CATALOG) {
       const read = catalogExtraction(b);
       for (const list of Object.values(read.evidence)) for (const ev of list ?? []) expect(read.text.slice(ev.index, ev.index + ev.text.length)).toBe(quoteText(ev));
       const checked = fromRead(factsFromExtraction(read), "text");
-      const unconfirmed = unconfirmedFields(checked.checks);
-      if (Object.keys(read.evidence).length > 0) expect(unconfirmed.length).toBeGreaterThan(0);
+      if (Object.keys(read.evidence).length > 0) expect(readCount(checked.checks)).toBeGreaterThan(0);
       for (const ride of [quiz({ age: 15 }), quiz({ age: 30, state: "TX" })]) {
-        const line = bottomLine(evaluate({ ...ride, riderAge: ride.age, facts: checked.facts }), TODAY, unconfirmed);
-        expect(line.kind, b.id).not.toBe("yes");
+        const line = bottomLine(evaluate({ ...ride, riderAge: ride.age, facts: checked.facts }), TODAY);
+        if (line.kind === "yes") expect(bottomLine(evaluate({ ...ride, riderAge: ride.age, facts: catalogFacts(b) }), TODAY).kind, b.id).not.toBe("no_illegal");
       }
     }
   });

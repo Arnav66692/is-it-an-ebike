@@ -1,5 +1,8 @@
-// Regression tests for the fourth review of the confirm-before-YES change. Each one names the
-// problem it guards against. The pure pieces run directly, and the cards are rendered to markup.
+// Regression tests from the fourth review of the read-facts change. Each one names the problem it
+// guards against. The step where the family ticked each read fact is gone, so these cover what
+// stays: a photo call for the last bike, the status lines a screen reader hears, and the words each
+// fact was read from, under that fact's own control. The pure pieces run directly, and the cards
+// are rendered to markup.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -8,32 +11,15 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { FactsCard } from "@/components/FactsCard";
 import { PedalPhotoCheck, photoStatus } from "@/components/PedalPhotoCheck";
-import { ShapeFacts, wheelMatchesKey } from "@/components/ShapeFacts";
-import { withWeight, withWheelSize } from "@/lib/checkerState";
+import { withWeight } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import { parseSpecText, quoteText, type Extraction } from "@/lib/extract/parse";
 import type { Lang } from "@/lib/i18n/names";
 import { readAnnouncement, t } from "@/lib/i18n/ui";
-import { READ_FIELD_NAMES } from "@/lib/i18n/verdicts";
 import { answerGate, callIfCurrent } from "@/lib/photo/pedalRule";
-import {
-  editOn,
-  emptyChecked,
-  fromRead,
-  pedalCallOn,
-  unconfirmedFields,
-  wheelPutBack,
-  withConfirmed,
-  withPedalCall,
-  type CheckedFacts,
-  type CheckedUpdate,
-} from "@/lib/provenance";
-import { bottomLine, evaluate } from "@/lib/rules";
-import { emptyFacts, READ_FIELDS, type BikeFacts, type PlaceId, type ReadField } from "@/lib/rules/types";
-import { brief, classBike } from "./helpers";
-import { typeErrors } from "./typeCheck";
+import { editOn, fromRead, pedalCallOn, withPedalCall, type CheckedFacts, type CheckedUpdate } from "@/lib/provenance";
+import { emptyFacts, READ_FIELDS, type BikeFacts, type ReadField } from "@/lib/rules/types";
 
-const DAY = "2026-10-19";
 const ROOT = join(__dirname, "..");
 const LANGS = ["en", "es"] as const;
 
@@ -44,12 +30,6 @@ const CLASS_2 =
 const DIRT_BIKE = "Electric dirt bike. No pedals. 3000W motor.";
 /** The review's second listing, read through a link while the first card's photo check ran. */
 const CLASS_1 = "Class 1 e-bike with pedals. 350W rated motor. No throttle. Pedal assist up to 20 mph.";
-/** A Utah Class 1 whose listing already says "Foot pegs: No". */
-const UTAH_CLASS_1 =
-  "Class 1 electric bike with pedals. 500W rated motor. No throttle. Pedal assist up to 20 mph. 20 x 4.0 tires. Weight 62 lbs with battery. Foot pegs: No.";
-/** A label with two wheel sizes, front 24 and rear 20. */
-const TWO_SIZES =
-  "Class 2 e-bike. 24 x 2.4 front tire. 20 x 4.0 rear tire. 500W rated motor. Thumb throttle up to 20 mph. Pedal assist up to 20 mph. Pedals: yes.";
 
 function extract(text: string, source: "listing" | "label" = "listing"): Extraction {
   return parseSpecText(text, source);
@@ -60,18 +40,13 @@ function read(text: string, source: "listing" | "label" = "listing"): CheckedFac
 }
 
 /** Applies one edit made on the card the family sees, the way the checker does. */
-function edit(bike: CheckedFacts, change: (f: BikeFacts) => BikeFacts, answered?: readonly ReadField[]): CheckedFacts {
-  return editOn(bike.facts, change(bike.facts), answered)(bike);
+function edit(bike: CheckedFacts, change: (f: BikeFacts) => BikeFacts): CheckedFacts {
+  return editOn(bike.facts, change(bike.facts))(bike);
 }
 
 /** Runs queued state updates in order, the way React applies them once it renders. */
 function applyAll(start: CheckedFacts, updates: readonly CheckedUpdate[]): CheckedFacts {
   return updates.reduce((cur, update) => update(cur), start);
-}
-
-function answer(state: string, age: number, bike: CheckedFacts, places: PlaceId[]) {
-  const result = evaluate({ state, riderAge: age, rideDate: DAY, facts: bike.facts, places });
-  return bottomLine(result, DAY, unconfirmedFields(bike.checks));
 }
 
 function renderCard(bike: CheckedFacts, evidence: Extraction["evidence"], lang: Lang = "en"): string {
@@ -84,7 +59,6 @@ function renderCard(bike: CheckedFacts, evidence: Extraction["evidence"], lang: 
         evidence,
         flags: [],
         onChange: () => undefined,
-        onConfirm: () => undefined,
         onPedalCall: () => undefined,
         onCheck: () => undefined,
       }),
@@ -125,11 +99,11 @@ describe("a photo call for the last bike never fills in the new bike's pedals", 
     const after = applyAll(old, queue);
     expect(after).toBe(next);
     expect(after.facts.hasPedals).toBe(true);
-    expect(brief(after.checks.hasPedals)).toEqual({ source: "text", status: "unchecked" });
+    expect(after.checks.hasPedals?.source).toBe("text");
     // Applied with no check, the way the checker did before, the old photo's No replaced the new bike's pedals.
     const raw = applyAll(old, [() => next, (cur) => withPedalCall(cur, "no_pedals")]);
     expect(raw.facts.hasPedals).toBe(false);
-    expect(brief(raw.checks.hasPedals)).toEqual({ source: "photo", status: "unchecked" });
+    expect(raw.checks.hasPedals?.source).toBe("photo");
   });
 
   it("still fills in the pedals on the bike on screen, after edits the family made while the check ran", () => {
@@ -139,7 +113,7 @@ describe("a photo call for the last bike never fills in the new bike's pedals", 
     const after = pedalCallOn(typed.facts, "no_pedals")(typed);
     expect(after.facts.hasPedals).toBe(false);
     expect(after.facts.weightLb).toBe(64);
-    expect(brief(after.checks.hasPedals)).toEqual({ source: "photo", status: "unchecked" });
+    expect(after.checks.hasPedals?.source).toBe("photo");
     // Checked against the facts as the check started, the call would be lost after any edit.
     expect(pedalCallOn(bike.facts, "no_pedals")(typed)).toBe(typed);
   });
@@ -154,9 +128,8 @@ describe("a photo call for the last bike never fills in the new bike's pedals", 
   });
 });
 
-describe("the photo check and the read count speak from status lines already on the page", () => {
-  const photoCheck = (lang: Lang) =>
-    renderToStaticMarkup(createElement(PedalPhotoCheck, { lang, startCheck: answerGate().start, onCall: () => undefined, tickAfter: () => false, picks: 0, focusTick: () => false }));
+describe("the photo check speaks from a status line already on the page", () => {
+  const photoCheck = (lang: Lang) => renderToStaticMarkup(createElement(PedalPhotoCheck, { lang, startCheck: answerGate().start, onCall: () => undefined, picks: 0 }));
 
   it("draws the photo check's one status line, empty, before anything happens", () => {
     for (const lang of LANGS) {
@@ -173,28 +146,19 @@ describe("the photo check and the read count speak from status lines already on 
     expect(photoStatus("working", 0, null)).toBe("photoCheckLoading");
     expect(photoStatus("working", 0.5, null)).toBe("photoCheckLoading");
     expect(photoStatus("working", 1, null)).toBe("photoCheckRunning");
-    for (const message of ["photoCheckNoPedalsTick", "photoCheckPedalsTick", "photoCheckPedals", "photoCheckAsk", "photoCheckKept", "photoCheckKeptTick"] as const) {
+    for (const message of ["photoCheckPedals", "photoCheckNoPedals", "photoCheckAsk", "photoCheckKept"] as const) {
       expect(photoStatus("choose", 1, message), message).toBe(message);
     }
     expect(photoStatus("choose", 1, "photoCheckFailed")).toBeNull();
     expect(photoStatus("closed", 0, "photoCheckNoWebGpu")).toBeNull();
   });
 
-  it("keeps the read count's status line on a card with nothing read, so a photo call there is heard", () => {
+  it("has no count of checked facts on the facts card", () => {
     for (const lang of LANGS) {
-      const typed = renderCard(emptyChecked(), {}, lang);
-      // The photo check's line and the read count's line, both empty.
-      expect(typed.match(/<p role="status"[^>]*><\/p>/g), lang).toHaveLength(2);
-      // After a photo call on a bike typed in, the same line holds the count.
-      const called = renderCard(withPedalCall(emptyChecked(), "pedals"), {}, lang);
-      expect(called, lang).toContain(`>${t(lang, "readCount", { done: 0, total: 1 })}</p>`);
-      expect(called.match(/role="status"/g), lang).toHaveLength(2);
+      const html = renderCard(read(CLASS_2), extract(CLASS_2).evidence, lang);
+      expect(html.match(/role="status"/g), lang).toHaveLength(1);
+      expect(html, lang).not.toMatch(/check-count|class="segs"|class="bar"/);
     }
-  });
-
-  it("keeps the line where it was on a card with facts read", () => {
-    const html = renderCard(read(CLASS_2), extract(CLASS_2).evidence);
-    expect(html).toMatch(new RegExp(`<p role="status"[^>]*>${t("en", "readCount", { done: 0, total: 8 })}</p><button`));
   });
 });
 
@@ -203,41 +167,17 @@ describe("the read announcement is not read out again once it is old", () => {
     for (const total of [1, 7]) expect(readAnnouncement("es", total)).not.toBe(readAnnouncement("en", total));
   });
 
-  it("is cleared on a language switch and on the family's first edit or tick (source check, the checker needs a browser)", () => {
+  it("is cleared on a language switch and on the family's first edit (source check, the checker needs a browser)", () => {
     const checker = source("components", "Checker.tsx");
     expect(checker).toMatch(/function switchLang\(\) \{[^}]*setReadNote\(null\);[^}]*\}/);
     expect(checker).toMatch(/function editFacts\([^)]*\) \{[^}]*setReadNote\(null\);[^}]*\}/);
-    expect(checker).toMatch(/function confirmFact\([^)]*\) \{[^}]*setReadNote\(null\);[^}]*\}/);
     // A new read still sets it, after clearing it so the same count is read out again.
     expect(checker).toMatch(/setReadNote\(null\);\s*if \(total > 0\) requestAnimationFrame\(\(\) => setReadNote\(total\)\);/);
   });
 });
 
-describe("a follow-up answer stays the family's own after later edits", () => {
-  it("keeps the foot pegs answer theirs after another fact is changed, so Utah still says YES", () => {
-    let bike = read(UTAH_CLASS_1);
-    expect(brief(bike.checks.hasFootPegs)).toEqual({ source: "text", status: "unchecked" });
-    bike = edit(bike, (f) => ({ ...f, motorOver20: false, assistOver28: false }));
-    // The "Foot pegs or a pedal kit?" follow-up, answered No, the same as the listing.
-    bike = edit(bike, (f) => ({ ...f, hasFootPegs: false, needsPedalKit: false }), ["hasFootPegs"]);
-    bike = unconfirmedFields(bike.checks).reduce((b, f) => withConfirmed(b, f, true), bike);
-    expect(brief(bike.checks.hasFootPegs)).toEqual({ source: "text", status: "theirs", answered: true });
-    expect(answer("UT", 30, bike, []).kind).toBe("yes");
-    const changes: ((f: BikeFacts) => BikeFacts)[] = [(f) => withWeight(f, 64), (f) => ({ ...f, ratedWatts: 350 })];
-    for (const change of changes) {
-      const after = edit(bike, change);
-      expect(brief(after.checks.hasFootPegs)).toEqual({ source: "text", status: "theirs", answered: true });
-      expect(unconfirmedFields(after.checks)).toEqual([]);
-      expect(answer("UT", 30, after, []).kind).toBe("yes");
-    }
-  });
-});
-
-/**
- * Where each fact's own control starts on the card: a number box's label, a question's legend or
- * the unlock box's name. "front" is the Front box, which has no box of its own to tick.
- */
-function controls(lang: Lang, split: boolean): [ReadField | "front", string][] {
+/** Where each fact's own control starts on the card: a number box's label, a question's legend or the unlock box's name. */
+function controls(lang: Lang): [ReadField, string][] {
   const label = (key: Parameters<typeof t>[1]) => `class="field-label">${t(lang, key)}</label>`;
   const legend = (key: Parameters<typeof t>[1]) => `<legend class="field-label">${t(lang, key)}</legend>`;
   return [
@@ -250,12 +190,7 @@ function controls(lang: Lang, split: boolean): [ReadField | "front", string][] {
     ["throttleMph", label("throttleMph")],
     ["assistMph", label("assistMph")],
     ["topSpeedMph", label("topMph")],
-    ...(split
-      ? ([
-          ["front", label("front")],
-          ["wheelSize", label("rear")],
-        ] as [ReadField | "front", string][])
-      : ([["wheelSize", label("wheelSizeIn")]] as [ReadField, string][])),
+    ["wheelSize", label("wheelSizeIn")],
     ["weightLb", label("weightLb")],
     ["wheelCount", legend("wheelCount")],
     ["hasFootPegs", legend("footPegs")],
@@ -263,133 +198,27 @@ function controls(lang: Lang, split: boolean): [ReadField | "front", string][] {
   ];
 }
 
-/** The name of the box that confirms `field`. With two wheel sizes, the box says which sizes it covers. */
-function boxName(lang: Lang, field: ReadField, bike: CheckedFacts, split: boolean): string {
-  if (field === "wheelSize" && split) return `aria-label="${t(lang, wheelMatchesKey(bike.checks.wheelSize, bike.facts))}"`;
-  return `aria-label="${t(lang, "readMatchesFor", { field: READ_FIELD_NAMES[lang][field] })}"`;
-}
-
-function onlyAt(html: string, text: string, what: string): number {
-  const at = html.indexOf(text);
-  expect(at, `${what} is on the card`).toBeGreaterThan(-1);
-  expect(html.indexOf(text, at + 1), `${what} is on the card once`).toBe(-1);
-  return at;
-}
-
-/** Where each control on the card starts. A control the card doesn't show is left out. */
-function controlsAt(html: string, lang: Lang, split: boolean): [ReadField | "front", number][] {
-  return controls(lang, split)
-    .filter(([, mark]) => html.includes(mark))
-    .map(([field, mark]) => [field, onlyAt(html, mark, `${field}'s control`)]);
-}
-
-interface Placement {
-  /** The control whose box this is: the nearest control above the box. */
-  owner: ReadField | "front" | undefined;
-  /** The card from that control down to the box. */
-  between: string;
-}
-
-/** Where the box for each read fact sits on the card. */
-function placements(html: string, lang: Lang, bike: CheckedFacts, split: boolean): Partial<Record<ReadField, Placement>> {
-  const at = controlsAt(html, lang, split);
-  const out: Partial<Record<ReadField, Placement>> = {};
-  for (const field of READ_FIELDS) {
-    if (!bike.checks[field]) continue;
-    const box = onlyAt(html, boxName(lang, field, bike, split), `${field}'s box`);
-    const above = at.filter(([, i]) => i < box).sort((a, b) => b[1] - a[1])[0];
-    out[field] = { owner: above?.[0], between: above ? html.slice(above[1], box) : "" };
-  }
-  return out;
-}
-
-describe("each box to tick sits under the fact it confirms", () => {
-  const full: BikeFacts = { ...classBike(2), peakWatts: 900, wattsUpTo: 750, topSpeedMph: 20, switchable: true, hasFootPegs: false };
-
-  it("puts every read fact's box under that fact's own control, with one wheel size or two, in both languages", () => {
-    for (const facts of [full, { ...full, wheelFrontIn: 24 }]) {
-      const split = facts.wheelFrontIn !== facts.wheelRearIn;
-      const bike = fromRead(facts);
-      expect(Object.keys(bike.checks).sort()).toEqual([...READ_FIELDS].sort());
-      for (const lang of LANGS) {
-        const html = renderCard(bike, {}, lang);
-        expect(controlsAt(html, lang, split)).toHaveLength(controls(lang, split).length);
-        const at = placements(html, lang, bike, split);
-        for (const field of READ_FIELDS) expect(at[field]?.owner, `${lang} ${field} split=${split}`).toBe(field);
-      }
-    }
-  });
-
-  it("puts the box under the same fact on the shape card drawn alone", () => {
-    const bike = fromRead(full);
-    const shape: readonly ReadField[] = ["wheelSize", "weightLb", "wheelCount", "hasFootPegs"];
-    for (const lang of LANGS) {
-      const html = unescape(
-        renderToStaticMarkup(createElement(ShapeFacts, { lang, facts: bike.facts, checks: bike.checks, evidence: {}, onChange: () => undefined, onConfirm: () => undefined })),
-      );
-      const at = placements(html, lang, { facts: bike.facts, checks: { wheelSize: bike.checks.wheelSize, weightLb: bike.checks.weightLb, wheelCount: bike.checks.wheelCount, hasFootPegs: bike.checks.hasFootPegs } }, false);
-      for (const field of shape) expect(at[field]?.owner, `${lang} ${field}`).toBe(field);
-    }
-  });
-
-  it("quotes the words each fact was read from under that fact, above its box", () => {
+describe("the words each fact was read from sit under that fact", () => {
+  it("quotes the words each fact was read from under that fact's own control, in both languages", () => {
     const bike = read(CLASS_2);
     const e = extract(CLASS_2).evidence;
     expect(e.ratedWatts?.[0]?.text).toContain("500W");
     for (const lang of LANGS) {
-      const at = placements(renderCard(bike, e, lang), lang, bike, false);
-      for (const field of unconfirmedFields(bike.checks)) {
-        expect(at[field]?.owner, `${lang} ${field}`).toBe(field);
+      const html = renderCard(bike, e, lang);
+      const at = controls(lang)
+        .filter(([, mark]) => html.includes(mark))
+        .map(([field, mark]) => [field, html.indexOf(mark)] as const);
+      const ownerOf = (i: number) => at.filter(([, c]) => c < i).sort((a, b) => b[1] - a[1])[0]?.[0];
+      for (const field of READ_FIELDS.filter((f) => bike.checks[f])) {
         const quotes = (e[field] ?? []).slice(0, 2);
         expect(quotes.length, `${lang} ${field}`).toBeGreaterThan(0);
-        // The quote as shown: its words, with "…" where it is cut in the middle of a sentence.
-        for (const quote of quotes) expect(at[field]?.between, `${lang} ${field}`).toContain(`>${quoteText(quote)}</q>`);
+        for (const quote of quotes) {
+          const shown = `>${quoteText(quote)}</q>`;
+          const spots: number[] = [];
+          for (let i = html.indexOf(shown); i >= 0; i = html.indexOf(shown, i + 1)) spots.push(i);
+          expect(spots.map(ownerOf), `${lang} ${field}`).toContain(field);
+        }
       }
     }
-  });
-});
-
-describe("the put-back rule runs only code that can run", () => {
-  it("compares the wheel size wheel by wheel, so fieldValue takes no wheel size", () => {
-    const errors = typeErrors(
-      [
-        'import { fieldValue } from "@/lib/provenance";',
-        'import { emptyFacts } from "@/lib/rules/types";',
-        'fieldValue(emptyFacts(), "weightLb");',
-        'fieldValue(emptyFacts(), "classes");',
-        'fieldValue(emptyFacts(), "wheelSize");',
-      ].join("\n"),
-    );
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toContain('"wheelSize"');
-    // The compiler builds the whole project's types, which can take more than 5 seconds on a busy machine.
-  }, 60_000);
-
-  it("puts a wheel back only when a wheel the family changed is at its read size again", () => {
-    const bike = read(TWO_SIZES, "label");
-    const check = bike.checks.wheelSize;
-    expect(check).toBeDefined();
-    if (!check) return;
-    expect([bike.facts.wheelFrontIn, bike.facts.wheelRearIn]).toEqual([24, 20]);
-    const front26 = withWheelSize(bike.facts, 26, false);
-    const rear16 = { ...bike.facts, wheelRearIn: 16 };
-    expect(wheelPutBack(check, front26, bike.facts)).toBe(true);
-    expect(wheelPutBack(check, rear16, bike.facts)).toBe(true);
-    expect(wheelPutBack(check, bike.facts, front26)).toBe(false);
-    expect(wheelPutBack(check, bike.facts, withWeight(bike.facts, 64))).toBe(false);
-    expect(wheelPutBack(check, front26, { ...front26, wheelRearIn: 16 })).toBe(false);
-    expect(wheelPutBack(check, { ...front26, wheelRearIn: 16 }, rear16)).toBe(true);
-  });
-
-  it("still takes the tick away from a ticked wheel size when a changed wheel is put back", () => {
-    let bike = read(TWO_SIZES, "label");
-    bike = edit(bike, (f) => withWheelSize(f, 26, false));
-    bike = withConfirmed(bike, "wheelSize", true);
-    expect(bike.checks.wheelSize?.status).toBe("ticked");
-    expect(edit(bike, (f) => withWheelSize(f, 24, false)).checks.wheelSize?.status).toBe("unchecked");
-    // A ticked fact of any other kind holds its read value, so an edit either makes it theirs or leaves it ticked.
-    const ticked = withConfirmed(read(CLASS_2), "weightLb", true);
-    expect(edit(ticked, (f) => withWeight(f, 63)).checks.weightLb?.status).toBe("theirs");
-    expect(edit(ticked, (f) => ({ ...f, ratedWatts: 350 })).checks.weightLb?.status).toBe("ticked");
   });
 });

@@ -1,7 +1,7 @@
 // A place card never says YES while the bottom line right above it says NO because of that same
-// card. Four rides that once showed "✓ YES" on a card under "✕ NO" on the bottom line: a "Not
-// sure" fast-mode answer in Texas, read facts left unchecked, a ride past the state check, and an
-// SDUHSD campus whose rules come only from the district's web page. Each card now answers NO with
+// card. Rides that once showed "✓ YES" on a card under "✕ NO" on the bottom line: a "Not sure"
+// fast-mode answer in Texas, a ride past the state check, and an SDUHSD campus whose rules come
+// only from the district's web page. Facts read from a link or photo now count the same as typed. Each card now answers NO with
 // the same reason as the bottom line, and the engine's own call is unchanged.
 
 import { createElement } from "react";
@@ -10,10 +10,10 @@ import { describe, expect, it } from "vitest";
 import { BottomLineCard } from "@/components/BottomLineCard";
 import { cardAnswer, heldBack, VerdictCard } from "@/components/VerdictCard";
 import type { Lang } from "@/lib/i18n/names";
-import { fromRead, unconfirmedFields } from "@/lib/provenance";
+import { fromRead } from "@/lib/provenance";
 import { evaluate } from "@/lib/rules";
 import { bottomLine } from "@/lib/rules/bottomLine";
-import type { BikeFacts, PlaceId, ReadField, Verdict } from "@/lib/rules/types";
+import type { BikeFacts, PlaceId, Verdict } from "@/lib/rules/types";
 import { headlineProblems, hedgeProblems, shownAnswer, visibleLines } from "./answerWords";
 import { classBike } from "./helpers";
 
@@ -25,20 +25,18 @@ interface Ride {
   facts: BikeFacts;
   places?: PlaceId[];
   date?: string;
-  unconfirmed?: ReadField[];
 }
 
 function show(ride: Ride, lang: Lang = "en") {
   const date = ride.date ?? TODAY;
   const result = evaluate({ state: ride.state, riderAge: ride.age, rideDate: date, facts: ride.facts, places: ride.places ?? [] });
-  const unconfirmed = ride.unconfirmed ?? [];
-  const bl = bottomLine(result, date, unconfirmed);
+  const bl = bottomLine(result, date);
   const cards = [result.state, ...result.local].map((v: Verdict) => {
-    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode: ride.state, rideDate: date, unconfirmed }));
+    const html = renderToStaticMarkup(createElement(VerdictCard, { verdict: v, lang, stateCode: ride.state, rideDate: date }));
     return { id: v.id, status: v.status, html, ...shownAnswer(html) };
   });
   const bottom = shownAnswer(renderToStaticMarkup(createElement(BottomLineCard, { line: bl, lang, stateCode: ride.state })));
-  return { result, bl, cards, bottom, date, unconfirmed };
+  return { result, bl, cards, bottom, date };
 }
 
 const notSure = classBike(1, { motorOver20: null, assistOver28: null, switchable: null, unsure: ["fast_mode"] });
@@ -77,18 +75,11 @@ describe("a place card answers NO when the bottom line can't confirm that same p
     expect(yesUnderNo).toEqual([]);
   });
 
-  it("read facts left unchecked: California and Encinitas say NO until the facts are checked, then YES", () => {
+  it("read facts: California and Encinitas say YES, the same as typed in", () => {
     const read = fromRead(classBike(2), "text");
-    const unconfirmed = unconfirmedFields(read.checks);
-    expect(unconfirmed.length).toBeGreaterThan(0);
-    const s = show({ state: "CA", age: 11, facts: read.facts, places: ["encinitas"], unconfirmed });
-    expect(s.bottom.word).toBe("NO");
-    for (const c of s.cards) {
-      expect(c, c.id).toMatchObject({ status: "yes", word: "NO", mark: "✕", line: "We can't say YES until you check the facts read from a link or photo against the bike." });
-    }
-    const checked = show({ state: "CA", age: 11, facts: read.facts, places: ["encinitas"], unconfirmed: [] });
-    expect(checked.bottom.word).toBe("YES");
-    expect(checked.cards.map((c) => c.word)).toEqual(["YES", "YES"]);
+    const s = show({ state: "CA", age: 11, facts: read.facts, places: ["encinitas"] });
+    expect(s.bottom.word).toBe("YES");
+    expect(s.cards.map((c) => c.word)).toEqual(["YES", "YES"]);
   });
 
   it("a ride after Nov 15, 2026, past the state check: the California card says NO with the bottom line", () => {
@@ -117,7 +108,7 @@ describe("a place card answers NO when the bottom line can't confirm that same p
     expect(cardAnswer(yes, TODAY, "CA")).toBe("yes");
     const no = evaluate({ state: "CA", riderAge: 14, rideDate: TODAY, facts: classBike(3), places: [] }).state;
     expect(no.status).toBe("no");
-    expect(heldBack(no, TODAY, "CA", ["classes"])).toBeNull();
+    expect(heldBack(no, TODAY, "CA")).toBeNull();
     expect(cardAnswer(no, TODAY, "CA")).toBe("no");
   });
 });
