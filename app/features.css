@@ -189,3 +189,286 @@ a.brand-mark::after {
   background: var(--card);
   border: 1px solid var(--line);
 }
+
+/* ---------- Map of racks and shops ---------- */
+
+/* The place box and its button on one row, the button under the box on a narrow phone. */
+.map-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.map-search > .field {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.map-search > .btn {
+  flex: 0 0 auto;
+}
+
+.map-locate {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .map-locate {
+    width: auto;
+  }
+}
+
+/* Places that match a search, each a full-width row at least 44 px tall. */
+.map-places {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+}
+
+.map-places li + li {
+  border-top: 1px solid var(--line);
+}
+
+.map-place {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  color: var(--accent);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+
+.map-place:hover {
+  background: var(--sunk);
+  color: var(--accent-hover);
+}
+
+.map-block {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.map-status {
+  font-weight: 500;
+}
+
+/* Leaflet's own rules are matched with .map-canvas.leaflet-container, so these win whatever order the two style sheets load in. */
+
+/* The map sits in its own stacking context, so Leaflet's panes never cover the page. */
+.map-frame {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  height: min(62vh, 560px);
+  min-height: 320px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-panel);
+  overflow: hidden;
+  background: var(--sunk);
+}
+
+.map-canvas.leaflet-container {
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  background: var(--sunk);
+}
+
+.map-canvas:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+/* A divIcon's own box is drawn by the SVG inside it. */
+.leaflet-div-icon.map-pin,
+.map-pin {
+  border: 0;
+  background: transparent;
+}
+
+.map-pin svg {
+  display: block;
+}
+
+/* Zoom buttons as square mono controls, 44 px. */
+.map-canvas.leaflet-container .leaflet-bar {
+  border: 1px solid var(--field-line);
+  border-radius: var(--r-ctl);
+  box-shadow: none;
+}
+
+.map-canvas.leaflet-container .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  border-radius: 0;
+  border-bottom-color: var(--line-strong);
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 1.25rem;
+}
+
+.map-canvas.leaflet-container .leaflet-bar a:hover {
+  background: var(--sunk);
+}
+
+.map-canvas.leaflet-container .leaflet-bar a.leaflet-disabled {
+  background: var(--sunk);
+  color: var(--muted);
+}
+
+.map-canvas.leaflet-container .leaflet-control-attribution {
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.75rem;
+}
+
+.map-canvas.leaflet-container .leaflet-control-attribution a {
+  color: var(--accent);
+}
+
+/* Popups take the page's card colors in both themes. */
+.map-canvas.leaflet-container .leaflet-popup-content-wrapper,
+.map-canvas.leaflet-container .leaflet-popup-tip {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-pop);
+}
+
+.map-canvas.leaflet-container .leaflet-popup-content-wrapper {
+  border-radius: var(--r-panel);
+}
+
+.map-canvas.leaflet-container .leaflet-popup-content {
+  margin: 0.875rem 2.75rem 0.875rem 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.map-canvas.leaflet-container a.leaflet-popup-close-button {
+  width: 44px;
+  height: 44px;
+  font: 1.25rem/44px var(--font-geist-mono), ui-monospace, monospace;
+  color: var(--muted);
+}
+
+.map-canvas.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--ink);
+}
+
+.spot-pop {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 12rem;
+}
+
+.map-canvas.leaflet-container .spot-pop p {
+  margin: 0;
+}
+
+/* What one rack or shop is: the kind as a mono label, then its name. */
+.spot-kind {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.spot-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.spot-warn {
+  color: var(--maybe);
+  font-weight: 500;
+}
+
+.spot-tags {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.spot-tags > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.spot-tags dt {
+  color: var(--muted);
+}
+
+.spot-tags a,
+.spot-open,
+.map-canvas.leaflet-container .spot-tags a,
+.map-canvas.leaflet-container .spot-open {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.spot-open::after {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-left: 6px;
+  background: currentColor;
+  -webkit-mask: var(--icon-ext) center / contain no-repeat;
+  mask: var(--icon-ext) center / contain no-repeat;
+}
+
+/* The map key, one row of marks and their names. */
+.map-legend ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.map-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.map-legend-pin svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+/* The nearest spots, one row each, split by hairlines. */
+.map-list {
+  display: grid;
+}
+
+.map-row {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.875rem 0;
+}
+
+.map-row + .map-row {
+  border-top: 1px solid var(--line);
+}
+
+.map-row > p {
+  margin: 0;
+}
+
+.map-show {
+  justify-self: start;
+}

@@ -267,6 +267,15 @@ export interface FoundPlace {
   bounds: Bounds | null;
 }
 
+/** How close to go for a found place: closer for an address, wider for a town. Never wider than the data zoom. */
+export function zoomForPlace(place: FoundPlace): number {
+  if (!place.bounds) return PLACE_ZOOM;
+  const span = Math.max(place.bounds.north - place.bounds.south, place.bounds.east - place.bounds.west);
+  if (span < 0.01) return 17;
+  if (span < 0.05) return PLACE_ZOOM;
+  return Math.max(MIN_DATA_ZOOM, 14);
+}
+
 /** The places in a Nominatim answer. Rows without a point are skipped. */
 export function parseNominatim(json: unknown): FoundPlace[] {
   if (!Array.isArray(json)) return [];
