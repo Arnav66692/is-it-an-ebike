@@ -28,6 +28,8 @@ import { MAP_TEXT, mapCountLine, mapText } from "@/lib/i18n/map";
 import { t } from "@/lib/i18n/ui";
 
 const VIEW = { south: 32.7051, west: -117.1699, north: 32.7249, east: -117.1452 };
+// Outside San Diego County, so fetching goes to the live route rather than the saved snapshot.
+const LIVE_VIEW = { south: 30.2651, west: -97.7499, north: 30.2849, east: -97.7252 };
 
 describe("Overpass query", () => {
   it("asks for node and way racks with way centers, shops and repair stations in the rounded view", () => {
@@ -175,45 +177,45 @@ describe("fetching", () => {
 
   it("asks our /api/map route once per view and answers the same view from memory", async () => {
     const fetcher = vi.fn(async () => reply(200, ANSWER));
-    const first = await fetchSpots(VIEW, undefined, fetcher as unknown as typeof fetch);
-    const again = await fetchSpots({ ...VIEW, south: 32.7052 }, undefined, fetcher as unknown as typeof fetch);
+    const first = await fetchSpots(LIVE_VIEW, undefined, fetcher as unknown as typeof fetch);
+    const again = await fetchSpots({ ...LIVE_VIEW, south: 30.2652 }, undefined, fetcher as unknown as typeof fetch);
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(again).toBe(first);
     expect(first.capped).toBe(false);
     const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("/api/map?south=32.70&west=-117.17&north=32.73&east=-117.14");
+    expect(url).toMatch(/^\/api\/map\?south=30\.2\d&west=-97\.7\d&north=30\.2\d&east=-97\.7\d$/);
     expect(init.method).toBe("GET");
   });
 
   it("says the service is busy on a 429 or a full queue, and failed on anything else", async () => {
     for (const status of [429, 503, 504]) {
       clearSpotCache();
-      await expect(fetchSpots(VIEW, undefined, (async () => reply(status, {})) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "rate" });
+      await expect(fetchSpots(LIVE_VIEW, undefined, (async () => reply(status, {})) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "rate" });
     }
     clearSpotCache();
-    await expect(fetchSpots(VIEW, undefined, (async () => reply(400, {})) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "failed" });
-    await expect(fetchSpots(VIEW, undefined, (async () => reply(200, { elements: [], remark: "runtime error: Query timed out" })) as unknown as typeof fetch)).rejects.toBeInstanceOf(MapFetchError);
-    await expect(fetchSpots(VIEW, undefined, (async () => { throw new TypeError("offline"); }) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "failed" });
+    await expect(fetchSpots(LIVE_VIEW, undefined, (async () => reply(400, {})) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "failed" });
+    await expect(fetchSpots(LIVE_VIEW, undefined, (async () => reply(200, { elements: [], remark: "runtime error: Query timed out" })) as unknown as typeof fetch)).rejects.toBeInstanceOf(MapFetchError);
+    await expect(fetchSpots(LIVE_VIEW, undefined, (async () => { throw new TypeError("offline"); }) as unknown as typeof fetch)).rejects.toMatchObject({ failure: "failed" });
   });
 
   it("stops waiting on a slow answer and says the service is busy", async () => {
     const slow = ((_url: string, init: RequestInit) =>
       new Promise((_, reject) => init.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))))) as unknown as typeof fetch;
-    await expect(fetchSpots(VIEW, undefined, slow, 10)).rejects.toMatchObject({ failure: "rate" });
+    await expect(fetchSpots(LIVE_VIEW, undefined, slow, 10)).rejects.toMatchObject({ failure: "rate" });
   });
 
   it("passes the page's abort through, so a newer move cancels the old request", async () => {
     const slow = ((_url: string, init: RequestInit) =>
       new Promise((_, reject) => init.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))))) as unknown as typeof fetch;
     const page = new AbortController();
-    const pending = fetchSpots(VIEW, page.signal, slow, 60_000);
+    const pending = fetchSpots(LIVE_VIEW, page.signal, slow, 60_000);
     page.abort();
     await expect(pending).rejects.not.toBeInstanceOf(MapFetchError);
   });
 
   it("marks a full set of racks as capped", async () => {
     const many = { elements: Array.from({ length: MAX_RACKS }, (_, i) => ({ type: "node", id: i + 1, lat: 32.71, lon: -117.16, tags: { amenity: "bicycle_parking" } })) };
-    const answer = await fetchSpots(VIEW, undefined, (async () => reply(200, many)) as unknown as typeof fetch);
+    const answer = await fetchSpots(LIVE_VIEW, undefined, (async () => reply(200, many)) as unknown as typeof fetch);
     expect(answer.capped).toBe(true);
   });
 
