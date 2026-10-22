@@ -5,7 +5,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SiteNav } from "@/components/SiteHeader";
-import { clearSpotCache, fetchSpots, MapFetchError, searchPlaces } from "@/lib/map/fetchSpots";
+import { clearSpotCache, clearStateData, fetchSpots, MapFetchError, searchPlaces } from "@/lib/map/fetchSpots";
 import {
   boundsKey,
   countSpots,
@@ -173,7 +173,11 @@ function reply(status: number, body: unknown): Response {
 }
 
 describe("fetching", () => {
-  beforeEach(() => clearSpotCache());
+  // No saved state files here, so every view goes to the live route. tests/mapStates.test.ts covers the saved files.
+  beforeEach(() => {
+    clearSpotCache();
+    clearStateData({ areas: [], missing: [] });
+  });
 
   it("asks our /api/map route once per view and answers the same view from memory", async () => {
     const fetcher = vi.fn(async () => reply(200, ANSWER));
@@ -240,9 +244,9 @@ describe("map words", () => {
     expect(t("es", "navMap")).toBe("Mapa");
   });
 
-  it("counts what is in view, with the repair stations only when there are some", () => {
-    expect(mapCountLine("en", { rack: 38, shop: 4, repair: 0 })).toBe("38 racks, 4 shops in view.");
-    expect(mapCountLine("en", { rack: 1, shop: 1, repair: 2 })).toBe("1 rack, 1 shop, 2 repair stations in view.");
+  it("counts what is in view, with the repair spots only when there are some", () => {
+    expect(mapCountLine("en", { rack: 38, shop: 4, repair: 0 })).toBe("38 racks, 4 bike shops in view.");
+    expect(mapCountLine("en", { rack: 1, shop: 1, repair: 2 })).toBe("1 rack, 1 bike shop, 2 repair spots in view.");
     expect(mapCountLine("es", { rack: 1, shop: 3, repair: 1 })).not.toMatch(/\{/);
   });
 
