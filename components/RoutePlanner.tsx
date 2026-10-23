@@ -7,13 +7,14 @@
 // "Find a legal route" asks the router to go around every piece that failed, and checks again.
 
 import dynamic from "next/dynamic";
-import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { announcement } from "./BottomLineCard";
+import { AlongTheWay, ElevationProfile, MixBar, RangeCard, RouteStats } from "./RouteExtras";
 import { formatDate, joinList, type Lang } from "@/lib/i18n/names";
-import { kindText, reasonText, routeText } from "@/lib/i18n/route";
+import { reasonText, routeText } from "@/lib/i18n/route";
 import { MapFetchError, searchPlaces } from "@/lib/map/fetchSpots";
 import { distanceMeters, formatDistance, type FoundPlace } from "@/lib/map/osm";
-import { checkRoute, type CheckedPiece, type PieceStatus, type RouteProblem, type RouteVerdict } from "@/lib/route/legal";
+import { checkRoute, type PieceStatus, type RouteProblem, type RouteVerdict } from "@/lib/route/legal";
 import { ROUTE_RULES } from "@/lib/route/ruleData";
 import type { RoutePlan, RoutePoint, RouteRequest } from "@/lib/route/types";
 import type { BikeFacts } from "@/lib/rules";
@@ -25,7 +26,6 @@ const MAX_TRIP_METERS = 48_000;
 const MAX_AVOID = 20;
 const MAX_TRIES = 3;
 const GEO_TIMEOUT_MS = 10_000;
-const FEET_PER_METER = 3.28084;
 const SDUHSD_LEAID = "0634380";
 
 interface Picked {
@@ -204,11 +204,13 @@ interface Props {
   rideDate: string;
   /** The family picked an SDUHSD campus in the checker. */
   sduhsdCampus: boolean;
+  /** The catalog bike the finder sent, so its battery size can fill the estimate. */
+  bikeId: string | null;
 }
 
 type Phase = { kind: "idle" } | { kind: "loading"; legal: boolean } | { kind: "error"; key: "busy" | "noRoute" | "failed" | "tooFar" | "needBoth" } | { kind: "ready" };
 
-export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus }: Props) {
+export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bikeId }: Props) {
   const headId = useId();
   const [from, setFrom] = useState<Picked | null>(null);
   const [to, setTo] = useState<Picked | null>(null);
@@ -216,7 +218,22 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus }: 
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [legalNote, setLegalNote] = useState<"legalFound" | "noLegalFound" | null>(null);
   const [campus, setCampus] = useState(sduhsdCampus);
+  const [style, setStyle] = useState<"balanced" | "roads">("balanced");
+  const [avoidHills, setAvoidHills] = useState(false);
+  const [catalogWh, setCatalogWh] = useState<number | null>(null);
   const abort = useRef<AbortController | null>(null);
+
+  // A bike from the finder carries its battery size, read from the maker's page.
+  useEffect(() => {
+    if (!bikeId) return;
+    let live = true;
+    void import("@/lib/bikes/catalog").then(({ catalogBike }) => {
+      if (live) setCatalogWh(catalogBike(bikeId)?.battery_wh ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [bikeId]);
 
   const endsInSduhsd = plan?.atEnd.some((j) => (j.layer === "school_secondary" || j.layer === "school_unified") && j.geoid === SDUHSD_LEAID) ?? false;
   const rider = useMemo(() => ({ riderAge, rideDate, facts, sduhsdCampus: campus && endsInSduhsd }), [riderAge, rideDate, facts, campus, endsInSduhsd]);
@@ -251,7 +268,7 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus }: 
     setLegalNote(null);
     try {
       if (!legal || !plan || !verdict) {
-        setPlan(await fetchPlan({ from: from.point, to: to.point, prefer: "balanced" }, controller.signal));
+        setPlan(await fetchPlan({ from: from.point, to: to.point, prefer: style, avoidHills }, controller.signal));
         setPhase({ kind: "ready" });
         return;
       }
@@ -259,7 +276,8 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus }: 
       let avoid: RoutePoint[] = [];
       for (let i = 0; i < MAX_TRIES && best.verdict.kind !== "yes" && best.verdict.avoid.length > 0; i += 1) {
         avoid = mergeAvoid(avoid, best.verdict.avoid);
-        const next = await fetchPlan({ from: from.point, to: to.point, avoid, prefer: preferFor(best.verdict) }, controller.signal);
+        const prefer = preferFor(best.verdict) === "roads" ? "roads" : style;
+        const next = await fetchPlan({ from: from.point, to: to.point, avoid, prefer, avoidHills }, controller.signal);
         const nextVerdict = checkRoute(next, rider, ROUTE_RULES);
         if (!better(nextVerdict, best.verdict)) break;
         best = { plan: next, verdict: nextVerdict };
@@ -285,6 +303,23 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus }: 
       <div className="route-fields">
         <PlaceField lang={lang} label={routeText(lang, "fromLabel")} picked={from} onPick={pickFrom} allowLocate />
         <PlaceField lang={lang} label={routeText(lang, "toLabel")} picked={to} onPick={pickTo} allowLocate={false} />
+      </div>
+      <div className="route-options">
+        <div className="space-y-2">
+          <p className="field-label">{routeText(lang, "optStyle")}</p>
+          <div className="route-seg" role="group" aria-label={routeText(lang, "optStyle")}>
+            <button type="button" aria-pressed={style === "balanced"} onClick={() => setStyle("balanced")}>
+              {routeText(lang, "optCalm")}
+            </button>
+            <button type="button" aria-pressed={style === "roads"} onClick={() => setStyle("roads")}>
+              {routeText(lang, "optDirect")}
+            </button>
+          </div>
+        </div>
+        <label className="route-campus">
+          <input type="checkbox" checked={avoidHills} onChange={(e) => setAvoidHills(e.target.checked)} />
+          <span>{routeText(lang, "optHills")}</span>
+        </label>
       </div>
       <div className="actions">
         <button type="button" className="btn btn-go" disabled={loading} onClick={() => void run(false)}>
@@ -313,7 +348,12 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus }: 
           ) : null}
           <Legend lang={lang} />
           <RouteMap plan={plan} pieces={verdict.pieces} label={routeText(lang, "mapLabel")} />
-          <PieceList pieces={verdict.pieces} lang={lang} />
+          <div className="route-insights">
+            <ElevationProfile plan={plan} lang={lang} />
+            <MixBar plan={plan} lang={lang} />
+          </div>
+          <AlongTheWay pieces={verdict.pieces} lang={lang} />
+          <RangeCard plan={plan} lang={lang} facts={facts} catalogWh={catalogWh} />
         </>
       ) : null}
       <footer className="meta space-y-1">
@@ -339,7 +379,6 @@ function headline(v: RouteVerdict, lang: Lang, rideDate: string): string {
 function RouteAnswer({ verdict, plan, lang, rideDate }: { verdict: RouteVerdict; plan: RoutePlan; lang: Lang; rideDate: string }) {
   const headId = useId();
   const yes = verdict.kind === "yes";
-  const minutes = Math.max(1, Math.round(plan.seconds / 60));
   return (
     <section className="card bottom-line route-answer" data-kind={verdict.kind} aria-labelledby={headId}>
       <header className="bl-top">
@@ -356,10 +395,7 @@ function RouteAnswer({ verdict, plan, lang, rideDate }: { verdict: RouteVerdict;
         {verdict.unchecked.length > 0 && verdict.kind !== "no_illegal" ? (
           <p className="font-semibold">{routeText(lang, "uncheckedLine", { places: joinList(verdict.unchecked, lang) })}</p>
         ) : null}
-        <p>
-          {routeText(lang, "stats", { distance: formatDistance(plan.meters), minutes })}
-          {plan.climbMeters !== null ? ` ${routeText(lang, "climb", { feet: Math.round(plan.climbMeters * FEET_PER_METER) })}` : ""}
-        </p>
+        <RouteStats plan={plan} lang={lang} />
       </header>
       <div className="bl-body">
         {verdict.problems.length > 0 ? (
@@ -425,27 +461,5 @@ function Legend({ lang }: { lang: Lang }) {
         </li>
       ))}
     </ul>
-  );
-}
-
-/** The route in words, joining neighbouring pieces of the same kind, name and answer. */
-function PieceList({ pieces, lang }: { pieces: readonly CheckedPiece[]; lang: Lang }) {
-  const rows: { status: PieceStatus; kind: CheckedPiece["segment"]["kind"]; name: string | null; meters: number; key: string }[] = [];
-  for (const p of pieces) {
-    const last = rows[rows.length - 1];
-    if (last && last.status === p.status && last.kind === p.segment.kind && last.name === p.segment.name) last.meters += p.segment.meters;
-    else rows.push({ status: p.status, kind: p.segment.kind, name: p.segment.name, meters: p.segment.meters, key: `${p.index}` });
-  }
-  return (
-    <details className="route-pieces">
-      <summary>{routeText(lang, "piecesTitle")}</summary>
-      <ol className="space-y-1">
-        {rows.map((r) => (
-          <li key={r.key} data-status={r.status}>
-            <span className={`route-swatch route-swatch-${r.status}`} aria-hidden="true" /> {routeText(lang, STATUS_KEY[r.status])}: {r.name ?? routeText(lang, "unnamed")}, {kindText(lang, r.kind)}, {formatDistance(r.meters)}
-          </li>
-        ))}
-      </ol>
-    </details>
   );
 }

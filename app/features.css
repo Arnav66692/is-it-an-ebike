@@ -1119,3 +1119,256 @@ a.brand-mark::after {
   padding-left: 0;
   list-style: none;
 }
+
+.route-casing {
+  stroke: var(--card);
+  stroke-opacity: 0.85;
+}
+
+.route-pin span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 2px solid var(--card);
+  box-shadow: var(--shadow-pop);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--card);
+  background: var(--ink);
+}
+
+.route-pin-finish span {
+  background: var(--accent);
+  color: var(--accent-ink, var(--card));
+}
+
+.route-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1.5rem;
+}
+
+.route-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-ctl);
+  overflow: hidden;
+}
+
+.route-seg button {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+}
+
+.route-seg button + button {
+  border-left: 1px solid var(--line-strong);
+}
+
+.route-seg button[aria-pressed="true"] {
+  color: var(--primary-ink);
+  background: var(--primary);
+}
+
+.route-seg button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.route-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.route-stats div {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  background: var(--sunk);
+}
+
+.route-stats dt {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.route-stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-insights {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 720px) {
+  .route-insights {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.route-profile {
+  margin: 0;
+}
+
+.route-profile svg {
+  display: block;
+  width: 100%;
+  height: 80px;
+  margin-top: 0.5rem;
+}
+
+.route-profile-area {
+  fill: var(--accent-soft);
+}
+
+.route-profile-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.route-profile-scale {
+  display: flex;
+  justify-content: space-between;
+}
+
+.route-mix-bar {
+  display: flex;
+  height: 12px;
+  margin-top: 0.6rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--sunk);
+}
+
+.route-mix-bar span {
+  height: 100%;
+}
+
+.route-mix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.route-mix-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.route-mix-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.route-mix-mix_lanes {
+  background: var(--yes);
+}
+
+.route-mix-mix_paths {
+  background: var(--accent);
+}
+
+.route-mix-mix_streets {
+  background: var(--muted);
+}
+
+.route-mix-mix_walks {
+  background: var(--maybe);
+}
+
+.route-mix-mix_trails {
+  background: var(--accent-solid);
+}
+
+.route-mix-mix_other {
+  background: var(--line-strong);
+}
+
+.route-steps {
+  padding: 0;
+  list-style: none;
+}
+
+.route-steps li {
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  gap: 0.7rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.route-step-dot {
+  width: 12px;
+  height: 12px;
+  margin-top: 0.35rem;
+  border-radius: 999px;
+}
+
+.route-step-name {
+  font-weight: 600;
+}
+
+.route-step-do {
+  font-weight: 600;
+}
+
+.route-steps li[data-status="banned"] .route-step-do {
+  color: var(--no);
+}
+
+.route-range-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+}
+
+.route-range-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.route-range-result {
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--yes);
+  border-radius: var(--r-ctl);
+  background: var(--sunk);
+}
+
+.route-range-result > * + * {
+  margin-top: 0.4rem;
+}
+
+.route-range-result[data-fit="tight"] {
+  border-left-color: var(--maybe);
+}
+
+.route-range-result[data-fit="short"] {
+  border-left-color: var(--no);
+}
+
+.route-range-big {
+  font-size: 1.2rem;
+  font-weight: 700;
+}

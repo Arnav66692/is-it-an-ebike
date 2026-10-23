@@ -7,7 +7,7 @@
 
 import L from "leaflet";
 import { useEffect, useMemo } from "react";
-import { CircleMarker, MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
 import type { CheckedPiece, PieceStatus } from "@/lib/route/legal";
 import type { RoutePlan } from "@/lib/route/types";
 
@@ -19,6 +19,16 @@ const FIT_PAD = L.point(28, 28);
 /** Solid for a clear answer, dashed for one the check can't confirm, dotted for state law only. */
 const DASH: Record<PieceStatus, string | undefined> = { allowed: undefined, banned: undefined, unclear: "10 8", unchecked: "2 8" };
 const WEIGHT: Record<PieceStatus, number> = { allowed: 6, banned: 8, unclear: 7, unchecked: 6 };
+/** A darker outline under every piece, so the route reads clearly over busy map tiles. */
+const CASING_EXTRA = 4;
+
+/** A lettered pin for the start and the end. The letter is fixed text, never map data. */
+function pin(letter: "A" | "B", kind: "start" | "finish"): L.DivIcon {
+  return L.divIcon({ className: `route-pin route-pin-${kind}`, html: `<span>${letter}</span>`, iconSize: [30, 30], iconAnchor: [15, 15] });
+}
+
+const START_PIN = pin("A", "start");
+const FINISH_PIN = pin("B", "finish");
 
 /** How long the page takes to settle after the route appears, so the second fit sees the final size. */
 const SETTLE_MS = 300;
@@ -70,6 +80,11 @@ export default function RouteMap({ plan, pieces, label }: Props) {
       <MapContainer center={[start.lat, start.lon]} zoom={14} maxZoom={MAX_ZOOM} className="map-canvas" scrollWheelZoom={false} aria-label={label}>
         <TileLayer url={TILE_URL} attribution={ATTRIBUTION} maxZoom={MAX_ZOOM} />
         <FitRoute plan={plan} />
+        {lines
+          .filter((l) => l.positions.length > 1)
+          .map((l) => (
+            <Polyline key={`casing-${l.key}`} positions={l.positions} pathOptions={{ className: "route-casing", weight: WEIGHT[l.status] + CASING_EXTRA, lineCap: "round", lineJoin: "round", interactive: false }} />
+          ))}
         {order.flatMap((status) =>
           lines
             .filter((l) => l.status === status && l.positions.length > 1)
@@ -81,8 +96,8 @@ export default function RouteMap({ plan, pieces, label }: Props) {
               />
             )),
         )}
-        <CircleMarker center={[start.lat, start.lon]} radius={7} pathOptions={{ className: "route-end route-start", weight: 3, fillOpacity: 1, interactive: false }} />
-        <CircleMarker center={[end.lat, end.lon]} radius={8} pathOptions={{ className: "route-end route-finish", weight: 3, fillOpacity: 1, interactive: false }} />
+        <Marker position={[start.lat, start.lon]} icon={START_PIN} keyboard={false} interactive={false} />
+        <Marker position={[end.lat, end.lon]} icon={FINISH_PIN} keyboard={false} interactive={false} />
       </MapContainer>
     </div>
   );

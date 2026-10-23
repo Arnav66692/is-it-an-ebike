@@ -33,8 +33,8 @@ export const VALHALLA_PATHS = { route: "/route", trace: "/trace_attributes", hei
 /** How freely the route may use streets, from 0 to 1. "balanced" favors paths and quiet streets, and "roads" uses streets and bike lanes. */
 export const USE_ROADS = { balanced: 0.25, roads: 1 } as const;
 
-/** How willing the rider is to climb, from 0 (avoid hills) to 1 (don't mind them). Half way suits a family. */
-const USE_HILLS = 0.5;
+/** How willing the rider is to climb, from 0 (avoid hills) to 1 (don't mind them). Half way suits a family, and near zero avoids the big ones. */
+export const USE_HILLS = { normal: 0.5, avoid: 0.05 } as const;
 
 /** What Valhalla is asked for each edge of the route. Nothing else is read. */
 const EDGE_ATTRIBUTES = [
@@ -66,7 +66,7 @@ export function routeBody(request: RouteRequest) {
     locations: [location(request.from), location(request.to)],
     costing: "bicycle",
     costing_options: {
-      bicycle: { bicycle_type: "Hybrid", use_roads: USE_ROADS[request.prefer ?? "balanced"], use_hills: USE_HILLS },
+      bicycle: { bicycle_type: "Hybrid", use_roads: USE_ROADS[request.prefer ?? "balanced"], use_hills: USE_HILLS[request.avoidHills ? "avoid" : "normal"] },
     },
     directions_options: { units: "kilometers" },
   };
@@ -186,6 +186,12 @@ export function parseEdges(json: unknown, pointCount: number): ValhallaEdge[] | 
 
 /** Valhalla's "no reading here" value for a height. Real ground is never below -1000 m. */
 const MIN_HEIGHT_M = -1000;
+
+/** One height per route point, in order, with null where there is no reading. Null when the answer doesn't match the route. */
+export function parseHeightReadings(json: unknown, points: number): (number | null)[] | null {
+  if (!isRecord(json) || !Array.isArray(json.range_height) || json.range_height.length !== points) return null;
+  return json.range_height.map((pair: unknown) => (Array.isArray(pair) && finite(pair[1]) && pair[1] > MIN_HEIGHT_M ? pair[1] : null));
+}
 
 /** The heights along the route in order, in meters, with places that have no reading left out. Null when the answer isn't heights. */
 export function parseHeights(json: unknown): number[] | null {

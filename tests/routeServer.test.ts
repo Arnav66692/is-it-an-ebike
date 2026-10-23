@@ -1273,14 +1273,19 @@ describe("checking the request", () => {
   const good = { from: { lat: 32.9474, lon: -117.2385 }, to: { lat: 32.9572, lon: -117.1893 } };
 
   it("reads a start and an end, and defaults to the balanced mode", () => {
-    expect(parseRouteRequest(good)).toEqual({ ...good, prefer: "balanced" });
+    expect(parseRouteRequest(good)).toEqual({ ...good, prefer: "balanced", avoidHills: false });
+  });
+
+  it("reads avoidHills only as true or false", () => {
+    expect(parseRouteRequest({ ...good, avoidHills: true })).toEqual({ ...good, prefer: "balanced", avoidHills: true });
+    expect(parseRouteRequest({ ...good, avoidHills: "yes" })).toBeNull();
   });
 
   it("reads the avoid points and the roads mode, and ignores fields it doesn't know", () => {
     const avoid = [{ lat: 32.95, lon: -117.2 }];
-    expect(parseRouteRequest({ ...good, avoid, prefer: "roads", note: "ignored" })).toEqual({ ...good, avoid, prefer: "roads" });
-    expect(parseRouteRequest({ ...good, avoid: [] })).toEqual({ ...good, avoid: [], prefer: "balanced" });
-    expect(parseRouteRequest({ from: { ...good.from, label: "home" }, to: good.to })).toEqual({ ...good, prefer: "balanced" });
+    expect(parseRouteRequest({ ...good, avoid, prefer: "roads", note: "ignored" })).toEqual({ ...good, avoid, prefer: "roads", avoidHills: false });
+    expect(parseRouteRequest({ ...good, avoid: [] })).toEqual({ ...good, avoid: [], prefer: "balanced", avoidHills: false });
+    expect(parseRouteRequest({ from: { ...good.from, label: "home" }, to: good.to })).toEqual({ ...good, prefer: "balanced", avoidHills: false });
   });
 
   it("accepts a route in Alaska, Hawaii and Puerto Rico", () => {

@@ -37,6 +37,7 @@ import {
   heightBody,
   isNoRoute,
   parseEdges,
+  parseHeightReadings,
   parseHeights,
   parseRoute,
   routeBody,
@@ -253,18 +254,24 @@ async function readTags(wayIds: readonly number[], fetcher: typeof fetch, limitM
   return tags ? { tags, source: TAGS_READ } : { tags: new Map(), source: TAGS_MISSING };
 }
 
-/** Total climb in meters, or null when Valhalla's height service is slow, busy or has no readings here. */
-async function readClimb(shape: string, fetcher: typeof fetch, gate: Gate, limitMs: number): Promise<number | null> {
+interface HeightsRead {
+  climbMeters: number | null;
+  heights: (number | null)[] | null;
+}
+
+/** Total climb in meters and the height at each point, or nulls when Valhalla's height service is slow, busy or has no readings here. */
+async function readHeights(shape: string, points: number, fetcher: typeof fetch, gate: Gate, limitMs: number): Promise<HeightsRead> {
   const asked = await askValhalla(fetcher, gate, VALHALLA_PATHS.height, heightBody(shape), limitMs);
-  if (asked.kind !== "ok") return null;
+  if (asked.kind !== "ok") return { climbMeters: null, heights: null };
   const heights = parseHeights(asked.json);
-  return heights && heights.length >= 2 ? totalClimbMeters(heights) : null;
+  return { climbMeters: heights && heights.length >= 2 ? totalClimbMeters(heights) : null, heights: parseHeightReadings(asked.json, points) };
 }
 
 interface Details {
   edges: ValhallaEdge[];
   tags: TagsRead;
   climbMeters: number | null;
+  heights: (number | null)[] | null;
 }
 
 /** The edges, then the tags and the climb together. Without the edges there is no plan, so those failures are fatal. */
@@ -274,8 +281,8 @@ async function readDetails(route: ParsedRoute, fetcher: typeof fetch, gate: Gate
   const edges = parseEdges(traced.json, route.points.length);
   if (!edges) return null;
   const wayIds = edges.flatMap((edge) => (edge.wayId === null ? [] : [edge.wayId]));
-  const [tags, climbMeters] = await Promise.all([readTags(wayIds, fetcher, limits.tagsMs), readClimb(route.shape, fetcher, gate, limits.heightMs)]);
-  return { edges, tags, climbMeters };
+  const [tags, height] = await Promise.all([readTags(wayIds, fetcher, limits.tagsMs), readHeights(route.shape, route.points.length, fetcher, gate, limits.heightMs)]);
+  return { edges, tags, climbMeters: height.climbMeters, heights: height.heights };
 }
 
 interface Piece {
@@ -422,6 +429,7 @@ export async function buildRoutePlan(request: RouteRequest, fetcher: typeof fetc
     meters: route.meters,
     seconds: route.seconds,
     climbMeters: details.climbMeters,
+    heights: details.heights,
     segments,
     crossed: alongRoute(boundaries.crossed, segments),
     atEnd: boundaries.atEnd.map(toJurisdiction),
@@ -456,7 +464,9 @@ export function parseRouteRequest(body: unknown): RouteRequest | null {
   if (haversineMeters(from, to) > MAX_ROUTE_METERS) return null;
   const prefer = body.prefer === undefined ? "balanced" : body.prefer;
   if (prefer !== "balanced" && prefer !== "roads") return null;
-  if (body.avoid === undefined) return { from, to, prefer };
+  if (body.avoidHills !== undefined && typeof body.avoidHills !== "boolean") return null;
+  const avoidHills = body.avoidHills === true;
+  if (body.avoid === undefined) return { from, to, prefer, avoidHills };
   if (!Array.isArray(body.avoid) || body.avoid.length > MAX_AVOID_POINTS) return null;
   const avoid: RoutePoint[] = [];
   for (const item of body.avoid) {
@@ -464,7 +474,7 @@ export function parseRouteRequest(body: unknown): RouteRequest | null {
     if (!point) return null;
     avoid.push(point);
   }
-  return { from, to, avoid, prefer };
+  return { from, to, avoid, prefer, avoidHills };
 }
 
 // A repeat of the same route is served from memory. The key is a hash of the request rounded to
@@ -484,7 +494,7 @@ function rounded(point: RoutePoint): string {
 
 function cacheKey(request: RouteRequest): string {
   const avoid = [...new Set((request.avoid ?? []).map(rounded))].sort();
-  const text = JSON.stringify([rounded(request.from), rounded(request.to), avoid, request.prefer ?? "balanced"]);
+  const text = JSON.stringify([rounded(request.from), rounded(request.to), avoid, request.prefer ?? "balanced", request.avoidHills === true]);
   return createHash("sha256").update(text).digest("hex");
 }
 

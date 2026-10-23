@@ -91,6 +91,8 @@ export interface RoutePlan {
   seconds: number;
   /** Total climb along the route, or null when the router didn't say. */
   climbMeters: number | null;
+  /** The ground height at each point, in meters, null where there is no reading. Missing when the height service didn't answer. */
+  heights?: (number | null)[] | null;
   segments: RouteSegment[];
   /** Every Census area the route crosses. */
   crossed: Jurisdiction[];
@@ -108,4 +110,6 @@ export interface RouteRequest {
   avoid?: RoutePoint[];
   /** "roads" keeps to streets and bike lanes when paths or sidewalks are the problem. */
   prefer?: "balanced" | "roads";
+  /** Steer around steep climbs, for a weak motor or a low battery. */
+  avoidHills?: boolean;
 }

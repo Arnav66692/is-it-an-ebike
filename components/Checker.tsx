@@ -661,7 +661,7 @@ export function Checker() {
           {summary ? announcement(summary, lang, unchecked, uncheckedDistricts) : ""}
         </p>
         {result && age !== null && date !== null && !questionsFirst ? (
-          <RoutePlanner lang={lang} facts={facts} riderAge={age} rideDate={date} sduhsdCampus={ride.places.includes("sduhsd_campuses")} />
+          <RoutePlanner lang={lang} facts={facts} riderAge={age} rideDate={date} sduhsdCampus={ride.places.includes("sduhsd_campuses")} bikeId={initial.bike} />
         ) : null}
         {result ? (
           <div className="actions no-print">
