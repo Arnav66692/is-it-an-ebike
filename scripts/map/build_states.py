@@ -4,12 +4,13 @@ public/map/states/, plus index.json, from OpenStreetMap answers and Overture Map
 Usage: python3 build_states.py --osm DIR --overture FILE --overture-region sd|ca|us
            --overture-release 2026-10-21.0 --seed public/map/san-diego.json --out public/map/states
 
-A state read from OpenStreetMap gets a full file (racks and public repair stations come only from
-there), with Overture shops and repair shops merged in. A state the Overture read covered but
-OpenStreetMap did not gets a shops-only file, marked racksSaved false, so the page shows its shops
-at once and asks the live route for racks. The seed snapshot's box becomes its own full area inside
-its state, and that state's shops-only file leaves the box out. A state neither read covered is
-listed as missing, so the page asks the live route for everything there.
+--osm DIR holds one Overpass-style answer per state, from qlever_racks.py (QLever over all of
+OpenStreetMap) or overpass_states.py. A state read from OpenStreetMap gets a full file (racks and
+public repair stations come only from there), with Overture shops and repair shops merged in. A
+state the Overture read covered but OpenStreetMap did not gets a shops-only file, marked racksSaved
+false, so the page shows its shops at once and asks the live route for racks. The seed snapshot's
+box becomes its own full area inside its state, and that state's file leaves the box out. A state
+neither read covered is listed as missing, so the page asks the live route for everything there.
 
 Compact format, version 1:
   r: racks as [lat, lon, capacity or 0, flags], flags 1 covered, 2 not covered, 4 private or customers
@@ -80,7 +81,7 @@ def phone_key(raw):
     return digits[-10:] if len(digits) >= 10 else None
 
 
-def same_place(a, b):
+def same_place(a, b, phones=True):
     d = meters((a["y"], a["x"]), (b["y"], b["x"]))
     na, nb = a.get("n"), b.get("n")
     if d <= DEDUPE_M and similar_names(na, nb):
@@ -90,7 +91,7 @@ def same_place(a, b):
     if d <= CLOSE_M and name_tokens(na) & name_tokens(nb):
         return True
     # One shop listed at an old and a new address shares its phone number.
-    if d <= SAME_PHONE_M and phone_key(a.get("p")) and phone_key(a.get("p")) == phone_key(b.get("p")):
+    if phones and d <= SAME_PHONE_M and phone_key(a.get("p")) and phone_key(a.get("p")) == phone_key(b.get("p")):
         return True
     return d <= UNNAMED_DEDUPE_M and (not na or not nb)
 
@@ -226,6 +227,31 @@ def merge_into(osm_place, ov):
     return merged
 
 
+def dedupe_osm(places):
+    """Keeps a shop OpenStreetMap lists twice once, say as a point and as its building, or once
+    named and once not. Same rules as the merge, less the phone rule, since two branches can share
+    a number. The first copy keeps its fields and the second fills its gaps. Public repair stations
+    are left as they are."""
+    out, folded = [], 0
+    for p in places:
+        hit = None if p["k"] == "st" else next(
+            (i for i, q in enumerate(out) if q["k"] != "st" and abs(q["y"] - p["y"]) < NEAR_DEG and same_place(q, p, phones=False)), None)
+        if hit is None:
+            out.append(p)
+            continue
+        kept = dict(out[hit])
+        for key in ("n", "a", "p", "w", "h"):
+            kept[key] = kept.get(key) or p.get(key)
+        if kept["k"] == "r" and p["k"] == "s":
+            kept["k"] = "s"
+            kept["f"] = 1
+        else:
+            kept["f"] = 1 if kept.get("f") or p.get("f") or (kept["k"] == "s" and p["k"] == "r") else 0
+        out[hit] = kept
+        folded += 1
+    return out, folded
+
+
 def find_same(places, ov, osm_only):
     return next((i for i, p in enumerate(places) if p["k"] != "st" and (not osm_only or "o" in p["s"])
                  and abs(p["y"] - ov["y"]) < NEAR_DEG and same_place(p, ov)), None)
@@ -319,7 +345,7 @@ def osm_by_state(osm_dir):
         data = json.load(open(path))
         meta = data.get("_meta") or {}
         if meta.get("state") in STATES:
-            entry = found.setdefault(meta["state"], {"elements": [], "read": meta.get("read")})
+            entry = found.setdefault(meta["state"], {"elements": [], "read": meta.get("read"), "source": meta.get("source")})
             entry["elements"] += data.get("elements", [])
     return found
 
@@ -328,17 +354,20 @@ def area_jobs(st, box, osm_state, ov, seed_area, covered):
     """The files one state gets. osm_state is its OpenStreetMap answer or None, ov its Overture
     places, seed_area the seed snapshot when it lies in this state, covered whether the Overture
     read covered the whole state. Each job is one area: its id, box, OpenStreetMap elements and
-    read date, Overture places, and whether its racks are saved."""
-    if osm_state is not None:
-        return [{"id": st, "box": box, "elements": osm_state["elements"], "osmRead": osm_state["read"],
-                 "overture": ov, "racksSaved": True}]
+    read date, Overture places, and whether its racks are saved. The seed box keeps its own file,
+    and the state's file leaves the box out, so no spot is listed twice."""
     jobs = []
+    elements = osm_state["elements"] if osm_state is not None else []
     if seed_area is not None:
         sb = seed_area["box"]
         jobs.append({"id": st + "-sd", "box": sb, "elements": seed_area["elements"], "osmRead": seed_area["read"],
                      "overture": [p for p in ov if in_box(p["y"], p["x"], sb)], "racksSaved": True})
         ov = [p for p in ov if not in_box(p["y"], p["x"], sb)]
-    if covered:
+        elements = [el for el in elements if not (osm_point(el) and in_box(*osm_point(el), sb))]
+    if osm_state is not None:
+        jobs.append({"id": st, "box": box, "elements": elements, "osmRead": osm_state["read"], "overture": ov,
+                     "racksSaved": True})
+    elif covered:
         jobs.append({"id": st, "box": box, "elements": [], "osmRead": None, "overture": ov, "racksSaved": False})
     return jobs
 
@@ -377,6 +406,7 @@ def main():
         for job in jobs:
             ov = job["overture"]
             racks, osm_places = osm_rows(job["elements"])
+            osm_places, folded = dedupe_osm(osm_places)
             places, merge_stats = merge_places(osm_places, ov)
             read = {"osm": job["osmRead"], "overture": args.overture_release if ov else None}
             sources = (["osm"] if job["racksSaved"] else []) + (["overture"] if ov else [])
@@ -387,7 +417,7 @@ def main():
                 areas.append({"id": part_id, "state": st, "bbox": [round(v, 4) for v in part_box], "file": part_id + ".json",
                               "counts": counts(pr, pp), "sources": sources, "racksSaved": job["racksSaved"], "read": read,
                               "bytes": len(text.encode())})
-            totals[job["id"]] = {"osm_places": len(osm_places), "overture_places": len(ov), **merge_stats}
+            totals[job["id"]] = {"osm_places": len(osm_places), "osm_twice": folded, "overture_places": len(ov), **merge_stats}
     index = {
         "v": 1,
         "built": time.strftime("%Y-%m-%d"),
@@ -396,6 +426,9 @@ def main():
                  "Overture Maps Places, CDLA Permissive 2.0, with ODbL for rows Overture took from OpenStreetMap.",
         "overture": {"release": args.overture_release, "region": args.overture_region, "minConfidence": MIN_CONFIDENCE,
                      "dropped": ov_dropped},
+        "osm": {"sources": sorted({e["source"] for e in osm.values() if e.get("source")}),
+                "read": sorted({e["read"] for e in osm.values() if e.get("read")}),
+                "seed": {"id": seed_state + "-sd", "read": seed["read"]}},
         "areas": areas,
         "missing": missing,
     }

@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from build_states import area_jobs, merge_places, osm_rows, overture_rows, same_place, us_phone  # noqa: E402
+from build_states import area_jobs, dedupe_osm, merge_places, osm_rows, overture_rows, same_place, us_phone  # noqa: E402
 
 
 def place(name, y, x, kind="s", source="o", **extra):
@@ -83,6 +83,29 @@ class MergeRules(unittest.TestCase):
             os.unlink(f.name)
         self.assertEqual([(p["n"], p["k"]) for p in kept], [("San Juan Bikes", "s"), ("Kept", "r")])
         self.assertEqual(dropped, {"low_confidence": 1, "closed": 1, "no_name": 0, "outside_us": 1})
+
+    def test_a_state_with_osm_and_the_seed_box_lists_each_spot_in_one_file(self):
+        box = (32.5, -124.5, 42.0, -114.1)
+        seed = {"box": (32.53, -117.6, 33.51, -116.08), "elements": [{"type": "node", "id": 1}], "read": "2026-10-22"}
+        rack_in = {"type": "node", "id": 2, "lat": 32.8, "lon": -117.1, "tags": {"amenity": "bicycle_parking"}}
+        rack_out = {"type": "way", "id": 3, "center": {"lat": 34.0, "lon": -118.2}, "tags": {"amenity": "bicycle_parking"}}
+        inside, outside = place("In", 32.8, -117.1, source="v"), place("Out", 34.0, -118.2, source="v")
+        jobs = area_jobs("CA", box, {"elements": [rack_in, rack_out], "read": "2026-09-21"}, [inside, outside], seed, True)
+        self.assertEqual([(j["id"], j["racksSaved"], j["osmRead"], [p["n"] for p in j["overture"]]) for j in jobs],
+                         [("CA-sd", True, "2026-10-22", ["In"]), ("CA", True, "2026-09-21", ["Out"])])
+        self.assertEqual([el["id"] for el in jobs[0]["elements"]], [1])
+        self.assertEqual([el["id"] for el in jobs[1]["elements"]], [3])
+
+    def test_a_shop_osm_lists_twice_is_kept_once_but_branches_sharing_a_phone_stay(self):
+        point = place("Cosmic Cycles", 37.83954, -122.28284, a="5651 San Pablo Avenue")
+        unnamed = place(None, 37.83956, -122.28285)
+        building = place("Cosmic Cycles", 37.8399, -122.2829, p="(510) 693-8758", f=1)
+        stand = place(None, 37.83955, -122.28284, kind="st")
+        branch = place("Bike World North", 37.87, -122.28, p="(510) 693-8758")
+        kept, folded = dedupe_osm([unnamed, point, building, stand, branch])
+        self.assertEqual(folded, 2)
+        self.assertEqual([(p["n"], p["k"]) for p in kept], [("Cosmic Cycles", "s"), (None, "st"), ("Bike World North", "s")])
+        self.assertEqual((kept[0]["a"], kept[0]["p"], kept[0]["f"], kept[0]["y"]), ("5651 San Pablo Avenue", "(510) 693-8758", 1, 37.83956))
 
     def test_us_phone(self):
         self.assertEqual(us_phone("+18589976783"), "(858) 997-6783")
