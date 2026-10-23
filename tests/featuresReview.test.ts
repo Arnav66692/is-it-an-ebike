@@ -190,7 +190,8 @@ describe("mods answers", () => {
         }
       }
     }
-  });
+    // It draws every answer card in both languages, about a second alone but over 5 under a busy machine.
+  }, 30_000);
 
   it("separates mods that break the law from ones that can't be confirmed or need an answer", () => {
     const unsure = answerMod(MODS_DATA, throttle, 3, 1, TODAY, false);
