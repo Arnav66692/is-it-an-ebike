@@ -178,8 +178,13 @@ export function spotKindText(lang: Lang, spot: Spot): string {
   return mapText(lang, spot.stand === false ? "kind_repairShop" : "kind_stand");
 }
 
+/** A count with thousands marks, like 18,399, since a whole state's racks run to five digits. */
+export function formatCount(lang: Lang, n: number): string {
+  return n.toLocaleString(lang === "es" ? "es-US" : "en-US");
+}
+
 function counted(lang: Lang, n: number, one: MapKey, many: MapKey): string {
-  return n === 1 ? mapText(lang, one) : mapText(lang, many, { n });
+  return n === 1 ? mapText(lang, one) : mapText(lang, many, { n: formatCount(lang, n) });
 }
 
 /** "38 racks, 4 bike shops in view.", with the repair spots only when there are some. */

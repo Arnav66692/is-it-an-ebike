@@ -9,7 +9,7 @@ import L from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import type { Lang } from "@/lib/i18n/names";
-import { mapText } from "@/lib/i18n/map";
+import { formatCount, mapText } from "@/lib/i18n/map";
 import { boundsOf, CLUSTER_CELL_PX, CLUSTER_OFF_ZOOM, clusterGrid, clusterSize, type Cluster } from "@/lib/map/mapState";
 import { fitView, US_CENTER, US_ZOOM, type Bounds, type LatLon, type Spot, type SpotKind } from "@/lib/map/osm";
 import { PIN_SIZE, pinSvg } from "@/lib/map/pins";
@@ -72,7 +72,7 @@ function clusterIcon(count: number): L.DivIcon {
   if (hit) return hit;
   const size = clusterSize(count);
   const px = CLUSTER_PX[size];
-  const made = L.divIcon({ className: `map-cluster map-cluster-${size}`, html: `<span>${count}</span>`, iconSize: [px, px], iconAnchor: [px / 2, px / 2] });
+  const made = L.divIcon({ className: `map-cluster map-cluster-${size}`, html: `<span>${formatCount("en", count)}</span>`, iconSize: [px, px], iconAnchor: [px / 2, px / 2] });
   clusterIcons.set(count, made);
   return made;
 }
@@ -197,7 +197,7 @@ function Marks({ lang, spots, selectedId, onSelect, onClose, markers }: MarksPro
           key={c.key}
           position={map.unproject(L.point(c.x, c.y), zoom)}
           icon={clusterIcon(c.ids.length)}
-          title={mapText(lang, "clusterTitle", { n: c.ids.length })}
+          title={mapText(lang, "clusterTitle", { n: formatCount(lang, c.ids.length) })}
           keyboard={false}
           eventHandlers={{ click: () => zoomInto(c) }}
         />

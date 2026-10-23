@@ -5,7 +5,7 @@
 
 import { useEffect, useId, useRef } from "react";
 import type { Lang } from "@/lib/i18n/names";
-import { mapText, spotKindText } from "@/lib/i18n/map";
+import { formatCount, mapText, spotKindText } from "@/lib/i18n/map";
 import type { ChipCount } from "@/lib/map/mapState";
 import { formatDistance, type NearSpot, type Spot, type SpotKind } from "@/lib/map/osm";
 import { pinSvg } from "@/lib/map/pins";
@@ -24,7 +24,7 @@ export function FilterChips({ lang, chips, onToggle }: { lang: Lang; chips: read
         <button key={c.kind} type="button" className="map-chip" aria-pressed={c.on} onClick={() => onToggle(c.kind)}>
           <Pin kind={c.kind} className="map-chip-pin" />
           <span>{mapText(lang, `chip_${c.kind}`)}</span>
-          {c.count !== null ? <span className="map-chip-count">{c.count}</span> : null}
+          {c.count !== null ? <span className="map-chip-count">{formatCount(lang, c.count)}</span> : null}
         </button>
       ))}
     </div>
