@@ -1,7 +1,8 @@
 "use client";
 
 // The map of bike racks, bike shops and repair stations. The rider picks where to look, by place
-// name or by their own location, and the page reads the saved state files for what is in view.
+// name or by their own location, and the page reads the saved state files for what is in view. A
+// place search fits the whole place, so a state shows every rack and shop in it.
 // Only where no file is saved does it ask our own server, which asks OpenStreetMap's Overpass
 // servers. After that first look the page waits for "Search this
 // area", so a pan never fires a request on its own. Chips above the map show or hide each kind,
@@ -19,6 +20,7 @@ import {
   canSearchArea,
   chipCounts,
   filterSpots,
+  grownBounds,
   listSpots,
   moveToSpot,
   selectReducer,
@@ -26,16 +28,21 @@ import {
   type AreaState,
   type KindFilter,
 } from "@/lib/map/mapState";
-import { countSpots, inBounds, MAX_RACKS, MIN_DATA_ZOOM, zoomForPlace, type FoundPlace, type LatLon, type Spot, type SpotKind } from "@/lib/map/osm";
+import { countSpots, inBounds, MAX_RACKS, placeTarget, SAVED_DATA_ZOOM, type Bounds, type FoundPlace, type LatLon, type Spot, type SpotKind } from "@/lib/map/osm";
 import { SiteHeader, useLang } from "./SiteHeader";
 import MapView, { prefersReducedMotion, type MapCommand, type MapViewState } from "./MapView";
 import { FilterChips, MapControls, MapStateCard, NearestList, type MapCardTone } from "./MapParts";
 
-/** "racks" means the saved shops are shown while the live racks load, and "racksFailed" that they didn't come. */
-type DataStatus = "idle" | "loading" | "ready" | "racks" | "rate" | "failed" | "racksFailed";
+/**
+ * "racks" means the saved shops are shown while the live racks load, and "racksFailed" that they
+ * didn't come. "zoom" means the view is too wide for the live route, outside the saved states.
+ */
+type DataStatus = "idle" | "loading" | "ready" | "racks" | "rate" | "failed" | "racksFailed" | "zoom";
 
 /** How many of the nearest spots the list names. */
 const LIST_SIZE = 10;
+/** Marks this share of the view past each edge are drawn too, so a short pan shows them at once. */
+const MARK_MARGIN = 0.5;
 /** How close the map goes for the rider's location. */
 const LOCATE_ZOOM = 16;
 const GEO_TIMEOUT_MS = 10_000;
@@ -75,7 +82,7 @@ function useSpots(area: AreaState): { spots: Spot[]; capped: boolean; status: Da
       .then((got) => setAnswer({ nonce, spots: got.spots, capped: got.capped, status: "ready" }))
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
-        const status = err instanceof MapFetchError && err.failure === "rate" ? "rate" : "failed";
+        const status = err instanceof MapFetchError ? err.failure : "failed";
         setAnswer((cur) => {
           const shopsShown = cur?.nonce === nonce && cur.status === "racks";
           return { nonce, spots: cur?.spots ?? NO_SPOTS, capped: false, status: shopsShown ? "racksFailed" : status };
@@ -92,6 +99,8 @@ function useSpots(area: AreaState): { spots: Spot[]; capped: boolean; status: Da
 interface Home {
   center: LatLon;
   zoom: number;
+  /** The place's box, fitted again on Recenter. */
+  bounds: Bounds | null;
 }
 
 export function BikeMap() {
@@ -118,6 +127,13 @@ export function BikeMap() {
   const inView = useMemo(() => (view ? spots.filter((s) => inBounds(s, view.bounds)) : []), [spots, view]);
   const shownInView = useMemo(() => filterSpots(inView, filter), [inView, filter]);
   const rows = useMemo(() => (view ? listSpots(shownInView, view.center, LIST_SIZE, selectedId) : []), [shownInView, view, selectedId]);
+  // A whole state can hold thousands of racks, so only the marks near the screen go on the map.
+  // The picked spot always stays, so its popup has a mark.
+  const marks = useMemo(() => {
+    if (!view) return shown;
+    const near = grownBounds(view.bounds, MARK_MARGIN);
+    return shown.filter((s) => s.id === selectedId || inBounds(s, near));
+  }, [shown, view, selectedId]);
   const chips = chipCounts(inView, filter, status === "ready" || spots.length > 0);
 
   function move(center: LatLon, zoom: number, extra: Partial<MapCommand> = {}) {
@@ -125,17 +141,18 @@ export function BikeMap() {
     setCommand({ nonce: nonce.current, center, zoom, ...extra });
   }
 
-  /** A jump the rider asked for by place or location, which searches by itself when it lands. */
-  function jumpTo(center: LatLon, zoom: number) {
+  /** A jump the rider asked for by place or location, which searches by itself when it lands. A box is fitted whole. */
+  function jumpTo(center: LatLon, zoom: number, bounds: Bounds | null = null) {
     dispatchArea({ type: "autoNext" });
-    setHome({ center, zoom });
-    move(center, zoom, { focus: true });
+    setHome({ center, zoom, bounds });
+    move(center, zoom, bounds ? { focus: true, bounds } : { focus: true });
   }
 
   function goTo(place: FoundPlace) {
     setFound([]);
     setNote({ key: "placeMoved", q: place.label });
-    jumpTo({ lat: place.lat, lon: place.lon }, zoomForPlace(place));
+    const to = placeTarget(place);
+    jumpTo(to.center, to.zoom, to.bounds);
   }
 
   function onView(next: MapViewState) {
@@ -199,14 +216,22 @@ export function BikeMap() {
   }
 
   function onRecenter() {
-    if (home) move(home.center, home.zoom, { animate: !prefersReducedMotion() });
+    if (home) move(home.center, home.zoom, home.bounds ? { animate: !prefersReducedMotion(), bounds: home.bounds } : { animate: !prefersReducedMotion() });
   }
 
-  const zoomedOut = !view || view.zoom < MIN_DATA_ZOOM;
+  const zoomedOut = !view || view.zoom < SAVED_DATA_ZOOM;
   const problem = status === "rate" || status === "failed" || status === "racksFailed";
   const waiting = status === "loading" || status === "racks";
   const tone: MapCardTone | null =
-    status === "idle" ? "empty" : waiting ? "loading" : problem ? "busy" : shownInView.length === 0 && !zoomedOut ? "none" : null;
+    status === "idle"
+      ? "empty"
+      : waiting
+        ? "loading"
+        : problem
+          ? "busy"
+          : status === "zoom" || (shownInView.length === 0 && !zoomedOut)
+            ? "none"
+            : null;
   const stateText =
     status === "idle"
       ? mapText(lang, "emptyState")
@@ -220,7 +245,9 @@ export function BikeMap() {
               ? mapText(lang, "failed")
               : status === "racksFailed"
                 ? mapText(lang, "racksFailed")
-                : mapText(lang, "noneHere");
+                : status === "zoom"
+                  ? mapText(lang, "zoomCloser")
+                  : mapText(lang, "noneHere");
   const statusLine = tone === null ? mapCountLine(lang, countSpots(shownInView)) : stateText;
   const showCapped = status === "ready" && capped;
   const offerSearch = !waiting && canSearchArea(area, view, capped);
@@ -286,7 +313,7 @@ export function BikeMap() {
           <div className="map-frame">
             <MapView
               lang={lang}
-              spots={shown}
+              spots={marks}
               command={command}
               selectedId={selectedId}
               onView={onView}

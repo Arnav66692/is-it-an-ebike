@@ -3,7 +3,7 @@
 // no CORS headers, so asking from the server is the only way the page can tell "busy" from
 // "broken". Answers are cached by Vercel's CDN per rounded view, and nothing else is stored.
 
-import { OVERPASS_URL, overpassBody, overpassRemarkError, roundBounds, type Bounds } from "./osm";
+import { LIVE_MAX_SPAN_DEG, OVERPASS_URL, overpassBody, overpassRemarkError, roundBounds, type Bounds } from "./osm";
 
 /** Tried in this order. The first is the main public server, the rest are public mirrors. */
 export const OVERPASS_ENDPOINTS: readonly string[] = [
@@ -23,8 +23,8 @@ const LAT_MIN = 15;
 const LAT_MAX = 72;
 const LON_MIN = -180;
 const LON_MAX = -60;
-/** A zoom 13 view on a large screen is well under this, so a bigger box is not from the page. */
-export const MAX_SPAN_DEG = 0.75;
+/** A zoom 13 view on a large screen is well under this, so a bigger box is not from the page. The page checks the same limit first. */
+export const MAX_SPAN_DEG = LIVE_MAX_SPAN_DEG;
 
 const PARAMS = ["south", "west", "north", "east"] as const;
 

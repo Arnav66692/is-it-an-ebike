@@ -1,7 +1,8 @@
 // The network calls the map page makes, each only when the rider moves the map close enough or
 // submits a place. Racks, shops and repair shops come from the saved state files in
 // public/map/states/ (lib/map/stateData.ts), and every state, DC and Puerto Rico has its racks
-// saved, so a US view answers at once with no live call. Our own /api/map route is the fallback:
+// saved, so a US view answers at once with no live call, from a whole state down to one street.
+// Our own /api/map route is the fallback, for small views only:
 // when the index or a file a view needs doesn't load, for a view off every state's box, and for
 // the racks of a file that holds shops only or a state with no file, which the data has none of
 // now. The route asks the public Overpass servers and mirrors (lib/map/overpassServer.ts). Answers
@@ -11,6 +12,8 @@
 import {
   boundsKey,
   countSpots,
+  inBounds,
+  LIVE_MAX_SPAN_DEG,
   MAX_RACKS,
   nominatimUrl,
   overpassRemarkError,
@@ -33,14 +36,14 @@ import {
   type StateIndex,
 } from "./stateData";
 
-/** Why a call failed, in the words the page picks a message by. */
-export type FetchFailure = "rate" | "failed";
+/** Why a call failed, in the words the page picks a message by. "zoom" means the view is too wide for the live route. */
+export type FetchFailure = "rate" | "failed" | "zoom";
 
 export class MapFetchError extends Error {
   readonly failure: FetchFailure;
 
   constructor(failure: FetchFailure) {
-    super(failure === "rate" ? "rate limited" : "request failed");
+    super(failure === "rate" ? "rate limited" : failure === "zoom" ? "view too wide" : "request failed");
     this.failure = failure;
     this.name = "MapFetchError";
   }
@@ -129,12 +132,18 @@ function loadArea(area: StateArea, fetcher: typeof fetch): Promise<Spot[] | null
   return file;
 }
 
-/** Saved spots in a view, with racks capped the same way a live answer is. */
+/**
+ * Every saved spot in a view, with no cap, so the counts for a whole state are true. The map draws
+ * only the marks near the screen and groups crowded ones into bubbles.
+ */
 export function spotsInView(all: readonly Spot[], b: Bounds): SpotAnswer {
-  const inView = all.filter((s) => s.lat >= b.south && s.lat <= b.north && s.lon >= b.west && s.lon <= b.east);
-  let racks = 0;
-  const spots = inView.filter((s) => s.kind !== "rack" || ++racks <= MAX_RACKS);
-  return { spots, capped: racks > MAX_RACKS };
+  return { spots: all.filter((s) => inBounds(s, b)), capped: false };
+}
+
+/** True when a view is wider than the live route takes, after rounding out the way the request does. */
+export function tooWideForLive(bounds: Bounds): boolean {
+  const r = roundBounds(bounds);
+  return r.north - r.south > LIVE_MAX_SPAN_DEG || r.east - r.west > LIVE_MAX_SPAN_DEG;
 }
 
 interface SavedView {
@@ -181,6 +190,8 @@ export async function fetchSpots(
 
 /** The live route's answer for a view, from the cache when asked before. */
 async function liveSpots(bounds: Bounds, signal: AbortSignal | undefined, fetcher: typeof fetch, waitMs: number): Promise<SpotAnswer> {
+  // Our server refuses a wider view, so say "zoom in" instead of asking.
+  if (tooWideForLive(bounds)) throw new MapFetchError("zoom");
   const key = boundsKey(bounds);
   const hit = cache.get(key);
   if (hit) return hit;

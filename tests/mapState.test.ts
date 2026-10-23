@@ -20,7 +20,7 @@ import {
   toggleKind,
   type AreaState,
 } from "@/lib/map/mapState";
-import { MIN_DATA_ZOOM, type Spot, type SpotKind } from "@/lib/map/osm";
+import { MIN_DATA_ZOOM, SAVED_DATA_ZOOM, type Spot, type SpotKind } from "@/lib/map/osm";
 import { MAP_TEXT } from "@/lib/i18n/map";
 
 function spot(id: string, kind: SpotKind, lat: number, lon: number): Spot {
@@ -186,7 +186,7 @@ describe("Search this area", () => {
 
   it("hides the button too far out, and searches by itself again after a place pick", () => {
     const first: AreaState = areaReducer(AREA_START, { type: "view", view: view(0) });
-    expect(canSearchArea(first, view(0.5, MIN_DATA_ZOOM - 1), false)).toBe(false);
+    expect(canSearchArea(first, view(0.5, SAVED_DATA_ZOOM - 1), false)).toBe(false);
     const picking = areaReducer(first, { type: "autoNext" });
     expect(canSearchArea(picking, view(0.5), false)).toBe(false);
     const moved = areaReducer(picking, { type: "view", view: view(0.5) });

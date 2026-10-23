@@ -2,7 +2,7 @@
 // "Search this area" rule are tested without a browser. components/BikeMap.tsx and
 // components/MapView.tsx call these.
 
-import { distanceMeters, MIN_DATA_ZOOM, nearestSpots, showsAs, SPOT_KINDS, type Bounds, type LatLon, type NearSpot, type Spot, type SpotKind } from "./osm";
+import { distanceMeters, MIN_DATA_ZOOM, nearestSpots, SAVED_DATA_ZOOM, showsAs, SPOT_KINDS, type Bounds, type LatLon, type NearSpot, type Spot, type SpotKind } from "./osm";
 
 // ---------- Filters ----------
 
@@ -122,6 +122,13 @@ export function clusterSize(count: number): "s" | "m" | "l" {
   return "l";
 }
 
+/** A box grown by a share of its size on every side, so marks just off screen are ready when the rider pans. */
+export function grownBounds(b: Bounds, share: number): Bounds {
+  const dLat = (b.north - b.south) * share;
+  const dLon = (b.east - b.west) * share;
+  return { south: b.south - dLat, west: b.west - dLon, north: b.north + dLat, east: b.east + dLon };
+}
+
 /** The box around a group of spots, for zooming in on a bubble. */
 export function boundsOf(spots: readonly LatLon[]): Bounds | null {
   if (spots.length === 0) return null;
@@ -193,7 +200,7 @@ export interface AreaState {
   searchedZoom: number;
   /** Goes up with every search, so "Try again" on the same view asks again. */
   nonce: number;
-  /** The next view that rests at the data zoom searches by itself, after a place pick or my location. */
+  /** The next view searches by itself, after a place pick or my location, from the saved data zoom in. */
   autoNext: boolean;
 }
 
@@ -211,18 +218,20 @@ function searchView(state: AreaState, view: ViewLike): AreaState {
 }
 
 /**
- * When the map asks for data. The first view at the data zoom, and the first view after a place
- * pick or my location, search by themselves. Any other move waits for "Search this area".
+ * When the map asks for data. The first view after a place pick or my location searches by
+ * itself, from the saved data zoom in, so a whole state can show at once. Without a pick, the
+ * first view searches by itself only at the live data zoom, so opening the page loads nothing.
+ * Any other move waits for "Search this area".
  */
 export function areaReducer(state: AreaState, action: AreaAction): AreaState {
   switch (action.type) {
     case "autoNext":
       return { ...state, autoNext: true };
     case "view":
-      if (action.view.zoom < MIN_DATA_ZOOM) return state;
-      return state.autoNext || state.searched === null ? searchView(state, action.view) : state;
+      if (state.autoNext) return action.view.zoom < SAVED_DATA_ZOOM ? state : searchView(state, action.view);
+      return state.searched === null && action.view.zoom >= MIN_DATA_ZOOM ? searchView(state, action.view) : state;
     case "search":
-      return action.view.zoom < MIN_DATA_ZOOM ? state : searchView(state, action.view);
+      return action.view.zoom < SAVED_DATA_ZOOM ? state : searchView(state, action.view);
     case "retry":
       return state.searched === null ? state : { ...state, nonce: state.nonce + 1 };
   }
@@ -237,7 +246,7 @@ function contains(outer: Bounds, inner: Bounds): boolean {
  * area last asked for, or the racks there were capped and the rider zoomed in to see more.
  */
 export function canSearchArea(state: AreaState, view: ViewLike | null, capped: boolean): boolean {
-  if (!view || view.zoom < MIN_DATA_ZOOM || state.searched === null || state.autoNext) return false;
+  if (!view || view.zoom < SAVED_DATA_ZOOM || state.searched === null || state.autoNext) return false;
   if (!contains(state.searched, view.bounds)) return true;
   return capped && view.zoom > state.searchedZoom;
 }

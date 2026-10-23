@@ -11,7 +11,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import type { Lang } from "@/lib/i18n/names";
 import { mapText } from "@/lib/i18n/map";
 import { boundsOf, CLUSTER_CELL_PX, CLUSTER_OFF_ZOOM, clusterGrid, clusterSize, type Cluster } from "@/lib/map/mapState";
-import { US_CENTER, US_ZOOM, type Bounds, type LatLon, type Spot, type SpotKind } from "@/lib/map/osm";
+import { fitView, US_CENTER, US_ZOOM, type Bounds, type LatLon, type Spot, type SpotKind } from "@/lib/map/osm";
 import { PIN_SIZE, pinSvg } from "@/lib/map/pins";
 import { SpotCard, spotTitle } from "./SpotFacts";
 
@@ -26,6 +26,8 @@ export interface MapCommand {
   nonce: number;
   center: LatLon;
   zoom: number;
+  /** A place's box to fit whole, in place of center and zoom, so a state search shows the state. */
+  bounds?: Bounds;
   /** A spot whose popup opens once the map is there. */
   openId?: string;
   /** Move keyboard focus to the map, so the arrow keys pan it right away. */
@@ -111,12 +113,15 @@ function Commander({ command, markers }: { command: MapCommand | null; markers: 
     const open = () => {
       if (command.openId) markers.current.get(command.openId)?.openPopup();
     };
-    const target = L.latLng(command.center.lat, command.center.lon);
+    const fit = command.bounds ? fitView(command.bounds, map.getSize()) : null;
+    const center = fit?.center ?? command.center;
+    const zoom = fit?.zoom ?? command.zoom;
+    const target = L.latLng(center.lat, center.lon);
     if (command.animate) {
       map.once("moveend", open);
-      map.flyTo(target, command.zoom, { duration: FLY_SECONDS });
+      map.flyTo(target, zoom, { duration: FLY_SECONDS });
     } else {
-      map.setView(target, command.zoom, { animate: false });
+      map.setView(target, zoom, { animate: false });
       open();
     }
     if (command.focus) map.getContainer().focus({ preventScroll: true });

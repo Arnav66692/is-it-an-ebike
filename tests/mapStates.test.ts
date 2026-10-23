@@ -210,18 +210,19 @@ describe("falling back to the live route", () => {
 
   it("asks the live route in a state with no file, when a file is missing, or when the index is", async () => {
     const missingState = fetcherWith({ "/map/states/index.json": index });
-    expect((await fetchSpots(box(34, 14, 36, 16), undefined, missingState as unknown as typeof fetch)).spots[0].source).toBeUndefined();
+    // Live views are small, since the live route refuses one wider than 0.75 degrees.
+    expect((await fetchSpots(box(34.9, 14.9, 35.1, 15.1), undefined, missingState as unknown as typeof fetch)).spots[0].source).toBeUndefined();
     expect(missingState.mock.calls.some((c) => String(c[0]).startsWith("/api/map"))).toBe(true);
 
     clearStateData();
     const missingFile = fetcherWith({ "/map/states/index.json": index });
-    await fetchSpots(box(14, 14, 16, 16), undefined, missingFile as unknown as typeof fetch);
+    await fetchSpots(box(14.9, 14.9, 15.1, 15.1), undefined, missingFile as unknown as typeof fetch);
     expect(missingFile.mock.calls.map((c) => String(c[0]).split("?")[0])).toEqual(["/map/states/index.json", "/map/states/AA.json", "/api/map"]);
 
     clearStateData();
     clearSpotCache();
     const noIndex = fetcherWith({});
-    expect((await fetchSpots(box(14, 14, 16, 16), undefined, noIndex as unknown as typeof fetch)).spots).toHaveLength(1);
+    expect((await fetchSpots(box(14.9, 14.9, 15.1, 15.1), undefined, noIndex as unknown as typeof fetch)).spots).toHaveLength(1);
   });
 });
 
@@ -315,16 +316,20 @@ describe("the saved data", () => {
     expect(fetcher.mock.calls.some((c) => String(c[0]).startsWith("/api/"))).toBe(false);
   });
 
-  it("shows racks in downtown Austin and Manhattan from the saved files, under the rack cap", async () => {
+  it("shows every saved rack in downtown Austin and Manhattan, with no cap", async () => {
     for (const [view, code] of [
       [AUSTIN, "TX"],
       [MANHATTAN, "NY"],
     ] as const) {
       const answer = await fetchSpots(view, undefined, diskFetch);
-      const racks = answer.spots.filter((s) => s.kind === "rack");
+      const racks = answer.spots.filter((s) => s.kind === "rack" && s.id.startsWith(`${code}/`));
+      const raw = JSON.parse(readFileSync(join(PUBLIC, `map/states/${code}.json`), "utf8")) as { r: number[][] };
+      const inside = raw.r.filter(([lat, lon]) => lat >= view.south && lat <= view.north && lon >= view.west && lon <= view.east).length;
       expect(racks.length, code).toBeGreaterThanOrEqual(50);
-      expect(racks.length, code).toBeLessThanOrEqual(MAX_RACKS);
-      expect(racks.some((s) => s.id.startsWith(`${code}/`)), code).toBe(true);
+      expect(racks.length, code).toBe(inside);
+      expect(answer.capped, code).toBe(false);
+      // Midtown Manhattan holds more racks than the live route's cap, and all of them show.
+      if (code === "NY") expect(inside).toBeGreaterThan(MAX_RACKS);
     }
     expect((diskFetch as unknown as ReturnType<typeof vi.fn>).mock.calls.every((c) => !String(c[0]).startsWith("/api/"))).toBe(true);
   });

@@ -59,8 +59,22 @@ export function isBusiness(spot: Spot): boolean {
 export const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 export const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 
-/** The map asks for data only this close in, so one query covers a few square miles at most. */
+/**
+ * The live route answers only this close in, so one query covers a few square miles at most. The
+ * first look without a place pick waits for this zoom too.
+ */
 export const MIN_DATA_ZOOM = 13;
+/** The widest view the live route takes, in degrees each way. Our server refuses a wider one. */
+export const LIVE_MAX_SPAN_DEG = 0.75;
+/**
+ * Saved state files answer a view from this zoom in, about a big state at once, so a search for a
+ * state, county or city shows everything in it.
+ */
+export const SAVED_DATA_ZOOM = 4;
+/** A place search never goes closer than street level. */
+export const PLACE_MAX_ZOOM = 17;
+/** Room left around a fitted place, in pixels, so its edge isn't under the map's buttons. */
+export const FIT_PAD_PX = 24;
 export const MAX_RACKS = 500;
 export const MAX_SHOPS = 100;
 export const MAX_REPAIRS = 100;
@@ -291,13 +305,68 @@ export interface FoundPlace {
   bounds: Bounds | null;
 }
 
-/** How close to go for a found place: closer for an address, wider for a town. Never wider than the data zoom. */
-export function zoomForPlace(place: FoundPlace): number {
-  if (!place.bounds) return PLACE_ZOOM;
-  const span = Math.max(place.bounds.north - place.bounds.south, place.bounds.east - place.bounds.west);
-  if (span < 0.01) return 17;
-  if (span < 0.05) return PLACE_ZOOM;
-  return Math.max(MIN_DATA_ZOOM, 14);
+/** Where a place search lands: a box to fit whole, or a point and a zoom when there's no usable box. */
+export interface PlaceTarget {
+  center: LatLon;
+  zoom: number;
+  /** The place's box. The map fits it once it knows its own size, in place of center and zoom. */
+  bounds: Bounds | null;
+}
+
+/**
+ * Where to go for a found place. A place with a box is fitted whole, so a state shows the whole
+ * state and a town the whole town. A box wider than half the world wraps the date line, as
+ * Alaska's does (-180 to 180), so the map centers on the place's own point at the saved data zoom.
+ */
+export function placeTarget(place: FoundPlace): PlaceTarget {
+  const center = { lat: place.lat, lon: place.lon };
+  const b = place.bounds;
+  if (!b || b.north < b.south || b.east < b.west) return { center, zoom: PLACE_ZOOM, bounds: null };
+  if (b.east - b.west > 180) return { center, zoom: SAVED_DATA_ZOOM, bounds: null };
+  return { center, zoom: PLACE_ZOOM, bounds: b };
+}
+
+const TILE_PX = 256;
+/** Web Mercator stops short of the poles. */
+const MAX_MERCATOR_LAT = 85;
+
+function mercatorY(lat: number): number {
+  const r = (Math.max(-MAX_MERCATOR_LAT, Math.min(MAX_MERCATOR_LAT, lat)) * Math.PI) / 180;
+  return Math.log(Math.tan(Math.PI / 4 + r / 2));
+}
+
+function latOfMercatorY(y: number): number {
+  return ((2 * Math.atan(Math.exp(y)) - Math.PI / 2) * 180) / Math.PI;
+}
+
+/** A map's size in pixels. */
+export interface MapSize {
+  x: number;
+  y: number;
+}
+
+/**
+ * The center and zoom that fit a box in a map this many pixels across, the way Leaflet's
+ * fitBounds does on whole zoom steps, kept between the saved data zoom and street level.
+ */
+export function fitView(b: Bounds, size: MapSize, pad = FIT_PAD_PX): { center: LatLon; zoom: number } {
+  const width = Math.max(1, size.x - 2 * pad);
+  const height = Math.max(1, size.y - 2 * pad);
+  const top = mercatorY(b.north);
+  const bottom = mercatorY(b.south);
+  const byWidth = Math.log2((width * 360) / (TILE_PX * Math.max(b.east - b.west, 1e-9)));
+  const byHeight = Math.log2((height * 2 * Math.PI) / (TILE_PX * Math.max(top - bottom, 1e-12)));
+  const zoom = Math.min(PLACE_MAX_ZOOM, Math.max(SAVED_DATA_ZOOM, Math.floor(Math.min(byWidth, byHeight))));
+  return { center: { lat: latOfMercatorY((top + bottom) / 2), lon: (b.west + b.east) / 2 }, zoom };
+}
+
+/** The box a map this many pixels across shows at a center and zoom, as Leaflet reports it. */
+export function boundsAround(center: LatLon, zoom: number, size: MapSize): Bounds {
+  const world = TILE_PX * 2 ** zoom;
+  const halfLon = (size.x / 2 / world) * 360;
+  const halfY = (size.y / 2 / world) * 2 * Math.PI;
+  const y = mercatorY(center.lat);
+  return { south: latOfMercatorY(y - halfY), west: center.lon - halfLon, north: latOfMercatorY(y + halfY), east: center.lon + halfLon };
 }
 
 /** The places in a Nominatim answer. Rows without a point are skipped. */
