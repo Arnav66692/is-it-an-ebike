@@ -8,6 +8,8 @@ import type { WayKind } from "@/lib/route/types";
 const EN = {
   title: "Plan a legal route",
   intro: "Check every street, bike lane and path between two places for this rider and this bike, including each city's own rules.",
+  laterCheck: "After the answer, plan a route here. Every street is checked for this rider and bike, with a hills chart and a battery estimate.",
+  laterAnswer: "Answer the questions above, then plan a route here.",
   fromLabel: "From",
   toLabel: "To",
   placeHelp: "An address, a school, a park or a place in the US.",
@@ -159,6 +161,8 @@ type RouteKey = keyof typeof EN;
 const ES: Record<RouteKey, string> = {
   title: "Planea una ruta legal",
   intro: "Revisa cada calle, carril para bicicletas y sendero entre dos lugares para este ciclista y esta bicicleta, incluidas las reglas propias de cada ciudad.",
+  laterCheck: "Después de la respuesta, planea una ruta aquí. Se revisa cada calle para este ciclista y esta bicicleta, con un gráfico de cuestas y una estimación de batería.",
+  laterAnswer: "Responde las preguntas de arriba y luego planea una ruta aquí.",
   fromLabel: "Desde",
   toLabel: "Hasta",
   placeHelp: "Una dirección, una escuela, un parque o un lugar en EE. UU.",

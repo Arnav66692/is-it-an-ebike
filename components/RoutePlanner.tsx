@@ -296,9 +296,12 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bi
 
   return (
     <section className="card route-plan space-y-4" aria-labelledby={headId}>
-      <h3 id={headId} className="card-title">
+      <h2 id={headId} className="card-title">
+        <span aria-hidden="true" className="step">
+          5
+        </span>
         {routeText(lang, "title")}
-      </h3>
+      </h2>
       <p className="help">{routeText(lang, "intro")}</p>
       <div className="route-fields">
         <PlaceField lang={lang} label={routeText(lang, "fromLabel")} picked={from} onPick={pickFrom} allowLocate />

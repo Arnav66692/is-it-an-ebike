@@ -19,6 +19,7 @@ import { BikeIcon } from "./BikeIcon";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
 import { RoutePlanner } from "./RoutePlanner";
+import { routeText } from "@/lib/i18n/route";
 import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
@@ -662,7 +663,10 @@ export function Checker() {
         </p>
         {result && age !== null && date !== null && !questionsFirst ? (
           <RoutePlanner lang={lang} facts={facts} riderAge={age} rideDate={date} sduhsdCampus={ride.places.includes("sduhsd_campuses")} bikeId={initial.bike} />
-        ) : null}
+        ) : (
+          // Shown before it unlocks, so the family can see a route check comes next.
+          <LaterStep title={routeText(lang, "title")} step={5} hint={routeText(lang, result ? "laterAnswer" : "laterCheck")} />
+        )}
         {result ? (
           <div className="actions no-print">
             <button type="button" className="btn btn-quiet" onClick={goToFacts}>
