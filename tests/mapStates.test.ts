@@ -1,13 +1,14 @@
 // The saved state files the map reads first (public/map/states/), their parser, the choice of
 // files for a view, the repair flag, shops-only files with live racks, the fall back to the live
-// route, and a sanity check of the data itself. scripts/map/build_states.py writes the files.
+// route, and a sanity check of the data itself, which holds racks for every state.
+// scripts/map/qlever_racks.py and scripts/map/build_states.py write the files.
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { clearSpotCache, clearStateData, fetchSpots } from "@/lib/map/fetchSpots";
 import { ALL_KINDS, chipCounts, filterSpots, toggleKind } from "@/lib/map/mapState";
-import { countSpots, isBusiness, parseOverpass, showsAs, type Spot } from "@/lib/map/osm";
+import { countSpots, isBusiness, MAX_RACKS, parseOverpass, showsAs, type Spot } from "@/lib/map/osm";
 import { chooseAreas, liveFill, parseStateFile, parseStateIndex, type StateIndex } from "@/lib/map/stateData";
 
 const PUBLIC = join(process.cwd(), "public");
@@ -19,6 +20,12 @@ const US_CODES =
 const CARMEL_VALLEY = { south: 32.9, west: -117.27, north: 32.98, east: -117.18 };
 const DOWNTOWN_SD = { south: 32.7, west: -117.17, north: 32.73, east: -117.14 };
 const AUSTIN = { south: 30.26, west: -97.75, north: 30.28, east: -97.73 };
+const ARLINGTON = { south: 38.85, west: -77.13, north: 38.91, east: -77.05 };
+const MANHATTAN = { south: 40.74, west: -74.0, north: 40.77, east: -73.97 };
+
+type IndexRow = { id: string; state: string; bbox: number[]; file: string; sources: string[]; racksSaved: boolean; counts: Record<string, number> };
+const AREAS = INDEX_JSON.areas as IndexRow[];
+const total = (rows: IndexRow[], k: string) => rows.reduce((n, a) => n + a.counts[k], 0);
 
 /** Serves files from public/ the way the site would, and refuses anything else. */
 const diskFetch = vi.fn(async (url: string | URL | Request) => {
@@ -224,13 +231,18 @@ describe("the saved data", () => {
     clearStateData();
   });
 
-  it("has a saved shop file for every state, DC and Puerto Rico, and every listed file is there", () => {
+  it("has a saved file with racks and shops for every state, DC and Puerto Rico, and every listed file is there", () => {
     const saved = new Set(INDEX.areas.map((a) => a.state));
     expect([...saved].sort()).toEqual([...US_CODES].sort());
     expect(INDEX.missing).toEqual([]);
     for (const code of US_CODES) {
-      const own = INDEX_JSON.areas.filter((a: { state: string; sources: string[] }) => a.state === code && a.sources.includes("overture"));
-      expect(own.length, code).toBeGreaterThan(0);
+      const own = AREAS.filter((a) => a.state === code);
+      expect(own.some((a) => a.sources.includes("overture")), code).toBe(true);
+    }
+    for (const area of AREAS) {
+      expect(area.racksSaved, area.id).toBe(true);
+      expect(area.sources, area.id).toContain("osm");
+      expect(area.counts.rack, area.id).toBeGreaterThan(0);
     }
     for (const area of INDEX_JSON.areas) {
       const text = readFileSync(join(PUBLIC, "map/states", area.file), "utf8");
@@ -291,18 +303,57 @@ describe("the saved data", () => {
     }
   });
 
-  it("shows Austin's saved shops without waiting on the live racks", async () => {
-    let release: (r: Response) => void = () => {};
-    const liveReply = new Promise<Response>((resolve) => {
-      release = resolve;
-    });
-    const fetcher = vi.fn(async (url: string | URL | Request) => (String(url).startsWith("/api/map") ? liveReply : diskFetch(url)));
+  it("shows racks in Arlington, Virginia from the saved files without asking /api/map", async () => {
+    const fetcher = vi.fn(async (url: string | URL | Request) => (String(url).startsWith("/api/") ? reply(503, {}) : diskFetch(url)));
     const shops = vi.fn();
-    const answer = fetchSpots(AUSTIN, undefined, fetcher as unknown as typeof fetch, 60_000, shops);
-    await vi.waitFor(() => expect(shops).toHaveBeenCalledTimes(1));
-    expect(countSpots(shops.mock.calls[0][0].spots).shop).toBeGreaterThanOrEqual(1);
-    expect(fetcher.mock.calls.some((c) => String(c[0]).startsWith("/api/map"))).toBe(true);
-    release(reply(200, { elements: [{ type: "node", id: 9, lat: 30.27, lon: -97.74, tags: { amenity: "bicycle_parking" } }] }));
-    expect(countSpots((await answer).spots).rack).toBe(1);
+    const answer = await fetchSpots(ARLINGTON, undefined, fetcher as unknown as typeof fetch, 60_000, shops);
+    const racks = answer.spots.filter((s) => s.kind === "rack");
+    expect(racks.length).toBeGreaterThanOrEqual(100);
+    expect(racks.some((s) => s.id.startsWith("VA/"))).toBe(true);
+    expect(countSpots(answer.spots).shop).toBeGreaterThanOrEqual(1);
+    expect(shops).not.toHaveBeenCalled();
+    expect(fetcher.mock.calls.some((c) => String(c[0]).startsWith("/api/"))).toBe(false);
+  });
+
+  it("shows racks in downtown Austin and Manhattan from the saved files, under the rack cap", async () => {
+    for (const [view, code] of [
+      [AUSTIN, "TX"],
+      [MANHATTAN, "NY"],
+    ] as const) {
+      const answer = await fetchSpots(view, undefined, diskFetch);
+      const racks = answer.spots.filter((s) => s.kind === "rack");
+      expect(racks.length, code).toBeGreaterThanOrEqual(50);
+      expect(racks.length, code).toBeLessThanOrEqual(MAX_RACKS);
+      expect(racks.some((s) => s.id.startsWith(`${code}/`)), code).toBe(true);
+    }
+    expect((diskFetch as unknown as ReturnType<typeof vi.fn>).mock.calls.every((c) => !String(c[0]).startsWith("/api/"))).toBe(true);
+  });
+
+  it("reads racks from QLever over OpenStreetMap for every state, with sane totals", () => {
+    expect(INDEX_JSON.osm.sources.join(" ")).toContain("QLever osm-planet");
+    expect(INDEX_JSON.osm.read).toEqual(["2026-09-21"]);
+    expect(INDEX_JSON.osm.seed).toEqual({ id: "CA-sd", read: "2026-10-22" });
+    // Wide on purpose: a count outside them means a broken read, not a few new racks.
+    expect(total(AREAS, "rack")).toBeGreaterThanOrEqual(100_000);
+    expect(total(AREAS, "rack")).toBeLessThanOrEqual(200_000);
+    expect(total(AREAS, "stand")).toBeGreaterThanOrEqual(3_000);
+    const ranges: Record<string, [number, number]> = { VA: [1_000, 10_000], TX: [3_000, 30_000], NY: [5_000, 50_000], CA: [10_000, 60_000] };
+    for (const [code, [low, high]] of Object.entries(ranges)) {
+      const racks = total(
+        AREAS.filter((a) => a.state === code),
+        "rack",
+      );
+      expect(racks, code).toBeGreaterThanOrEqual(low);
+      expect(racks, code).toBeLessThanOrEqual(high);
+    }
+  });
+
+  it("keeps every saved spot inside its file's box, so a view that shows it loads the file", () => {
+    for (const area of AREAS) {
+      const [south, west, north, east] = area.bbox;
+      const spots = parseStateFile(JSON.parse(readFileSync(join(PUBLIC, "map/states", area.file), "utf8")), area.id);
+      const outside = spots.filter((s) => s.lat < south || s.lat > north || s.lon < west || s.lon > east);
+      expect(outside.length, area.id).toBe(0);
+    }
   });
 });

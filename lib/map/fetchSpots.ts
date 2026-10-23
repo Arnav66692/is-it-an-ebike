@@ -1,10 +1,12 @@
 // The network calls the map page makes, each only when the rider moves the map close enough or
-// submits a place. Racks, shops and repair shops come first from the saved state files in
-// public/map/states/ (lib/map/stateData.ts), so a view answers at once. A state whose file holds
-// shops only shows them at once and then asks our own /api/map route for the racks, and a state
-// with no saved file asks it for everything. The route asks the public Overpass servers and
-// mirrors (lib/map/overpassServer.ts). Answers are kept in memory for this visit only, so panning
-// back and forth doesn't ask again. Nothing is written to storage.
+// submits a place. Racks, shops and repair shops come from the saved state files in
+// public/map/states/ (lib/map/stateData.ts), and every state, DC and Puerto Rico has its racks
+// saved, so a US view answers at once with no live call. Our own /api/map route is the fallback:
+// when the index or a file a view needs doesn't load, for a view off every state's box, and for
+// the racks of a file that holds shops only or a state with no file, which the data has none of
+// now. The route asks the public Overpass servers and mirrors (lib/map/overpassServer.ts). Answers
+// are kept in memory for this visit only, so panning back and forth doesn't ask again. Nothing is
+// written to storage.
 
 import {
   boundsKey,
