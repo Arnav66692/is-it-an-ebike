@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css";
 import { CheckerApp } from "@/components/ClientOnly";
 
 export default function Home() {

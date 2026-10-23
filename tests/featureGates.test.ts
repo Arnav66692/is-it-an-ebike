@@ -2,7 +2,7 @@
 // RESULTS.md shows.
 
 import { describe, expect, it } from "vitest";
-import { districtGates, finderGates, modGates, modRideGates } from "./featureGates";
+import { districtGates, finderGates, modGates, modRideGates, routeGates } from "./featureGates";
 
 describe("feature gates", () => {
   it("maps only SDUHSD among 19,430 districts to a checked record", () => {
@@ -29,5 +29,13 @@ describe("feature gates", () => {
     expect(g.rides).toBeGreaterThan(50_000);
     expect(g.yes).toBeGreaterThan(0);
     expect([g.yes_engine_refuses, g.yes_without_pedals]).toEqual([0, 0]);
+  }, 240_000);
+
+  it("never counts a route piece toward a YES that the rule files block, or says YES where the engine doesn't", () => {
+    const g = routeGates();
+    expect(g.pieces).toBeGreaterThan(2_000);
+    expect(g.pieces_yes).toBeGreaterThan(0);
+    expect(g.routes_yes).toBeGreaterThan(0);
+    expect([g.piece_yes_rules_block, g.route_yes_engine_not_yes]).toEqual([0, 0]);
   }, 240_000);
 });

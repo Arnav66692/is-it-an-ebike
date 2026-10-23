@@ -1,0 +1,1787 @@
+{
+  "_meta": {
+    "derived": "2026-10-23",
+    "from": "data/rules/san_diego_local.json other_local_rules, plus new readings marked new_reading"
+  },
+  "jurisdictions": {
+    "city_of_san_diego": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Inside City parks only. A designated bikeway is open to bicycles under the first sentence of this clause, but the next sentence bars motorized vehicles except on roads made for cars. The record leaves open whether an e-bike counts as a motorized vehicle here.",
+            "rule": "park_bicycle_limits",
+            "citation": "SDMC 63.0102(c)(19), 63.0109",
+            "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter06/Ch06Art03Division01.pdf",
+            "quote": "Motorcycles or any other motorized vehicles are prohibited except on roads designated and established for automotive traffic.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Sidewalks that front a commercial business establishment. Bicycles are allowed there only where official signs authorize it.",
+            "rule": "no_sidewalk_riding_by_businesses",
+            "citation": "SDMC 84.09(a)",
+            "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+            "quote": "No person shall operate a bicycle upon any sidewalk fronting any commercial business establishment unless official signs are posted authorizing such use.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "everywhere",
+            "whereNote": "SDMC 84.04 bars riding any vehicle on any sidewalk. The record notes that Vehicle Code 670 excludes only devices moved exclusively by human power, so an e-bike may count as a vehicle here. The record leaves this open, so sidewalks that do not front a business stay unconfirmed.",
+            "rule": "sidewalk_vehicle_ban_84_04",
+            "citation": "SDMC 84.04",
+            "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+            "quote": "It shall be unlawful for any person to ride, drive, propel, or cause to be propelled any vehicle or animal across or upon any sidewalk excepting over permanently constructed driveways and excepting when it is necessary for any temporary purpose to drive a loaded vehicle across a sidewalk",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside City parks only. The code counts open space, beaches, bays, wetlands and perimeter sidewalks as parks. A bicycle may ride there only where posted to authorize it, on a designated bikeway, on a road made for cars, or on a park fire or service road. The record says to treat e-bikes on unposted park paths as not allowed.",
+            "rule": "park_bicycle_limits",
+            "citation": "SDMC 63.0102(c)(19), 63.0109",
+            "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter06/Ch06Art03Division01.pdf",
+            "quote": "Bicycles. It is unlawful to ride a bicycle except: (1) where posted to authorize bicycle riding; or (2) on any designated bikeway; or (3) on any road designated and established for automotive traffic; or (4) on paved and unpaved roads within a park used as fire or service roads by authorized motor vehicles unless otherwise posted.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside City parks only. The code counts open space, beaches, bays, wetlands and perimeter sidewalks as parks. A bicycle may ride there only where posted to authorize it, on a designated bikeway, on a road made for cars, or on a park fire or service road. The record says to treat e-bikes on unposted park paths as not allowed.",
+            "rule": "park_bicycle_limits",
+            "citation": "SDMC 63.0102(c)(19), 63.0109",
+            "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter06/Ch06Art03Division01.pdf",
+            "quote": "Bicycles. It is unlawful to ride a bicycle except: (1) where posted to authorize bicycle riding; or (2) on any designated bikeway; or (3) on any road designated and established for automotive traffic; or (4) on paved and unpaved roads within a park used as fire or service roads by authorized motor vehicles unless otherwise posted.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "SDMC Chapter 8, Article 4, Division 0 (84.01 to 84.21, all read) and Chapter 8, Article 3, Division 2 (83.0201 to 83.0207, all read). Chapter 6, Article 3, Divisions 0 and 1 were searched for bicycle, bikeway, electric, motorized, trail, boardwalk, pier and wheeled terms and the relevant hits were read, including 63.0102, 63.0106, 63.0109, 63.05, 63.20.7 and 63.20.16. No section limits e-bikes on streets or bike lanes, and 63.0102(c)(19) lets a bicycle use any road made for cars and any designated bikeway. Section 84.06(b) bars bicycles from freeways where signed, and freeways are not streets in this data.",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "SDMC Chapter 8, Article 4, Division 0 (84.01 to 84.21, all read) and Chapter 8, Article 3, Division 2 (83.0201 to 83.0207, all read). Chapter 6, Article 3, Divisions 0 and 1 were searched for bicycle, bikeway, electric, motorized, trail, boardwalk, pier and wheeled terms and the relevant hits were read, including 63.0102, 63.0106, 63.0109, 63.05, 63.20.7 and 63.20.16. No section limits e-bikes on streets or bike lanes, and 63.0102(c)(19) lets a bicycle use any road made for cars and any designated bikeway. Section 84.06(b) bars bicycles from freeways where signed, and freeways are not streets in this data.",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "SDMC Chapter 8, Article 4, Division 0 (84.01 to 84.21, all read) and Chapter 8, Article 3, Division 2 (83.0201 to 83.0207, all read). Chapter 6, Article 3, Divisions 0 and 1 were searched for bicycle, bikeway, electric, motorized, trail, boardwalk, pier and wheeled terms and the relevant hits were read, including 63.0102, 63.0106, 63.0109, 63.05, 63.20.7 and 63.20.16. No section limits e-bikes on streets or bike lanes, and 63.0102(c)(19) lets a bicycle use any road made for cars and any designated bikeway. Section 84.06(b) bars bicycles from freeways where signed, and freeways are not streets in this data.",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "ocean_front_walk",
+          "names": [
+            "Ocean Front Walk"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The public walkway on Ocean Front Walk in Mission Beach, from the South Mission Beach Jetty north to the end of the walkway at Ocean Boulevard at Law Street in Pacific Beach.",
+          "rule": "boardwalk_motorized_device_ban",
+          "citation": "SDMC 84.18(b)(1)",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "quote": "It is unlawful for any person to operate any motorized transportation device in the following locations: (1) on the public walkway on Ocean Front Walk in Mission Beach",
+          "from": "record",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "bayside_walk",
+          "names": [
+            "Bayside Walk",
+            "Bayside walk"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The public walkway on the west side of Mission Bay Park from San Diego Place, next to the South Mission Beach Jetty, to Corona Oriente Road, the end of Crown Point Park.",
+          "rule": "boardwalk_motorized_device_ban",
+          "citation": "SDMC 84.18(b)(2)",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "quote": "(2) on the public walkway on the west side of Mission Bay Park from San Diego Place (adjacent to the South Mission Beach Jetty) to Corona Oriente Road (terminus of Crown Point Park), known as Bayside Walk;",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "east_mission_bay_walkway",
+          "names": [],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The public walkway on the east side of Mission Bay Park from De Anza Road south to the South Shores Boat Launch and Park. No OpenStreetMap name was found for it on 2026-10-23, so the app cannot match it by name.",
+          "rule": "boardwalk_motorized_device_ban",
+          "citation": "SDMC 84.18(b)(3)",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "quote": "(3) on the public walkway on the east side of Mission Bay Park from De Anza Road southward to the South Shores Boat Launch and Park; and",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "la_jolla_shores_boardwalk",
+          "names": [
+            "La Jolla Shores Boardwalk"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The boardwalk from Avenida De La Playa, next to La Jolla Shores, north to the end of Kellogg Park at its northeast corner. The name comes from SDMC 63.0502. No OpenStreetMap way with this name was found on 2026-10-23.",
+          "rule": "boardwalk_motorized_device_ban",
+          "citation": "SDMC 84.18(b)(4)",
+          "source_url": "https://docs.sandiego.gov/municode/MuniCodeChapter08/Ch08Art04Division00.pdf",
+          "quote": "(4) on the boardwalk from Avenida De La Playa (adjacent to La Jolla Shores) north to the terminus of Kellogg Park at its northeast corner.",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "carlsbad": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Parks include public trails (CMC 11.32.010). The code bars operating any vehicle in a park except as the City Manager permits. Whether an e-bike is a vehicle is unsettled, because CMC 10.04.150 excludes a device moved by human power. The record notes that a city flier says Class 3 is not allowed on trails, but a flier is not enacted text.",
+            "rule": "park_and_trail_vehicle_limit",
+            "citation": "Carlsbad Mun. Code 11.32.030(22), 11.32.010, 10.04.150",
+            "source_url": "https://ecode360.com/44007383",
+            "quote": "To use or operate any vehicles at any time, except as permitted by the City Manager, or designee, in a park, designated streets or parking areas or as part of a supervised recreational activity",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. The City Clerk keeps a list of such places and the City Manager can amend it.",
+            "rule": "regulated_device_ban_where_posted",
+            "citation": "CMC 10.56.020(A)",
+            "source_url": "https://ecode360.com/44006970",
+            "quote": "It is prohibited to operate or ride on any regulated mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "everywhere",
+            "whereNote": "Every sidewalk. CMC 10.56.010 counts electric bicycles as regulated mobility devices. CMC 10.32.030 also bars vehicles, including bicycles, from sidewalk areas.",
+            "rule": "sidewalk_ban",
+            "citation": "CMC 10.56.020(B)",
+            "source_url": "https://ecode360.com/44006970",
+            "quote": "No person shall operate or ride a regulated mobility device upon any sidewalk, in any public drainage facility, culvert, ditch, channel, or any other public athletic/sports court, or gymnasium in the city.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Parks include public trails (CMC 11.32.010). The code bars operating any vehicle in a park except as the City Manager permits. Whether an e-bike is a vehicle is unsettled, because CMC 10.04.150 excludes a device moved by human power. The record notes that a city flier says Class 3 is not allowed on trails, but a flier is not enacted text.",
+            "rule": "park_and_trail_vehicle_limit",
+            "citation": "Carlsbad Mun. Code 11.32.030(22), 11.32.010, 10.04.150",
+            "source_url": "https://ecode360.com/44007383",
+            "quote": "To use or operate any vehicles at any time, except as permitted by the City Manager, or designee, in a park, designated streets or parking areas or as part of a supervised recreational activity",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. The City Clerk keeps a list of such places and the City Manager can amend it.",
+            "rule": "regulated_device_ban_where_posted",
+            "citation": "CMC 10.56.020(A)",
+            "source_url": "https://ecode360.com/44006970",
+            "quote": "It is prohibited to operate or ride on any regulated mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Parks include public trails (CMC 11.32.010). The code bars operating any vehicle in a park except as the City Manager permits. Whether an e-bike is a vehicle is unsettled, because CMC 10.04.150 excludes a device moved by human power. The record notes that a city flier says Class 3 is not allowed on trails, but a flier is not enacted text.",
+            "rule": "park_and_trail_vehicle_limit",
+            "citation": "Carlsbad Mun. Code 11.32.030(22), 11.32.010, 10.04.150",
+            "source_url": "https://ecode360.com/44007383",
+            "quote": "To use or operate any vehicles at any time, except as permitted by the City Manager, or designee, in a park, designated streets or parking areas or as part of a supervised recreational activity",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. The City Clerk keeps a list of such places and the City Manager can amend it.",
+            "rule": "regulated_device_ban_where_posted",
+            "citation": "CMC 10.56.020(A)",
+            "source_url": "https://ecode360.com/44006970",
+            "quote": "It is prohibited to operate or ride on any regulated mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "CMC Chapter 10.56 (10.56.010 to 10.56.070), Chapter 10.32 (10.32.010 to 10.32.093) and Chapter 11.32 (11.32.010 to 11.32.110), all read in full on eCode360, plus the Chapter 10.04 definitions of highway, park, parkway, pedestrian and vehicle. No section bans or limits e-bikes on streets or bike lanes. Section 10.56.020(A) bars regulated mobility devices in any public area where a ban is posted and keeps a list of such places with the City Clerk.",
+          "source_url": "https://ecode360.com/44006970",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "CMC Chapter 10.56 (10.56.010 to 10.56.070), Chapter 10.32 (10.32.010 to 10.32.093) and Chapter 11.32 (11.32.010 to 11.32.110), all read in full on eCode360, plus the Chapter 10.04 definitions of highway, park, parkway, pedestrian and vehicle. No section bans or limits e-bikes on streets or bike lanes. Section 10.56.020(A) bars regulated mobility devices in any public area where a ban is posted and keeps a list of such places with the City Clerk.",
+          "source_url": "https://ecode360.com/44006970",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "CMC Chapter 10.56 (10.56.010 to 10.56.070), Chapter 10.32 (10.32.010 to 10.32.093) and Chapter 11.32 (11.32.010 to 11.32.110), all read in full on eCode360, plus the Chapter 10.04 definitions of highway, park, parkway, pedestrian and vehicle. No section bans or limits e-bikes on streets or bike lanes. Section 10.56.020(A) bars regulated mobility devices in any public area where a ban is posted and keeps a list of such places with the City Clerk.",
+          "source_url": "https://ecode360.com/44006970",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "poinsettia_community_park",
+          "names": [
+            "Poinsettia Community Park",
+            "Poinsettia Park"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "Poinsettia Community Park. Added to the list of places where e-bikes are prohibited by Council resolution on Feb 10, 2026 (adopted 5 to 0 per the minutes). Only an unsigned packet draft of the resolution was read, and the ban applies where signs are posted.",
+          "rule": "park_ban",
+          "citation": "Carlsbad Res. No. 2026-038 (Feb 10, 2026 packet draft)",
+          "source_url": "https://www.carlsbadca.gov/home/showpublisheddocument/25363/639058922376966881#page=353",
+          "quote": "That Poinsettia Community Park and Pine Avenue Community Park are added to the list of locations where electric bicycles are prohibited pursuant to Carlsbad Municipal Code Section 10.56.020(A).",
+          "from": "record",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "pine_avenue_community_park",
+          "names": [
+            "Pine Avenue Community Park",
+            "Pine Avenue Park"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "Pine Avenue Community Park. Added to the list of places where e-bikes are prohibited by Council resolution on Feb 10, 2026 (adopted 5 to 0 per the minutes). Only an unsigned packet draft of the resolution was read, and the ban applies where signs are posted.",
+          "rule": "park_ban",
+          "citation": "Carlsbad Res. No. 2026-038 (Feb 10, 2026 packet draft)",
+          "source_url": "https://www.carlsbadca.gov/home/showpublisheddocument/25363/639058922376966881#page=353",
+          "quote": "That Poinsettia Community Park and Pine Avenue Community Park are added to the list of locations where electric bicycles are prohibited pursuant to Carlsbad Municipal Code Section 10.56.020(A).",
+          "from": "record",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "encinitas": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public beaches, public parks and recreational trails. Title 8 does not define vehicle, and Vehicle Code 670 excludes only devices moved exclusively by human power, so this section may reach e-bikes. Shown as unclear, never as allowed and never as clearly banned.",
+            "rule": "park_beach_trail_vehicle_ban_unclear",
+            "citation": "Encinitas Municipal Code 8.04.010, 8.04.130 (Ord. 2004-09)",
+            "source_url": "https://ecode360.com/44477393",
+            "quote": "It is unlawful for any person to drive, park or allow to stand any self propelled vehicle on a public beach, public park, or recreational trail unless the operator has previously obtained express approval",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Same unsettled question. This section bars riding any vehicle other than on an authorized roadway inside a City beach, park or recreational trail. The code does not say whether an e-bike is a vehicle.",
+            "rule": "park_beach_trail_vehicle_ban_unclear",
+            "citation": "EMC 8.04.130(A)",
+            "source_url": "https://ecode360.com/44477393",
+            "quote": "Within any City beach, park, or recreational trail, it shall be unlawful for any person to ride or drive a moped, motorcycle, automobile or any other vehicle other than on an authorized roadway.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Business district. EMC 14.06.030 says it includes South Coast Highway 101 between D Street and J Street and also covers any area that meets the Vehicle Code test. EMC 14.32.030 leaves bicycles out of the general sidewalk ban. The app does not treat other sidewalks as allowed.",
+            "rule": "sidewalk_ban_in_business_district",
+            "citation": "Encinitas Municipal Code 14.56.020(B), 14.06.010, 14.06.030, Veh. Code 235",
+            "source_url": "https://ecode360.com/44479706",
+            "quote": "No person shall ride a bicycle on a sidewalk within a business district.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public beaches, public parks and recreational trails. Title 8 does not define vehicle, and Vehicle Code 670 excludes only devices moved exclusively by human power, so this section may reach e-bikes. Shown as unclear, never as allowed and never as clearly banned.",
+            "rule": "park_beach_trail_vehicle_ban_unclear",
+            "citation": "Encinitas Municipal Code 8.04.010, 8.04.130 (Ord. 2004-09)",
+            "source_url": "https://ecode360.com/44477393",
+            "quote": "It is unlawful for any person to drive, park or allow to stand any self propelled vehicle on a public beach, public park, or recreational trail unless the operator has previously obtained express approval",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Same unsettled question. This section bars riding any vehicle other than on an authorized roadway inside a City beach, park or recreational trail. The code does not say whether an e-bike is a vehicle.",
+            "rule": "park_beach_trail_vehicle_ban_unclear",
+            "citation": "EMC 8.04.130(A)",
+            "source_url": "https://ecode360.com/44477393",
+            "quote": "Within any City beach, park, or recreational trail, it shall be unlawful for any person to ride or drive a moped, motorcycle, automobile or any other vehicle other than on an authorized roadway.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public beaches, public parks and recreational trails. Title 8 does not define vehicle, and Vehicle Code 670 excludes only devices moved exclusively by human power, so this section may reach e-bikes. Shown as unclear, never as allowed and never as clearly banned.",
+            "rule": "park_beach_trail_vehicle_ban_unclear",
+            "citation": "Encinitas Municipal Code 8.04.010, 8.04.130 (Ord. 2004-09)",
+            "source_url": "https://ecode360.com/44477393",
+            "quote": "It is unlawful for any person to drive, park or allow to stand any self propelled vehicle on a public beach, public park, or recreational trail unless the operator has previously obtained express approval",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Same unsettled question. This section bars riding any vehicle other than on an authorized roadway inside a City beach, park or recreational trail. The code does not say whether an e-bike is a vehicle.",
+            "rule": "park_beach_trail_vehicle_ban_unclear",
+            "citation": "EMC 8.04.130(A)",
+            "source_url": "https://ecode360.com/44477393",
+            "quote": "Within any City beach, park, or recreational trail, it shall be unlawful for any person to ride or drive a moped, motorcycle, automobile or any other vehicle other than on an authorized roadway.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "other",
+            "whereNote": "Trails used by hikers, horse riders or bicyclists. The code does not define power cycle, so it cannot be told whether an e-bike counts.",
+            "rule": "motorcycles_power_cycles_on_trails",
+            "citation": "EMC 14.32.093",
+            "source_url": "https://ecode360.com/44479462",
+            "quote": "It is unlawful for any person to operate any motorcycle or power cycle on any trails used by hikers, horse riders or bicyclist.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "EMC Chapter 14.56 (14.56.010 to 14.56.080), Chapter 14.06 and Chapter 14.32, all read in full on eCode360, plus Title 8 Chapter 8.04 (8.04.010 to 8.04.170, searched for bicycle, trail, vehicle and motor terms and the hits read). No section bans or limits bicycles or e-bikes on streets or bike lanes. Section 14.56.020(A) has the City Traffic Engineer erect signs regulating bicycle riding on any public sidewalk or roadway, but it states no ban.",
+          "source_url": "https://ecode360.com/44479706",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "EMC Chapter 14.56 (14.56.010 to 14.56.080), Chapter 14.06 and Chapter 14.32, all read in full on eCode360, plus Title 8 Chapter 8.04 (8.04.010 to 8.04.170, searched for bicycle, trail, vehicle and motor terms and the hits read). No section bans or limits bicycles or e-bikes on streets or bike lanes. Section 14.56.020(A) has the City Traffic Engineer erect signs regulating bicycle riding on any public sidewalk or roadway, but it states no ban.",
+          "source_url": "https://ecode360.com/44479706",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "EMC Chapter 14.56 (14.56.010 to 14.56.080), Chapter 14.06 and Chapter 14.32, all read in full on eCode360, plus Title 8 Chapter 8.04 (8.04.010 to 8.04.170, searched for bicycle, trail, vehicle and motor terms and the hits read). No section bans or limits bicycles or e-bikes on streets or bike lanes. Section 14.56.020(A) has the City Traffic Engineer erect signs regulating bicycle riding on any public sidewalk or roadway, but it states no ban.",
+          "source_url": "https://ecode360.com/44479706",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "solana_beach": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "In any park or on any beach. Beaches include adjacent bluff tops, public trails, access ways and parking lots. The code bars motor-powered vehicles and does not say whether an e-bike counts. The record lists this rule for other electric devices and leaves the e-bike question open. The Coastal Rail Trail is defined separately in 11.12.010(C) and named separately in 11.12.020(EE), so the record thinks this probably does not reach it.",
+            "rule": "motor_vehicles_banned_in_parks_and_beaches",
+            "citation": "SBMC 11.12.020(R), 11.12.010(A)",
+            "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach11/SolanaBeach1112.html#11.12.020",
+            "quote": "R. To use or operate any motor-powered vehicles at any time, except as permitted by the city manager in designated streets or parking areas or as part of a supervised recreational activity.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district. SBMC 10.04.030 does not define the term, and 10.04.020 brings in Vehicle Code definitions as they existed in 1987.",
+            "rule": "sidewalk_ban_in_business_district",
+            "citation": "Solana Beach Mun. Code 10.44.010(B)",
+            "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach10/SolanaBeach1044.html#10.44.010",
+            "quote": "B. It is unlawful for any person to ride a bicycle upon any sidewalk in a business district or on any street with a designated bicycle path or way.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Sidewalks along any street with a designated bicycle path or way. The code does not list those streets. The record reads this clause as a sidewalk ban only.",
+            "rule": "sidewalk_ban_in_business_district",
+            "citation": "Solana Beach Mun. Code 10.44.010(B)",
+            "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach10/SolanaBeach1044.html#10.44.010",
+            "quote": "B. It is unlawful for any person to ride a bicycle upon any sidewalk in a business district or on any street with a designated bicycle path or way.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "In any park or on any beach. Beaches include adjacent bluff tops, public trails, access ways and parking lots. The code bars motor-powered vehicles and does not say whether an e-bike counts. The record lists this rule for other electric devices and leaves the e-bike question open.",
+            "rule": "motor_vehicles_banned_in_parks_and_beaches",
+            "citation": "SBMC 11.12.020(R), 11.12.010(A)",
+            "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach11/SolanaBeach1112.html#11.12.020",
+            "quote": "R. To use or operate any motor-powered vehicles at any time, except as permitted by the city manager in designated streets or parking areas or as part of a supervised recreational activity.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "In any park or on any beach. Beaches include adjacent bluff tops, public trails, access ways and parking lots. The code bars motor-powered vehicles and does not say whether an e-bike counts. The record lists this rule for other electric devices and leaves the e-bike question open.",
+            "rule": "motor_vehicles_banned_in_parks_and_beaches",
+            "citation": "SBMC 11.12.020(R), 11.12.010(A)",
+            "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach11/SolanaBeach1112.html#11.12.020",
+            "quote": "R. To use or operate any motor-powered vehicles at any time, except as permitted by the city manager in designated streets or parking areas or as part of a supervised recreational activity.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "other",
+            "whereNote": "Riders’ trails only. The code does not define power cycle or riders’ trail, so it cannot be told whether an e-bike counts.",
+            "rule": "motorcycles_power_cycles_on_trails",
+            "citation": "SBMC 10.44.080",
+            "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach10/SolanaBeach1044.html#10.44.010",
+            "quote": "It is unlawful for any person to operate any motorcycle or power cycle on any riders’ trail within the city.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "SBMC Chapter 10.44 (10.44.010 to 10.44.150), Chapter 10.04 and Chapter 11.12 (11.12.010 to 11.12.210), all read in full. Chapters 10.12, 10.28, 10.36, 10.40, 10.46 and 11.16 were searched for bicycle, trail and path terms and no riding rule was found. No section bans or limits e-bikes on streets or bike lanes. Section 10.44.010(D) gives bicycles on a roadway the rights and duties of a vehicle.",
+          "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach10/SolanaBeach1044.html#10.44.010",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "SBMC Chapter 10.44 (10.44.010 to 10.44.150), Chapter 10.04 and Chapter 11.12 (11.12.010 to 11.12.210), all read in full. Chapters 10.12, 10.28, 10.36, 10.40, 10.46 and 11.16 were searched for bicycle, trail and path terms and no riding rule was found. No section bans or limits e-bikes on streets or bike lanes. Section 10.44.010(D) gives bicycles on a roadway the rights and duties of a vehicle.",
+          "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach10/SolanaBeach1044.html#10.44.010",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "SBMC Chapter 10.44 (10.44.010 to 10.44.150), Chapter 10.04 and Chapter 11.12 (11.12.010 to 11.12.210), all read in full. Chapters 10.12, 10.28, 10.36, 10.40, 10.46 and 11.16 were searched for bicycle, trail and path terms and no riding rule was found. No section bans or limits e-bikes on streets or bike lanes. Section 10.44.010(D) gives bicycles on a roadway the rights and duties of a vehicle.",
+          "source_url": "https://www.codepublishing.com/CA/SolanaBeach/html/SolanaBeach10/SolanaBeach1044.html#10.44.010",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "del_mar": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside any City park or preserve. DMMC 14.54.020 defines Bicycle to include all electric bicycles.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 8.04.090, 14.54.040(D)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+            "quote": "It shall be unlawful for any person to ride a bicycle upon any City park or preserve.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Trails and walkways inside the San Dieguito Lagoon and River Valley, which runs east from the Camino del Mar Bridge to the east city limit. Allowed only where designated and signed for bicycles. Class 1 and 2 are expressly allowed on the Coast to Crest Trail.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 14.54.040(E)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+            "quote": "Any trail or walkway within the confines of the San Dieguito Lagoon and River Valley, unless designated and signed as permitting Bicycle access",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Business District means the Village Center District plus any commercial zone in Del Mar.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 14.54.040(A)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+            "quote": "Within the City of Del Mar, it shall be unlawful for any person to ride a Bicycle in, on or upon: A. Any sidewalk in a Business District.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any sidewalk posted with signs that prohibit riding.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 14.54.040(B)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+            "quote": "B. Any sidewalk posted with signs prohibiting such riding. C. Any street or sidewalk with a designated bicycle path or way, requiring such riding to be within the designated bicycle lane, unless an exception applies in accordance with Section 21208 of the California Vehicle Code",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Sidewalks along a street with a designated bicycle path or way. Riding must be inside the designated bicycle lane unless a Vehicle Code 21208 exception applies. The Jul 7, 2025 staff report confirms this covers the sidewalk next to Powerhouse Park.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 14.54.040(C)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+            "quote": "C. Any street or sidewalk with a designated bicycle path or way, requiring such riding to be within the designated bicycle lane, unless an exception applies in accordance with Section 21208 of the California Vehicle Code",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside any City park or preserve. DMMC 14.54.020 defines Bicycle to include all electric bicycles.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 8.04.090, 14.54.040(D)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+            "quote": "It shall be unlawful for any person to ride a bicycle upon any City park or preserve.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Trails and walkways inside the San Dieguito Lagoon and River Valley, which runs east from the Camino del Mar Bridge to the east city limit. Allowed only where designated and signed for bicycles. Class 1 and 2 are expressly allowed on the Coast to Crest Trail.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 14.54.040(E)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+            "quote": "Any trail or walkway within the confines of the San Dieguito Lagoon and River Valley, unless designated and signed as permitting Bicycle access",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "On a public beach. The code bars driving, parking or standing any self-propelled vehicle without approval and does not say whether an e-bike counts. Shown as a caution, not a settled ban.",
+            "rule": "self_propelled_vehicles_beach_park_ban",
+            "citation": "DMMC 8.04.020",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+            "quote": "It is unlawful for any person to drive, park, or allow to stand, any self-propelled vehicle on a public beach or public park unless the operator has previously obtained express approval",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside any City park or preserve. DMMC 14.54.020 defines Bicycle to include all electric bicycles.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 8.04.090, 14.54.040(D)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+            "quote": "It shall be unlawful for any person to ride a bicycle upon any City park or preserve.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Trails and walkways inside the San Dieguito Lagoon and River Valley, which runs east from the Camino del Mar Bridge to the east city limit. Allowed only where designated and signed for bicycles. Class 1 and 2 are expressly allowed on the Coast to Crest Trail.",
+            "rule": "park_sidewalk_and_lagoon_trail_bans",
+            "citation": "DMMC 14.54.040(E)",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+            "quote": "Any trail or walkway within the confines of the San Dieguito Lagoon and River Valley, unless designated and signed as permitting Bicycle access",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "On a public beach. The code bars driving, parking or standing any self-propelled vehicle without approval and does not say whether an e-bike counts. Shown as a caution, not a settled ban.",
+            "rule": "self_propelled_vehicles_beach_park_ban",
+            "citation": "DMMC 8.04.020",
+            "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+            "quote": "It is unlawful for any person to drive, park, or allow to stand, any self-propelled vehicle on a public beach or public park unless the operator has previously obtained express approval",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "DMMC Chapter 14.54 (14.54.010 to 14.54.050) and Title 8 Chapters 8.04 and 8.12 (all sections), read in full on Municode, code version of Jun 30, 2026. Section 14.54.040(C) requires riding inside a designated bicycle lane on a street that has one. No section bans or limits e-bikes on streets or in bike lanes.",
+          "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "DMMC Chapter 14.54 (14.54.010 to 14.54.050) and Title 8 Chapters 8.04 and 8.12 (all sections), read in full on Municode, code version of Jun 30, 2026. Section 14.54.040(C) requires riding inside a designated bicycle lane on a street that has one. No section bans or limits e-bikes on streets or in bike lanes.",
+          "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "DMMC Chapter 14.54 (14.54.010 to 14.54.050) and Title 8 Chapters 8.04 and 8.12 (all sections), read in full on Municode, code version of Jun 30, 2026. Section 14.54.040(C) requires riding inside a designated bicycle lane on a street that has one. No section bans or limits e-bikes on streets or in bike lanes.",
+          "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT14TRCO_CH14.54BI",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "coast_to_crest_trail",
+          "names": [
+            "Coast to Crest Trail"
+          ],
+          "classes": [
+            1,
+            2
+          ],
+          "status": "allowed",
+          "extent": "The Coast to Crest Trail inside the San Dieguito Lagoon and River Valley in Del Mar. Class 1 and Class 2 e-bikes are expressly permitted.",
+          "rule": "coast_to_crest_class1_and_2_allowed",
+          "citation": "DMMC 8.12.030(D), 14.54.040(E)",
+          "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+          "quote": "Bicycles and similar non-motorized vehicles shall be permitted only on trails and walkways designated and signed as permitting bicycle access, with the exception of the Coast to Crest Trail, which shall expressly permit bicycles, including class 1 and class 2 electric bicycles as defined by California Vehicle Code Section 312.5",
+          "from": "record",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "coast_to_crest_trail_class_3",
+          "names": [
+            "Coast to Crest Trail"
+          ],
+          "classes": [
+            3
+          ],
+          "status": "unclear",
+          "extent": "The Coast to Crest Trail inside the San Dieguito Lagoon and River Valley in Del Mar. The code names only Class 1 and Class 2, so Class 3 is not confirmed.",
+          "rule": "coast_to_crest_class1_and_2_allowed",
+          "citation": "DMMC 8.12.030(D), 14.54.040(E)",
+          "source_url": "https://library.municode.com/ca/del_mar/codes/municipal_code?nodeId=TIT8BEWAPA_CH8.12SADILARI_8.12.030PRAC",
+          "quote": "Bicycles and similar non-motorized vehicles shall be permitted only on trails and walkways designated and signed as permitting bicycle access, with the exception of the Coast to Crest Trail, which shall expressly permit bicycles, including class 1 and class 2 electric bicycles as defined by California Vehicle Code Section 312.5",
+          "from": "record",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "oceanside": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. OCC 5.1(b) counts an electric bicycle as a mobility device.",
+            "rule": "mobility_device_ban_where_posted",
+            "citation": "OCC 5.14(f)",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+            "quote": "It is prohibited to operate or ride on a mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in section 5.14(b), (c), and (d).",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Sidewalks that front a business establishment. Allowed there only where signs are posted authorizing such use. On other sidewalks OCC 5.14(g) sets rules on speed, direction, yielding and dismounting and does not itself ban riding.",
+            "rule": "sidewalk_rules",
+            "citation": "OCC 5.14(g)",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+            "quote": "No person shall operate a bicycle or mobility device upon any sidewalk fronting any business establishment unless signs are posted authorizing such use.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. OCC 5.1(b) counts an electric bicycle as a mobility device.",
+            "rule": "mobility_device_ban_where_posted",
+            "citation": "OCC 5.14(f)",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+            "quote": "It is prohibited to operate or ride on a mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in section 5.14(b), (c), and (d).",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. OCC 5.1(b) counts an electric bicycle as a mobility device.",
+            "rule": "mobility_device_ban_where_posted",
+            "citation": "OCC 5.14(f)",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+            "quote": "It is prohibited to operate or ride on a mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in section 5.14(b), (c), and (d).",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "On the beach. The code bars motorized machines and does not define the term or name electric bicycles. The record says an e-bike very likely falls under it, but the text does not say so.",
+            "rule": "beach_motorized_ban",
+            "citation": "Oceanside City Code 19.7",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH19OCBE",
+            "quote": "No person shall drive any motor vehicle or ride any motorized machine on the beach.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Only the docks, fingers and walkways in the Oceanside small craft harbor. The code uses the word bicycle and does not name electric bicycles.",
+            "rule": "harbor_docks_and_walkways",
+            "citation": "OCC 29A.49",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH29ASMCRHA",
+            "quote": "It shall be unlawful for any person to ride, store or operate a bicycle, skateboard, roller skates or similar device or motor vehicle, etc., upon the docks, fingers or walkways in the harbor.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted. OCC 5.1(b) counts an electric bicycle as a mobility device.",
+            "rule": "mobility_device_ban_where_posted",
+            "citation": "OCC 5.14(f)",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+            "quote": "It is prohibited to operate or ride on a mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in section 5.14(b), (c), and (d).",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "On the beach. The code bars motorized machines and does not define the term or name electric bicycles. The record says an e-bike very likely falls under it, but the text does not say so.",
+            "rule": "beach_motorized_ban",
+            "citation": "Oceanside City Code 19.7",
+            "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH19OCBE",
+            "quote": "No person shall drive any motor vehicle or ride any motorized machine on the beach.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "OCC Chapter 5 (5.1 to 5.17), Chapter 18 (18.1 to 18.9), Chapter 19 (19.1 to 19.20) and Chapter 21, all read in full on Municode. Chapters 20 and 29A were searched for bicycle, motor, vehicle and skate terms and the hits were read. No section bans or limits e-bikes on streets outside the pier area and Pier Plaza. Section 5.14(f) bars mobility devices where signs are posted.",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "OCC Chapter 5 (5.1 to 5.17), Chapter 18 (18.1 to 18.9), Chapter 19 (19.1 to 19.20) and Chapter 21, all read in full on Municode. Chapters 20 and 29A were searched for bicycle, motor, vehicle and skate terms and the hits were read. Section 5.11 bars a motor vehicle or other motor-driven cycle from a posted bicycle lane or facility. It does not name electric bicycles and Chapter 5 treats them separately as mobility devices, so it is not treated as a ban here. Section 5.14(f) bars mobility devices where signs are posted.",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "OCC Chapter 5 (5.1 to 5.17), Chapter 18 (18.1 to 18.9), Chapter 19 (19.1 to 19.20) and Chapter 21, all read in full on Municode. Chapters 20 and 29A were searched for bicycle, motor, vehicle and skate terms and the hits were read. Section 5.11 bars a motor vehicle or other motor-driven cycle from a posted bicycle lane or facility. It does not name electric bicycles and Chapter 5 treats them separately as mobility devices, so it is not treated as a ban here. Section 5.14(f) bars mobility devices where signs are posted.",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "oceanside_pier",
+          "names": [
+            "Oceanside Pier"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The Municipal Pier and its ramps. OCC 18.1 also bars any bicycle or other propelled vehicle on the pier from May 15 through Sep 15.",
+          "rule": "pier_and_plaza_ban",
+          "citation": "OCC 5.14(a)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": "No person shall operate a bicycle or mobility device upon the Municipal Pier or Municipal Pier ramps, the Oceanside Pier Amphitheater, and the Junior Seau Beach Community Center.",
+          "from": "record",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "oceanside_pier_amphitheater",
+          "names": [
+            "Oceanside Pier Amphitheater"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The Oceanside Pier Amphitheater.",
+          "rule": "pier_and_plaza_ban",
+          "citation": "OCC 5.14(a)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": "No person shall operate a bicycle or mobility device upon the Municipal Pier or Municipal Pier ramps, the Oceanside Pier Amphitheater, and the Junior Seau Beach Community Center.",
+          "from": "record",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "junior_seau_beach_community_center_plaza",
+          "names": [
+            "Junior Seau Beach Community Center"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "All stairways, walkways, sidewalks and other ways inside the Junior Seau Beach Community Center plaza, south to the north curbline of Betty's Lot (Lot 30), bounded on the west by The Strand. No OpenStreetMap name was found for the plaza on 2026-10-23.",
+          "rule": "pier_and_plaza_ban",
+          "citation": "OCC 5.14(b)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": "Bicycles and mobility devices are prohibited from all stairways, walkways, sidewalks, or any way or place contained within the Junior Seau Beach Community Center plaza south to the north curbline of Betty's Lot (Lot 30) bounded on the west by The Strand.",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "oceanside_pier_plaza",
+          "names": [
+            "Pier Plaza"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The Pier Plaza, bounded on the south by First Street, on the north by the north side of the parking lot at the northwest intersection of The Strand and the Municipal Pier, on the east by the west side of Pacific Street, and on the west by the Pacific Ocean. It covers any sidewalk, roadway, parking lot or other way inside those lines. No OpenStreetMap name was found for the plaza on 2026-10-23, so the app cannot match it by name.",
+          "rule": "pier_and_plaza_ban",
+          "citation": "OCC 5.14(c), (d), (f)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH5BIMODE",
+          "quote": "It is prohibited to operate or ride on a mobility device in public areas where such prohibition is posted by signs or as otherwise set forth in section 5.14(b), (c), and (d).",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "libby_lake_park",
+          "names": [
+            "Libby Lake Park"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "unclear",
+          "extent": "Libby Lake Park, except dedicated city streets and public parking lots. The code bars motorized vehicles and does not define the term or name electric bicycles.",
+          "rule": "libby_lake_park_motorized_vehicles",
+          "citation": "OCC 20.23(a)",
+          "source_url": "https://library.municode.com/ca/oceanside/codes/code_of_ordinances?nodeId=CH20OFIS",
+          "quote": "No person shall operate, ride, drive or in any manner propel any motorized vehicle, including but not limited to autos, trucks, motorcycles, and mini-bikes within any portion of Libby Lake Park except on dedicated city streets and established public parking lots",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "escondido": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Recreational areas, which are parks, playgrounds, recreation centers and school athletic fields. EMC 18-67 defines vehicle as any conveyance, motor-powered or self-propelled. On its words this reaches e-bikes off paved park roads, but it says drive and EMC 18-92(b) assumes bicycles are ridden there. Unsettled.",
+            "rule": "recreational_area_vehicle_limit",
+            "citation": "EMC 18-129",
+            "source_url": "https://ecode360.com/43260426",
+            "quote": "No person shall drive any vehicle on any recreational area except the paved park roads or parking areas",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted.",
+            "rule": "bicycles_and_mobility_devices_banned_where_posted",
+            "citation": "EMC 5-5(a)",
+            "source_url": "https://ecode360.com/43254330",
+            "quote": "Bicycles, mobility devices, and nonmotorized vehicles are prohibited where posted. It is prohibited to operate or ride on a bicycle, mobility device, or nonmotorized vehicle in public areas where signs prohibiting such activity are posted.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "everywhere",
+            "whereNote": "Every sidewalk, for electric bicycles of any class and any age. Ord. No. 2026-07 was adopted Sep 16, 2026. Its own recital says it takes effect 60 days after adoption, Nov 15, 2026, while the Government Code 36937 default would be Oct 16, 2026. So a ban in force on 2026-10-23 cannot be confirmed. It is certain from Nov 15, 2026.",
+            "rule": "sidewalk_ban",
+            "citation": "EMC 5-5(b)(1)",
+            "source_url": "https://ecode360.com/43254330",
+            "quote": "Mobility devices, such as electric bicycles and motor vehicles, are prohibited from operating on any sidewalk in the city.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Recreational areas, which are parks, playgrounds, recreation centers and school athletic fields. EMC 18-67 defines vehicle as any conveyance, motor-powered or self-propelled. On its words this reaches e-bikes off paved park roads, but it says drive and EMC 18-92(b) assumes bicycles are ridden there. Unsettled.",
+            "rule": "recreational_area_vehicle_limit",
+            "citation": "EMC 18-129",
+            "source_url": "https://ecode360.com/43260426",
+            "quote": "No person shall drive any vehicle on any recreational area except the paved park roads or parking areas",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted.",
+            "rule": "bicycles_and_mobility_devices_banned_where_posted",
+            "citation": "EMC 5-5(a)",
+            "source_url": "https://ecode360.com/43254330",
+            "quote": "Bicycles, mobility devices, and nonmotorized vehicles are prohibited where posted. It is prohibited to operate or ride on a bicycle, mobility device, or nonmotorized vehicle in public areas where signs prohibiting such activity are posted.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Recreational areas, which are parks, playgrounds, recreation centers and school athletic fields. EMC 18-67 defines vehicle as any conveyance, motor-powered or self-propelled. On its words this reaches e-bikes off paved park roads, but it says drive and EMC 18-92(b) assumes bicycles are ridden there. Unsettled.",
+            "rule": "recreational_area_vehicle_limit",
+            "citation": "EMC 18-129",
+            "source_url": "https://ecode360.com/43260426",
+            "quote": "No person shall drive any vehicle on any recreational area except the paved park roads or parking areas",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any public area where a no-ride sign is posted.",
+            "rule": "bicycles_and_mobility_devices_banned_where_posted",
+            "citation": "EMC 5-5(a)",
+            "source_url": "https://ecode360.com/43254330",
+            "quote": "Bicycles, mobility devices, and nonmotorized vehicles are prohibited where posted. It is prohibited to operate or ride on a bicycle, mobility device, or nonmotorized vehicle in public areas where signs prohibiting such activity are posted.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "EMC Chapter 5 (5-1 to 5-13, as replaced by Ord. No. 2026-07) and Chapter 18, Article 4, Division 3 (18-126 to 18-131), read in full on eCode360, plus 18-67, 18-71, 18-76 and 18-92. No section bans or limits e-bikes on streets or bike lanes. Section 5-5(a) bars bicycles and mobility devices in public areas where signs are posted.",
+          "source_url": "https://ecode360.com/43254330",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "EMC Chapter 5 (5-1 to 5-13, as replaced by Ord. No. 2026-07) and Chapter 18, Article 4, Division 3 (18-126 to 18-131), read in full on eCode360, plus 18-67, 18-71, 18-76 and 18-92. No section bans or limits e-bikes on streets or bike lanes. Section 5-5(a) bars bicycles and mobility devices in public areas where signs are posted.",
+          "source_url": "https://ecode360.com/43254330",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "EMC Chapter 5 (5-1 to 5-13, as replaced by Ord. No. 2026-07) and Chapter 18, Article 4, Division 3 (18-126 to 18-131), read in full on eCode360, plus 18-67, 18-71, 18-76 and 18-92. No section bans or limits e-bikes on streets or bike lanes. Section 5-5(a) bars bicycles and mobility devices in public areas where signs are posted.",
+          "source_url": "https://ecode360.com/43254330",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "san_marcos": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Any City park, trail, recreation area or reserve. SMMC 9.04.080(a) also bars Motorized Vehicles in a Park or trail except on roadways and in areas designated for them, and 9.04.020(g) lists the class 3 electric bicycle as a Motorized Vehicle.",
+            "rule": "class3_park_and_trail_ban",
+            "citation": "SMMC 9.04.070(f)(2)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.04GE",
+            "quote": "No Person shall operate a class 3 electric bicycle or homemade electric bicycle within any Park or on any City trail.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Any City park, trail, recreation area or reserve. The code permits Class 1 and 2 except on trails the Director designates, and the Director’s list and maps are posted on the city website and kept on file, not in the code. The same section, 9.04.070(f)(1), says no one may operate a bicycle or other Non-motorized Vehicle except in Areas designated for that purpose. The city page names the trails around Walnut Grove Park and the Highlands areas, but its maps are images, so the closed trails could not be named.",
+            "rule": "class3_park_and_trail_ban",
+            "citation": "SMMC 9.04.070(f)(2)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.04GE",
+            "quote": "Class 1 and class 2 electric bicycles are permitted, except on certain trails, as designated by the Director.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district as the Vehicle Code defines it.",
+            "rule": "sidewalk_rules",
+            "citation": "SMMC 12.25.040(a)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+            "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district as defined by the Vehicle Code or on any street with a designated bicycle path or way",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "other",
+            "whereNote": "Sidewalks along any street with a designated bicycle path or way. The code does not list those streets.",
+            "rule": "sidewalk_rules",
+            "citation": "SMMC 12.25.040(a)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+            "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district as defined by the Vehicle Code or on any street with a designated bicycle path or way",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any sidewalk posted with a no-riding sign.",
+            "rule": "sidewalk_ban_where_posted",
+            "citation": "SMMC 12.25.040(b)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+            "quote": "No person shall ride upon any sidewalk that has been posted with signs prohibiting such riding.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "allowed",
+            "where": "other",
+            "whereNote": "Sidewalks within exclusively residential areas. Not allowed where the sidewalk is posted with a no-riding sign. The city e-bike page says no class is allowed on sidewalks, which is stricter than the code.",
+            "rule": "sidewalk_rules",
+            "citation": "SMMC 12.25.040(a)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+            "quote": "except that persons may operate bicycles upon sidewalks within exclusively residential areas.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Any City park, trail, recreation area or reserve. SMMC 9.04.080(a) also bars Motorized Vehicles in a Park or trail except on roadways and in areas designated for them, and 9.04.020(g) lists the class 3 electric bicycle as a Motorized Vehicle.",
+            "rule": "class3_park_and_trail_ban",
+            "citation": "SMMC 9.04.070(f)(2)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.04GE",
+            "quote": "No Person shall operate a class 3 electric bicycle or homemade electric bicycle within any Park or on any City trail.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Any City park, trail, recreation area or reserve. The code permits Class 1 and 2 except on trails the Director designates, and the Director’s list and maps are posted on the city website and kept on file, not in the code. The same section, 9.04.070(f)(1), says no one may operate a bicycle or other Non-motorized Vehicle except in Areas designated for that purpose. The city page names the trails around Walnut Grove Park and the Highlands areas, but its maps are images, so the closed trails could not be named.",
+            "rule": "class3_park_and_trail_ban",
+            "citation": "SMMC 9.04.070(f)(2)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.04GE",
+            "quote": "Class 1 and class 2 electric bicycles are permitted, except on certain trails, as designated by the Director.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Any City park, trail, recreation area or reserve. SMMC 9.04.080(a) also bars Motorized Vehicles in a Park or trail except on roadways and in areas designated for them, and 9.04.020(g) lists the class 3 electric bicycle as a Motorized Vehicle.",
+            "rule": "class3_park_and_trail_ban",
+            "citation": "SMMC 9.04.070(f)(2)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.04GE",
+            "quote": "No Person shall operate a class 3 electric bicycle or homemade electric bicycle within any Park or on any City trail.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Any City park, trail, recreation area or reserve. The code permits Class 1 and 2 except on trails the Director designates, and the Director’s list and maps are posted on the city website and kept on file, not in the code. The same section, 9.04.070(f)(1), says no one may operate a bicycle or other Non-motorized Vehicle except in Areas designated for that purpose. The city page names the trails around Walnut Grove Park and the Highlands areas, but its maps are images, so the closed trails could not be named.",
+            "rule": "class3_park_and_trail_ban",
+            "citation": "SMMC 9.04.070(f)(2)",
+            "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.04GE",
+            "quote": "Class 1 and class 2 electric bicycles are permitted, except on certain trails, as designated by the Director.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "SMMC Chapter 12.25 (12.25.010 to 12.25.060) read in full on Municode, and Title 9 Chapter 9.04 sections 9.04.020, 9.04.070 and 9.04.080 read in full. No section bans or limits e-bikes on streets or bike lanes. Section 9.04.080(a) lets Motorized Vehicles use roadways inside parks.",
+          "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "SMMC Chapter 12.25 (12.25.010 to 12.25.060) read in full on Municode, and Title 9 Chapter 9.04 sections 9.04.020, 9.04.070 and 9.04.080 read in full. No section bans or limits e-bikes on streets or bike lanes. Section 9.04.080(a) lets Motorized Vehicles use roadways inside parks.",
+          "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "SMMC Chapter 12.25 (12.25.010 to 12.25.060) read in full on Municode, and Title 9 Chapter 9.04 sections 9.04.020, 9.04.070 and 9.04.080 read in full. No section bans or limits e-bikes on streets or bike lanes. Section 9.04.080(a) lets Motorized Vehicles use roadways inside parks.",
+          "source_url": "https://library.municode.com/ca/san_marcos/codes/code_of_ordinances?nodeId=TIT12MOVETR_CH12.25BIELBIRE",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "vista": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Inside Vista parks and recreation facilities only. The code lets bicycles use paths designated for them and does not say how a path is designated, so a path built for bicycles is not confirmed. Title 12 does not define bicycle, so its reach to e-bikes rests on the words bicycle and any other vehicle.",
+            "rule": "park_path_limits",
+            "citation": "Vista Mun. Code 12.08.010(O)",
+            "source_url": "https://portal.laserfiche.com/Portal/DocView.aspx?id=1044614&repo=r-3f0b2553",
+            "quote": "Ride a bicycle, tricycle, motorcycle, motorcycle chopper, skateboards, scooters, or any other vehicle on any path, trail, walk, or any recreation facility, other than those designated for the same.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "everywhere",
+            "whereNote": "Every sidewalk, for any age and every e-bike class. The only exception is locations in the City Bicycle Master Plan with proper signage and striping approved by the City Traffic Engineer. The record does not know which locations are signed and striped. VMC 10.68.060 also makes a bicycle operator dismount to use a sidewalk or crosswalk.",
+            "rule": "sidewalk_ban",
+            "citation": "VMC 10.68.030",
+            "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+            "quote": "It is unlawful for any person to ride or operate a bicycle upon any sidewalk in the city, with the exception of locations included in the City's Bicycle Master Plan with proper signage and striping as approved by the City's Traffic Engineer.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside Vista parks and recreation facilities only. The code bars riding on any path, trail or walk other than those designated for bicycles. Title 12 does not define bicycle, so its reach to e-bikes rests on the words bicycle and any other vehicle.",
+            "rule": "park_path_limits",
+            "citation": "Vista Mun. Code 12.08.010(O)",
+            "source_url": "https://portal.laserfiche.com/Portal/DocView.aspx?id=1044614&repo=r-3f0b2553",
+            "quote": "Ride a bicycle, tricycle, motorcycle, motorcycle chopper, skateboards, scooters, or any other vehicle on any path, trail, walk, or any recreation facility, other than those designated for the same.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside Vista parks and recreation facilities only. The code bars riding on any path, trail or walk other than those designated for bicycles. Title 12 does not define bicycle, so its reach to e-bikes rests on the words bicycle and any other vehicle.",
+            "rule": "park_path_limits",
+            "citation": "Vista Mun. Code 12.08.010(O)",
+            "source_url": "https://portal.laserfiche.com/Portal/DocView.aspx?id=1044614&repo=r-3f0b2553",
+            "quote": "Ride a bicycle, tricycle, motorcycle, motorcycle chopper, skateboards, scooters, or any other vehicle on any path, trail, walk, or any recreation facility, other than those designated for the same.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "VMC Chapter 10.68 (10.68.010 to 10.68.100, signed code portal copy dated 01/10/25), read in full. No section bans or limits e-bikes on streets or bike lanes. Section 10.68.050 on bikeways was repealed by Ord. No. 2024-14, and 10.68.080 gives bicycles on a roadway or bikeway the rights and duties of a vehicle.",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "VMC Chapter 10.68 (10.68.010 to 10.68.100, signed code portal copy dated 01/10/25), read in full. No section bans or limits e-bikes on streets or bike lanes. Section 10.68.050 on bikeways was repealed by Ord. No. 2024-14, and 10.68.080 gives bicycles on a roadway or bikeway the rights and duties of a vehicle.",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "VMC Chapter 10.68 (10.68.010 to 10.68.100, signed code portal copy dated 01/10/25), read in full. No section bans or limits e-bikes on streets or bike lanes. Section 10.68.050 on bikeways was repealed by Ord. No. 2024-14, and 10.68.080 gives bicycles on a roadway or bikeway the rights and duties of a vehicle.",
+          "source_url": "https://portal.laserfiche.com/Portal/ElectronicFile.aspx?docid=1044603&repo=r-3f0b2553",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "poway": {
+      "kinds": {
+        "road": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "allowed",
+            "where": "everywhere",
+            "whereNote": "Permitted on a roadway unless appropriate signs prohibit it.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Wherever appropriate signs prohibit riding.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "allowed",
+            "where": "everywhere",
+            "whereNote": "Permitted on a bicycle path unless appropriate signs prohibit it. PMC 10.57.020 says a bicycle path may also be called a bicycle trail.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Wherever appropriate signs prohibit riding.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district.",
+            "rule": "sidewalk_ban_in_business_district",
+            "citation": "PMC 10.40.010",
+            "source_url": "https://ecode360.com/50661170",
+            "quote": "It is unlawful for any person to ride any bicycle, including an electric bicycle, upon any sidewalk in a business district.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "allowed",
+            "where": "other",
+            "whereNote": "Permitted on a sidewalk outside a business district, unless appropriate signs prohibit it. PMC 10.57.070(B) sets 10 mph on sidewalks and 5 mph in a school zone when children are present.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Wherever appropriate signs prohibit riding.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside parks, playgrounds and school grounds, unless the way is designated as a bicycle path or route. PMC 10.57.090(E) adds that e-bikes stay on the designated bike trails, pathways and roadways within parks.",
+            "rule": "where_to_ride",
+            "citation": "PMC 10.57.090(C)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "No person shall ride or operate an electric bicycle upon any playground, park or school ground not designated as a bicycle path or route.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Areas of a City Community Services facility that are designated and posted as a pedestrian walkway. The code uses the words vehicle and bicycle and does not name electric bicycles.",
+            "rule": "pedestrian_walkways_posted",
+            "citation": "PMC 9.48.280",
+            "source_url": "https://ecode360.com/50661639",
+            "quote": "No person shall ride, operate or use any vehicle, skateboard, bicycle, scooter, roller skates or roller blades in any area of a City Community Services facility designated and posted as a pedestrian walkway.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside parks, playgrounds and school grounds, unless the way is designated as a bicycle path or route. PMC 10.57.090(E) adds that e-bikes stay on the designated bike trails, pathways and roadways within parks.",
+            "rule": "where_to_ride",
+            "citation": "PMC 10.57.090(C)",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "No person shall ride or operate an electric bicycle upon any playground, park or school ground not designated as a bicycle path or route.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "other",
+            "whereNote": "Outside parks. Section 10.57.090(A) permits a bicycle trail, which the code defines as another name for a bicycle path, so it is not clear that it covers an unpaved trail. PMC 10.40.100 bars motorcycles and power cycles on riders’ and hikers’ trails and does not define power cycle. Signs decide. The record notes the city trails page says motorized vehicles are not permitted, but a web page is not enacted text.",
+            "rule": "riding_permitted_unless_signed",
+            "citation": "PMC 10.57.090(A), 10.40.100",
+            "source_url": "https://ecode360.com/50661267",
+            "quote": "Riding of electric bicycles on any sidewalk, bicycle path, bicycle trail, or roadway is permitted unless prohibited by appropriate signs authorized pursuant to the terms of this chapter.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "bike_lane": {
+          "read": "PMC Chapter 10.57 (10.57.010 to 10.57.100) and Chapter 10.40 (10.40.010 to 10.40.130), read in full on eCode360, plus Chapter 9.48 Article II (9.48.040 to 9.48.330, searched for bicycle, trail, motor and wheel terms and the hits read). No section bans or limits e-bikes in bike lanes or separated bikeways. Section 10.57.090(A) permits roadway riding unless signs prohibit it, and 10.57.090(D) assumes a rider may be in a bike lane.",
+          "source_url": "https://ecode360.com/50661267",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "PMC Chapter 10.57 (10.57.010 to 10.57.100) and Chapter 10.40 (10.40.010 to 10.40.130), read in full on eCode360, plus Chapter 9.48 Article II (9.48.040 to 9.48.330, searched for bicycle, trail, motor and wheel terms and the hits read). No section bans or limits e-bikes in bike lanes or separated bikeways. Section 10.57.090(A) permits roadway riding unless signs prohibit it, and 10.57.090(D) assumes a rider may be in a bike lane.",
+          "source_url": "https://ecode360.com/50661267",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    }
+  }
+}

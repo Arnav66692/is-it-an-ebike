@@ -21,6 +21,10 @@ import type { PlaceIndexFile } from "../lib/places/types";
 import { bottomLine, evaluate, PLACE_IDS, STATE_CODES } from "../lib/rules";
 import { emptyFacts, type BikeFacts, type ClassNum, type PlaceId } from "../lib/rules/types";
 import { CA_ANSWERS_BEFORE, caAnswersDigest } from "./modsDigest";
+import { CHECKED_CITIES } from "../lib/places/sanDiego";
+import { checkPiece, checkRoute, type RouteRider } from "../lib/route/legal";
+import { ROUTE_RULES } from "../lib/route/ruleData";
+import type { RouteSegment } from "../lib/route/types";
 
 const ROOT = join(__dirname, "..");
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(join(ROOT, path), "utf8")) as T;
@@ -227,4 +231,132 @@ export function finderGates(): FinderGates {
     }
   }
   return gates;
+}
+
+// ---------- The legal route check ----------
+
+export interface RouteGates {
+  pieces: number;
+  pieces_yes: number;
+  /** A piece counted toward a YES that the raw rule files block. */
+  piece_yes_rules_block: number;
+  routes: number;
+  routes_yes: number;
+  /** A route YES where the engine's own bottom line for that rider, bike and place is not YES. */
+  route_yes_engine_not_yes: number;
+}
+
+type RawKindRule = { classes: number[]; status: string; where: string };
+type RawLocal = { kinds: Record<string, RawKindRule[] | undefined>; notChecked: string[] };
+type RawState = { kinds: Record<string, Record<string, string | boolean>> };
+
+const ROUTE_KINDS = ["road", "bike_lane", "separated_bikeway", "bike_path", "sidewalk", "footway", "trail"] as const;
+
+/** The strictest reading of the raw rule files, written out apart from lib/route/legal.ts. */
+function rawRouteBlocks(state: RawState | undefined, local: RawLocal | undefined, checkedPlace: boolean, kind: string, cls: number, posted: boolean): boolean {
+  if (posted) return true;
+  const rule = state?.kinds?.[kind];
+  if (!rule) return true;
+  const status = rule[String(cls)];
+  const localRules = (local?.kinds?.[kind] ?? []).filter((r) => r.classes.includes(cls));
+  if (status === "unclear") return true;
+  if (status === "banned") return !(rule.localMayAllow === true && localRules.some((r) => r.status === "allowed" && r.where === "everywhere"));
+  if (!checkedPlace) return false;
+  if (!local) return rule.localMayRestrict === true;
+  if (localRules.some((r) => r.status !== "allowed")) return true;
+  return local.notChecked.includes(kind) && rule.localMayRestrict === true;
+}
+
+/** A full set of facts for a class, so the engine can answer without follow-up questions. */
+function routeFacts(cls: ClassNum): BikeFacts {
+  return {
+    ...emptyFacts(),
+    hasPedals: true,
+    classes: [cls],
+    ratedWatts: 500,
+    hasThrottle: cls === 2,
+    throttleMph: cls === 2 ? 20 : null,
+    assistMph: cls === 3 ? 28 : 20,
+    topSpeedMph: cls === 3 ? 28 : 20,
+    switchable: false,
+    motorOver20: false,
+    assistOver28: false,
+    wheelCount: 2,
+    wheelFrontIn: 26,
+    wheelRearIn: 26,
+    weightLb: 60,
+    weightOver100: false,
+    hasFootPegs: false,
+    needsPedalKit: false,
+  };
+}
+
+export function routeGates(): RouteGates {
+  const states = readJson<{ states: Record<string, RawState> }>("data/rules/route/states.json").states;
+  const local: Record<string, RawLocal> = {
+    ...readJson<{ jurisdictions: Record<string, RawLocal> }>("data/rules/route/local_sd_a.json").jurisdictions,
+    ...readJson<{ jurisdictions: Record<string, RawLocal> }>("data/rules/route/local_sd_b.json").jurisdictions,
+  };
+  const spots = [...CHECKED_CITIES.map((c) => ({ record: c.record as PlaceId, placeGeoid: c.geoid as string | null })), { record: "unincorporated_san_diego_county" as PlaceId, placeGeoid: null }];
+  const g: RouteGates = { pieces: 0, pieces_yes: 0, piece_yes_rules_block: 0, routes: 0, routes_yes: 0, route_yes_engine_not_yes: 0 };
+
+  for (const state of Object.keys(states)) {
+    for (const kind of ROUTE_KINDS) {
+      for (const cls of [1, 2, 3] as const) {
+        for (const spot of state === "CA" ? [...spots, null] : [null]) {
+          for (const posted of [false, true]) {
+            const seg: RouteSegment = {
+              from: 0,
+              to: 1,
+              meters: 100,
+              kind,
+              name: null,
+              wayId: null,
+              tags: posted ? { bicycle: "no" } : {},
+              state,
+              countyGeoid: spot ? "06073" : "00000",
+              placeGeoid: spot ? spot.placeGeoid : "0000000",
+              placeName: spot ? null : "Elsewhere",
+            };
+            const piece = checkPiece(seg, 0, [cls], ROUTE_RULES);
+            const towardYes = piece.status === "allowed" || piece.status === "unchecked";
+            g.pieces += 1;
+            if (towardYes) g.pieces_yes += 1;
+            if (towardYes && rawRouteBlocks(states[state], spot ? local[spot.record] : undefined, spot !== null, kind, cls, posted)) g.piece_yes_rules_block += 1;
+          }
+        }
+      }
+    }
+  }
+
+  const rideDate = "2026-10-23";
+  for (const spot of spots) {
+    for (let age = 8; age <= 20; age += 1) {
+      for (const cls of [1, 2, 3] as const) {
+        const facts = routeFacts(cls);
+        const seg: RouteSegment = { from: 0, to: 1, meters: 500, kind: "road", name: null, wayId: null, tags: {}, state: "CA", countyGeoid: "06073", placeGeoid: spot.placeGeoid, placeName: null };
+        const plan = {
+          points: [
+            { lat: 32.9, lon: -117.2 },
+            { lat: 32.905, lon: -117.2 },
+          ],
+          meters: 500,
+          seconds: 120,
+          climbMeters: null,
+          segments: [seg],
+          crossed: [{ layer: "state" as const, geoid: "06", name: "California", state: "CA" }],
+          atEnd: [],
+          sources: { router: "gate", boundaries: "gate", tags: "gate", read: rideDate },
+        };
+        const rider: RouteRider = { riderAge: age, rideDate, facts, sduhsdCampus: false };
+        const verdict = checkRoute(plan, rider, ROUTE_RULES);
+        g.routes += 1;
+        if (verdict.kind !== "yes") continue;
+        g.routes_yes += 1;
+        const engine = bottomLine(evaluate({ state: "CA", places: [spot.record], riderAge: age, rideDate, facts, otherPlaces: false }), rideDate);
+        if (engine.kind !== "yes") g.route_yes_engine_not_yes += 1;
+      }
+    }
+  }
+  return g;
 }

@@ -1,0 +1,1266 @@
+{
+  "_meta": {
+    "derived": "2026-10-23",
+    "from": "data/rules/san_diego_local.json other_local_rules, plus new readings marked new_reading"
+  },
+  "jurisdictions": {
+    "chula_vista": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Paths, trails, walks and sidewalks inside a City park or recreation area. Bicycles, scooters and tricycles are lawful only on a path or area the Director of Recreation designates, so whether an e-bike may use even a designated path is unclear.",
+            "rule": "park_path_limits",
+            "citation": "Chula Vista Mun. Code 2.66.250, 10.73.100",
+            "source_url": "https://chulavista.municipal.codes/CVMC/2.66",
+            "quote": "it is unlawful to skateboard, roller blade, in-line skate, or roller skate or ride a bicycle, scooter, tricycle, motorized bicycle, motorcycle or motor vehicle on any path, bridle trail, basketball or tennis court, walk or sidewalk in any City park or recreation area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "business_district",
+            "whereNote": "Sidewalks inside a business district as CVMC 10.08.060 defines it.",
+            "rule": "sidewalk_rules",
+            "citation": "Chula Vista Mun. Code 10.73.080(A) (Ord. 3597)",
+            "source_url": "https://chulavista.municipal.codes/CVMC/10.73",
+            "quote": "No person shall use, ride, or operate any electric micromobility vehicle upon any sidewalk within any business district as described by this code, nor upon a sidewalk within the City containing signs posted by the City Engineer prohibiting such use, riding, or operation.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any sidewalk where the City Engineer has posted a sign banning this use.",
+            "rule": "sidewalk_rules",
+            "citation": "Chula Vista Mun. Code 10.73.080(A) (Ord. 3597)",
+            "source_url": "https://chulavista.municipal.codes/CVMC/10.73",
+            "quote": "No person shall use, ride, or operate any electric micromobility vehicle upon any sidewalk within any business district as described by this code, nor upon a sidewalk within the City containing signs posted by the City Engineer prohibiting such use, riding, or operation.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              3
+            ],
+            "status": "banned",
+            "where": "everywhere",
+            "whereNote": "Class 3 e-bikes only, on any sidewalk in the City. Classes 1 and 2 are covered by the business district and posted sign entries.",
+            "rule": "sidewalk_rules",
+            "citation": "Chula Vista Mun. Code 10.73.080(B) (Ord. 3597)",
+            "source_url": "https://chulavista.municipal.codes/CVMC/10.73.080",
+            "quote": "No person shall use, ride, or operate a Class 3 electric bicycle upon any sidewalk within the City.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Paths, trails, walks and sidewalks inside a City park or recreation area. Bicycles, scooters and tricycles are lawful only on a path or area the Director of Recreation designates, so whether an e-bike may use even a designated path is unclear.",
+            "rule": "park_path_limits",
+            "citation": "Chula Vista Mun. Code 2.66.250, 10.73.100",
+            "source_url": "https://chulavista.municipal.codes/CVMC/2.66",
+            "quote": "it is unlawful to skateboard, roller blade, in-line skate, or roller skate or ride a bicycle, scooter, tricycle, motorized bicycle, motorcycle or motor vehicle on any path, bridle trail, basketball or tennis court, walk or sidewalk in any City park or recreation area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Paths, trails, walks and sidewalks inside a City park or recreation area. Bicycles, scooters and tricycles are lawful only on a path or area the Director of Recreation designates, so whether an e-bike may use even a designated path is unclear.",
+            "rule": "park_path_limits",
+            "citation": "Chula Vista Mun. Code 2.66.250, 10.73.100",
+            "source_url": "https://chulavista.municipal.codes/CVMC/2.66",
+            "quote": "it is unlawful to skateboard, roller blade, in-line skate, or roller skate or ride a bicycle, scooter, tricycle, motorized bicycle, motorcycle or motor vehicle on any path, bridle trail, basketball or tennis court, walk or sidewalk in any City park or recreation area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Paths, trails, walks and sidewalks inside a City park or recreation area. Bicycles, scooters and tricycles are lawful only on a path or area the Director of Recreation designates, so whether an e-bike may use even a designated path is unclear.",
+            "rule": "park_path_limits",
+            "citation": "Chula Vista Mun. Code 2.66.250, 10.73.100",
+            "source_url": "https://chulavista.municipal.codes/CVMC/2.66",
+            "quote": "it is unlawful to skateboard, roller blade, in-line skate, or roller skate or ride a bicycle, scooter, tricycle, motorized bicycle, motorcycle or motor vehicle on any path, bridle trail, basketball or tennis court, walk or sidewalk in any City park or recreation area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "CVMC Ch. 10.72 Bicycles, Ch. 10.73 Electric Micromobility Vehicles and Ch. 10.76 Pedestrians (all sections of each), plus the Title 10 chapter list and the Ch. 10.08 definitions of bicycle, bicycle lane, bicycle path, business district and electric micromobility vehicle. 10.73.080(C) to (E) cover motorized scooters only.",
+          "source_url": "https://chulavista.municipal.codes/CVMC/10.72",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "CVMC Ch. 10.72 Bicycles, Ch. 10.73 Electric Micromobility Vehicles and Ch. 10.76 Pedestrians (all sections of each), plus the Title 10 chapter list and the Ch. 10.08 definitions of bicycle, bicycle lane, bicycle path, business district and electric micromobility vehicle. 10.73.080(C) to (E) cover motorized scooters only.",
+          "source_url": "https://chulavista.municipal.codes/CVMC/10.72",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "CVMC Ch. 10.72 Bicycles, Ch. 10.73 Electric Micromobility Vehicles and Ch. 10.76 Pedestrians (all sections of each), plus the Title 10 chapter list and the Ch. 10.08 definitions of bicycle, bicycle lane, bicycle path, business district and electric micromobility vehicle. 10.73.080(C) to (E) cover motorized scooters only.",
+          "source_url": "https://chulavista.municipal.codes/CVMC/10.72",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "coronado": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "Public beaches. The code bars a vehicle, motorized or nonmotorized, unless an official of the City authorizes it in advance. The code has no local definition of vehicle and no court has tested whether an e-bike counts. The city treats e-bikes as covered.",
+            "rule": "beach_park_vehicle_ban",
+            "citation": "Coronado Mun. Code 56.18.040",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.040",
+            "quote": "Unless expressly authorized in advance by an official of the City of Coronado, it is unlawful to operate, park, or allow to stand a vehicle, motorized or nonmotorized, upon any public beach, park, golf course, median strip, traffic island, or parkway",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks, the golf course, median strips, traffic islands and parkways. The code bars a vehicle, motorized or nonmotorized, unless an official of the City authorizes it in advance. The code has no local definition of vehicle and no court has tested whether an e-bike counts. The city treats e-bikes as covered.",
+            "rule": "beach_park_vehicle_ban",
+            "citation": "Coronado Mun. Code 56.18.040",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.040",
+            "quote": "Unless expressly authorized in advance by an official of the City of Coronado, it is unlawful to operate, park, or allow to stand a vehicle, motorized or nonmotorized, upon any public beach, park, golf course, median strip, traffic island, or parkway",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "everywhere",
+            "whereNote": "All City sidewalks, Orange Avenue included. Riders must dismount and walk, or use adjacent or nearby roadways. The code exempts disabled persons and on-duty public agency staff.",
+            "rule": "sidewalk_and_boardwalk_ban",
+            "citation": "Coronado Mun. Code 56.18.050(B)(1), 56.02.020(H) (Ord. 2024-09)",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.050",
+            "quote": "It is prohibited to operate or ride on a motorized mobility device in the following areas of the City. Operators and riders must dismount and walk their motorized mobility devices within these areas, or operate or ride them on adjacent or nearby roadways. 1. All City sidewalks.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "Public beaches. The code bars a vehicle, motorized or nonmotorized, unless an official of the City authorizes it in advance. The code has no local definition of vehicle and no court has tested whether an e-bike counts. The city treats e-bikes as covered.",
+            "rule": "beach_park_vehicle_ban",
+            "citation": "Coronado Mun. Code 56.18.040",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.040",
+            "quote": "Unless expressly authorized in advance by an official of the City of Coronado, it is unlawful to operate, park, or allow to stand a vehicle, motorized or nonmotorized, upon any public beach, park, golf course, median strip, traffic island, or parkway",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks, the golf course, median strips, traffic islands and parkways. The code bars a vehicle, motorized or nonmotorized, unless an official of the City authorizes it in advance. The code has no local definition of vehicle and no court has tested whether an e-bike counts. The city treats e-bikes as covered.",
+            "rule": "beach_park_vehicle_ban",
+            "citation": "Coronado Mun. Code 56.18.040",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.040",
+            "quote": "Unless expressly authorized in advance by an official of the City of Coronado, it is unlawful to operate, park, or allow to stand a vehicle, motorized or nonmotorized, upon any public beach, park, golf course, median strip, traffic island, or parkway",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "Public beaches. The code bars a vehicle, motorized or nonmotorized, unless an official of the City authorizes it in advance. The code has no local definition of vehicle and no court has tested whether an e-bike counts. The city treats e-bikes as covered.",
+            "rule": "beach_park_vehicle_ban",
+            "citation": "Coronado Mun. Code 56.18.040",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.040",
+            "quote": "Unless expressly authorized in advance by an official of the City of Coronado, it is unlawful to operate, park, or allow to stand a vehicle, motorized or nonmotorized, upon any public beach, park, golf course, median strip, traffic island, or parkway",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks, the golf course, median strips, traffic islands and parkways. The code bars a vehicle, motorized or nonmotorized, unless an official of the City authorizes it in advance. The code has no local definition of vehicle and no court has tested whether an e-bike counts. The city treats e-bikes as covered.",
+            "rule": "beach_park_vehicle_ban",
+            "citation": "Coronado Mun. Code 56.18.040",
+            "source_url": "https://coronado.municipal.codes/CMC/56.18.040",
+            "quote": "Unless expressly authorized in advance by an official of the City of Coronado, it is unlawful to operate, park, or allow to stand a vehicle, motorized or nonmotorized, upon any public beach, park, golf course, median strip, traffic island, or parkway",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "CMC Ch. 56.01, 56.02, 56.08 Bicycles, 56.18 Driving Rules, 56.20, 56.28, 56.40 Restricted Use of Streets and 56.90 (all sections), plus Ch. 48.04 Beaches. 56.18.050(B) sends riders to adjacent or nearby roadways and sets no street rule.",
+          "source_url": "https://coronado.municipal.codes/CMC/56",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "CMC Ch. 56.01, 56.02, 56.08 Bicycles, 56.18 Driving Rules, 56.20, 56.28, 56.40 Restricted Use of Streets and 56.90 (all sections), plus Ch. 48.04 Beaches. 56.18.050(B) sends riders to adjacent or nearby roadways and sets no street rule.",
+          "source_url": "https://coronado.municipal.codes/CMC/56",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "CMC Ch. 56.01, 56.02, 56.08 Bicycles, 56.18 Driving Rules, 56.20, 56.28, 56.40 Restricted Use of Streets and 56.90 (all sections), plus Ch. 48.04 Beaches. 56.18.050(B) sends riders to adjacent or nearby roadways and sets no street rule.",
+          "source_url": "https://coronado.municipal.codes/CMC/56",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "coronado_hotel_del_paseo",
+          "names": [
+            "Paseo at the Hotel del Coronado"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The Paseo at the Hotel del Coronado, from Avenida Del Sol north to RH Dana Place.",
+          "rule": "sidewalk_and_boardwalk_ban",
+          "citation": "Coronado Mun. Code 56.18.050(B)(2), 56.02.020(H) (Ord. 2024-09)",
+          "source_url": "https://coronado.municipal.codes/CMC/56.18.050",
+          "quote": "It is prohibited to operate or ride on a motorized mobility device in the following areas of the City. Operators and riders must dismount and walk their motorized mobility devices within these areas, or operate or ride them on adjacent or nearby roadways. 1. All City sidewalks. 2. The Paseo at the Hotel del Coronado, from Avenida Del Sol north to RH Dana Place.",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "coronado_shores_boardwalk",
+          "names": [
+            "Boardwalk at Coronado Shores"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The Boardwalk at Coronado Shores, from Avenida Lunar north to Avenida Del Sol.",
+          "rule": "sidewalk_and_boardwalk_ban",
+          "citation": "Coronado Mun. Code 56.18.050(B)(3), 56.02.020(H) (Ord. 2024-09)",
+          "source_url": "https://coronado.municipal.codes/CMC/56.18.050",
+          "quote": "It is prohibited to operate or ride on a motorized mobility device in the following areas of the City. Operators and riders must dismount and walk their motorized mobility devices within these areas, or operate or ride them on adjacent or nearby roadways. 1. All City sidewalks. 2. The Paseo at the Hotel del Coronado, from Avenida Del Sol north to RH Dana Place. 3. The Boardwalk at Coronado Shores, from Avenida Lunar north to Avenida Del Sol.",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        },
+        {
+          "id": "coronado_glorietta_bay_promenade",
+          "names": [
+            "Promenade along the Glorietta Bay Marina"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The Promenade along the Glorietta Bay Marina, from Glorietta Bay Park north to the intersection of Strand Way, Orange Avenue, and Avenida Del Sol.",
+          "rule": "sidewalk_and_boardwalk_ban",
+          "citation": "Coronado Mun. Code 56.18.050(B)(4), 56.02.020(H) (Ord. 2024-09)",
+          "source_url": "https://coronado.municipal.codes/CMC/56.18.050",
+          "quote": "It is prohibited to operate or ride on a motorized mobility device in the following areas of the City. Operators and riders must dismount and walk their motorized mobility devices within these areas, or operate or ride them on adjacent or nearby roadways. 1. All City sidewalks. 2. The Paseo at the Hotel del Coronado, from Avenida Del Sol north to RH Dana Place. 3. The Boardwalk at Coronado Shores, from Avenida Lunar north to Avenida Del Sol. 4. The Promenade along the Glorietta Bay Marina, from Glorietta Bay Park north to the intersection of Strand Way, Orange Avenue, and Avenida Del Sol.",
+          "from": "new_reading",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "el_cajon": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside any city park, city playground or public facility, and on the public grounds of the Expanded Civic Center and the property between Main Street and Douglas Avenue. Whether the ban reaches sidewalks and parking lots next to a park is not settled.",
+            "rule": "park_and_facility_ebike_ban",
+            "citation": "El Cajon Mun. Code 9.42.030 (Ord. No. 5176)",
+            "source_url": "https://ecode360.com/44370011",
+            "quote": "Notwithstanding Chapter 2.56, it is unlawful for any person to ride a skateboard, scooter, electric bicycle, motorized scooter or dockless vehicle within any city park, any city playground, any public facility, or upon any public grounds in the Expanded Civic Center area or the public property between Main Street and Douglas Avenue, including that area commonly referred to as the Prescott Promenade.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "everywhere",
+            "whereNote": "ECMC 10.08.070 bars riding any vehicle on a sidewalk, except across driveways. The Vehicle Code leaves out only devices moved exclusively by human power, so an e-bike may count as a vehicle here. The record leaves this open.",
+            "rule": "sidewalk_vehicle_ban",
+            "citation": "El Cajon Mun. Code 10.08.070, 10.04.140",
+            "source_url": "https://ecode360.com/44370524",
+            "quote": "No person shall ride, drive, propel or cause to be propelled any vehicle or animal across or upon any sidewalk excepting over permanently constructed driveways",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside any city park, city playground or public facility, and on the public grounds of the Expanded Civic Center and the property between Main Street and Douglas Avenue. Whether the ban reaches sidewalks and parking lots next to a park is not settled.",
+            "rule": "park_and_facility_ebike_ban",
+            "citation": "El Cajon Mun. Code 9.42.030 (Ord. No. 5176)",
+            "source_url": "https://ecode360.com/44370011",
+            "quote": "Notwithstanding Chapter 2.56, it is unlawful for any person to ride a skateboard, scooter, electric bicycle, motorized scooter or dockless vehicle within any city park, any city playground, any public facility, or upon any public grounds in the Expanded Civic Center area or the public property between Main Street and Douglas Avenue, including that area commonly referred to as the Prescott Promenade.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "Inside any city park, city playground or public facility, and on the public grounds of the Expanded Civic Center and the property between Main Street and Douglas Avenue. Whether the ban reaches sidewalks and parking lots next to a park is not settled.",
+            "rule": "park_and_facility_ebike_ban",
+            "citation": "El Cajon Mun. Code 9.42.030 (Ord. No. 5176)",
+            "source_url": "https://ecode360.com/44370011",
+            "quote": "Notwithstanding Chapter 2.56, it is unlawful for any person to ride a skateboard, scooter, electric bicycle, motorized scooter or dockless vehicle within any city park, any city playground, any public facility, or upon any public grounds in the Expanded Civic Center area or the public property between Main Street and Douglas Avenue, including that area commonly referred to as the Prescott Promenade.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "Read in full: ECMC Ch. 9.42, Ch. 10.08 General Provisions and Ch. 10.26 Dockless Vehicles. Searched the full text of Titles 2, 9, 10 and 12 for bicycle, bike, scooter, skate and wheeled device and read every match. Only freeway and park rules turned up besides the sidewalk rule, and a freeway or a park is not an ordinary street.",
+          "source_url": "https://ecode360.com/44370485",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "Read in full: ECMC Ch. 9.42, Ch. 10.08 General Provisions and Ch. 10.26 Dockless Vehicles. Searched the full text of Titles 2, 9, 10 and 12 for bicycle, bike, scooter, skate and wheeled device and read every match. Only freeway and park rules turned up besides the sidewalk rule, and a freeway or a park is not an ordinary street.",
+          "source_url": "https://ecode360.com/44370485",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "Read in full: ECMC Ch. 9.42, Ch. 10.08 General Provisions and Ch. 10.26 Dockless Vehicles. Searched the full text of Titles 2, 9, 10 and 12 for bicycle, bike, scooter, skate and wheeled device and read every match. Only freeway and park rules turned up besides the sidewalk rule, and a freeway or a park is not an ordinary street.",
+          "source_url": "https://ecode360.com/44370485",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "el_cajon_prescott_promenade_civic_center",
+          "names": [
+            "Prescott Promenade",
+            "Prescott Promenade Park"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The public grounds of the Expanded Civic Center (City Hall, East County Regional Center, East County Performing Arts Center, Library, Community Center and Fire Facility Headquarters Complex) and the public property between Main Street and Douglas Avenue, including the Prescott Promenade.",
+          "rule": "park_and_facility_ebike_ban",
+          "citation": "El Cajon Mun. Code 9.42.030 (Ord. No. 5176)",
+          "source_url": "https://ecode360.com/44370011",
+          "quote": "Notwithstanding Chapter 2.56, it is unlawful for any person to ride a skateboard, scooter, electric bicycle, motorized scooter or dockless vehicle within any city park, any city playground, any public facility, or upon any public grounds in the Expanded Civic Center area or the public property between Main Street and Douglas Avenue, including that area commonly referred to as the Prescott Promenade.",
+          "from": "record",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "imperial_beach": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks, public playgrounds and public facilities, such as Dunes Park, Veterans Park, Portwood Pier Plaza, the Sports Park and the Tijuana Estuary Boardwalk. Bicycles are barred outside areas the City Council designates, and the code does not say whether this covers e-bikes.",
+            "rule": "park_bicycle_rules",
+            "citation": "Imperial Beach Mun. Code 12.56.020(P), (EE), 12.56.050(A)",
+            "source_url": "https://ecode360.com/42864356",
+            "quote": "It is unlawful for any person to ride a bicycle, skateboard, roller skates or inline skates within any public facility, public park or public playground except in areas specifically designated by resolution or ordinance of the City Council for riding bicycles, skateboards, roller skates, or inline skates.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "beaches",
+            "whereNote": "The beach area. Any vehicle with or without a motor is barred. Exceptions cover emergency vehicles, motorized wheelchairs and boat launching.",
+            "rule": "beach_vehicle_ban",
+            "citation": "Imperial Beach Mun. Code 12.60.110(A)",
+            "source_url": "https://ecode360.com/42864480",
+            "quote": "It is unlawful to bring or drive any motor-propelled or nonmotor-propelled vehicle, boat or airplane upon the beach area within the City.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "The beach area, which this section says includes the beach, sand, pier, dunes, boardwalk, parks and the grass area west of Seacoast Drive. The section says vehicle and does not name bicycles.",
+            "rule": "beach_area_vehicle_ban",
+            "citation": "Imperial Beach Mun. Code 10.36.160 (Ord. 93-866)",
+            "source_url": "https://ecode360.com/42863741",
+            "quote": "No person shall drive, park or leave unattended any vehicle upon the beach area of the City any time, including Sun-days and holidays, except in designated parking spaces. \"Beach area\" shall include the beach, sand, pier, dunes, boardwalk, parks, and grass area west of Seacoast Drive.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district. The code defines bicycle as human powered, so whether this reaches e-bikes is doubtful.",
+            "rule": "business_sidewalk_ban",
+            "citation": "Imperial Beach Mun. Code 10.56.180, 10.56.010",
+            "source_url": "https://ecode360.com/42863889",
+            "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks, public playgrounds and public facilities, such as Dunes Park, Veterans Park, Portwood Pier Plaza, the Sports Park and the Tijuana Estuary Boardwalk. Bicycles are barred outside areas the City Council designates, and the code does not say whether this covers e-bikes.",
+            "rule": "park_bicycle_rules",
+            "citation": "Imperial Beach Mun. Code 12.56.020(P), (EE), 12.56.050(A)",
+            "source_url": "https://ecode360.com/42864356",
+            "quote": "It is unlawful for any person to ride a bicycle, skateboard, roller skates or inline skates within any public facility, public park or public playground except in areas specifically designated by resolution or ordinance of the City Council for riding bicycles, skateboards, roller skates, or inline skates.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "beaches",
+            "whereNote": "The beach area. Any vehicle with or without a motor is barred. Exceptions cover emergency vehicles, motorized wheelchairs and boat launching.",
+            "rule": "beach_vehicle_ban",
+            "citation": "Imperial Beach Mun. Code 12.60.110(A)",
+            "source_url": "https://ecode360.com/42864480",
+            "quote": "It is unlawful to bring or drive any motor-propelled or nonmotor-propelled vehicle, boat or airplane upon the beach area within the City.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "The beach area, which this section says includes the beach, sand, pier, dunes, boardwalk, parks and the grass area west of Seacoast Drive. The section says vehicle and does not name bicycles.",
+            "rule": "beach_area_vehicle_ban",
+            "citation": "Imperial Beach Mun. Code 10.36.160 (Ord. 93-866)",
+            "source_url": "https://ecode360.com/42863741",
+            "quote": "No person shall drive, park or leave unattended any vehicle upon the beach area of the City any time, including Sun-days and holidays, except in designated parking spaces. \"Beach area\" shall include the beach, sand, pier, dunes, boardwalk, parks, and grass area west of Seacoast Drive.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks, public playgrounds and public facilities, such as Dunes Park, Veterans Park, Portwood Pier Plaza, the Sports Park and the Tijuana Estuary Boardwalk. Bicycles are barred outside areas the City Council designates, and the code does not say whether this covers e-bikes.",
+            "rule": "park_bicycle_rules",
+            "citation": "Imperial Beach Mun. Code 12.56.020(P), (EE), 12.56.050(A)",
+            "source_url": "https://ecode360.com/42864356",
+            "quote": "It is unlawful for any person to ride a bicycle, skateboard, roller skates or inline skates within any public facility, public park or public playground except in areas specifically designated by resolution or ordinance of the City Council for riding bicycles, skateboards, roller skates, or inline skates.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "beaches",
+            "whereNote": "The beach area. Any vehicle with or without a motor is barred. Exceptions cover emergency vehicles, motorized wheelchairs and boat launching.",
+            "rule": "beach_vehicle_ban",
+            "citation": "Imperial Beach Mun. Code 12.60.110(A)",
+            "source_url": "https://ecode360.com/42864480",
+            "quote": "It is unlawful to bring or drive any motor-propelled or nonmotor-propelled vehicle, boat or airplane upon the beach area within the City.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "beaches",
+            "whereNote": "The beach area, which this section says includes the beach, sand, pier, dunes, boardwalk, parks and the grass area west of Seacoast Drive. The section says vehicle and does not name bicycles.",
+            "rule": "beach_area_vehicle_ban",
+            "citation": "Imperial Beach Mun. Code 10.36.160 (Ord. 93-866)",
+            "source_url": "https://ecode360.com/42863741",
+            "quote": "No person shall drive, park or leave unattended any vehicle upon the beach area of the City any time, including Sun-days and holidays, except in designated parking spaces. \"Beach area\" shall include the beach, sand, pier, dunes, boardwalk, parks, and grass area west of Seacoast Drive.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "IBMC Title 10 Vehicles and Traffic (all chapters, 10.04 to 10.59, searched for bicycle, bike, skate, scooter and wheeled device), with Ch. 10.56 Bicycle Licensing and Regulation, 10.12.040 and 10.16.040 read in full. 10.56.180 covers business-district sidewalks only.",
+          "source_url": "https://ecode360.com/42863667",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "IBMC Title 10 Vehicles and Traffic (all chapters, 10.04 to 10.59, searched for bicycle, bike, skate, scooter and wheeled device), with Ch. 10.56 Bicycle Licensing and Regulation, 10.12.040 and 10.16.040 read in full. 10.56.180 covers business-district sidewalks only.",
+          "source_url": "https://ecode360.com/42863667",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "IBMC Title 10 Vehicles and Traffic (all chapters, 10.04 to 10.59, searched for bicycle, bike, skate, scooter and wheeled device), with Ch. 10.56 Bicycle Licensing and Regulation, 10.12.040 and 10.16.040 read in full. 10.56.180 covers business-district sidewalks only.",
+          "source_url": "https://ecode360.com/42863667",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": [
+        {
+          "id": "imperial_beach_pier",
+          "names": [
+            "Imperial Beach Pier"
+          ],
+          "classes": [
+            1,
+            2,
+            3
+          ],
+          "status": "banned",
+          "extent": "The deck of the public fishing pier next to Portwood Pier Plaza.",
+          "rule": "pier_ban",
+          "citation": "Imperial Beach Mun. Code 12.68.010(A)",
+          "source_url": "https://ecode360.com/42864551",
+          "quote": "To operate a bicycle, skateboard, roller skates or to ride a bicycle or other vehicle on the deck of the pier;",
+          "from": "record",
+          "checked": "2026-10-23"
+        }
+      ]
+    },
+    "la_mesa": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks and public lands. The code bars motorized vehicles, except on parking facilities and roadways built for vehicles, without written authorization from the Chief of Police. Whether this reaches e-bikes is an interpretation.",
+            "rule": "park_motorized_vehicle_ban",
+            "citation": "La Mesa Mun. Code 12.32.140, 9.08.095",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR_CH12.32MIDRRU",
+            "quote": "It shall be unlawful for any person to operate, drive, move, park or leave standing in or upon any public park or public lands, any motorized vehicle, except upon parking facilities or roadways designed and established for vehicular traffic, without written authorization from the La Mesa Chief of Police or his authorized representative.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "City parks. The code bars a self-driven vehicle on a sidewalk, path, field or turfed area, except on clearly marked roadways and parking lots. Its vehicle definition covers any wheeled conveyance that is motor-powered or self-propelled. Whether this reaches e-bikes is an interpretation.",
+            "rule": "park_motorized_vehicle_ban",
+            "citation": "La Mesa Mun. Code 9.08.095",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.08RUGOPAREAR",
+            "quote": "To drive an automobile, motorcycle, or other self-driven vehicle, as defined in Section 9.04.040 of this title on any sidewalk, path, field, or turfed area in a city park, except on clearly marked roadways and parking lots, unless given express permission by department of parks and recreation staff as part of an approved use permit.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "everywhere",
+            "whereNote": "LMMC 12.32.040 bars riding any vehicle on any sidewalk, except across driveways. The code treats even a pedal bicycle as a vehicle, so on its words an e-bike is covered. No court or city statement has tested this, and the city's e-bike page says no e-bike class is allowed on sidewalks.",
+            "rule": "sidewalk_vehicle_ban",
+            "citation": "La Mesa Mun. Code 12.32.040, 12.04.030",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR_CH12.32MIDRRU",
+            "quote": "No person shall ride, drive, propel, or cause to be propelled any vehicle or animal across or upon any sidewalk excepting over permanently constructed driveways",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks and public lands. The code bars motorized vehicles, except on parking facilities and roadways built for vehicles, without written authorization from the Chief of Police. Whether this reaches e-bikes is an interpretation.",
+            "rule": "park_motorized_vehicle_ban",
+            "citation": "La Mesa Mun. Code 12.32.140, 9.08.095",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR_CH12.32MIDRRU",
+            "quote": "It shall be unlawful for any person to operate, drive, move, park or leave standing in or upon any public park or public lands, any motorized vehicle, except upon parking facilities or roadways designed and established for vehicular traffic, without written authorization from the La Mesa Chief of Police or his authorized representative.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "City parks. The code bars a self-driven vehicle on a sidewalk, path, field or turfed area, except on clearly marked roadways and parking lots. Its vehicle definition covers any wheeled conveyance that is motor-powered or self-propelled. Whether this reaches e-bikes is an interpretation.",
+            "rule": "park_motorized_vehicle_ban",
+            "citation": "La Mesa Mun. Code 9.08.095",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.08RUGOPAREAR",
+            "quote": "To drive an automobile, motorcycle, or other self-driven vehicle, as defined in Section 9.04.040 of this title on any sidewalk, path, field, or turfed area in a city park, except on clearly marked roadways and parking lots, unless given express permission by department of parks and recreation staff as part of an approved use permit.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Public parks and public lands. The code bars motorized vehicles, except on parking facilities and roadways built for vehicles, without written authorization from the Chief of Police. Whether this reaches e-bikes is an interpretation.",
+            "rule": "park_motorized_vehicle_ban",
+            "citation": "La Mesa Mun. Code 12.32.140, 9.08.095",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR_CH12.32MIDRRU",
+            "quote": "It shall be unlawful for any person to operate, drive, move, park or leave standing in or upon any public park or public lands, any motorized vehicle, except upon parking facilities or roadways designed and established for vehicular traffic, without written authorization from the La Mesa Chief of Police or his authorized representative.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "City parks. The code bars a self-driven vehicle on a sidewalk, path, field or turfed area, except on clearly marked roadways and parking lots. Its vehicle definition covers any wheeled conveyance that is motor-powered or self-propelled. Whether this reaches e-bikes is an interpretation.",
+            "rule": "park_motorized_vehicle_ban",
+            "citation": "La Mesa Mun. Code 9.08.095",
+            "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT9PARE_CH9.08RUGOPAREAR",
+            "quote": "To drive an automobile, motorcycle, or other self-driven vehicle, as defined in Section 9.04.040 of this title on any sidewalk, path, field, or turfed area in a city park, except on clearly marked roadways and parking lots, unless given express permission by department of parks and recreation staff as part of an approved use permit.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "Read in full: LMMC 12.04.020 and 12.04.030 definitions, 12.12.050, Ch. 12.32 Miscellaneous Driving Rules, Ch. 12.36 Pedestrians and Ch. 12.38 Electric Bicycle Safety Pilot Program. Searched Ch. 12.52 Restricted Use of Streets for bicycle, bike, skate, scooter and wheel terms, which turned up only weight limits on named streets, plus the Title 12 chapter list. 12.32.070 covers freeways only.",
+          "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "Read in full: LMMC 12.04.020 and 12.04.030 definitions, 12.12.050, Ch. 12.32 Miscellaneous Driving Rules, Ch. 12.36 Pedestrians and Ch. 12.38 Electric Bicycle Safety Pilot Program. Searched Ch. 12.52 Restricted Use of Streets for bicycle, bike, skate, scooter and wheel terms, which turned up only weight limits on named streets, plus the Title 12 chapter list. 12.32.070 covers freeways only.",
+          "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "Read in full: LMMC 12.04.020 and 12.04.030 definitions, 12.12.050, Ch. 12.32 Miscellaneous Driving Rules, Ch. 12.36 Pedestrians and Ch. 12.38 Electric Bicycle Safety Pilot Program. Searched Ch. 12.52 Restricted Use of Streets for bicycle, bike, skate, scooter and wheel terms, which turned up only weight limits on named streets, plus the Title 12 chapter list. 12.32.070 covers freeways only.",
+          "source_url": "https://library.municode.com/ca/la_mesa/codes/code_of_ordinances?nodeId=TIT12TR",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "lemon_grove": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "City parks, which the code says include their streets and sidewalks. The code bars motor vehicles except where parking is designated. An e-bike is not a motor vehicle under the Vehicle Code, so whether this reaches e-bikes is unclear.",
+            "rule": "park_motor_vehicle_ban",
+            "citation": "Lemon Grove Mun. Code 12.20.140",
+            "source_url": "https://ecode360.com/44609049",
+            "quote": "It is unlawful for any automobile, motorcycle or other motor vehicle to be in any park, excepting at such place or places as are provided for and designated as places for the parking of automobiles, motorcycles or other motor vehicles.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district. Title 10 does not define bicycle and the Vehicle Code definitions apply, so the rule plausibly reaches e-bikes but this is not settled.",
+            "rule": "business_sidewalk_ban",
+            "citation": "Lemon Grove Mun. Code 10.44.010, 10.04.020",
+            "source_url": "https://ecode360.com/44608601",
+            "quote": "It is unlawful for any person to ride a bicycle upon any sidewalk in a business district.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "City parks, which the code says include their streets and sidewalks. The code bars motor vehicles except where parking is designated. An e-bike is not a motor vehicle under the Vehicle Code, so whether this reaches e-bikes is unclear.",
+            "rule": "park_motor_vehicle_ban",
+            "citation": "Lemon Grove Mun. Code 12.20.140",
+            "source_url": "https://ecode360.com/44609049",
+            "quote": "It is unlawful for any automobile, motorcycle or other motor vehicle to be in any park, excepting at such place or places as are provided for and designated as places for the parking of automobiles, motorcycles or other motor vehicles.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "City parks, which the code says include their streets and sidewalks. The code bars motor vehicles except where parking is designated. An e-bike is not a motor vehicle under the Vehicle Code, so whether this reaches e-bikes is unclear.",
+            "rule": "park_motor_vehicle_ban",
+            "citation": "Lemon Grove Mun. Code 12.20.140",
+            "source_url": "https://ecode360.com/44609049",
+            "quote": "It is unlawful for any automobile, motorcycle or other motor vehicle to be in any park, excepting at such place or places as are provided for and designated as places for the parking of automobiles, motorcycles or other motor vehicles.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "LGMC Title 10 Vehicles and Traffic (all chapters, searched for bicycle, bike, skate, scooter and wheeled device), with Ch. 10.44 Bicycles and Skateboards read in full. 10.44.020 covers skateboards, roller skates and coasters in the central commercial area.",
+          "source_url": "https://ecode360.com/44608328",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "LGMC Title 10 Vehicles and Traffic (all chapters, searched for bicycle, bike, skate, scooter and wheeled device), with Ch. 10.44 Bicycles and Skateboards read in full. 10.44.020 covers skateboards, roller skates and coasters in the central commercial area.",
+          "source_url": "https://ecode360.com/44608328",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "LGMC Title 10 Vehicles and Traffic (all chapters, searched for bicycle, bike, skate, scooter and wheeled device), with Ch. 10.44 Bicycles and Skateboards read in full. 10.44.020 covers skateboards, roller skates and coasters in the central commercial area.",
+          "source_url": "https://ecode360.com/44608328",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "national_city": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              3
+            ],
+            "status": "unclear",
+            "where": "everywhere",
+            "whereNote": "Class 3 e-bikes only, on Class I multi-use bike paths. The sentence sits in the code's definitions subsection and repeats the state rule from before AB 1909, so it is shown as unclear, not as a ban.",
+            "rule": "class3_class_i_bike_path_ban",
+            "citation": "National City Mun. Code 11.52.010(B)(3) (Ord. No. 2023-2520)",
+            "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR_CH11.52BI",
+            "quote": "Class 3 e-bikes are prohibited from Class I multi-use bike paths unless specifically authorized by a local ordinance.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Inside any city park, playground, golf course or recreation facility, on any walkway or turfed area. An e-bike has a motor, but the city has not said it counts as a motorized vehicle here.",
+            "rule": "park_motorized_ban",
+            "citation": "National City Mun. Code 10.52.010(G)",
+            "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT10PUPEMOSA_VIOFAGPR_CH10.52REUSMUPAPLGOCO",
+            "quote": "Drive or ride a motorcycle, automobile, or any other motorized vehicle on any walkway or turfed area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district. The code defines bicycle as human powered, so whether this reaches e-bikes is not settled.",
+            "rule": "sidewalk_ban",
+            "citation": "National City Mun. Code 11.52.020(A)",
+            "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR_CH11.52BI",
+            "quote": "It is unlawful for any person to ride a bicycle upon a sidewalk within any business or residence district of the city, with the exception herein stated.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "other",
+            "whereNote": "Sidewalks in a residence district, unless the City Council has allowed sidewalk riding there by resolution, and none was found. The code defines bicycle as human powered, so whether this reaches e-bikes is not settled.",
+            "rule": "sidewalk_ban",
+            "citation": "National City Mun. Code 11.52.020(A)",
+            "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR_CH11.52BI",
+            "quote": "It is unlawful for any person to ride a bicycle upon a sidewalk within any business or residence district of the city, with the exception herein stated.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Inside any city park, playground, golf course or recreation facility, on any walkway or turfed area. An e-bike has a motor, but the city has not said it counts as a motorized vehicle here.",
+            "rule": "park_motorized_ban",
+            "citation": "National City Mun. Code 10.52.010(G)",
+            "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT10PUPEMOSA_VIOFAGPR_CH10.52REUSMUPAPLGOCO",
+            "quote": "Drive or ride a motorcycle, automobile, or any other motorized vehicle on any walkway or turfed area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "Inside any city park, playground, golf course or recreation facility, on any walkway or turfed area. An e-bike has a motor, but the city has not said it counts as a motorized vehicle here.",
+            "rule": "park_motorized_ban",
+            "citation": "National City Mun. Code 10.52.010(G)",
+            "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT10PUPEMOSA_VIOFAGPR_CH10.52REUSMUPAPLGOCO",
+            "quote": "Drive or ride a motorcycle, automobile, or any other motorized vehicle on any walkway or turfed area.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "Read in full: NCMC Ch. 11.52 Bicycles, Ch. 11.64 Mobility Devices and Ch. 11.36 Miscellaneous Driving Rules. Searched Ch. 11.40 Street Use Restrictions (trains and truck routes) and Ch. 11.44 Pedestrians for bicycle, bike, skate, scooter, sidewalk and wheel terms, plus the Title 11 chapter list. 11.36.060 covers freeways only. 11.52.010(B) says Class 1 and Class 2 e-bikes are legal on any paved surface where a regular bike may operate, which adds no street rule.",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "Read in full: NCMC Ch. 11.52 Bicycles, Ch. 11.64 Mobility Devices and Ch. 11.36 Miscellaneous Driving Rules. Searched Ch. 11.40 Street Use Restrictions (trains and truck routes) and Ch. 11.44 Pedestrians for bicycle, bike, skate, scooter, sidewalk and wheel terms, plus the Title 11 chapter list. 11.36.060 covers freeways only. 11.52.010(B) says Class 1 and Class 2 e-bikes are legal on any paved surface where a regular bike may operate, which adds no street rule.",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "Read in full: NCMC Ch. 11.52 Bicycles, Ch. 11.64 Mobility Devices and Ch. 11.36 Miscellaneous Driving Rules. Searched Ch. 11.40 Street Use Restrictions (trains and truck routes) and Ch. 11.44 Pedestrians for bicycle, bike, skate, scooter, sidewalk and wheel terms, plus the Title 11 chapter list. 11.36.060 covers freeways only. 11.52.010(B) says Class 1 and Class 2 e-bikes are legal on any paved surface where a regular bike may operate, which adds no street rule.",
+          "source_url": "https://library.municode.com/ca/national_city/codes/code_of_ordinances?nodeId=CD_ORD_TIT11VETR",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "santee": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "City parks and recreation areas. Riding is allowed only on an automobile road or a trail designated for these vehicles. The code also says bicycles are permitted on walkways and trails when the Director designates them. No designations were found.",
+            "rule": "park_vehicle_rule",
+            "citation": "Santee Mun. Code 8.08.280(A)",
+            "source_url": "https://ecode360.com/43750414",
+            "quote": "It is unlawful for any person to ride or drive a bicycle, motorcycle, automobile or any other vehicle in any location in a City park or recreation area other than on an automobile road or trail designated to accommodate such vehicles.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "posted_signs",
+            "whereNote": "Any sidewalk where the City Engineer has posted a sign banning electric bicycles. No list of posted sidewalks was found.",
+            "rule": "posted_sidewalk_ban",
+            "citation": "Santee Mun. Code 10.22.016 (Ord. 628)",
+            "source_url": "https://ecode360.com/48916226",
+            "quote": "It is unlawful for any person to ride or operate an electric bicycle on any sidewalk within the City where the City Engineer has posted a sign prohibiting such use.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "City parks and recreation areas. Riding is allowed only on an automobile road or a trail designated for these vehicles. The code also says bicycles are permitted on walkways and trails when the Director designates them. No designations were found.",
+            "rule": "park_vehicle_rule",
+            "citation": "Santee Mun. Code 8.08.280(A)",
+            "source_url": "https://ecode360.com/43750414",
+            "quote": "It is unlawful for any person to ride or drive a bicycle, motorcycle, automobile or any other vehicle in any location in a City park or recreation area other than on an automobile road or trail designated to accommodate such vehicles.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "City parks and recreation areas. Riding is allowed only on an automobile road or a trail designated for these vehicles. The code also says bicycles are permitted on walkways and trails when the Director designates them. No designations were found.",
+            "rule": "park_vehicle_rule",
+            "citation": "Santee Mun. Code 8.08.280(A)",
+            "source_url": "https://ecode360.com/43750414",
+            "quote": "It is unlawful for any person to ride or drive a bicycle, motorcycle, automobile or any other vehicle in any location in a City park or recreation area other than on an automobile road or trail designated to accommodate such vehicles.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {
+        "road": {
+          "read": "Read in full: SMC Ch. 10.22 Miscellaneous Provisions and the 10.02.020 definitions of bicycle and electric bicycle. Searched the full text of Titles 7, 8 and 10 for bicycle, bike, skate, scooter, wheeled device and trail, and read every match. 10.22.050 covers freeways only. 10.22.080 names motorcycles and power cycles on trails, not e-bikes.",
+          "source_url": "https://ecode360.com/43752313",
+          "checked": "2026-10-23"
+        },
+        "bike_lane": {
+          "read": "Read in full: SMC Ch. 10.22 Miscellaneous Provisions and the 10.02.020 definitions of bicycle and electric bicycle. Searched the full text of Titles 7, 8 and 10 for bicycle, bike, skate, scooter, wheeled device and trail, and read every match. 10.22.050 covers freeways only. 10.22.080 names motorcycles and power cycles on trails, not e-bikes.",
+          "source_url": "https://ecode360.com/43752313",
+          "checked": "2026-10-23"
+        },
+        "separated_bikeway": {
+          "read": "Read in full: SMC Ch. 10.22 Miscellaneous Provisions and the 10.02.020 definitions of bicycle and electric bicycle. Searched the full text of Titles 7, 8 and 10 for bicycle, bike, skate, scooter, wheeled device and trail, and read every match. 10.22.050 covers freeways only. 10.22.080 names motorcycles and power cycles on trails, not e-bikes.",
+          "source_url": "https://ecode360.com/43752313",
+          "checked": "2026-10-23"
+        }
+      },
+      "notChecked": [],
+      "facilities": []
+    },
+    "unincorporated_san_diego_county": {
+      "kinds": {
+        "bike_path": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "County parks, which the code says include trails, open space preserves and ecological reserves. Riding is allowed only in areas designated for it, and the code adds that e-bikes are allowed pursuant to State law.",
+            "rule": "county_parks_designated_areas_only",
+            "citation": "SDCC 41.130(b), (b)(i), 41.102(b) (Ord. No. 10823 (N.S.))",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+            "quote": "Ride or use a bicycle, E-bike, non-motorized scooter, skateboard, inline skates or other similar wheeled device except in areas designated for its use. (i) E-bikes allowed pursuant to State law.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "County parks. The code bars operating a vehicle in a park outside park roadways and parking areas without written authorization. Whether this reaches e-bikes is unclear.",
+            "rule": "county_parks_vehicle_license_and_registration",
+            "citation": "SDCC 41.127(f) (Ord. No. 10823 (N.S.))",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+            "quote": "No person shall operate a vehicle in a County park other than on a park roadway designated for vehicle traffic or in a parking area designated for vehicle use without written authorization issued by the Department.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "sidewalk": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "business_district",
+            "whereNote": "Sidewalks in a business district. The Traffic Code does not define bicycle, so whether this reaches e-bikes is arguable.",
+            "rule": "sidewalk_ban_in_business_district",
+            "citation": "SDCC 72.230 (County Traffic Code)",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-84827",
+            "quote": "It shall be unlawful for any person to ride a bicycle upon any sidewalk in a business district.",
+            "from": "record",
+            "checked": "2026-10-23"
+          }
+        ],
+        "footway": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "County parks, which the code says include trails, open space preserves and ecological reserves. Riding is allowed only in areas designated for it, and the code adds that e-bikes are allowed pursuant to State law.",
+            "rule": "county_parks_designated_areas_only",
+            "citation": "SDCC 41.130(b), (b)(i), 41.102(b) (Ord. No. 10823 (N.S.))",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+            "quote": "Ride or use a bicycle, E-bike, non-motorized scooter, skateboard, inline skates or other similar wheeled device except in areas designated for its use. (i) E-bikes allowed pursuant to State law.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "County parks. The code bars operating a vehicle in a park outside park roadways and parking areas without written authorization. Whether this reaches e-bikes is unclear.",
+            "rule": "county_parks_vehicle_license_and_registration",
+            "citation": "SDCC 41.127(f) (Ord. No. 10823 (N.S.))",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+            "quote": "No person shall operate a vehicle in a County park other than on a park roadway designated for vehicle traffic or in a parking area designated for vehicle use without written authorization issued by the Department.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ],
+        "trail": [
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "banned",
+            "where": "parks",
+            "whereNote": "County parks, which the code says include trails, open space preserves and ecological reserves. Riding is allowed only in areas designated for it, and the code adds that e-bikes are allowed pursuant to State law.",
+            "rule": "county_parks_designated_areas_only",
+            "citation": "SDCC 41.130(b), (b)(i), 41.102(b) (Ord. No. 10823 (N.S.))",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+            "quote": "Ride or use a bicycle, E-bike, non-motorized scooter, skateboard, inline skates or other similar wheeled device except in areas designated for its use. (i) E-bikes allowed pursuant to State law.",
+            "from": "record",
+            "checked": "2026-10-23"
+          },
+          {
+            "classes": [
+              1,
+              2,
+              3
+            ],
+            "status": "unclear",
+            "where": "parks",
+            "whereNote": "County parks. The code bars operating a vehicle in a park outside park roadways and parking areas without written authorization. Whether this reaches e-bikes is unclear.",
+            "rule": "county_parks_vehicle_license_and_registration",
+            "citation": "SDCC 41.127(f) (Ord. No. 10823 (N.S.))",
+            "source_url": "https://codelibrary.amlegal.com/codes/san_diego/latest/sandiego_regs/0-0-0-95312",
+            "quote": "No person shall operate a vehicle in a County park other than on a park roadway designated for vehicle traffic or in a parking area designated for vehicle use without written authorization issued by the Department.",
+            "from": "new_reading",
+            "checked": "2026-10-23"
+          }
+        ]
+      },
+      "noRuleFound": {},
+      "notChecked": [
+        "road",
+        "bike_lane",
+        "separated_bikeway"
+      ],
+      "facilities": []
+    }
+  }
+}

@@ -18,6 +18,7 @@ import type { PlaceEntry } from "@/lib/places/types";
 import { BikeIcon } from "./BikeIcon";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
+import { RoutePlanner } from "./RoutePlanner";
 import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
 import { FollowUps } from "./FollowUps";
@@ -659,6 +660,9 @@ export function Checker() {
         <p role="status" className="sr-only">
           {summary ? announcement(summary, lang, unchecked, uncheckedDistricts) : ""}
         </p>
+        {result && age !== null && date !== null && !questionsFirst ? (
+          <RoutePlanner lang={lang} facts={facts} riderAge={age} rideDate={date} sduhsdCampus={ride.places.includes("sduhsd_campuses")} />
+        ) : null}
         {result ? (
           <div className="actions no-print">
             <button type="button" className="btn btn-quiet" onClick={goToFacts}>

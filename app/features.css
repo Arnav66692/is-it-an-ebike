@@ -982,3 +982,140 @@ a.brand-mark::after {
 .map-note {
   font-size: 0.875rem;
 }
+
+/* ---------- The legal route check (components/RoutePlanner.tsx, components/RouteMap.tsx) ---------- */
+
+.route-fields {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .route-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.route-picked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.route-campus {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-height: 44px;
+}
+
+.route-campus input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+}
+
+/* The route map is shorter than the full map page, since the answer and the list sit around it. */
+.route-map-frame {
+  height: 52vh;
+  height: 52svh;
+  min-height: 280px;
+  max-height: 520px;
+}
+
+/* Leaflet draws the route as SVG paths. A class beats the stroke attribute, so the theme colors win. */
+.route-piece-allowed {
+  stroke: var(--yes);
+}
+
+.route-piece-banned {
+  stroke: var(--no);
+}
+
+.route-piece-unclear {
+  stroke: var(--maybe);
+}
+
+.route-piece-unchecked {
+  stroke: var(--accent);
+}
+
+.route-end {
+  stroke: var(--card);
+  fill: var(--ink);
+}
+
+.route-finish {
+  fill: var(--accent);
+}
+
+.route-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.route-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.route-swatch {
+  display: inline-block;
+  width: 1.5rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.route-swatch-allowed {
+  background: var(--yes);
+}
+
+.route-swatch-banned {
+  background: var(--no);
+}
+
+/* Dashed and dotted like the lines on the map, so the legend never rests on color alone. */
+.route-swatch-unclear {
+  background: repeating-linear-gradient(90deg, var(--maybe) 0 6px, transparent 6px 10px);
+}
+
+.route-swatch-unchecked {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 3px, transparent 3px 7px);
+}
+
+.route-problems > li {
+  border-left: 3px solid var(--line-strong);
+  padding-left: 0.75rem;
+}
+
+.route-answer[data-kind="no_illegal"] .route-problems > li {
+  border-left-color: var(--no);
+}
+
+.route-law summary,
+.route-pieces summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.route-law blockquote {
+  margin: 0.4rem 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--line);
+  color: var(--muted);
+}
+
+.route-pieces ol {
+  padding-left: 0;
+  list-style: none;
+}

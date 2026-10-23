@@ -1,0 +1,3528 @@
+{
+  "_meta": {
+    "derived": "2026-10-23",
+    "from": "data/rules/all_states.normalized.json where_allowed and local_authority",
+    "method": "Each state's seven rows were read by hand from where_allowed and local_authority and then checked by script. road comes from roads, bike_lane and separated_bikeway from bike_lanes, bike_path and trail from paths_trails, sidewalk from sidewalks, and footway only where a field names pedestrian paths, otherwise it is unclear. separated_bikeway copies bike_lane, except in Massachusetts where the bikeway sentence sets localMayRestrict. Class 3 limits come from class3_restrictions, and age, helmet, license and speedometer rules are ignored. A class is allowed when the field says it may ride there, says it follows bicycle rules there, or says there is no statewide ban. It is banned when the field says state law bars it. It is unclear when the field is silent, says no rule was found, says the answer is unsettled or hedged, depends on zone, speed or how the bike is classified, or leaves the choice to the managing authority. Where a Class 3 bike is treated as a moped or motor-driven cycle and the fields state no location rule for that category, Class 3 is unclear. localMayRestrict is true when the text says a local authority, state agency or land manager may ban, prohibit or regulate e-bikes or bicycles on that kind, or makes the permission subject to local ordinance. localMayAllow is true only when every banned class in the row can be lifted by a local authority or the managing agency. basis is an exact quote from the named field and supports the most restrictive or least certain value in the row, while the other values come from the field that normally feeds that kind."
+  },
+  "states": {
+    "AK": {
+      "citation": null,
+      "source_url": null,
+      "kinds": {
+        "road": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Unclear. Depends on whether the e-bike is a motor vehicle, motorcycle or motor-driven cycle.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Unclear.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Unclear.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Unclear at state level. Land managers and municipalities set their own rules (not researched).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Unclear.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Unclear.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Unclear at state level. Land managers and municipalities set their own rules (not researched).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "AL": {
+      "citation": "Ala. Code 32-5A-267(g), (h)",
+      "source_url": "https://alison.legislature.state.al.us/code-of-alabama?section=32-5A-267",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are, with bicycle rights and duties (32-5A-267(a), (g)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (32-5A-267(g)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (32-5A-267(g)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bicycle and multi-use paths. After notice and a public hearing, a county, municipality or other subdivision may ban Class 1 or 2 on its paths if needed for safety or legal compliance (32-5A-267(h)(1)a).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No state e-bike sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No state e-bike sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "This path-ban power does not cover nonmotorized natural-surface trails (32-5A-267(h)(2)), and the statute is silent on e-bikes there.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "AR": {
+      "citation": "Ark. Code Ann. 27-51-1703(1); 27-51-1705; 27-49-111",
+      "source_url": "https://arkleg.state.ar.us/Acts/FTPDocument?path=%2FACTS%2F2017R%2FPublic%2F&file=956.pdf&ddBienniumSession=2017%2F2017R",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Bicycle rights and duties (27-51-1703(1), 27-49-111).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Treated as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Treated as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 is barred from bicycle and multi-use paths unless within or adjacent to a highway or roadway, or the local authority permits it (27-51-1705(b)).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No state e-bike sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No state e-bike sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 may use bicycle and multi-use paths where bicycles are permitted, but the local authority with jurisdiction may prohibit them (27-51-1705(a)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "AZ": {
+      "citation": "A.R.S. 28-819(A), (D), (E)",
+      "source_url": "https://www.azleg.gov/ars/28/00819.htm",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Same rights and duties as a bicycle rider (28-819(A)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Treated as a bicycle (28-819(A)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Treated as a bicycle (28-819(A)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 may not be ridden on a bicycle or multiuse path unless it is within or adjacent to a highway or roadway, or the agency with jurisdiction allows it (28-819(E)).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state e-bike sidewalk rule found. Left to local regulation under 28-627(A)(8) and (14).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state e-bike sidewalk rule found. Left to local regulation under 28-627(A)(8) and (14).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 allowed on bicycle and multiuse paths, but the state agency or local authority with jurisdiction may prohibit them (28-819(D)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "CA": {
+      "citation": "Cal. Veh. Code 312.5(b); 21206; 21207.5",
+      "source_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=21207.5",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "E-bike riders follow the bicycle rules in Article 4 (312.5(b)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific ban. 21207.5(a) restricts 'motorized bicycles' (mopeds, VC 406), not e-bikes.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific ban. 21207.5(a) restricts 'motorized bicycles' (mopeds, VC 406), not e-bikes.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state ban on any class on bike paths since AB 1909 (effective Jan 1, 2023).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk ban. Local ordinances may regulate or prohibit (21206).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Locals may regulate operation on pedestrian or bicycle facilities (21206).",
+          "field": "where_allowed.paths_trails"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Local agencies may ban e-bikes or any class on equestrian, hiking or recreational trails (21207.5(b)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "CO": {
+      "citation": "C.R.S. 42-4-1412(1), (10), (14)",
+      "source_url": "https://colorado.public.law/statutes/crs_42-4-1412",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle rights and duties, subject to local ordinances within cities and towns (42-4-1412(1)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Treated as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Treated as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 is barred from bike or pedestrian paths unless the path is within a street or highway or the local authority permits it (42-4-1412(14)(b)).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed unless prohibited by official traffic control devices or local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 is barred from bike or pedestrian paths unless the path is within a street or highway or the local authority permits it (42-4-1412(14)(b)).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 may ride on a bike or pedestrian path where bicycles may travel, but a local authority may prohibit them (42-4-1412(14)(a)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "CT": {
+      "citation": "Conn. Gen. Stat. 14-289k(b), (c), (d); 14-286(a)",
+      "source_url": "https://www.cga.ct.gov/2026/sup/chap_248.htm",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Where bicycles may travel, with bicycle rights and duties",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are permitted (14-289k(b)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are permitted (14-289k(b)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 'shall not be ridden on a bicycle trail or path or multiuse trail or path' (14-289k(c)), with no local opt-in.",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed unless a city, town or borough ordinance or a State Traffic Administration regulation prohibits it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed unless a city, town or borough ordinance or a State Traffic Administration regulation prohibits it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 2 may not be ridden on a nonmotorized bicycle or multiuse trail with a natural surface tread and no added surfacing, unless a local ordinance permits (14-289k(d)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "DC": {
+      "citation": "18 DCMR 1201.9, 1201.19; 1201.18 (repealed)",
+      "source_url": "https://www.dcregs.dc.gov/Common/DCMR/RuleList.aspx?ChapterNum=18-12",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "A Class 3 used by motor above 20 mph is treated as a motor-driven cycle and the rider needs a valid driver's license (18 DCMR 9901.1).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "A Class 3 used by motor above 20 mph is treated as a motor-driven cycle and the rider needs a valid driver's license (18 DCMR 9901.1).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "A Class 3 used by motor above 20 mph is treated as a motor-driven cycle and the rider needs a valid driver's license (18 DCMR 9901.1).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "A Class 3 used by motor above 20 mph is treated as a motor-driven cycle and the rider needs a valid driver's license (18 DCMR 9901.1).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed outside the Central Business District unless a Mayor's order and signs prohibit it. Banned in the Central Business District except on designated sidewalks.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed outside the Central Business District unless a Mayor's order and signs prohibit it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "National Park Service land in DC follows federal rules, not checked here.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "DE": {
+      "citation": "21 Del. C. 4198P(g)",
+      "source_url": "https://delcode.delaware.gov/title21/c041/sc12/index.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are allowed, with bicycle rights and duties (4198P(a), (g)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (4198P(g)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (4198P(g)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bicycle and multi-use paths unless the local authority or state agency bans it after notice and a public hearing for safety or legal reasons (4198P(g)(1)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not allowed while using the electric motor, even on sidewalks open to bicycles (4198P(g)(3)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not allowed while using the electric motor, even on sidewalks open to bicycles (4198P(g)(3)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "May be banned on designated nonmotorized natural-surface trails (4198P(g)(2)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "FL": {
+      "citation": "Fla. Stat. 316.20655(1), (7); 316.008(7)(a)",
+      "source_url": "https://www.flsenate.gov/Laws/Statutes/2026/316.20655",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are allowed, with bicycle rights and duties (316.20655(1), (7)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (316.20655(7)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (316.20655(7)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bicycle and multiuse paths, but a municipality, county or state agency with jurisdiction may restrict or prohibit e-bikes on a path, trail network, beach or dune (316.20655(1)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Unclear default. E-bikes have bicycle rights, and 316.2065(10) sets duties for people riding bicycles on sidewalks. 316.008(7)(a) lets a county or municipality 'permit, control, or regulate' e-bikes on sidewalks, with a 15 mph cap in such an ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Unclear default.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bicycle and multiuse paths, but a municipality, county or state agency with jurisdiction may restrict or prohibit e-bikes on a path, trail network, beach or dune (316.20655(1)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "GA": {
+      "citation": "O.C.G.A. §§ 40-6-301, 40-6-303(a), 40-1-1(6.1), 40-6-144",
+      "source_url": "https://codes.findlaw.com/ga/title-40-motor-vehicles-and-traffic/ga-code-sect-40-6-303/",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. Riders have the same rights and duties as bicycle riders (§ 40-6-301) and ride as far right as practicable (§ 40-6-294).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. § 40-1-1(6.1) defines a bicycle lane as being for 'bicycles and electric assisted bicycles'.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. § 40-1-1(6.1) defines a bicycle lane as being for 'bicycles and electric assisted bicycles'.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class III only if the path is within or next to a highway, or the managing authority permits it (§ 40-6-303(a)(2)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Generally prohibited. § 40-6-144: no person shall drive any vehicle upon a sidewalk, except where a local ordinance allows bicycles on sidewalks for riders 12 or younger. Whether that local exception covers e-bikes is not stated.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Generally prohibited. § 40-6-144: no person shall drive any vehicle upon a sidewalk, except where a local ordinance allows bicycles on sidewalks for riders 12 or younger.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface trails designated nonmotorized are outside these rules. Their managers decide which devices may use them (§ 40-6-303(a)(3)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "HI": {
+      "citation": "HRS § 291C-145(g) as amended by Act 259, Section 13; § 291C-123(a) as amended by Act 259, Section 10",
+      "source_url": "https://www.capitol.hawaii.gov/sessions/session2026/bills/HB2021_CD1_.HTM",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle, but the bike must be registered first (§ 249-14(b)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. § 291C-123(a) lets bicycles use bicycle lanes and paths. Counties may post lanes and paths to bar 'persons riding a bicycle equipped with a motor' (§ 291C-145(g)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. § 291C-123(a) lets bicycles use bicycle lanes and paths. Counties may post lanes and paths to bar 'persons riding a bicycle equipped with a motor' (§ 291C-145(g)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle paths are allowed under § 291C-123 unless a county posts them closed to motorized bicycles (§ 291C-145(g)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All three classes allowed at 10 mph or less, except in business districts or where a county ordinance prohibits it. Counties may add reasonable restrictions (§ 291C-145(g)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "All three classes allowed at 10 mph or less, except in business districts or where a county ordinance prohibits it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state rule on natural-surface trails was found. State and county park rules may apply.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "IA": {
+      "citation": "Iowa Code § 321.235B(7), (9)",
+      "source_url": "https://www.legis.iowa.gov/docs/code/321.235B.pdf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on streets, highways, roadways and shoulders. Riders have the rights and duties of bicycle riders (§ 321.235B(7)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. Class 3 may not exceed the posted or applicable limit, or 20 mph where none is posted (§ 321.235B(9)(b)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. Class 3 may not exceed the posted or applicable limit, or 20 mph where none is posted (§ 321.235B(9)(b)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bikeways and bicycle or multi-use paths wherever bicycles are allowed.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk ban found. Allowed where bicycles are allowed. Cities regulate bicycle use, including sidewalks, under § 321.236(10). Local rules apply.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk ban found. Allowed where bicycles are allowed.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state natural-surface trail carve-out was found. DNR, county conservation and city park rules were not reviewed.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "ID": {
+      "citation": "Idaho Code §§ 49-725, 49-728, 49-721, 40-616",
+      "source_url": "https://legislature.idaho.gov/statutesrules/idstat/Title49/T49CH7/SECT49-728/",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. E-bike riders have the rights and duties of bicycle riders (§ 49-725) and of vehicle drivers under chapters 6 and 8 (§ 49-714, as amended 2026).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles may travel (§§ 49-725, 49-728).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles may travel (§§ 49-725, 49-728).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes, including Class 3, may use multiuse paths and other places bicycles may go, unless excluded by local ordinance or by signs posted by the agency with jurisdiction after public notice on a governing board agenda (§ 49-728).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are allowed. Riders must yield to pedestrians and give an audible signal before passing (§ 49-721(1)), and may not ride where traffic control devices prohibit bicycles (§ 49-721(2)). Local ordinances can exclude e-bikes (§ 49-725).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are allowed.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes, including Class 3, may use multiuse paths and other places bicycles may go, unless excluded by local ordinance or by signs posted by the agency with jurisdiction after public notice on a governing board agenda (§ 49-728).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "IL": {
+      "citation": "625 ILCS 5/11-1517(e)-(g)",
+      "source_url": "https://www.ilga.gov/Documents/legislation/ilcs/documents/062500050K11-1517.htm",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on any highway, street or roadway authorized for bicycles (§ 11-1517(e)). Bicycle rules apply (§ 11-1517(a)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 11-1517(e)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 11-1517(e)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on any bicycle path unless the municipality, county or local authority with jurisdiction bans e-bikes or a class (§ 11-1517(f), through 2026).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Prohibited: 'A person may not operate a low-speed electric bicycle on a sidewalk' (§ 11-1517(g)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Prohibited: 'A person may not operate a low-speed electric bicycle on a sidewalk' (§ 11-1517(g)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on any bicycle path unless the municipality, county or local authority with jurisdiction bans e-bikes or a class (§ 11-1517(f), through 2026).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "IN": {
+      "citation": "IC 9-21-11-13.1(j)-(l)",
+      "source_url": "https://iga.in.gov/laws/2026/ic/titles/9#9-21-11-13.1",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles are permitted (subsection (j)). Riders have the rights and duties of bicycle riders.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles are permitted (subsection (j)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles are permitted (subsection (j)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 only on paths within or next to a highway, or where the local authority or state agency allows it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule was found. Sidewalk riding is governed by local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule was found. Sidewalk riding is governed by local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "On natural-surface nonmotorized trails, the managing local authority or state agency decides (subsection (l)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "KS": {
+      "citation": "K.S.A. 8-1592b(f); K.S.A. 8-1590(d)",
+      "source_url": "https://www.ksrevisor.org/statutes/chapters/ch08/008_015_0092b.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. E-bike riders have the rights and duties of bicycle riders. Note K.S.A. 8-1590(d): 'Wherever a usable path for bicycles has been provided adjacent to a roadway, bicycle riders shall use such path and shall not use the roadway.' This bicycle duty appears to reach e-bike riders through 8-1592b(a).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes, including Class 3, are allowed on bicycle and multi-use paths, trails and trail networks. A municipality, county or state agency with jurisdiction may restrict or ban e-bikes or a class on its paths and trails (8-1592b(f)(2)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule. Cities may adopt home-rule ordinances governing e-bikes on 'sidewalks or sidewalk areas' (8-1592b(f)(2)). Local rules apply.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes, including Class 3, are allowed on bicycle and multi-use paths, trails and trail networks. A municipality, county or state agency with jurisdiction may restrict or ban e-bikes or a class on its paths and trails (8-1592b(f)(2)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "KY": {
+      "citation": "601 KAR 14:020 § 7(4) (bicycles on sidewalks); KRS 189.289(1) (electric low-speed scooters)",
+      "source_url": "https://apps.legislature.ky.gov/law/kar/titles/601/014/020/",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "If treated as a bicycle, it is operated 'in the same manner as a motor vehicle' and may use highway shoulders (601 KAR 14:020 § 7). If treated as a moped or low-speed scooter, highway use is allowed under those rules.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific rule. Electric low-speed scooters may use bicycle lanes (KRS 189.289(1)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific rule. Electric low-speed scooters may use bicycle lanes (KRS 189.289(1)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state e-bike path rule found. Local, state park and Kentucky Fish & Wildlife rules govern. Not reviewed.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycles may use sidewalks 'unless prohibited by law or ordinance' and must yield to pedestrians (601 KAR 14:020 § 7(4)). Whether this covers e-bikes depends on the unresolved classification.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Whether this covers e-bikes depends on the unresolved classification.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state e-bike path rule found. Local, state park and Kentucky Fish & Wildlife rules govern. Not reviewed.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "LA": {
+      "citation": "La. R.S. 32:204(F); R.S. 32:203(C)",
+      "source_url": "https://www.legis.la.gov/legis/Law.aspx?d=1187363",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. Riders have the rights and duties of bicycle riders: ride as far right as practicable, and shoulders are allowed (R.S. 32:197).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. R.S. 32:203(C) allows e-bikes in bike lanes at a reasonable and prudent speed that does not endanger bicyclists.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. R.S. 32:203(C) allows e-bikes in bike lanes at a reasonable and prudent speed that does not endanger bicyclists.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on shared-use trails, bicycle paths and trails. After notice and a public hearing, the managing local or state authority may ban Class 1 or 2 for safety or legal reasons. It may ban Class 3 without that process (R.S. 32:204(F)(1)-(2)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule found. Local ordinances govern (several parishes and cities restrict sidewalk cycling, not reviewed).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on shared-use trails, bicycle paths and trails. After notice and a public hearing, the managing local or state authority may ban Class 1 or 2 for safety or legal reasons. It may ban Class 3 without that process (R.S. 32:204(F)(1)-(2)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MA": {
+      "citation": "Mass. Gen. Laws ch. 85, § 11B3/4(b)-(d); ch. 85, § 11B",
+      "source_url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXIV/Chapter85/Section11B3~4",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Same as bicycles: all public ways except limited-access or express state highways posted against bicycles (ch. 85, § 11B).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed, same as bicycles.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bike paths and bikeways allowed unless the municipality or agency with jurisdiction prohibits or regulates e-bikes after public notice and a hearing (§ 11B3/4(c)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No Class 3 category exists. A 28 mph bike is likely a motorized bicycle: max 25 mph on ways, excluded from off-street recreational bicycle paths, bicycle lanes allowed (ch. 90, § 1B).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Prohibited for e-bikes statewide (§ 11B3/4(b)), even though regular bicycles may use some sidewalks outside business districts.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Prohibited for e-bikes statewide (§ 11B3/4(b)), even though regular bicycles may use some sidewalks outside business districts.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "banned",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Natural-surface trails designated nonmotorized are CLOSED to e-bikes unless the agency opens them after notice and hearing (§ 11B3/4(d)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MD": {
+      "citation": "Md. Code, Transp. § 21-1205.2(a); § 21-1103(b); § 21-1205.1(a)",
+      "source_url": "https://mgaleg.maryland.gov/2026RS/Statute_Web/gtr/21-1205.2.pdf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Where bicycles may travel. Bicycles may not use roadways posted above 50 mph (shoulder use allowed) or expressways, per § 21-1205.1(a). Must use a smooth-surface bike lane where one exists (§ 21-1205.1(b)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 21-1205.2(a)(1)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 21-1205.2(a)(1)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 may not be used on a bicycle path unless the path is within or adjacent to a highway right-of-way or the agency with jurisdiction allows it.",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Because § 11-104 defines bicycle to include an electric bicycle, sidewalk riding appears allowed unless a local ordinance bans it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Because § 11-104 defines bicycle to include an electric bicycle, sidewalk riding appears allowed unless a local ordinance bans it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface trails designated nonmotorized may be regulated for any class by the agency with jurisdiction.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "ME": {
+      "citation": "29-A M.R.S. § 2063(14)(F); § 2063(1), (2), (2-A)",
+      "source_url": "https://legislature.maine.gov/statutes/29-A/title29-Asec2063.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. For § 2063, 'bicycle' includes an e-bike, so bicycle road rules apply: ride to the right, paved shoulders allowed, and the rights and duties of a vehicle operator.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle. No e-bike-specific bike lane rule.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle. No e-bike-specific bike lane rule.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 only on paths within a highway or roadway, or where the managing authority authorizes it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule found in 29-A. Municipal ordinances govern. Not reviewed.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule found in 29-A.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "No e-bike may use a nonmotorized path with significant natural surface (gravel, stones, wooden bridging) unless authorized (§ 2063(14)(F)(3)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MI": {
+      "citation": "MCL 257.662a(6)-(10), (13); MCL 257.660c",
+      "source_url": "https://www.legislature.mi.gov/Laws/MCL?objectName=mcl-257-662a",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Any part of a highway open to bicycles, including the shoulder. Not allowed in a city that bans nonemergency motor vehicles (Mackinac Island) unless the city allows it, and not in Mackinac Island State Park without a permit (§ 662a(7)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 662a(6)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 662a(6)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 2 and Class 3 allowed on those trails ONLY if the managing agency authorizes it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "E-bikes follow bicycle rules (§ 662a(1)), and bicycles may use sidewalks unless an official traffic control device prohibits it (MCL 257.660c), with local ordinances able to restrict further.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific sidewalk rule.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Natural-surface nonmotorized trails are closed to all e-bikes unless the agency allows them.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MN": {
+      "citation": "Minn. Stat. § 169.222, subds. 4(d), 6a",
+      "source_url": "https://www.revisor.mn.gov/statutes/cite/169.222",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Same as bicycles, including shoulders and bicycle routes.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 may use bicycle paths, bicycle trails and shared use paths with the motor engaged unless restricted under § 85.015 subd. 1d (state trails), § 85.018 subd. 2(d) (local trails) or § 160.263 subd. 2(b) (bikeways).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "E-bikes are bicycles, so bicycle sidewalk rules apply: not on sidewalks in a business district unless local authorities permit it, and local authorities may ban bicycles on any sidewalk (§ 169.222, subd. 4(d)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "E-bikes are bicycles, so bicycle sidewalk rules apply: not on sidewalks in a business district unless local authorities permit it, and local authorities may ban bicycles on any sidewalk (§ 169.222, subd. 4(d)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface nonmotorized trails and bike parks may be regulated by the managing agency.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MO": {
+      "citation": "RSMo § 307.194.1, .7; § 300.347",
+      "source_url": "https://revisor.mo.gov/main/OneSection.aspx?section=307.194",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Where bicycles may travel, with all bicycle rights and duties (§ 307.194.1).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle and multi-use paths allowed where bicycles are. After notice and a public hearing, the agency with jurisdiction may ban Class 1 or 2 on a path for safety or legal reasons.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike sidewalk rule in § 307.194.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No e-bike sidewalk rule in § 307.194.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface nonmotorized trails may be regulated by the agency.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MS": {
+      "citation": "Miss. Code Ann. § 63-3-1315(7); § 21-37-3(2)",
+      "source_url": "https://billstatus.ls.state.ms.us/documents/2021/html/HB/1100-1199/HB1195SG.htm",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles are allowed, including streets, highways and roadways.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle and multi-use paths allowed. After notice and a public hearing, the agency with jurisdiction may ban Class 1 or 2 from a path if needed for safety or legal compliance.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Not addressed in § 63-3-1315. § 21-37-3(2) says § 63-3-1315 governs e-bikes on sidewalks, and § 63-3-1315(7) allows e-bikes where bicycles are permitted, so sidewalk use follows local bicycle rules. Treat as unclear.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not addressed in § 63-3-1315.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface trails designated nonmotorized may be regulated by the agency.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "MT": {
+      "citation": "MCA 61-8-601, 61-8-602, 61-8-605, 61-8-608",
+      "source_url": "https://archive.legmt.gov/bills/mca/title_0610/chapter_0080/part_0060/section_0080/0610-0080-0060-0080.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "As a bicycle: roadways and paved shoulders (61-8-605), with the rights and duties of a vehicle driver (61-8-602).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No Class 3 category. A 28 mph bike is likely a moped: may NOT be ridden under power on sidewalks or bicycle paths (61-8-608(3)(b)), may use highways, bike lanes and shoulders under power (61-8-608(3)(c))",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No Class 3 category. A 28 mph bike is likely a moped: may NOT be ridden under power on sidewalks or bicycle paths (61-8-608(3)(b)), may use highways, bike lanes and shoulders under power (61-8-608(3)(c))",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed unless official traffic control devices prohibit it (61-8-608(2)), yielding to pedestrians.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Land managers (state parks, federal lands) set their own trail rules.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NC": {
+      "citation": "N.C. Gen. Stat. § 20-4.01(49), § 20-171.1",
+      "source_url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_20/GS_20-4.01.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 (28 mph) is treated as a moped",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 (28 mph) is treated as a moped",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 (28 mph) is treated as a moped",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_path": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state statute. Set by the managing agency and local ordinance.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state statute for bicycles or e-bikes (20-160(b) bans only motor vehicles on sidewalks). Cities may regulate sidewalks (160A-296, 160A-300).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No state statute for bicycles or e-bikes (20-160(b) bans only motor vehicles on sidewalks).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state statute. Set by the managing agency and local ordinance.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "ND": {
+      "citation": "N.D.C.C. § 39-10.1-02, § 39-10.1-05, § 39-10.1-09(5)",
+      "source_url": "https://www.ndlegis.gov/cencode/t39c10-1.pdf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "E-bikes are bicycles. Riders have the rights and duties of drivers on roadways (39-10.1-02), must ride as far right as practicable, and may ride no more than two abreast (39-10.1-05).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not separately addressed. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not separately addressed. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes are allowed on bicycle and multi-use paths unless the governing entity prohibits them.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state statute found in chapters 39-10 or 39-10.1. Set by city ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No state statute found in chapters 39-10 or 39-10.1.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "All classes are allowed on bicycle and multi-use paths unless the governing entity prohibits them.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NE": {
+      "citation": "Neb. Rev. Stat. §§ 60-6,314, 60-6,317, 60-678",
+      "source_url": "https://nebraskalegislature.gov/laws/statutes.php?statute=60-6%2C317",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "As a bicycle, with the rights and duties of a vehicle driver (§ 60-6,314).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle rules apply on paths set aside for bicycles (§ 60-6,314(2)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle with pedestrian duties and yielding to pedestrians (§ 60-6,317(4)), unless a local ordinance restricts it (§ 60-6,317(5)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle with pedestrian duties and yielding to pedestrians (§ 60-6,317(4)), unless a local ordinance restricts it (§ 60-6,317(5)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "The state and any political subdivision may permit, prohibit or control e-bike use in areas under its control (§ 60-678).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NH": {
+      "citation": "RSA 265:144-a, I, VII, VIII; RSA 265:143",
+      "source_url": "https://gc.nh.gov/rsa/html/XXI/265/265-144-a.htm",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Wherever a bicycle may be operated, with the rights and duties of a vehicle driver (RSA 265:143).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as a bicycle.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 may NOT use a bicycle or multi-use path unless the path is within or adjacent to a highway or roadway, or the agency with jurisdiction allows Class 3.",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule found. Towns and cities regulate bicycle use on their ways by ordinance (RSA 265:149).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface nonmotorized trails may be regulated by the agency.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NJ": {
+      "citation": "N.J.S.A. 39:4-14.16(a), (d), (e), 39:4-14.3(a)",
+      "source_url": "https://pub.njleg.state.nj.us/Bills/2024/PL25/285_.PDF",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Motorized bicycles (class 2 and 3): banned from interstates, median-divided highways, roads posted over 50 mph, railroad rights-of-way, and public land where the agency prohibits them.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle rules apply to low-speed electric bicycles (39:4-14.16(g)) and to motorized bicycles unless the commissioner decides otherwise (39:4-14.3(f)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle rules apply to low-speed electric bicycles (39:4-14.16(g)) and to motorized bicycles unless the commissioner decides otherwise (39:4-14.3(f)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Path access for motorized bicycles is not stated in c.285.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Sidewalk riding is not authorized by state law and is set by local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Sidewalk riding is not authorized by state law and is set by local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Natural-surface non-motorized trails are off limits unless the agency allows it (39:4-14.16(d),(e)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NM": {
+      "citation": "NMSA 1978 § 66-3-709(A), (B), (D)",
+      "source_url": "https://nmlegis.gov/Sessions/23%20Regular/final/SB0069.pdf",
+      "kinds": {
+        "road": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not expressly addressed in SB 69. E-bikes are not motor vehicles. Bicycle-on-road rules were not separately verified.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not expressly addressed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not expressly addressed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 1 is allowed on bicycle or pedestrian paths unless a political subdivision bans it. Class 2 and 3 are banned from paths unless the path is within a street or highway, or a political subdivision allows them.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Not addressed in SB 69. Left to local ordinance (not verified).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "allowed",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 1 is allowed on bicycle or pedestrian paths unless a political subdivision bans it. Class 2 and 3 are banned from paths unless the path is within a street or highway, or a political subdivision allows them.",
+          "field": "where_allowed.paths_trails"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface non-motorized trails are outside 66-3-709 and may be regulated by the managing agency.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NV": {
+      "citation": "NRS 484A.4695; NRS 484B.763; NRS 484B.777; NRS 484B.450(3)",
+      "source_url": "https://www.leg.state.nv.us/NRS/NRS-484A.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are, with the rights and duties of a vehicle driver (NRS 484B.763).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle paths and shared-use paths allowed unless a local ordinance (or a state agency after notice and a hearing) bans e-bikes or a class for health, safety or legal reasons.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide rule on riding bicycles or e-bikes on sidewalks was found. The sidewalk ban in NRS 484B.117 applies to drivers of 'vehicles', and e-bikes are excluded from 'vehicle'.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide rule on riding bicycles or e-bikes on sidewalks was found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface nonmotorized trails may be regulated by the agency with jurisdiction.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "NY": {
+      "citation": "N.Y. Veh. & Traf. Law § 1242(4), (5), (8), (9), (10)",
+      "source_url": "https://www.nysenate.gov/legislation/laws/VAT/1242",
+      "kinds": {
+        "road": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Only on highways posted 30 mph or less (including private roads open to motor vehicles), unless local law says otherwise.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 is illegal outside a city of 1 million or more (in practice only NYC) per 1242(10).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 is illegal outside a city of 1 million or more (in practice only NYC) per 1242(10).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_path": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Banned on public lands and property other than highways, and greenways next to or connected with highways count as banned too, unless a state agency or locality designates and posts the land for e-bikes (1242(4)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Banned unless a local law authorizes it: 'No bicycle with electric assist shall be operated on a sidewalk, except as may be authorized by a local law'.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Banned unless a local law authorizes it: 'No bicycle with electric assist shall be operated on a sidewalk, except as may be authorized by a local law'.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Banned on public lands and property other than highways, and greenways next to or connected with highways count as banned too, unless a state agency or locality designates and posts the land for e-bikes (1242(4)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "OH": {
+      "citation": "Ohio Rev. Code § 4511.522(C), § 4511.711(A)",
+      "source_url": "https://codes.ohio.gov/ohio-revised-code/section-4511.522",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "E-bikes are bicycles and vehicles, so they may use roads with bicycle rights and duties.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Not separately restricted. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Not separately restricted. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 is banned from those paths unless the path is within or next to a highway or the authority allows it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Sidewalk riding is allowed only with the motor NOT engaged: no vehicle 'other than a bicycle or an electric bicycle if the motor is not engaged' on sidewalks (4511.711(A)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Sidewalk riding is allowed only with the motor NOT engaged: no vehicle 'other than a bicycle or an electric bicycle if the motor is not engaged' on sidewalks (4511.711(A)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "All classes are banned from mountain-bike, hiking, equestrian and natural-surface non-motorized trails unless authorized (4511.522(C)(3)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "OK": {
+      "citation": "47 Okla. Stat. § 11-1209(A), (E)",
+      "source_url": "https://www.oklegislature.gov/OK_Statutes/CompleteTitles/os47.rtf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Wherever bicycles may travel, with bicycle rights and duties (11-1209(A),(E)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are permitted.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed where bicycles are permitted.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All three classes are allowed on bicycle and multiuse paths unless the local authority or state agency bans them.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state statute found. Set by local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No state statute found. Set by local ordinance.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface non-motorized trails are outside this rule and may be regulated by the agency.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "OR": {
+      "citation": "ORS 814.405, ORS 814.410(1)(e), ORS 814.420",
+      "source_url": "https://www.oregonlegislature.gov/bills_laws/ors/ors814.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Bicycle rules apply (814.405). Where a jurisdiction finds a bike lane or path suitable, riders must use it (814.420).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed, as bicycles. Motorists must yield to e-bike riders in bike lanes (811.050).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed, as bicycles. Motorists must yield to e-bike riders in bike lanes (811.050).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific state statute was found. Path and trail rules are set by the managing agency (Oregon State Parks rulemaking in 2024 to 2025, not verified).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "BANNED statewide. Riding an e-bike on a sidewalk is 'unsafe operation of a bicycle on a sidewalk', a Class D violation (814.410(1)(e)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "BANNED statewide. Riding an e-bike on a sidewalk is 'unsafe operation of a bicycle on a sidewalk', a Class D violation (814.410(1)(e)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific state statute was found. Path and trail rules are set by the managing agency (Oregon State Parks rulemaking in 2024 to 2025, not verified).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "PA": {
+      "citation": "75 Pa.C.S. §§ 3501, 3505, 3508, 3511",
+      "source_url": "https://www.legis.state.pa.us/WU01/LI/LI/CT/HTM/75/00.035..HTM",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 status is unclear (see verdict_cautions). If it counts as a pedalcycle with electric assist, the rules for other e-bikes apply, including the 16 and older age rule. If not, it is most likely a motor-driven cycle (license, registration, insurance).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 status is unclear (see verdict_cautions). If it counts as a pedalcycle with electric assist, the rules for other e-bikes apply, including the 16 and older age rule. If not, it is most likely a motor-driven cycle (license, registration, insurance).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 status is unclear (see verdict_cautions). If it counts as a pedalcycle with electric assist, the rules for other e-bikes apply, including the 16 and older age rule. If not, it is most likely a motor-driven cycle (license, registration, insurance).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 status is unclear (see verdict_cautions). If it counts as a pedalcycle with electric assist, the rules for other e-bikes apply, including the 16 and older age rule. If not, it is most likely a motor-driven cycle (license, registration, insurance).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed outside business districts, yielding to pedestrians and signaling before passing. In business districts only where signs permit, and not where a usable bike-only lane is next to the sidewalk (§ 3508).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed outside business districts, yielding to pedestrians and signaling before passing.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Trail access on DCNR and other lands is set by the land manager (not verified).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "RI": {
+      "citation": "R.I. Gen. Laws § 31-19.7-2",
+      "source_url": "https://webserver.rilegislature.gov/Statutes/TITLE31/31-19.7/31-19.7-2.htm",
+      "kinds": {
+        "road": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not addressed in chapter 31-19.7. E-bikes are not motor vehicles. Whether chapter 31-19 bicycle rules apply was not verified.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not addressed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not addressed.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 is allowed by statute on state bicycle trails and paths. DEM may regulate other uses on its properties (DEM proposed state-park rule amendments in March 2025, not read). Class 2 and 3 access to state paths depends on DEM rules.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not addressed in the sections read.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not addressed in the sections read.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 is allowed by statute on state bicycle trails and paths. DEM may regulate other uses on its properties (DEM proposed state-park rule amendments in March 2025, not read). Class 2 and 3 access to state paths depends on DEM rules.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "SC": {
+      "citation": "S.C. Code Ann. §§ 56-5-3420, 56-5-3425, 56-5-3520",
+      "source_url": "https://www.scstatehouse.gov/code/t56c005.php",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "SC has no Class 3 category. A 28 mph Class 3 bike does not meet the § 56-1-10(29) definition (top motor-powered speed must be less than 20 mph).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "SC has no Class 3 category. A 28 mph Class 3 bike does not meet the § 56-1-10(29) definition (top motor-powered speed must be less than 20 mph).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "SC has no Class 3 category. A 28 mph Class 3 bike does not meet the § 56-1-10(29) definition (top motor-powered speed must be less than 20 mph).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "bike_path": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike rule found for paths or trails. Land managers and local governments set their own rules.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Whether an e-bike is a 'vehicle' under § 56-1-10(28) (which excludes devices moved by human power) is unclear. Local ordinances apply.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike or bicycle sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike rule found for paths or trails. Land managers and local governments set their own rules.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "SD": {
+      "citation": "SDCL § 32-20B-12",
+      "source_url": "https://sdlegislature.gov/Statutes/32-20B-12",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. Electric bicycles are 'vehicles' (§ 32-14-1(39)) but not 'motor vehicles' (§ 32-14-1(17)), and bicycle rules in Chapter 32-20B apply (ride near the right edge, § 32-20B-5).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific bike lane rule found. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific bike lane rule found. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class III not allowed on a bicycle path or multi-use path unless it is within or adjacent to a highway or roadway, or the managing entity expressly permits it (§ 32-20B-12).",
+          "field": "where_allowed.class3_restrictions"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Not confirmed whether 'bicycle' in those sections includes electric bicycles. Municipal ordinances may bar sidewalk riding.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Not confirmed whether 'bicycle' in those sections includes electric bicycles.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class III allowed on natural-surface nonmotorized trails unless the managing entity prohibits it.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "TN": {
+      "citation": "Tenn. Code Ann. § 55-8-306(a), as amended by 2026 Pub. Ch. 651 § 1",
+      "source_url": "https://publications.tnsosfiles.com/acts/114/pub/pc0651.pdf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 allowed anywhere bicycles may travel, but since April 1, 2026 a local government (by ordinance) or a state agency (by rule) may regulate or prohibit Class 1 and 2 on any part of a street or highway where bicycles travel, including state highways, for public safety.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 allowed (bike lanes are part of 'any part of a street or highway where bicycles are authorized to travel'), subject to local or state-agency restriction. Class 3 allowed in bike lanes and on shoulders within or next to the street.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 allowed (bike lanes are part of 'any part of a street or highway where bicycles are authorized to travel'), subject to local or state-agency restriction. Class 3 allowed in bike lanes and on shoulders within or next to the street.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 barred from paths and trails unless the path is within or adjacent to a street or highway or the local government or state agency permits it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No electric bicycle on a sidewalk unless the local government or state agency authorizes bicycles on that sidewalk AND the electric motor is disabled (§ 55-8-306(a)(4), 2016 text, not changed by Pub. Ch. 651).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No electric bicycle on a sidewalk unless the local government or state agency authorizes bicycles on that sidewalk AND the electric motor is disabled (§ 55-8-306(a)(4), 2016 text, not changed by Pub. Ch. 651).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 barred from paths and trails unless the path is within or adjacent to a street or highway or the local government or state agency permits it.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "TX": {
+      "citation": "Tex. Transp. Code § 551.106(a)",
+      "source_url": "https://statutes.capitol.texas.gov/Docs/TN/htm/TN.551.htm",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. Bicycle rules apply to electric bicycles (§ 551.002). TxDOT and local authorities may not ban e-bikes from highways used mainly by motor vehicles.",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed wherever regular bicycles are allowed (§ 551.106(a)(2)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed wherever regular bicycles are allowed (§ 551.106(a)(2)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes allowed wherever regular bicycles are allowed, except that TxDOT or a local authority may ban e-bikes on a path that is closed to motor vehicles and has a natural-surface tread made by clearing and grading native soil.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide ban. TxDOT or a local authority may prohibit bicycles (and so e-bikes) on sidewalks (§ 551.106(b)(1)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide ban. TxDOT or a local authority may prohibit bicycles (and so e-bikes) on sidewalks (§ 551.106(b)(1)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes allowed wherever regular bicycles are allowed, except that TxDOT or a local authority may ban e-bikes on a path that is closed to motor vehicles and has a natural-surface tread made by clearing and grading native soil.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "UT": {
+      "citation": "Utah Code § 41-6a-1115.5(1)-(3)",
+      "source_url": "https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-S1115.5_2024050120240501.html",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. An electric assisted bicycle follows the bicycle rules in Chapter 6a (§ 41-6a-1115.5(1)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. 'Bicycle lane' is defined to include electric assisted bicycle traffic (§ 41-6a-102(8)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. 'Bicycle lane' is defined to include electric assisted bicycle traffic (§ 41-6a-102(8)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on paths and trails designated for bicycles, unless a local authority or state agency restricts e-bikes or a class there (§ 41-6a-1115.5(3)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Bicycle sidewalk rules apply: yield to pedestrians, give an audible signal, ride at a prudent speed. Riders 18+ may not ride where a sign or ordinance prohibits it (§ 41-6a-1106). Local authorities may separately regulate or restrict e-bikes on sidewalks (§ 41-6a-1115.5(3)).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Bicycle sidewalk rules apply: yield to pedestrians, give an audible signal, ride at a prudent speed.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on paths and trails designated for bicycles, unless a local authority or state agency restricts e-bikes or a class there (§ 41-6a-1115.5(3)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "VA": {
+      "citation": "Va. Code § 46.2-904.1(F)",
+      "source_url": "https://law.lis.virginia.gov/vacode/title46.2/chapter8/section46.2-904.1/",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed wherever bicycles are allowed. Banned on Interstate Highway System components except barrier-separated facilities the Commonwealth Transportation Board approves (§ 46.2-908.1).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 46.2-904.1(F)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 46.2-904.1(F)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bicycle and shared-use paths. After notice and a public hearing, a locality or state agency may ban Class 1 or 2 on a path for public safety or legal compliance. It may ban Class 3 on a path without that process.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. § 46.2-903 exempts electric power-assisted bicycles from the ban on vehicles on sidewalks.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. § 46.2-903 exempts electric power-assisted bicycles from the ban on vehicles on sidewalks.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Natural-surface nonmotorized trails may be regulated by the managing body (§ 46.2-904.1(F)(1)-(3)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "VT": {
+      "citation": "23 V.S.A. § 1136a(e)",
+      "source_url": "https://legislature.vermont.gov/statutes/section/23/013/01136a",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed. E-bikes are governed as bicycles and riders have bicyclists' rights and duties (§ 1136a(a)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 1136a(e)(1)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Allowed (§ 1136a(e)(1)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed on bicycle and multiuse paths. After notice and a public hearing, the managing municipality, local authority or State agency may ban Class 1 or 2 on a path for safety or legal reasons. It may ban Class 3 on a path without that process.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike or bicycle sidewalk ban found. § 1132 bars only motor vehicles from sidewalks, and e-bikes are not motor vehicles. Municipal ordinances may regulate.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike or bicycle sidewalk ban found. § 1132 bars only motor vehicles from sidewalks, and e-bikes are not motor vehicles.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "On natural-surface trails designated nonmotorized, the path rules do not apply and the managing body may regulate e-bikes (§ 1136a(e)(2)-(4)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "WA": {
+      "citation": "RCW 46.61.710(3), (6)-(9)",
+      "source_url": "https://app.leg.wa.gov/RCW/default.aspx?cite=46.61.710",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. E-bikes may use highways and park to the same extent as bicycles (RCW 46.61.710(6)). Bicycle rules apply (RCW 46.37.690(3)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 allowed on any part of a highway designated for bicycles. Class 3 allowed on facilities within or adjacent to a highway (RCW 46.61.710(7)-(8)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 1 and 2 allowed on any part of a highway designated for bicycles. Class 3 allowed on facilities within or adjacent to a highway (RCW 46.61.710(7)-(8)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 barred from shared-use paths unless the local jurisdiction allows it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 barred from sidewalks unless there is no alternative as part of a bicycle or pedestrian path, or a local ordinance authorizes it (RCW 46.61.710(3), 46.61.715).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Class 3 barred from sidewalks unless there is no alternative as part of a bicycle or pedestrian path, or a local ordinance authorizes it (RCW 46.61.710(3), 46.61.715).",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "ALL classes barred from natural-surface trails designated nonmotorized unless the managing authority allows them (RCW 46.61.710(9)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "WI": {
+      "citation": "Wis. Stat. §§ 346.806(1), (3), 346.02(4)(a), 346.94(1)",
+      "source_url": "https://docs.legis.wisconsin.gov/statutes/statutes/346.pdf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. E-bikes have the same rights and duties as bicycles under chs. 340-351 (§ 346.806(1)), and bicycle provisions of ch. 346 apply to e-bikes (§ 346.02(4)(a)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as bicycles.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed as bicycles.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes may ride with the motor on along bikeways (as defined in § 84.60(1)(a)) run by DNR, DOT, a municipality or a county, subject to their rules. A municipality or county may ban powered e-bike use on its bikeways by ordinance, and DNR may do so by rule (§ 349.18(4)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "banned",
+          "2": "banned",
+          "3": "banned",
+          "localMayRestrict": false,
+          "localMayAllow": true,
+          "basis": "Not allowed unless local authorities permit it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Not allowed unless local authorities permit it.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "All classes may ride with the motor on along bikeways (as defined in § 84.60(1)(a)) run by DNR, DOT, a municipality or a county, subject to their rules.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "WV": {
+      "citation": "W. Va. Code § 17C-11-8(h)",
+      "source_url": "https://code.wvlegislature.gov/17C-11-8/",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. The operator has the rights and duties of the driver of a vehicle under Chapter 17C (§ 17C-11-8(a)). Class 1 and 2 have the same rights as regular bicycles on roads and trails where regular bicycles may go (§ 17C-11-8(h)(1)).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. Bicyclists must use a marked bicycle lane when riding slower than traffic, with exceptions (§ 17C-11-5(a)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed. Bicyclists must use a marked bicycle lane when riding slower than traffic, with exceptions (§ 17C-11-5(a)).",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 barred from bicycle paths, multiuse trails and single-use trails unless within a highway or roadway or the managing municipality, local authority or state agency expressly permits it.",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike or bicycle sidewalk rule found. Municipalities regulate bicycle operation under § 17C-2-8(a)(8).",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide e-bike or bicycle sidewalk rule found.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "banned",
+          "localMayRestrict": true,
+          "localMayAllow": true,
+          "basis": "Class 3 barred from bicycle paths, multiuse trails and single-use trails unless within a highway or roadway or the managing municipality, local authority or state agency expressly permits it.",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    },
+    "WY": {
+      "citation": "Wyo. Stat. §§ 31-5-702, 31-5-707(f), 31-5-120",
+      "source_url": "https://wyoleg.gov/statutes/compress/title31.pdf",
+      "kinds": {
+        "road": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Allowed with the rights and duties of a vehicle driver (§ 31-5-702).",
+          "field": "where_allowed.roads"
+        },
+        "bike_lane": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific bike lane rule found. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "separated_bikeway": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No e-bike-specific bike lane rule found. Bicycle rules apply.",
+          "field": "where_allowed.bike_lanes"
+        },
+        "bike_path": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide path ban for any class. A local authority or state agency with jurisdiction may regulate any class on trails it manages, including natural-surface nonmotorized trails (§ 31-5-707(f)).",
+          "field": "where_allowed.paths_trails"
+        },
+        "sidewalk": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "Likely not allowed under motor power. § 31-5-120 bars driving 'any vehicle except motorized wheelchairs other than by human power upon a sidewalk'. Pedaling with the motor off appears allowed. Local ordinances may differ.",
+          "field": "where_allowed.sidewalks"
+        },
+        "footway": {
+          "1": "unclear",
+          "2": "unclear",
+          "3": "unclear",
+          "localMayRestrict": false,
+          "localMayAllow": false,
+          "basis": "Likely not allowed under motor power. § 31-5-120 bars driving 'any vehicle except motorized wheelchairs other than by human power upon a sidewalk'.",
+          "field": "where_allowed.sidewalks"
+        },
+        "trail": {
+          "1": "allowed",
+          "2": "allowed",
+          "3": "allowed",
+          "localMayRestrict": true,
+          "localMayAllow": false,
+          "basis": "No statewide path ban for any class. A local authority or state agency with jurisdiction may regulate any class on trails it manages, including natural-surface nonmotorized trails (§ 31-5-707(f)).",
+          "field": "where_allowed.paths_trails"
+        }
+      }
+    }
+  }
+}
