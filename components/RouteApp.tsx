@@ -8,6 +8,7 @@
 import { useId, useState } from "react";
 import { CATALOG } from "@/lib/bikes/catalog";
 import { catalogFacts } from "@/lib/bikes/facts";
+import { BIKE_MODELS, modelFacts } from "@/lib/bikes/models";
 import { checkerToday, requestGate } from "@/lib/checkerState";
 import { factsFromExtraction } from "@/lib/extract/merge";
 import type { Extraction } from "@/lib/extract/parse";
@@ -23,7 +24,15 @@ import { SiteHeader, useLang } from "./SiteHeader";
 /** The Map doesn't ask the rider's age, since the bike is taken as legal. The engine never reads this there. */
 const UNUSED_AGE = 18;
 const CLASSES: readonly ClassNum[] = [1, 2, 3];
-const MODELS = CATALOG.map((bike) => ({ name: `${bike.maker} ${bike.model}`, bike }));
+/** Every model the search knows: the checked catalog first, then the maker-page list, each name once. */
+const MODELS: readonly { id: string; name: string; facts: () => BikeFacts; wh: number | null; url: string }[] = (() => {
+  const all = [
+    ...CATALOG.map((b) => ({ id: b.id, name: `${b.maker} ${b.model}`, facts: () => catalogFacts(b), wh: typeof b.battery_wh === "number" ? b.battery_wh : null, url: b.maker_url })),
+    ...BIKE_MODELS.map((m) => ({ id: m.id, name: `${m.maker} ${m.model}`, facts: () => modelFacts(m), wh: m.battery_wh, url: m.source_url })),
+  ];
+  const seen = new Set<string>();
+  return all.filter((m) => (seen.has(m.name.toLowerCase()) ? false : (seen.add(m.name.toLowerCase()), true)));
+})();
 
 function batteryOf(bikeId: string | null): string {
   const wh = bikeId ? CATALOG.find((b) => b.id === bikeId)?.battery_wh : null;
@@ -36,6 +45,7 @@ export function RouteApp() {
   const [handed] = useState(readRide);
   const [facts, setFacts] = useState<BikeFacts | null>(handed?.facts ?? null);
   const [source, setSource] = useState<string | null>(handed ? t(lang, "navCheck") : null);
+  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [batteryWh, setBatteryWh] = useState(() => batteryOf(handed?.bikeId ?? null));
   const [charge, setCharge] = useState("100");
   const [model, setModel] = useState("");
@@ -46,14 +56,16 @@ export function RouteApp() {
     setModel(text);
     const hit = MODELS.find((m) => m.name.toLowerCase() === text.trim().toLowerCase());
     if (!hit) return;
-    setFacts(catalogFacts(hit.bike));
+    setFacts(hit.facts());
     setSource(hit.name);
-    setBatteryWh(batteryOf(hit.bike.id));
+    setSourceUrl(hit.url);
+    setBatteryWh(hit.wh ? String(hit.wh) : "");
   }
 
   function onRead(extraction: Extraction) {
     setFacts(factsFromExtraction(extraction, emptyFacts()));
     setSource(routeText(lang, "bikeRead"));
+    setSourceUrl(null);
   }
 
   function pickClass(c: ClassNum) {
@@ -85,7 +97,7 @@ export function RouteApp() {
           <input className="field" list={listId} value={model} onChange={(e) => onModel(e.target.value)} autoComplete="off" />
           <datalist id={listId}>
             {MODELS.map((m) => (
-              <option key={m.bike.id} value={m.name} />
+              <option key={m.id} value={m.name} />
             ))}
           </datalist>
           <span className="help block">{routeText(lang, "bikeModelHelp")}</span>
@@ -96,7 +108,19 @@ export function RouteApp() {
         {/* Any bike works: a class and a battery size are all the route and the estimate need. */}
         {(
           <div className="space-y-4">
-            {source ? <p className="meta">{routeText(lang, "bikeFrom", { source })}</p> : null}
+            {source ? (
+              <p className="meta">
+                {routeText(lang, "bikeFrom", { source })}
+                {sourceUrl ? (
+                  <>
+                    {" "}
+                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+                      {routeText(lang, "readSource")}
+                    </a>
+                  </>
+                ) : null}
+              </p>
+            ) : null}
             <div className="space-y-2">
               <p className="field-label">{routeText(lang, "bikeClass")}</p>
               <div className="route-seg" role="group" aria-label={routeText(lang, "bikeClass")}>

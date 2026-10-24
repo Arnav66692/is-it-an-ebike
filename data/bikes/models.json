@@ -1,0 +1,1730 @@
+{
+ "_meta": {
+  "read": "2026-10-23",
+  "method": "Maker pages only. Each record was read on 2026-10-23, Pacific time, from the maker's own product page, fetched as static HTML with curl and turned into plain text. Where a maker lists several models on one page, the model's own line on that page was used, which applies to the Gazelle Ultimate variants and the Gazelle Eclipse C380+. No retailer, review or video site was used. Every quote was checked by script as an exact substring of the saved page text. A quote with \" ... \" joins fragments from the same page, each one verbatim. Where the page gives only volts and amp-hours, battery_wh is volts times amp-hours and the quote ends with a bracketed note that says so. classes lists every class the page names for the bike, including classes the maker says come from an app setting or an optional throttle or kit, for example the Aventon Current models, Level 4 ADV and Aventure M. top_assist_mph is the highest speed the page states for the bike, including speeds the maker says are unlocked in the app. motor_rated_w is rated or nominal watts and is null when only peak watts are given. weight_lb is null when the page gives it only without the battery or gives conflicting figures. throttle is true when the page names a throttle, false when the page says the bike has none as sold, and null when the page is silent. Skipped, with reasons in models_report.md, were models already in catalog.json, models whose page states no class or no battery size, pages that could not be fetched or only render their specs with script, and pages whose figures could not be tied to one model. Juiced Bikes now lists only the Scrambler. The RipRacer, Scorpion X2 and HyperScorpion links redirect to the home page and the RipRunner and CrossCurrent X links return 404."
+ },
+ "models": [
+  {
+   "id": "ariel-rider-kepler",
+   "maker": "Ariel Rider",
+   "model": "Kepler",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 1040,
+   "weight_lb": 98.6,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://arielrider.com/products/kepler",
+   "read_date": "2026-10-23",
+   "quote": "Top speed 20 mph (Class 2 default); 28 mph (Class 3 configuration) where legal ... 52V ~1,040Wh battery"
+  },
+  {
+   "id": "ariel-rider-x-class-60v-off-road",
+   "maker": "Ariel Rider",
+   "model": "X-Class 60V Off-Road",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 1200,
+   "weight_lb": 108,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://arielrider.com/products/x-class-60v",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed 20 MPH (Class 2) 28 MPH (Class 3) where legal ... Battery 60V 20Ah (single) [battery_wh computed: 60 V x 20 Ah = 1200 Wh]"
+  },
+  {
+   "id": "aventon-abound-sr",
+   "maker": "Aventon",
+   "model": "Abound SR",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 733,
+   "weight_lb": 80,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://www.aventon.com/products/abound-sr-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Ebike Class Class 2 ... 36V, 20Ah, 733Wh"
+  },
+  {
+   "id": "aventon-aventure-m",
+   "maker": "Aventon",
+   "model": "Aventure M",
+   "classes": [
+    1,
+    2
+   ],
+   "motor_rated_w": 250,
+   "battery_wh": 733,
+   "weight_lb": 73,
+   "top_assist_mph": null,
+   "throttle": false,
+   "source_url": "https://www.aventon.com/products/aventure-m-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Aventure M is a Class 1 eBike with pedal assist, but can easily be converted to Class 2 by installing a throttle ... 36V, 20Ah, 733Wh"
+  },
+  {
+   "id": "aventon-current-adv",
+   "maker": "Aventon",
+   "model": "Current ADV",
+   "classes": [
+    1,
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 800,
+   "weight_lb": 56,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.aventon.com/products/current-adv-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 (Convertible to Class 3) ... Battery 800Wh Integrated Battery"
+  },
+  {
+   "id": "aventon-current-exp",
+   "maker": "Aventon",
+   "model": "Current EXP",
+   "classes": [
+    1,
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 800,
+   "weight_lb": 52.7,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.aventon.com/products/current-exp-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 (Convertible to Class 3) ... Battery 800Wh Integrated Battery"
+  },
+  {
+   "id": "aventon-current-ltd",
+   "maker": "Aventon",
+   "model": "Current LTD",
+   "classes": [
+    1,
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 800,
+   "weight_lb": 51.0,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.aventon.com/products/current-ltd-ebike",
+   "read_date": "2026-10-23",
+   "quote": "The 800Wh battery ... Speed Class 1 (Convertible to Class 3)"
+  },
+  {
+   "id": "aventon-level-3",
+   "maker": "Aventon",
+   "model": "Level 3",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 733,
+   "weight_lb": 67,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://www.aventon.com/products/level-3-commuter-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Ebike Class Class 2 ... 36V, 20Ah, 733Wh"
+  },
+  {
+   "id": "aventon-level-4-adv",
+   "maker": "Aventon",
+   "model": "Level 4 ADV",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 800,
+   "weight_lb": 61,
+   "top_assist_mph": 28,
+   "throttle": false,
+   "source_url": "https://www.aventon.com/products/level-4-adv-ebike",
+   "read_date": "2026-10-23",
+   "quote": "36V, 20Ah, 800Wh ... Ebike Class Class 1 (Convertible to Class 2 and/or Class 3)"
+  },
+  {
+   "id": "aventon-pace-4",
+   "maker": "Aventon",
+   "model": "Pace 4",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 733,
+   "weight_lb": 58.2,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.aventon.com/products/pace-4-step-through-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Ebike Class Class 2 (Can be converted to Class 3 ... 36V, 20Ah, 733Wh"
+  },
+  {
+   "id": "aventon-pace-5-rec",
+   "maker": "Aventon",
+   "model": "Pace 5 REC",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 733,
+   "weight_lb": 60.48,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.aventon.com/products/pace-5-rec-step-through-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Ebike Class Class 2 ... 36V, 20Ah, 733Wh"
+  },
+  {
+   "id": "aventon-ramblas-adv",
+   "maker": "Aventon",
+   "model": "Ramblas ADV",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": 250,
+   "battery_wh": 708,
+   "weight_lb": 54,
+   "top_assist_mph": null,
+   "throttle": false,
+   "source_url": "https://www.aventon.com/products/ramblas-adv-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 ... Aventon 708 WH"
+  },
+  {
+   "id": "blix-vika-x",
+   "maker": "Blix",
+   "model": "Vika X",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 614.4,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://blixbike.com/products/vika-x-folding-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 614.4Wh (48V) ... The Vika X is a class 2 ebike that can be changed to a class 3 ebike"
+  },
+  {
+   "id": "gazelle-eclipse-c380-plus",
+   "maker": "Gazelle",
+   "model": "Eclipse C380+",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 750,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.gazellebikes.com/en-us/electric-commuter-bikes",
+   "read_date": "2026-10-23",
+   "quote": "The Gazelle Eclipse C380+ is our first Class 3 bike available in a low-step. With an active geometry, a CVT hub and belt drive, and beefy 750Wh battery"
+  },
+  {
+   "id": "gazelle-ultimate-c380",
+   "maker": "Gazelle",
+   "model": "Ultimate C380",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 540,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.gazellebikes.com/en-us/models/gazelle-ultimate",
+   "read_date": "2026-10-23",
+   "quote": "Gazelle Ultimate C380 4.8 (26) Enviolo stepless gearhub (380% range) Bosch Performance Line (75 Nm) Class 1 e-bike Battery 540Wh"
+  },
+  {
+   "id": "gazelle-ultimate-c380-plus",
+   "maker": "Gazelle",
+   "model": "Ultimate C380+",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 540,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://www.gazellebikes.com/en-us/models/gazelle-ultimate",
+   "read_date": "2026-10-23",
+   "quote": "Gazelle Ultimate C380+ 4.6 (8) Stepless Enviolo gearing Bosch Performance Line Sport (90 Nm) Class 3, 28 mph 540Wh battery, 50 miles range"
+  },
+  {
+   "id": "gazelle-ultimate-c5",
+   "maker": "Gazelle",
+   "model": "Ultimate C5",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 540,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.gazellebikes.com/en-us/models/gazelle-ultimate",
+   "read_date": "2026-10-23",
+   "quote": "Gazelle Ultimate C5 5 speeds Bosch Performance Line (75 Nm) Class 1 e-bike Battery 540Wh"
+  },
+  {
+   "id": "gazelle-ultimate-t10",
+   "maker": "Gazelle",
+   "model": "Ultimate T10",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 540,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://www.gazellebikes.com/en-us/models/gazelle-ultimate",
+   "read_date": "2026-10-23",
+   "quote": "Gazelle Ultimate T10 5.0 (7) 10 speed derailleur Bosch Active Line Plus (60 Nm) Class 1 e-bike Battery 540Wh"
+  },
+  {
+   "id": "gazelle-ultimate-t11-plus",
+   "maker": "Gazelle",
+   "model": "Ultimate T11+",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 540,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://www.gazellebikes.com/en-us/models/gazelle-ultimate",
+   "read_date": "2026-10-23",
+   "quote": "Gazelle Ultimate T11+ 11-speed Shimano derailleur Bosch Performance Line Sport (90 Nm) Class 3, 28 mph 540Wh battery, 50 miles range"
+  },
+  {
+   "id": "heybike-hybrid",
+   "maker": "Heybike",
+   "model": "Hybrid",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 864,
+   "weight_lb": 69,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.heybike.com/products/hybrid",
+   "read_date": "2026-10-23",
+   "quote": "Class 2/3 Switch ... Battery: 864Wh"
+  },
+  {
+   "id": "heybike-ranger-3-0-pro",
+   "maker": "Heybike",
+   "model": "Ranger 3.0 Pro",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 75,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.heybike.com/products/ranger-3-0-pro",
+   "read_date": "2026-10-23",
+   "quote": "720Wh Battery Capacity ... Can I convert the Ranger 3.0 Pro to Class 3 or Class 1? Yes. The Ranger 3.0 Pro is configured as Class 2 by default"
+  },
+  {
+   "id": "heybike-ranger-s-2-0",
+   "maker": "Heybike",
+   "model": "Ranger S 2.0",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 692,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://www.heybike.com/products/ranger-s-2-0",
+   "read_date": "2026-10-23",
+   "quote": "Class Class 3 Pedal Assist 5 Levels Battery & Charging Battery Capacity 48V 14.4Ah (692Wh)"
+  },
+  {
+   "id": "heybike-saturn",
+   "maker": "Heybike",
+   "model": "Saturn",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 1000,
+   "battery_wh": 956.8,
+   "weight_lb": 103,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.heybike.com/products/saturn",
+   "read_date": "2026-10-23",
+   "quote": "1 × 956.8 Wh ... How to set Saturn to Class 2 or Class 3?"
+  },
+  {
+   "id": "heybike-titan",
+   "maker": "Heybike",
+   "model": "Titan",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 85,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://www.heybike.com/products/titan",
+   "read_date": "2026-10-23",
+   "quote": "Class 2 compliance at a factory-set 20 MPH ... Single Battery: 48V 15Ah Lithium Battery(720Wh)"
+  },
+  {
+   "id": "heybike-venus",
+   "maker": "Heybike",
+   "model": "Venus",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 680,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.heybike.com/products/venus",
+   "read_date": "2026-10-23",
+   "quote": "Class 2/3 Switch ... Battery: 680Wh"
+  },
+  {
+   "id": "himiway-a7",
+   "maker": "Himiway",
+   "model": "A7",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 720,
+   "weight_lb": 84,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://himiwaybike.com/products/himiway-a7-commuter-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 15Ah ... Class 1/2/3 Throttle range [battery_wh computed: 48 V x 15 Ah = 720 Wh]"
+  },
+  {
+   "id": "himiway-a7-pro",
+   "maker": "Himiway",
+   "model": "A7 Pro",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 720,
+   "weight_lb": 77,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://himiwaybike.com/products/himiway-a7pro-commuter-ebike",
+   "read_date": "2026-10-23",
+   "quote": "720 Wh Samsung/LG Battery ... Class 2 mid-drive motor with torque sensor"
+  },
+  {
+   "id": "himiway-d5-2-0",
+   "maker": "Himiway",
+   "model": "D5 2.0",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 92,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://himiwaybike.com/products/himiway-d5",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 15Ah ... Class 1/2/3 Throttle range [battery_wh computed: 48 V x 15 Ah = 720 Wh]"
+  },
+  {
+   "id": "himiway-d5-2-0-20-inch",
+   "maker": "Himiway",
+   "model": "D5 2.0 20\"",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 80,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://himiwaybike.com/products/d5-2-20",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 15Ah ... Class 1/2/3 Throttle range [battery_wh computed: 48 V x 15 Ah = 720 Wh]"
+  },
+  {
+   "id": "himiway-d5-2-0-st",
+   "maker": "Himiway",
+   "model": "D5 2.0 ST",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 92,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://himiwaybike.com/products/himiway-d5-st",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 15Ah ... Class 1/2/3 Throttle range [battery_wh computed: 48 V x 15 Ah = 720 Wh]"
+  },
+  {
+   "id": "hover-1-h-1-pro-series-compass",
+   "maker": "Hover-1",
+   "model": "H-1 Pro Series Compass",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 460.8,
+   "weight_lb": 55.8,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://www.hover-1.com/products/h-1%E2%84%A2-pro-series-compass-e-bike",
+   "read_date": "2026-10-23",
+   "quote": "Class 2 E-Bike ... Battery: 48V/9.6Ah [battery_wh computed: 48 V x 9.6 Ah = 460.8 Wh]"
+  },
+  {
+   "id": "juiced-bikes-scrambler",
+   "maker": "Juiced Bikes",
+   "model": "Scrambler",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 998,
+   "weight_lb": 85,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://juicedbikes.com/products/scrambler",
+   "read_date": "2026-10-23",
+   "quote": "Class 1, 2, or 3 ebike ... a 998Wh battery"
+  },
+  {
+   "id": "lectric-xp-trike2",
+   "maker": "Lectric eBikes",
+   "model": "XP Trike2",
+   "classes": [
+    1,
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 624,
+   "weight_lb": null,
+   "top_assist_mph": 14,
+   "throttle": true,
+   "source_url": "https://lectricebikes.com/products/xp-trike-blue",
+   "read_date": "2026-10-23",
+   "quote": "48V, 13Ah (624Wh) ... as a Class 1 or 2 eBike"
+  },
+  {
+   "id": "lectric-xp4-750",
+   "maker": "Lectric eBikes",
+   "model": "XP4 750",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 840,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://lectricebikes.com/products/xp-green-long-range",
+   "read_date": "2026-10-23",
+   "quote": "48V, 17.5Ah (840Wh) ... as a Class 1, 2, or 3 eBike"
+  },
+  {
+   "id": "lectric-xpedition2-single-battery",
+   "maker": "Lectric eBikes",
+   "model": "XPedition2, single battery",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 624,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://lectricebikes.com/products/xpedition-single-battery",
+   "read_date": "2026-10-23",
+   "quote": "48V, 13Ah (624Wh) ... as a Class 1, 2, or 3 eBike"
+  },
+  {
+   "id": "lectric-xpress-lite",
+   "maker": "Lectric eBikes",
+   "model": "XPress Lite",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 374,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://lectricebikes.com/products/xpress-lite-white-ebike",
+   "read_date": "2026-10-23",
+   "quote": "as a Class 1, 2, or 3 eBike ... 48V, 7.8Ah (374Wh)"
+  },
+  {
+   "id": "lectric-xpress2",
+   "maker": "Lectric eBikes",
+   "model": "XPress2",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 672,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://lectricebikes.com/products/xpress-750-step-thru-blue-ebike",
+   "read_date": "2026-10-23",
+   "quote": "as a Class 1, 2, or 3 eBike ... 48V, 14Ah (672Wh)"
+  },
+  {
+   "id": "mokwheel-asphalt",
+   "maker": "Mokwheel",
+   "model": "Asphalt",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 705.6,
+   "weight_lb": 64,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/asphalt",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... removable 48V 14.7Ah battery [battery_wh computed: 48 V x 14.7 Ah = 705.6 Wh]"
+  },
+  {
+   "id": "mokwheel-basalt",
+   "maker": "Mokwheel",
+   "model": "Basalt",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 940,
+   "weight_lb": 80,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/basalt",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... Capacity 940Wh"
+  },
+  {
+   "id": "mokwheel-basalt-2-0",
+   "maker": "Mokwheel",
+   "model": "Basalt 2.0",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 940,
+   "weight_lb": 80,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/basalt-2-0",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... A 940Wh battery"
+  },
+  {
+   "id": "mokwheel-basalt-st",
+   "maker": "Mokwheel",
+   "model": "Basalt ST",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 940,
+   "weight_lb": 68,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/basalt-st",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... Capacity 940Wh"
+  },
+  {
+   "id": "mokwheel-flint",
+   "maker": "Mokwheel",
+   "model": "Flint",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": 350,
+   "battery_wh": 360,
+   "weight_lb": 36,
+   "top_assist_mph": 20,
+   "throttle": null,
+   "source_url": "https://mokwheel.com/products/flint",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 1 ... Battery36V 10Ah [battery_wh computed: 36 V x 10 Ah = 360 Wh]"
+  },
+  {
+   "id": "mokwheel-flint-pro",
+   "maker": "Mokwheel",
+   "model": "Flint Pro",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": 250,
+   "battery_wh": 360,
+   "weight_lb": 31,
+   "top_assist_mph": 20,
+   "throttle": null,
+   "source_url": "https://mokwheel.com/products/flint-pro",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 1 ... Battery36V 10Ah [battery_wh computed: 36 V x 10 Ah = 360 Wh]"
+  },
+  {
+   "id": "mokwheel-granite",
+   "maker": "Mokwheel",
+   "model": "Granite",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 720,
+   "weight_lb": 101,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/granite",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2 ... 48V 15Ah (720Wh) battery"
+  },
+  {
+   "id": "mokwheel-mesa-plus-st",
+   "maker": "Mokwheel",
+   "model": "Mesa Plus ST",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 768,
+   "weight_lb": 72,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/mesa-plus-st",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... Technical Battery48V 16Ah [battery_wh computed: 48 V x 16 Ah = 768 Wh]"
+  },
+  {
+   "id": "mokwheel-obsidian-2-0",
+   "maker": "Mokwheel",
+   "model": "Obsidian 2.0",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 940,
+   "weight_lb": 77,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/obsidian-2-0",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... The 940Wh battery"
+  },
+  {
+   "id": "mokwheel-onyx",
+   "maker": "Mokwheel",
+   "model": "Onyx",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 940,
+   "weight_lb": 89,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/onyx",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... 48V 19.6Ah (940Wh) battery"
+  },
+  {
+   "id": "mokwheel-scoria-2-0",
+   "maker": "Mokwheel",
+   "model": "Scoria 2.0",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 940,
+   "weight_lb": 82,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/scoria",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... 48V 19.6Ah (940Wh) battery"
+  },
+  {
+   "id": "mokwheel-slate",
+   "maker": "Mokwheel",
+   "model": "Slate",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 720,
+   "weight_lb": null,
+   "top_assist_mph": 25,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/slate",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2 ... 48V 15Ah (720Wh) battery"
+  },
+  {
+   "id": "mokwheel-tarmac",
+   "maker": "Mokwheel",
+   "model": "Tarmac",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 58,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/tarmac",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... 720 Wh battery"
+  },
+  {
+   "id": "mokwheel-tor-plus",
+   "maker": "Mokwheel",
+   "model": "Tor Plus",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 81,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://mokwheel.com/products/tor-plus",
+   "read_date": "2026-10-23",
+   "quote": "Classification Class 2/3 ... Technical Battery48V 15Ah [battery_wh computed: 48 V x 15 Ah = 720 Wh]"
+  },
+  {
+   "id": "pedego-avenue-core",
+   "maker": "Pedego",
+   "model": "Avenue: Core",
+   "classes": [
+    1,
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 504,
+   "weight_lb": null,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/avenue-core",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 - 20mph Pedal Assist; Class 2 - 20mph Pedal Assist & Throttle Range Range Up to 42 Miles Rider Height Electronics Motor 48V, 500W, 75Nm Torque Battery 48V 10.5Ah 504Wh"
+  },
+  {
+   "id": "pedego-boomerang-core",
+   "maker": "Pedego",
+   "model": "Boomerang: Core",
+   "classes": [
+    1,
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 546,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/boomerang-core",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2 Range Range Up to 46 Miles Rider Height 4'10\" to 6'3\" Electronics Motor 500W Rear Hub Motor Primary Battery 52V 10.5Ah [battery_wh computed: 52 V x 10.5 Ah = 546 Wh]"
+  },
+  {
+   "id": "pedego-boomerang-pro",
+   "maker": "Pedego",
+   "model": "Boomerang: Pro",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 910,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/boomerang-pro",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2; Class 3 Ready Range Range Up to 75 Miles Rider Height 4'10\" to 6'3\" Electronics Motor 750W Rear Hub Motor Primary Battery 52V 17.5Ah [battery_wh computed: 52 V x 17.5 Ah = 910 Wh]"
+  },
+  {
+   "id": "pedego-cargo",
+   "maker": "Pedego",
+   "model": "Cargo",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 672,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": null,
+   "source_url": "https://pedegoelectricbikes.com/products/cargo",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2; Class 3 Ready ... 48V14Ah [battery_wh computed: 48 V x 14 Ah = 672 Wh]"
+  },
+  {
+   "id": "pedego-element-2",
+   "maker": "Pedego",
+   "model": "Element 2",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 835,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/element-2",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 - 20mph Pedal Assist Class 2 - 20mph Pedal Assist & Throttle Class 3 Ready (Participating Locations) - 28mph Pedal Assist Range Range Up to 81 Miles Rider Height 5'1\" - 6'1\" Electronics Motor 48V, 750W, 90Nm Torque Battery 48V17.4Ah 835Wh"
+  },
+  {
+   "id": "pedego-element-core",
+   "maker": "Pedego",
+   "model": "Element: Core",
+   "classes": [
+    1,
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 460.8,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/element-core",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2 Range Range Up to 38 Miles Rider Height 4'11\" to 6'1\" Electronics Motor 500W Rear Hub Motor Primary Battery 48V 9.6Ah [battery_wh computed: 48 V x 9.6 Ah = 460.8 Wh]"
+  },
+  {
+   "id": "pedego-element-pro",
+   "maker": "Pedego",
+   "model": "Element: Pro",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 749,
+   "battery_wh": 672,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/element-pro",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2; Class 3 Ready Range Range Up to 56 Miles Rider Height 4'11\" to 6'1\" Electronics Motor 749W Rear Hub Motor Primary Battery 48V 14Ah [battery_wh computed: 48 V x 14 Ah = 672 Wh]"
+  },
+  {
+   "id": "pedego-moto",
+   "maker": "Pedego",
+   "model": "MOTO",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 921.6,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/moto",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2; Class 3 Ready ... 48V19.2Ah [battery_wh computed: 48 V x 19.2 Ah = 921.6 Wh]"
+  },
+  {
+   "id": "pedego-ridge-rider-2025",
+   "maker": "Pedego",
+   "model": "Ridge Rider: 2025",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 749,
+   "battery_wh": 672,
+   "weight_lb": null,
+   "top_assist_mph": null,
+   "throttle": true,
+   "source_url": "https://pedegoelectricbikes.com/products/ridge-rider",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 1 & Class 2; Class 3 Ready ... Battery 48 VOLT 14 AMP HOUR [battery_wh computed: 48 V x 14 Ah = 672 Wh]"
+  },
+  {
+   "id": "rad-power-bikes-radrunner-max",
+   "maker": "Rad Power Bikes",
+   "model": "RadRunner Max",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 672,
+   "weight_lb": 82,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.radpowerbikes.com/products/radrunner-max-electric-cargo-utility-bike",
+   "read_date": "2026-10-23",
+   "quote": "Safe Shield Semi-Integrated Battery (14 Ah), 672 Wh, Certified by ACT to UL 2271 Charger 48V, 2 Amp Rad Power Bikes smart charger, operates on 100V-240V AC power outlets Class Class 1-3"
+  },
+  {
+   "id": "rad-power-bikes-radrunner-plus",
+   "maker": "Rad Power Bikes",
+   "model": "RadRunner Plus",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 624,
+   "weight_lb": 75,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://www.radpowerbikes.com/products/radrunner-plus-electric-cargo-utility-bike",
+   "read_date": "2026-10-23",
+   "quote": "Safe Shield Advanced External Battery (13 Ah), 624 Wh, UL Certified Charger 48VDC, 2 Amp Rad Power Bikes smart charger, operates on 100V-240V AC power outlets Class Class 2"
+  },
+  {
+   "id": "rad-power-bikes-radster-road",
+   "maker": "Rad Power Bikes",
+   "model": "Radster Road",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 74.5,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.radpowerbikes.com/products/radster-road-electric-commuter-bike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 15Ah 720 Wh ... Class switchable 1 to 3. Ships in Class 2 status."
+  },
+  {
+   "id": "rad-power-bikes-radwagon",
+   "maker": "Rad Power Bikes",
+   "model": "RadWagon",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 76.7,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://www.radpowerbikes.com/products/radwagon-electric-cargo-utility-bike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 15 Ah 720 Wh ... Top speed: Class 2"
+  },
+  {
+   "id": "rad-power-bikes-radwagon-5",
+   "maker": "Rad Power Bikes",
+   "model": "RadWagon 5",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 86,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://www.radpowerbikes.com/products/radwagon-electric-cargo-bike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 15Ah 720 Wh ... Class switchable 1 to 3. Ships in Class 2 status."
+  },
+  {
+   "id": "ride1up-700-series",
+   "maker": "Ride1Up",
+   "model": "700 Series",
+   "classes": [
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://ride1up.com/product/700-series/",
+   "read_date": "2026-10-23",
+   "quote": "Speed Class 2-3 electric bike, with 28mph pedal assist and 20mph throttle ... Battery 48V 15ah [battery_wh computed: 48 V x 15 Ah = 720 Wh]"
+  },
+  {
+   "id": "ride1up-cf-racer1",
+   "maker": "Ride1Up",
+   "model": "CF Racer1",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": 250,
+   "battery_wh": 252,
+   "weight_lb": 28,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://ride1up.com/product/cf-racer1/",
+   "read_date": "2026-10-23",
+   "quote": "Battery 252Wh Samsung ... Speed Class 3 electric bike, with 28mph pedal assist"
+  },
+  {
+   "id": "ride1up-revv1-fs",
+   "maker": "Ride1Up",
+   "model": "Revv1 FS",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 1040,
+   "weight_lb": 110,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://ride1up.com/product/revv-1/",
+   "read_date": "2026-10-23",
+   "quote": "Battery 52V 20ah ... pre-programmed as a Class 2 e-bike [battery_wh computed: 52 V x 20 Ah = 1040 Wh]"
+  },
+  {
+   "id": "ride1up-trailrush",
+   "maker": "Ride1Up",
+   "model": "TrailRush",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 504,
+   "weight_lb": null,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://ride1up.com/product/trailrush/",
+   "read_date": "2026-10-23",
+   "quote": "Range 30-50 miles (504Wh) ... Speed Class 3 electric bike, with 28mph pedal assist"
+  },
+  {
+   "id": "super73-oracle-red-bull-racing-m1d-se",
+   "maker": "SUPER73",
+   "model": "Oracle Red Bull Racing M1D SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 780,
+   "weight_lb": 88,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-m1d-se-redbull",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | Single 780Wh Battery Range"
+  },
+  {
+   "id": "super73-b1g",
+   "maker": "SUPER73",
+   "model": "SUPER73-B1G",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 520,
+   "weight_lb": 90,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-b1g",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | Single 520Wh Battery Range"
+  },
+  {
+   "id": "super73-b1g-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-B1G SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 780,
+   "weight_lb": 90,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-b1g-se",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | Single 780Wh Battery Range"
+  },
+  {
+   "id": "super73-m1d",
+   "maker": "SUPER73",
+   "model": "SUPER73-M1D",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 520,
+   "weight_lb": 88,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-m1d",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | Single 520Wh Battery Range"
+  },
+  {
+   "id": "super73-m1d-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-M1D SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 780,
+   "weight_lb": 88,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-m1d-se",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | Single 780Wh Battery Range"
+  },
+  {
+   "id": "super73-mzft",
+   "maker": "SUPER73",
+   "model": "SUPER73-MZFT",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 520,
+   "weight_lb": 85,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-mzft",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH ... Battery | 520Wh (52V 10Ah)"
+  },
+  {
+   "id": "super73-mzft-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-MZFT SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 780,
+   "weight_lb": 85,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-mzft-se",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | Single 780Wh Battery Range"
+  },
+  {
+   "id": "super73-r-adventure-series-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-R Adventure Series SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 960,
+   "weight_lb": 88,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-r-adventure-series-se-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 6-7 hours Battery | 960Wh (48V 20Ah)"
+  },
+  {
+   "id": "super73-r-brooklyn-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-R Brooklyn SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 960,
+   "weight_lb": 83,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-r-brooklyn-se-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 6-7 hours Battery | 960Wh (48V 20Ah)"
+  },
+  {
+   "id": "super73-s2-laguna",
+   "maker": "SUPER73",
+   "model": "SUPER73-S2 Laguna",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 480,
+   "weight_lb": 67,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-s2-laguna",
+   "read_date": "2026-10-23",
+   "quote": "Top Speed | Class 2 20MPH Range | 25-35 miles* *25+ miles of range at 20mph under Class-2 throttle-only operation Charge Time | 5 hours Battery | 480Wh (48V 10Ah)"
+  },
+  {
+   "id": "super73-s2-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-S2 SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 720,
+   "weight_lb": 71,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-s2-se-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 7-8 hours Battery | 720 Wh (48V 15Ah)"
+  },
+  {
+   "id": "super73-z-adventure-series-core",
+   "maker": "SUPER73",
+   "model": "SUPER73-Z Adventure Series Core",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 480,
+   "weight_lb": 73,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-z-adventure-series-core-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 5 hours Battery | 480Wh (48V 10Ah)"
+  },
+  {
+   "id": "super73-z-adventure-series-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-Z Adventure Series SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 720,
+   "weight_lb": 75,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-z-adventure-series-se-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 7-8 hours Battery | 720 Wh (48V 15Ah)"
+  },
+  {
+   "id": "super73-z-miami-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-Z Miami SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 480,
+   "weight_lb": 59,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-z-miami-se-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 5 hrs Battery | 480Wh (48V 10Ah)"
+  },
+  {
+   "id": "super73-zx-core",
+   "maker": "SUPER73",
+   "model": "SUPER73-ZX Core",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 480,
+   "weight_lb": 62,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-zx-core-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 5 hrs Battery | 480Wh (48V 10Ah)"
+  },
+  {
+   "id": "super73-zx-se",
+   "maker": "SUPER73",
+   "model": "SUPER73-ZX SE",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 720,
+   "weight_lb": 64,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://super73.com/products/super73-zx-se-legacy",
+   "read_date": "2026-10-23",
+   "quote": "Class-2 throttle-only operation Charge Time | 7-8 hrs Battery | 720 Wh (48V 15Ah)"
+  },
+  {
+   "id": "tern-hsd-s11",
+   "maker": "Tern",
+   "model": "HSD S11",
+   "classes": [
+    3
+   ],
+   "motor_rated_w": null,
+   "battery_wh": 545,
+   "weight_lb": 61.9,
+   "top_assist_mph": 28,
+   "throttle": null,
+   "source_url": "https://www.ternbicycles.com/us/bikes/472/hsd-s11",
+   "read_date": "2026-10-23",
+   "quote": "Class 3 max speed 28 mph Battery: Bosch PowerPack 545 ... Range: 545 Wh"
+  },
+  {
+   "id": "velotric-breeze-1",
+   "maker": "Velotric",
+   "model": "Breeze 1",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 627,
+   "weight_lb": 48,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-breeze-1",
+   "read_date": "2026-10-23",
+   "quote": "Battery Removable 48V, 13.4Ah (627Wh) ... Class 1/2/3 Throttle Range"
+  },
+  {
+   "id": "velotric-discover-1-plus",
+   "maker": "Velotric",
+   "model": "Discover 1 Plus",
+   "classes": [
+    1,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 691.2,
+   "weight_lb": 60,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-discover-1",
+   "read_date": "2026-10-23",
+   "quote": "switch freely between Class 1 and 3 ... Battery 48V, 691.2Wh"
+  },
+  {
+   "id": "velotric-discover-3",
+   "maker": "Velotric",
+   "model": "Discover 3",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 730,
+   "weight_lb": 61,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-discover-3-commuter-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Switch between Class 1, 2, and 3 ... Battery 48V, 15.2Ah(730Wh)"
+  },
+  {
+   "id": "velotric-discover-m",
+   "maker": "Velotric",
+   "model": "Discover M",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 801.6,
+   "weight_lb": 60,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-discover-m-mid-drive-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Switch between Class 1, 2, and 3 ... Battery 48V, 16.7Ah (801.6Wh)"
+  },
+  {
+   "id": "velotric-fold-1-lite",
+   "maker": "Velotric",
+   "model": "Fold 1 Lite",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 486,
+   "weight_lb": 61,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-fold-1-lite",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 486Wh ... Class 1/2/3 Throttle Range"
+  },
+  {
+   "id": "velotric-fold-1-plus",
+   "maker": "Velotric",
+   "model": "Fold 1 Plus",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 608,
+   "weight_lb": 63,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-fold-1-plus",
+   "read_date": "2026-10-23",
+   "quote": "Battery Removable 48V, 13Ah, 608Wh ... Class 1/2/3 Throttle Range"
+  },
+  {
+   "id": "velotric-go-1",
+   "maker": "Velotric",
+   "model": "Go 1",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 500,
+   "battery_wh": 691.2,
+   "weight_lb": 65,
+   "top_assist_mph": 25,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-go-1-e-bike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 14.4Ah, 691.2Wh ... Default Speed 20 MPH, Class 2"
+  },
+  {
+   "id": "velotric-gomad",
+   "maker": "Velotric",
+   "model": "GoMad",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 801.6,
+   "weight_lb": 77,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-gomad-utility-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Switch between Class 1, 2, and 3 with a single tap ... Battery 48V, 16.7Ah (801.6Wh)"
+  },
+  {
+   "id": "velotric-nomad-1-plus",
+   "maker": "Velotric",
+   "model": "Nomad 1 Plus",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 691,
+   "weight_lb": 71,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-nomad-1",
+   "read_date": "2026-10-23",
+   "quote": "48V 14.4Ah, 750W Class 2 with Throttle Assist ... 691Wh battery ... switch from Class 1 to 3 easily"
+  },
+  {
+   "id": "velotric-nomad-2x",
+   "maker": "Velotric",
+   "model": "Nomad 2X",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 801.6,
+   "weight_lb": 80,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-nomad-2x",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 16.7Ah (801.6Wh) ... Ebike Class 1/2/3"
+  },
+  {
+   "id": "velotric-packer-1",
+   "maker": "Velotric",
+   "model": "Packer 1",
+   "classes": [
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 691.2,
+   "weight_lb": 75,
+   "top_assist_mph": 25,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-packer-1-e-bike",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 14.4Ah, 691.2Wh ... Default Speed 20 MPH, Class 2"
+  },
+  {
+   "id": "velotric-summit-1",
+   "maker": "Velotric",
+   "model": "Summit 1",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 705.6,
+   "weight_lb": 62,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-summit-1",
+   "read_date": "2026-10-23",
+   "quote": "switch between Class 1, 2, and 3 configurations ... Battery 48V, 705.6Wh"
+  },
+  {
+   "id": "velotric-summit-2",
+   "maker": "Velotric",
+   "model": "Summit 2",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 801.6,
+   "weight_lb": 57,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-summit-2-hybrid-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Easily switch between Class 1, 2, and 3 ... Battery 48V, 16.7Ah (801.6Wh)"
+  },
+  {
+   "id": "velotric-t1",
+   "maker": "Velotric",
+   "model": "T1",
+   "classes": [
+    1
+   ],
+   "motor_rated_w": 350,
+   "battery_wh": 352.8,
+   "weight_lb": 36,
+   "top_assist_mph": 25,
+   "throttle": null,
+   "source_url": "https://velotricbike.com/products/velotric-t1-ebike",
+   "read_date": "2026-10-23",
+   "quote": "36V 9.8Ah battery ... Max Speed 20 MPH, Class 1 [battery_wh computed: 36 V x 9.8 Ah = 352.8 Wh]"
+  },
+  {
+   "id": "velotric-tempo",
+   "maker": "Velotric",
+   "model": "Tempo",
+   "classes": [
+    1,
+    2,
+    3
+   ],
+   "motor_rated_w": 350,
+   "battery_wh": 374,
+   "weight_lb": 39,
+   "top_assist_mph": 28,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-tempo-city-ebike",
+   "read_date": "2026-10-23",
+   "quote": "Easily switch between Class 1/2/3 ... Battery 36V, 10.14Ah(374Wh)"
+  },
+  {
+   "id": "velotric-triker",
+   "maker": "Velotric",
+   "model": "Triker",
+   "classes": [
+    1,
+    2
+   ],
+   "motor_rated_w": 750,
+   "battery_wh": 804,
+   "weight_lb": 85.8,
+   "top_assist_mph": 20,
+   "throttle": true,
+   "source_url": "https://velotricbike.com/products/velotric-triker",
+   "read_date": "2026-10-23",
+   "quote": "Battery 48V, 16.75 Ah ... Class 1/2 Throttle Range [battery_wh computed: 48 V x 16.75 Ah = 804 Wh]"
+  }
+ ]
+}
