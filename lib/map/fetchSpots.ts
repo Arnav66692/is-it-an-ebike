@@ -18,6 +18,8 @@ import {
   nominatimUrl,
   overpassRemarkError,
   parseNominatim,
+  parsePhoton,
+  photonUrl,
   parseOverpass,
   roundBounds,
   type Bounds,
@@ -224,19 +226,41 @@ async function liveSpots(bounds: Bounds, signal: AbortSignal | undefined, fetche
   return answer;
 }
 
-/** Up to five US places that match a name. */
-export async function searchPlaces(query: string, lang: "en" | "es", signal?: AbortSignal, fetcher: typeof fetch = fetch): Promise<FoundPlace[]> {
+/** One geocoder's answer, parsed, with its failures in the words the page picks a message by. */
+async function askGeocoder(url: string, parse: (json: unknown) => FoundPlace[], signal: AbortSignal | undefined, fetcher: typeof fetch): Promise<FoundPlace[]> {
   let res: Response;
   try {
-    res = await fetcher(nominatimUrl(query, lang), { signal });
+    res = await fetcher(url, { signal });
   } catch (err) {
     if (signal?.aborted) throw err;
     throw new MapFetchError("failed");
   }
   if (!res.ok) throw new MapFetchError(failureOf(res.status));
   try {
-    return parseNominatim(await res.json());
+    return parse(await res.json());
   } catch {
     throw new MapFetchError("failed");
+  }
+}
+
+/**
+ * Up to five US places that match a name. Nominatim answers first. It matches words exactly, so
+ * "scripps ranch highschool" or a typo finds nothing, and then Photon, which forgives both, is asked.
+ * Photon is asked too when Nominatim is busy or down. Only when both fail does the search fail.
+ */
+export async function searchPlaces(query: string, lang: "en" | "es", signal?: AbortSignal, fetcher: typeof fetch = fetch): Promise<FoundPlace[]> {
+  let failure: MapFetchError | null = null;
+  try {
+    const found = await askGeocoder(nominatimUrl(query, lang), parseNominatim, signal, fetcher);
+    if (found.length > 0) return found;
+  } catch (err) {
+    if (signal?.aborted || !(err instanceof MapFetchError)) throw err;
+    failure = err;
+  }
+  try {
+    return await askGeocoder(photonUrl(query), parsePhoton, signal, fetcher);
+  } catch (err) {
+    if (signal?.aborted || !(err instanceof MapFetchError)) throw err;
+    throw failure ?? err;
   }
 }

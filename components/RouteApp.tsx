@@ -56,6 +56,10 @@ export function RouteApp() {
     setSource(routeText(lang, "bikeRead"));
   }
 
+  function pickClass(c: ClassNum) {
+    setFacts((f) => ({ ...(f ?? { ...emptyFacts(), hasPedals: true }), classes: [c] }));
+  }
+
   function onManual() {
     setFacts({ ...emptyFacts(), hasPedals: true });
     setSource(null);
@@ -65,6 +69,8 @@ export function RouteApp() {
   const whOk = Number.isFinite(wh) && wh > 0 ? wh : null;
   const chargePct = Math.max(0, Math.min(100, Number(charge) || 0));
   const ready = facts !== null && facts.classes.length > 0;
+  const typed = model.trim().toLowerCase();
+  const notListed = typed.length >= 3 && !MODELS.some((m) => m.name.toLowerCase().includes(typed));
 
   return (
     <div className="page page-route">
@@ -84,21 +90,23 @@ export function RouteApp() {
           </datalist>
           <span className="help block">{routeText(lang, "bikeModelHelp")}</span>
         </label>
+        {notListed ? <p className="note">{routeText(lang, "bikeNotListed", { model: model.trim() })}</p> : null}
         <p className="help">{routeText(lang, "bikeOrRead")}</p>
         <BikeInput lang={lang} onRead={onRead} onManual={onManual} gate={gate} />
-        {facts ? (
+        {/* Any bike works: a class and a battery size are all the route and the estimate need. */}
+        {(
           <div className="space-y-4">
             {source ? <p className="meta">{routeText(lang, "bikeFrom", { source })}</p> : null}
             <div className="space-y-2">
               <p className="field-label">{routeText(lang, "bikeClass")}</p>
               <div className="route-seg" role="group" aria-label={routeText(lang, "bikeClass")}>
                 {CLASSES.map((c) => (
-                  <button key={c} type="button" aria-pressed={facts.classes.includes(c)} onClick={() => setFacts({ ...facts, classes: [c] })}>
+                  <button key={c} type="button" aria-pressed={facts?.classes.includes(c) ?? false} onClick={() => pickClass(c)}>
                     {routeText(lang, "bikeClass")} {c}
                   </button>
                 ))}
               </div>
-              {facts.classes.length === 0 ? <p className="note">{routeText(lang, "bikeNeedClass")}</p> : null}
+              {!facts || facts.classes.length === 0 ? <p className="note">{routeText(lang, "bikeNeedClass")}</p> : null}
             </div>
             <div className="route-range-grid">
               <label className="route-range-field">
@@ -112,8 +120,6 @@ export function RouteApp() {
               </label>
             </div>
           </div>
-        ) : (
-          <p className="note">{routeText(lang, "bikeNeed")}</p>
         )}
       </section>
 

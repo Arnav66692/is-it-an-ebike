@@ -77,10 +77,10 @@ const en = {
   nearestTitle: "Nearest to the middle of the map",
   nearestEmpty: "Nothing to list yet. Zoom in or pick a place.",
   dataNote: "Data from OpenStreetMap volunteers and Overture Maps. It can be incomplete or out of date, and some racks are private, so check signs and call shops ahead.",
-  privacy: "The map loads saved racks and shops from this site. For an area with no saved file yet, it asks our own server for the area on screen, and our server asks OpenStreetMap's Overpass servers and mirrors. Place searches go to OpenStreetMap only when you ask, and nothing is stored beyond a cache of map areas.",
+  privacy: "The map loads saved racks and shops from this site. For an area with no saved file yet, it asks our own server for the area on screen, and our server asks OpenStreetMap's Overpass servers and mirrors. Place searches go to Nominatim, or Photon when Nominatim finds nothing, two free services built on OpenStreetMap, only when you ask, and nothing is stored beyond a cache of map areas.",
   aboutTitle: "About this map",
   about1: "Racks, public repair stations and some shops come from OpenStreetMap. More bike shops and repair shops come from Overture Maps, an open map data project. Saved areas answer at once from this site. Elsewhere our server asks the public Overpass servers and mirrors, only for the part of the map on screen.",
-  about2: "Place search uses OpenStreetMap's Nominatim. Map tiles come from OpenStreetMap too. No accounts, no keys and no tracking.",
+  about2: "Place search uses OpenStreetMap's Nominatim, and Photon by Komoot when Nominatim finds nothing. Map tiles come from OpenStreetMap too. No accounts, no keys and no tracking.",
 };
 
 type MapKey = keyof typeof en;
@@ -158,10 +158,10 @@ const es: Record<MapKey, string> = {
   nearestTitle: "Lo más cerca del centro del mapa",
   nearestEmpty: "Aún no hay nada que mostrar. Acerca el mapa o busca un lugar.",
   dataNote: "Datos de voluntarios de OpenStreetMap y de Overture Maps. Pueden estar incompletos o desactualizados, y algunos racks son privados, así que revisa los letreros y llama a las tiendas antes de ir.",
-  privacy: "El mapa carga racks y tiendas guardados en este sitio. Para una zona que aún no tiene archivo guardado, le pide a nuestro propio servidor la zona en pantalla, y nuestro servidor se la pide a los servidores Overpass de OpenStreetMap y sus espejos. Las búsquedas de lugares van a OpenStreetMap solo cuando lo pides, y no se guarda nada aparte de una caché de zonas del mapa.",
+  privacy: "El mapa carga racks y tiendas guardados en este sitio. Para una zona que aún no tiene archivo guardado, le pide a nuestro propio servidor la zona en pantalla, y nuestro servidor se la pide a los servidores Overpass de OpenStreetMap y sus espejos. Las búsquedas de lugares van a Nominatim, o a Photon cuando Nominatim no encuentra nada, dos servicios gratis basados en OpenStreetMap, solo cuando lo pides. No se guarda nada aparte de una caché de zonas del mapa.",
   aboutTitle: "Sobre este mapa",
   about1: "Los racks, las estaciones públicas de reparación y algunas tiendas vienen de OpenStreetMap. Más tiendas y talleres de bicicletas vienen de Overture Maps, un proyecto abierto de datos de mapas. Las zonas guardadas responden al instante desde este sitio. En otras zonas, nuestro servidor se los pide a los servidores públicos de Overpass y sus espejos, solo para la parte del mapa en pantalla.",
-  about2: "La búsqueda de lugares usa Nominatim de OpenStreetMap. Los mosaicos del mapa también vienen de OpenStreetMap. Sin cuentas, sin claves y sin rastreo.",
+  about2: "La búsqueda de lugares usa Nominatim de OpenStreetMap, y Photon de Komoot cuando Nominatim no encuentra nada. Los mosaicos del mapa también vienen de OpenStreetMap. Sin cuentas, sin claves y sin rastreo.",
 };
 
 const TEXT: Record<Lang, Record<MapKey, string>> = { en, es };

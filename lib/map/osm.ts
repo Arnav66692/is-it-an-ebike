@@ -58,6 +58,8 @@ export function isBusiness(spot: Spot): boolean {
 
 export const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 export const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
+/** Komoot's free geocoder on OpenStreetMap data. It forgives typos and run-together words that Nominatim misses. */
+export const PHOTON_URL = "https://photon.komoot.io/api/";
 
 /**
  * The live route answers only this close in, so one query covers a few square miles at most. The
@@ -295,6 +297,41 @@ export function osmLink(p: LatLon): string {
 export function nominatimUrl(query: string, lang: "en" | "es"): string {
   const params = new URLSearchParams({ format: "json", countrycodes: "us", limit: "5", "accept-language": lang, q: query.trim() });
   return `${NOMINATIM_URL}?${params.toString()}`;
+}
+
+/** A Photon search by name. It asks for more than it shows, since places outside the US are dropped. */
+export function photonUrl(query: string): string {
+  const params = new URLSearchParams({ q: query.trim(), limit: "15", lang: "en" });
+  return `${PHOTON_URL}?${params.toString()}`;
+}
+
+function words(v: unknown): string | null {
+  return typeof v === "string" && v.trim() ? v.trim() : null;
+}
+
+/** Photon's matches in the US and Puerto Rico, at most five, with each place's box when Photon gives one. */
+export function parsePhoton(json: unknown): FoundPlace[] {
+  const features = (json as { features?: unknown } | null)?.features;
+  if (!Array.isArray(features)) return [];
+  const places: FoundPlace[] = [];
+  for (const f of features as Record<string, unknown>[]) {
+    const p = (f?.properties ?? {}) as Record<string, unknown>;
+    const coords = (f?.geometry as { coordinates?: unknown } | undefined)?.coordinates;
+    if (!Array.isArray(coords) || coords.length < 2) continue;
+    const lon = Number(coords[0]);
+    const lat = Number(coords[1]);
+    const country = words(p.countrycode)?.toUpperCase();
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || (country !== "US" && country !== "PR")) continue;
+    const street = words(p.street);
+    const parts = [words(p.name), street && words(p.housenumber) ? `${words(p.housenumber)} ${street}` : street, words(p.city) ?? words(p.county), words(p.state), words(p.postcode)];
+    const label = [...new Set(parts.filter((x): x is string => x !== null))].join(", ");
+    if (!label) continue;
+    const ext = Array.isArray(p.extent) ? p.extent.map(Number) : [];
+    const bounds = ext.length === 4 && ext.every(Number.isFinite) ? { west: ext[0], north: ext[1], east: ext[2], south: ext[3] } : null;
+    places.push({ id: `photon-${words(p.osm_type) ?? ""}${String(p.osm_id ?? `${lat},${lon}`)}`, label, lat, lon, bounds });
+    if (places.length === 5) break;
+  }
+  return places;
 }
 
 export interface FoundPlace {
