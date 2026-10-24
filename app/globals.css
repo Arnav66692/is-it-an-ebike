@@ -2423,3 +2423,196 @@ a.source-link::after {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
+
+/* ---------- The atmosphere layer ----------
+   A soft sky behind every page, a floating glass header, rounded frosted cards, pill buttons and
+   calm motion. It only adds on top of the rules above: every color the contrast tests read stays
+   as it is, the cards stay nearly opaque so text keeps its contrast, and motion stops for anyone
+   who asks for less of it. */
+
+:root {
+  /* Three soft lights in the sky: blush, lilac and mist. */
+  --sky-a: #f6d8d1;
+  --sky-b: #dcd5f7;
+  --sky-c: #d0e4f6;
+  --r-card: 22px;
+  --r-pill: 999px;
+  --glow-shadow: 0 1px 0 0 rgb(255 255 255 / 0.6) inset, 0 28px 60px -44px rgb(40 20 70 / 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Twilight: plum, deep indigo and a sea-blue night. */
+    --sky-a: #2c1a3e;
+    --sky-b: #17254b;
+    --sky-c: #0f2a34;
+    --glow-shadow: 0 1px 0 0 rgb(255 255 255 / 0.05) inset, 0 28px 60px -40px rgb(0 0 0 / 0.85);
+  }
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(60rem 36rem at 10% -10%, var(--sky-a), transparent 62%),
+    radial-gradient(52rem 34rem at 95% 2%, var(--sky-b), transparent 58%),
+    radial-gradient(72rem 42rem at 50% 112%, var(--sky-c), transparent 64%);
+  background-attachment: fixed;
+}
+
+/* A fine film grain over the sky, so the gradients never band. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Two slow lights drifting behind the page. Only transform moves, so it stays smooth on phones. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(32rem 32rem at 28% 32%, color-mix(in srgb, var(--sky-b) 60%, transparent), transparent 70%),
+    radial-gradient(28rem 28rem at 76% 66%, color-mix(in srgb, var(--sky-a) 55%, transparent), transparent 70%);
+  animation: sky-drift 40s var(--ease) infinite alternate;
+}
+
+@keyframes sky-drift {
+  from {
+    transform: translate3d(-3%, -2%, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0) rotate(6deg);
+  }
+}
+
+/* The header floats as a dark glass panel over the sky, with the sky's light caught in its corners. */
+.hero {
+  width: min(64rem, calc(100% - 1rem));
+  margin: 0.5rem auto 0;
+  border: 1px solid color-mix(in srgb, var(--band-edge) 70%, transparent);
+  border-radius: 28px;
+  background-color: color-mix(in srgb, var(--band) 94%, transparent);
+  background-image:
+    radial-gradient(38rem 18rem at 0% 0%, color-mix(in srgb, var(--sky-a) 24%, transparent), transparent 70%),
+    radial-gradient(32rem 18rem at 100% 100%, color-mix(in srgb, var(--sky-b) 22%, transparent), transparent 70%),
+    radial-gradient(circle at 1px 1px, var(--band-dot) 1px, transparent 0);
+  background-size: auto, auto, 16px 16px;
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: 0 34px 80px -44px rgb(30 15 50 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+@media (min-width: 640px) {
+  .hero {
+    width: min(64rem, calc(100% - 2rem));
+    margin-top: 1rem;
+  }
+}
+
+/* Cards are frosted glass: nearly opaque, so text keeps its contrast, with the sky softly behind. */
+.card:not(.bottom-line) {
+  border-color: color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow: var(--glow-shadow);
+}
+
+.bottom-line {
+  border-radius: var(--r-card);
+  box-shadow: 0 0 0 1px var(--line), var(--glow-shadow);
+}
+
+.btn {
+  border-radius: var(--r-pill);
+  padding-inline: 1.35rem;
+}
+
+.btn-go {
+  box-shadow: 0 12px 26px -16px color-mix(in srgb, var(--primary) 75%, transparent);
+}
+
+@media (hover: hover) {
+  .btn-go:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+.field {
+  border-radius: 14px;
+}
+
+.route-seg {
+  border-radius: var(--r-pill);
+}
+
+.map-frame {
+  border-radius: var(--r-card);
+}
+
+/* The page comes in gently, a beat apart, once. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page > .card,
+.page > section,
+.page > .hero {
+  animation: rise-in 700ms var(--ease) both;
+}
+
+.page > :nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.page > :nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.page > :nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.page > :nth-child(n + 5) {
+  animation-delay: 280ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after,
+  .page > * {
+    animation: none !important;
+  }
+}
+
+@media print {
+  body {
+    background-image: none;
+  }
+
+  body::before,
+  body::after {
+    display: none;
+  }
+
+  .hero,
+  .card:not(.bottom-line) {
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
