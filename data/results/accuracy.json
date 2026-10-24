@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-24T02:11:02.018Z",
-  "commit": "9f4c598",
+  "generated_at": "2026-10-24T02:40:14.108Z",
+  "commit": "4f20c25",
   "engine": {
     "states": 51,
     "san_diego_places": 20,
@@ -95,8 +95,8 @@
   },
   "tests": {
     "total": 1283,
-    "passed": 1283,
-    "failed": 0
+    "passed": 1281,
+    "failed": 2
   },
   "pilot": {
     "photos_clip": {
