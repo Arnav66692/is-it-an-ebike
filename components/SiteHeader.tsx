@@ -10,12 +10,13 @@ import { t } from "@/lib/i18n/ui";
 import { BikeIcon } from "./BikeIcon";
 import { TitleWords } from "./Hero";
 
-export type NavPage = "check" | "mods" | "find" | "map";
+export type NavPage = "check" | "mods" | "find" | "route" | "map";
 
-const NAV: readonly { page: NavPage; path: string; key: "navCheck" | "navMods" | "navFind" | "navMap" }[] = [
+const NAV: readonly { page: NavPage; path: string; key: "navCheck" | "navMods" | "navFind" | "navRoute" | "navMap" }[] = [
   { page: "check", path: "/", key: "navCheck" },
   { page: "mods", path: "/mods", key: "navMods" },
   { page: "find", path: "/find", key: "navFind" },
+  { page: "route", path: "/route", key: "navRoute" },
   { page: "map", path: "/map", key: "navMap" },
 ];
 

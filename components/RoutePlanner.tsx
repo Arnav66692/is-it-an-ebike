@@ -206,11 +206,13 @@ interface Props {
   sduhsdCampus: boolean;
   /** The catalog bike the finder sent, so its battery size can fill the estimate. */
   bikeId: string | null;
+  /** The step number beside the title, or null on the Map page, which is all route. */
+  step?: number | null;
 }
 
 type Phase = { kind: "idle" } | { kind: "loading"; legal: boolean } | { kind: "error"; key: "busy" | "noRoute" | "failed" | "tooFar" | "needBoth" } | { kind: "ready" };
 
-export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bikeId }: Props) {
+export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bikeId, step = 5 }: Props) {
   const headId = useId();
   const [from, setFrom] = useState<Picked | null>(null);
   const [to, setTo] = useState<Picked | null>(null);
@@ -297,9 +299,11 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bi
   return (
     <section className="card route-plan space-y-4" aria-labelledby={headId}>
       <h2 id={headId} className="card-title">
-        <span aria-hidden="true" className="step">
-          5
-        </span>
+        {step !== null ? (
+          <span aria-hidden="true" className="step">
+            {step}
+          </span>
+        ) : null}
         {routeText(lang, "title")}
       </h2>
       <p className="help">{routeText(lang, "intro")}</p>

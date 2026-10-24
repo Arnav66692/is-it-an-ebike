@@ -5,9 +5,9 @@ import type { Spot, SpotCounts, SpotKind } from "@/lib/map/osm";
 import type { Lang } from "./names";
 
 const en = {
-  metaTitle: "Bike racks and shops map | Is it an e-bike?",
+  metaTitle: "Racks and repairs | Is it an e-bike?",
   metaDescription: "Find bike racks to lock up an e-bike, bike shops and repair shops near you, from OpenStreetMap and Overture Maps.",
-  title: "Racks and shops",
+  title: "Racks and repairs",
   tagline: "Where to lock up an e-bike, and where to get it fixed.",
   findLegend: "Where to look",
   placeLabel: "Find a place",
@@ -86,9 +86,9 @@ const en = {
 type MapKey = keyof typeof en;
 
 const es: Record<MapKey, string> = {
-  metaTitle: "Mapa de racks y tiendas de bicicletas | ¿Es una bicicleta eléctrica?",
+  metaTitle: "Racks y reparaciones | ¿Es una bicicleta eléctrica?",
   metaDescription: "Encuentra racks para dejar una bicicleta eléctrica, tiendas de bicicletas y talleres de reparación cerca de ti, con datos de OpenStreetMap y Overture Maps.",
-  title: "Racks y tiendas",
+  title: "Racks y reparaciones",
   tagline: "Dónde dejar una bicicleta eléctrica con candado, y dónde repararla.",
   findLegend: "Dónde buscar",
   placeLabel: "Buscar un lugar",

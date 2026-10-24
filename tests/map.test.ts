@@ -240,8 +240,10 @@ describe("map words", () => {
     const es = renderToStaticMarkup(createElement(SiteNav, { lang: "es", current: "find" }));
     expect(es).toContain('href="/map?lang=es"');
     expect(es).toContain(`>${t("es", "navMap")}</a>`);
-    expect(t("en", "navMap")).toBe("Map");
-    expect(t("es", "navMap")).toBe("Mapa");
+    expect(t("en", "navMap")).toBe("Racks and repairs");
+    expect(t("es", "navMap")).toBe("Racks y reparaciones");
+    expect(t("en", "navRoute")).toBe("Map");
+    expect(t("es", "navRoute")).toBe("Mapa");
   });
 
   it("counts what is in view, with the repair spots only when there are some", () => {

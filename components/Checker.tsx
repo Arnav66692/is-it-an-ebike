@@ -18,7 +18,7 @@ import type { PlaceEntry } from "@/lib/places/types";
 import { BikeIcon } from "./BikeIcon";
 import { BikeInput } from "./BikeInput";
 import { announcement, BottomLineCard } from "./BottomLineCard";
-import { RoutePlanner } from "./RoutePlanner";
+import { writeRide } from "@/lib/route/ride";
 import { routeText } from "@/lib/i18n/route";
 import { Card, LaterStep } from "./controls";
 import { FactsCard } from "./FactsCard";
@@ -309,6 +309,13 @@ export function Checker() {
     answerFocus.current = null;
     if (el && el !== document.activeElement && el.isConnected !== false) el.focus?.({ preventScroll: true });
   }, [questionsFirst]);
+  // A finished answer hands this rider and bike to the Map, for this tab only.
+  const routeReady = result !== null && age !== null && date !== null && !questionsFirst;
+  const routeCampus = ride.places.includes("sduhsd_campuses");
+  const routeHeadId = useId();
+  useEffect(() => {
+    if (routeReady && age !== null && date !== null) writeRide({ facts, riderAge: age, rideDate: date, sduhsdCampus: routeCampus, bikeId: initial.bike });
+  }, [routeReady, facts, age, date, routeCampus, initial.bike]);
 
   const sortedStates = [...STATE_CODES].sort((a, b) => stateName(a, lang).localeCompare(stateName(b, lang), lang));
 
@@ -661,8 +668,21 @@ export function Checker() {
         <p role="status" className="sr-only">
           {summary ? announcement(summary, lang, unchecked, uncheckedDistricts) : ""}
         </p>
-        {result && age !== null && date !== null && !questionsFirst ? (
-          <RoutePlanner lang={lang} facts={facts} riderAge={age} rideDate={date} sduhsdCampus={ride.places.includes("sduhsd_campuses")} bikeId={initial.bike} />
+        {routeReady ? (
+          <section className="card space-y-3" aria-labelledby={`${routeHeadId}-head`}>
+            <h2 id={`${routeHeadId}-head`} className="card-title">
+              <span aria-hidden="true" className="step">
+                5
+              </span>
+              {routeText(lang, "title")}
+            </h2>
+            <p className="help pl-10">{routeText(lang, "readyLine")}</p>
+            <div className="pl-10">
+              <a className="btn btn-go" href={pageHref("/route", lang)}>
+                {routeText(lang, "openMap")}
+              </a>
+            </div>
+          </section>
         ) : (
           // Shown before it unlocks, so the family can see a route check comes next.
           <LaterStep title={routeText(lang, "title")} step={5} hint={routeText(lang, result ? "laterAnswer" : "laterCheck")} />
