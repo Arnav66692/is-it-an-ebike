@@ -40,11 +40,11 @@ Each popup and list row shows the kind, the name if tagged, `capacity`, `covered
 
 ## Licenses
 
-- OpenStreetMap data is © OpenStreetMap contributors, available under the Open Database License (ODbL). This covers the tiles, the live answers and the racks, stations and OpenStreetMap shops in the saved files. The saved ones were read through the public QLever endpoint, which serves the planet file as it is.
+- OpenStreetMap data is © OpenStreetMap contributors, available under the Open Database License (ODbL). This covers the underlying data, live answers and the racks, stations and OpenStreetMap shops in the saved files. Tile-service usage is governed separately by the OSMF tile usage policy. The saved ones were read through the public QLever endpoint, which serves the planet file as it is.
 - Overture Maps Places is published by the Overture Maps Foundation under CDLA Permissive 2.0. Rows Overture took from OpenStreetMap stay under ODbL. Overture asks for attribution to the Overture Maps Foundation, https://docs.overturemaps.org/attribution/.
 - The map shows "© OpenStreetMap contributors, Overture Maps Foundation", with each name linked, in the corner of the map. `public/map/states/index.json` repeats both licenses in its `about` line.
-- Tiles follow the OpenStreetMap Foundation tile usage policy. This is a light, human-driven page, which the policy allows.
-- Nominatim and Overpass follow their own usage policies. Nominatim allows at most one search a second, which a submit-only box keeps well under.
+- Operators must follow the OpenStreetMap Foundation tile usage policy, including attribution, caching and traffic requirements.
+- Nominatim and Overpass follow their own usage policies. A submit-only box reduces requests but does not guarantee compliance with service-wide rate limits; operators must account for aggregate traffic.
 - Leaflet (BSD 2-Clause) and react-leaflet (Hippocratic License 2.1) draw the map.
 
 ## Limits
@@ -130,7 +130,7 @@ Each popup and list row shows the kind, the name if tagged, `capacity`, `covered
 **To build the national files**, on a connection without a data cap:
 
 ```
-D=/private/tmp/claude-501/mapdata
+D="$(mktemp -d)"
 python3 -m venv $D/venv && $D/venv/bin/pip install duckdb
 cd scripts/map
 nohup $D/venv/bin/python overture_states.py $D/overture-us $D/overture-us.jsonl 2026-10-21.0 \

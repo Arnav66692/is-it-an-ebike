@@ -21,11 +21,11 @@ The research could not read Trek's pages, which load their specs in the browser 
 
 `lib/bikes/finder.ts` runs the rules engine with those facts for the rider's age, state and checked San Diego places, on today's date, and shows the engine's bottom line. A YES says it is on the maker's specs. A pedal-less e-moto is never YES. `tests/finder.test.ts` runs every bike for every state, 15 ages and every checked San Diego place set, more than 50,000 rides, and checks that no bike is YES where the engine on the page's facts alone says it is not allowed.
 
-"Check this bike" opens the checker with the bike's facts loaded as read from the maker's page, each one not checked, so the checker can't say YES until the family checks every fact against the bike. It carries the state, the checked San Diego places and the rider's age.
+"Check this bike" opens the checker with the maker's facts and source wording available for review and editing. Read facts count the same as typed facts; there is no per-fact confirmation checkbox. The link carries the rider's age and selected places, including unchecked cities and school districts.
 
 ## Ranking
 
-Only bikes in the budget are listed. A YES for this rider in these places comes first, then the closer fit: 3 points for each use that matches, 1 for a color they like, 1 for a height in the maker's fit range, and 10 off for a height outside it or an age outside the maker's own age rule. Ties go to the lower price, then a fixed number made from the bike's id (FNV-1a), which has no order of its own. No maker's name counts for or against a bike, and a test renames every maker and checks the order stays the same. There are no images, and no link earns a fee.
+Only bikes in the budget are listed. A YES for this rider in these places comes first, then the closer fit: 3 points for each use that matches, 1 for a color they like, 1 for a height in the maker's fit range, and 10 off for a height outside it or an age outside the maker's own age rule. Ties go to the lower price, then a fixed number made from the bike's id (FNV-1a), which has no order of its own. No maker's name counts for or against a bike, and a test renames every maker and checks the order stays the same. Photos are available in an optional drawer, and no link earns a fee.
 
 ## Photos and buy links
 

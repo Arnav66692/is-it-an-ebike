@@ -8,7 +8,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { answerHead, linkedClass, ModAnswerCard, modsRideDate, modsToday } from "@/components/ModsCheck";
 import { pageHref } from "@/components/SiteHeader";
-import { kindText, MODS_KEYS, MODS_TEXT, modsText } from "@/lib/i18n/mods";
+import { kindText, MODS_KEYS, MODS_TEXT } from "@/lib/i18n/mods";
 import { t, UI_KEYS } from "@/lib/i18n/ui";
 import { answerMod, inEffect, modApplies, outcomesFor, overallYes, YES_KINDS, type AnswerKind, type ModChoice } from "@/lib/mods/answer";
 import { buildModsData, FROM_2027, MODS_ANSWERS, MODS_DATA, MODS_SOURCE, type AnswersFile, type ModView } from "@/lib/mods/data";

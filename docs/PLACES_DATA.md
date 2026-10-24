@@ -5,7 +5,7 @@ The "Where do they ride?" search box loads `public/places/us-places.json` the fi
 ## What is in it
 
 - 41,766 rows. 3,144 counties and county equivalents, 32,071 places (cities, towns, villages, boroughs and census designated places, called CDPs), and 6,551 towns and townships.
-- The 51 states and DC are added in code from the file's state list, and from `lib/places/sdNeighborhoods.ts` the 52 City of San Diego community planning areas and 71 everyday neighborhood names for parts of the City.
+- The 50 states and DC are added in code from the file's state list, and from `lib/places/sdNeighborhoods.ts` the 52 City of San Diego community planning areas and 71 everyday neighborhood names for parts of the City.
 - San Diego County is also found by the name the answer gives its record, "Unincorporated San Diego County", in English and Spanish (`lib/places/sanDiego.ts`).
 - Towns and townships come from the 12 states where the Census says they are general-purpose local governments: CT, ME, MA, MI, MN, NH, NJ, NY, PA, RI, VT and WI. 1,808 were left out because a place with the same name in the same county is already in the file.
 - 59 places the ACS table doesn't place got their county from their Gazetteer internal point inside the 2025 county boundaries.

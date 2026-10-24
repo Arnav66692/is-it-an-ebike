@@ -44,3 +44,8 @@ next-env.d.ts
 /private/
 /.cache/
 /.claude/
+.gstack/
+
+# Python map-builder test artifacts
+__pycache__/
+*.py[cod]

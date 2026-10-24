@@ -3,7 +3,9 @@
 // and stores nothing.
 
 import { lookup } from "node:dns/promises";
+import type { LookupAddress } from "node:dns";
 import { isIP } from "node:net";
+import { Agent, fetch, type Response } from "undici";
 
 export type ListingErrorCode = "invalid" | "blocked" | "failed" | "too_big";
 
@@ -27,7 +29,7 @@ const USER_AGENT = "IsItAnEbike/0.1 (student project that reads public e-bike sp
 
 function isPrivateIp(ip: string): boolean {
   if (isIP(ip) === 4) {
-    const [a, b] = ip.split(".").map(Number);
+    const [a, b, c] = ip.split(".").map(Number);
     return (
       a === 0 ||
       a === 10 ||
@@ -36,6 +38,11 @@ function isPrivateIp(ip: string): boolean {
       (a === 169 && b === 254) ||
       (a === 172 && b >= 16 && b <= 31) ||
       (a === 192 && b === 168) ||
+      (a === 192 && b === 0 && (c === 0 || c === 2)) ||
+      (a === 192 && b === 88 && c === 99) ||
+      (a === 198 && (b === 18 || b === 19)) ||
+      (a === 198 && b === 51 && c === 100) ||
+      (a === 203 && b === 0 && c === 113) ||
       a >= 224
     );
   }
@@ -48,17 +55,26 @@ function isPrivateIp(ip: string): boolean {
   }
   // Only ordinary global IPv6 is allowed. Teredo, 6to4 and NAT64 can reach IPv4 inside a network.
   if (!/^[23]/.test(x)) return true;
-  return x.startsWith("2001:0:") || x.startsWith("2001::") || x.startsWith("2002:") || x.startsWith("64:ff9b");
+  const second = parseInt(x.split(":")[1] || "0", 16);
+  return (x.startsWith("2001:") && (second < 0x200 || second === 0xdb8)) ||
+    x.startsWith("2002:") || /^3fff:0*[0-9a-f]{0,3}:/.test(x);
 }
 
-async function assertPublic(url: URL): Promise<void> {
+async function publicAddresses(url: URL, signal: AbortSignal): Promise<LookupAddress[]> {
   if (url.protocol !== "https:" && url.protocol !== "http:") throw new ListingError("invalid");
   if (url.username || url.password) throw new ListingError("invalid");
   if (url.port && url.port !== "80" && url.port !== "443") throw new ListingError("invalid");
-  const host = url.hostname.toLowerCase();
+  const host = url.hostname.toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
   if (host === "localhost" || /\.(localhost|local|internal|lan|home)$/.test(host)) throw new ListingError("invalid");
-  const addresses = isIP(host) ? [{ address: host }] : await lookup(host, { all: true }).catch(() => []);
+  signal.throwIfAborted();
+  const addresses = isIP(host) ? [{ address: host, family: isIP(host) }] :
+    await new Promise<LookupAddress[]>((resolve, reject) => {
+      const aborted = () => reject(new ListingError("failed"));
+      signal.addEventListener("abort", aborted, { once: true });
+      lookup(host, { all: true }).then(resolve, reject).finally(() => signal.removeEventListener("abort", aborted));
+    }).catch(() => []);
   if (addresses.length === 0 || addresses.some((a) => isPrivateIp(a.address))) throw new ListingError("invalid");
+  return addresses;
 }
 
 async function readCapped(res: Response): Promise<string> {
@@ -82,19 +98,39 @@ async function readCapped(res: Response): Promise<string> {
 async function safeFetch(start: URL, accept: string): Promise<{ status: number; body: string; contentType: string }> {
   let url = start;
   for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
-    await assertPublic(url);
-    const res = await fetch(url, {
-      redirect: "manual",
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-      headers: { "user-agent": USER_AGENT, accept },
+    const signal = AbortSignal.timeout(TIMEOUT_MS);
+    const addresses = await publicAddresses(url, signal);
+    // Use only the validated DNS answers when opening the socket. Fetching the
+    // hostname with a default dispatcher would resolve it again (DNS rebinding).
+    // Keep the original URL so Host, TLS SNI and certificate checks stay correct.
+    const agent = new Agent({
+      connect: {
+        lookup(_host, options, callback) {
+          const eligible = options.family ? addresses.filter((a) => a.family === options.family) : addresses;
+          if (eligible.length === 0) return callback(new ListingError("invalid"), []);
+          if (options.all) callback(null, eligible);
+          else callback(null, eligible[0].address, eligible[0].family);
+        },
+      },
     });
-    if (res.status >= 300 && res.status < 400) {
-      const next = res.headers.get("location");
-      if (!next) throw new ListingError("failed");
-      url = new URL(next, url);
-      continue;
+    try {
+      const res = await fetch(url, {
+        dispatcher: agent,
+        redirect: "manual",
+        signal,
+        headers: { "user-agent": USER_AGENT, accept },
+      });
+      if (res.status >= 300 && res.status < 400) {
+        await res.body?.cancel();
+        const next = res.headers.get("location");
+        if (!next) throw new ListingError("failed");
+        url = new URL(next, url);
+        continue;
+      }
+      return { status: res.status, body: await readCapped(res), contentType: res.headers.get("content-type") ?? "" };
+    } finally {
+      await agent.destroy();
     }
-    return { status: res.status, body: await readCapped(res), contentType: res.headers.get("content-type") ?? "" };
   }
   throw new ListingError("failed");
 }
@@ -205,6 +241,7 @@ export async function fetchListing(raw: string): Promise<Listing> {
       throw new ListingError(page.status === 401 || page.status === 403 || page.status === 429 ? "blocked" : "failed");
     }
   } catch (err) {
+    if (err instanceof ListingError && err.code === "invalid") throw err;
     if (!product) throw err;
     // The product JSON already gave us text, so a blocked page isn't fatal.
   }

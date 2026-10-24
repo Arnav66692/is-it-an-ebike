@@ -3,7 +3,6 @@
 // None may give "Can't confirm", "unsure" or "not sure" as the answer. The "Not sure" input choice
 // on a follow-up question stays, since it is a question, not an answer, and it leads to NO.
 
-import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
