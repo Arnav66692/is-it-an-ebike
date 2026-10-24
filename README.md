@@ -35,7 +35,7 @@ The interface includes a 3D backdrop, an entrance screen and optional sound, wit
 
 ## Evidence and limits
 
-[RESULTS.md](RESULTS.md) contains the generated case counts, gates and test results. The tests compare the engine with an independently implemented reader of the same rule data. **Agreement with that table does not prove the table matches current law.** The rules were researched with AI assistance, not certified by a lawyer. Check the dates and linked primary sources; laws and local policies can change.
+[RESULTS.md](RESULTS.md) is a dated snapshot of the source commit named in that report, with generated case counts, gates and test results. The CI badge above shows checks for the current branch. The tests compare the engine with an independently implemented reader of the same rule data. **Agreement with that table does not prove the table matches current law.** The rules were researched with AI assistance, not certified by a lawyer. Check the dates and linked primary sources; laws and local policies can change.
 
 The [pilot](PILOT.md) reports failed photo-model attempts as well as the later passing experiment. Its small held-out set is not a guarantee for arbitrary photos or devices. The optional model download is about 194 MB and requires WebGPU support.
 
