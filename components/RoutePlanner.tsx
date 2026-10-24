@@ -208,11 +208,16 @@ interface Props {
   bikeId: string | null;
   /** The step number beside the title, or null on the Map page, which is all route. */
   step?: number | null;
+  /** On the Map the bike is taken as legal for the rider, and the answer says so. */
+  assumeBikeLegal?: boolean;
+  /** The battery size and charge the Map already asked for. */
+  batteryWh?: number | null;
+  chargePct?: number;
 }
 
 type Phase = { kind: "idle" } | { kind: "loading"; legal: boolean } | { kind: "error"; key: "busy" | "noRoute" | "failed" | "tooFar" | "needBoth" } | { kind: "ready" };
 
-export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bikeId, step = 5 }: Props) {
+export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bikeId, step = 5, assumeBikeLegal = false, batteryWh, chargePct }: Props) {
   const headId = useId();
   const [from, setFrom] = useState<Picked | null>(null);
   const [to, setTo] = useState<Picked | null>(null);
@@ -238,7 +243,7 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bi
   }, [bikeId]);
 
   const endsInSduhsd = plan?.atEnd.some((j) => (j.layer === "school_secondary" || j.layer === "school_unified") && j.geoid === SDUHSD_LEAID) ?? false;
-  const rider = useMemo(() => ({ riderAge, rideDate, facts, sduhsdCampus: campus && endsInSduhsd }), [riderAge, rideDate, facts, campus, endsInSduhsd]);
+  const rider = useMemo(() => ({ riderAge, rideDate, facts, sduhsdCampus: campus && endsInSduhsd, assumeBikeLegal }), [riderAge, rideDate, facts, campus, endsInSduhsd, assumeBikeLegal]);
   // The answer follows the bike facts, age and date above, so editing them updates the route's answer too.
   const verdict = useMemo(() => (plan ? checkRoute(plan, rider, ROUTE_RULES) : null), [plan, rider]);
 
@@ -338,7 +343,7 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bi
       </p>
       {plan && verdict && phase.kind !== "loading" ? (
         <>
-          {endsInSduhsd ? (
+          {endsInSduhsd && !assumeBikeLegal ? (
             <label className="route-campus">
               <input type="checkbox" checked={campus} onChange={(e) => setCampus(e.target.checked)} />
               <span>{routeText(lang, "campus")}</span>
@@ -360,7 +365,7 @@ export function RoutePlanner({ lang, facts, riderAge, rideDate, sduhsdCampus, bi
             <MixBar plan={plan} lang={lang} />
           </div>
           <AlongTheWay pieces={verdict.pieces} lang={lang} />
-          <RangeCard plan={plan} lang={lang} facts={facts} catalogWh={catalogWh} />
+          <RangeCard plan={plan} lang={lang} facts={facts} catalogWh={batteryWh !== undefined ? batteryWh : catalogWh} chargePct={chargePct} />
         </>
       ) : null}
       <footer className="meta space-y-1">
@@ -417,6 +422,7 @@ function RouteAnswer({ verdict, plan, lang, rideDate }: { verdict: RouteVerdict;
         ) : null}
         <div className="space-y-1">
           <h5 className="eyebrow">{routeText(lang, "riderTitle")}</h5>
+          {verdict.rider.length === 0 ? <p>{routeText(lang, "riderAssumed")}</p> : null}
           {verdict.rider.map((r) => (
             <p key={r.state}>{r.line ? routeText(lang, "riderSame", { answer: announcement(r.line, lang) }) : routeText(lang, "r_state_no_rules", { state: r.state })}</p>
           ))}

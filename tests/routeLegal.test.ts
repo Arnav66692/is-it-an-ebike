@@ -174,6 +174,16 @@ describe("a whole route", () => {
     expect(v.meters.unchecked).toBe(100);
   });
 
+  it("skips the rider check when the Map takes the bike as legal, and still checks every piece", () => {
+    const kid = { ...ADULT, riderAge: 11, assumeBikeLegal: true };
+    const streets = checkRoute(plan([seg("road"), seg("bike_lane")]), kid, RULES);
+    expect(streets.kind).toBe("yes");
+    expect(streets.rider).toEqual([]);
+    const boardwalk = checkRoute(plan([seg("road"), seg("footway", SD, { name: "Ocean Front Walk" })]), kid, RULES);
+    expect(boardwalk.kind).toBe("no_illegal");
+    expect(boardwalk.problems[0].reason.code).toBe("facility_banned");
+  });
+
   it("can't confirm an empty route", () => {
     expect(checkRoute(plan([]), ADULT, RULES).kind).toBe("no_unconfirmed");
   });

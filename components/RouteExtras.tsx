@@ -224,10 +224,12 @@ interface RangeProps {
   facts: BikeFacts;
   /** The battery size from the bike's catalog page, when the bike came from the finder. */
   catalogWh: number | null;
+  /** The charge now, when the page above already asked for it, along with catalogWh as the battery size. */
+  chargePct?: number;
 }
 
 /** A battery estimate for this route, from the rider's own numbers. */
-export function RangeCard({ plan, lang, facts, catalogWh }: RangeProps) {
+export function RangeCard({ plan, lang, facts, catalogWh, chargePct: givenCharge }: RangeProps) {
   const class3 = facts.classes.includes(3);
   const cap = facts.assistMph ?? (class3 ? 28 : 20);
   const [whText, setWhText] = useState<string | null>(null);
@@ -245,7 +247,8 @@ export function RangeCard({ plan, lang, facts, catalogWh }: RangeProps) {
   const riderLb = positive(rider);
   const bikeWeight = positive(shownBike);
   const mph = positive(speed);
-  const chargePct = pct(Number(charge) || 0);
+  const asked = givenCharge !== undefined;
+  const chargePct = pct(asked ? givenCharge : Number(charge) || 0);
   const estimate = useMemo(() => {
     if (batteryWh === null || riderLb === null || bikeWeight === null || mph === null) return null;
     return estimateRange(plan.points, plan.heights, {
@@ -273,8 +276,8 @@ export function RangeCard({ plan, lang, facts, catalogWh }: RangeProps) {
         <p className="help">{routeText(lang, "rangeIntro")}</p>
       </div>
       <div className="route-range-grid">
-        {field(routeText(lang, "rangeBattery"), shownWh, setWhText, { help: routeText(lang, "rangeBatteryHelp") })}
-        {field(routeText(lang, "rangeCharge"), charge, setCharge, { max: 100 })}
+        {asked ? null : field(routeText(lang, "rangeBattery"), shownWh, setWhText, { help: routeText(lang, "rangeBatteryHelp") })}
+        {asked ? null : field(routeText(lang, "rangeCharge"), charge, setCharge, { max: 100 })}
         {field(routeText(lang, "rangeRider"), rider, setRider)}
         {field(routeText(lang, "rangeBike"), shownBike, setBikeLb)}
         {field(routeText(lang, "rangeSpeed"), speed, setSpeed, { max: cap })}

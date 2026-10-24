@@ -96,6 +96,11 @@ export interface RouteRider {
   facts: BikeFacts;
   /** The family said the ride ends at a San Dieguito Union High School District campus. */
   sduhsdCampus: boolean;
+  /**
+   * The Map can skip the rider and bike check and take the bike as legal for the rider, as the
+   * family asked. Every piece is still checked for the bike's class, and the answer says what it assumed.
+   */
+  assumeBikeLegal?: boolean;
 }
 
 /** The checked local record for a piece: one of the 18 cities, or the county outside them. */
@@ -294,7 +299,7 @@ function middleOf(plan: RoutePlan, seg: RouteSegment): RoutePoint {
 /** The whole answer for one route. */
 export function checkRoute(plan: RoutePlan, rider: RouteRider, rules: RouteRules): RouteVerdict {
   const verdictClasses = new Map<string, ClassNum[]>();
-  const answers = riderAnswers(plan, rider, verdictClasses);
+  const answers = rider.assumeBikeLegal ? [] : riderAnswers(plan, rider, verdictClasses);
   const classes = classesFor(answers, rider.facts, verdictClasses);
   const pieces = plan.segments.map((seg, i) => checkPiece(seg, i, classes, rules));
   const meters: Record<PieceStatus, number> = { allowed: 0, banned: 0, unclear: 0, unchecked: 0 };
