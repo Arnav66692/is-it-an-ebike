@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { PAGE_LANG_SCRIPT } from "@/lib/pageLang";
 import "./globals.css";
 import "./features.css";
+import "./experience.css";
+import { ExperienceLoader } from "@/components/ExperienceLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +39,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Our own fixed code, no user input: it sets the page's language (lib/pageLang.ts). */}
         <script dangerouslySetInnerHTML={{ __html: PAGE_LANG_SCRIPT }} />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <ExperienceLoader />
+      </body>
     </html>
   );
 }

@@ -1,0 +1,313 @@
+/* ---------- The experience: the 3D world, the intro, the sound button and the cursor ring ---------- */
+
+.world {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1400ms var(--ease);
+}
+
+.world[data-ready="true"] {
+  opacity: 1;
+}
+
+.world canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* The drifting CSS lights sit under the world, for screens without WebGL. */
+body::after {
+  z-index: -3;
+}
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--ink);
+  background:
+    radial-gradient(48rem 30rem at 50% 0%, var(--sky-b), transparent 65%),
+    radial-gradient(40rem 26rem at 10% 100%, var(--sky-a), transparent 60%),
+    radial-gradient(40rem 26rem at 95% 90%, var(--sky-c), transparent 60%),
+    var(--bg);
+  transition:
+    opacity 900ms var(--ease),
+    transform 900ms var(--ease),
+    filter 900ms var(--ease);
+}
+
+.intro[data-leaving="true"] {
+  opacity: 0;
+  transform: scale(1.05);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.intro-body > * {
+  animation: rise-in 900ms var(--ease) both;
+}
+
+.intro-body > :nth-child(2) {
+  animation-delay: 180ms;
+}
+
+.intro-body > :nth-child(3) {
+  animation-delay: 320ms;
+}
+
+.intro-body > :nth-child(4) {
+  animation-delay: 480ms;
+}
+
+.intro-wheel {
+  width: 104px;
+  height: 104px;
+  margin: 0 auto;
+  animation: rise-in 900ms var(--ease) both, wheel-turn 18s linear infinite;
+}
+
+.intro-rim,
+.intro-spoke {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: draw-in 1600ms var(--ease) forwards;
+}
+
+.intro-rim-in {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  animation-delay: 200ms;
+}
+
+.intro-spoke {
+  stroke-width: 1.2;
+  opacity: 0.7;
+  animation-delay: 450ms;
+}
+
+.intro-hub {
+  fill: var(--accent);
+}
+
+@keyframes draw-in {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes wheel-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.intro-name {
+  margin-top: 1.6rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.intro-line {
+  max-width: 23rem;
+  margin: 0.8rem auto 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.intro-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  margin-top: 1.9rem;
+  padding: 0 1.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 14px 34px -16px rgb(40 20 70 / 0.4);
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
+}
+
+.intro-enter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -16px rgb(40 20 70 / 0.5);
+}
+
+.intro-enter:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.intro-foot {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.sound-btn {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: var(--ink);
+  box-shadow: var(--glow-shadow);
+}
+
+.sound-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.sound-bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+}
+
+.sound-bars i {
+  width: 3px;
+  height: 4px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.sound-btn[aria-pressed="true"] .sound-bars i {
+  animation: sound-bar 900ms ease-in-out infinite alternate;
+}
+
+.sound-bars i:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.sound-bars i:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+.sound-bars i:nth-child(4) {
+  animation-delay: 450ms;
+}
+
+@keyframes sound-bar {
+  from {
+    height: 4px;
+  }
+  to {
+    height: 16px;
+  }
+}
+
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2000;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid #ffffff;
+  border-radius: 999px;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition:
+    width 250ms var(--ease),
+    height 250ms var(--ease),
+    margin 250ms var(--ease),
+    opacity 250ms var(--ease);
+}
+
+.cursor-ring[data-on="true"] {
+  opacity: 1;
+}
+
+.cursor-ring[data-hover="true"] {
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+}
+
+@media (pointer: coarse) {
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* The hero's title arrives out of a soft blur. */
+.hero .app-title {
+  animation: title-in 1100ms var(--ease) both;
+  animation-delay: 120ms;
+}
+
+@keyframes title-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .intro-body > *,
+  .intro-wheel,
+  .intro-rim,
+  .intro-spoke,
+  .hero .app-title,
+  .sound-btn[aria-pressed="true"] .sound-bars i {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .intro-rim,
+  .intro-spoke {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media print {
+  .world,
+  .intro,
+  .sound-btn,
+  .cursor-ring {
+    display: none !important;
+  }
+}
