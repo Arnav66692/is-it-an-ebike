@@ -248,7 +248,20 @@ async function askGeocoder(url: string, parse: (json: unknown) => FoundPlace[], 
  * "scripps ranch highschool" or a typo finds nothing, and then Photon, which forgives both, is asked.
  * Photon is asked too when Nominatim is busy or down. Only when both fail does the search fail.
  */
-export async function searchPlaces(query: string, lang: "en" | "es", signal?: AbortSignal, fetcher: typeof fetch = fetch): Promise<FoundPlace[]> {
+/** Words families often run together, split the way maps spell them, like "highschool" to "high school". */
+const SPELLED_OUT: readonly [RegExp, string][] = [
+  [/\bhighschool\b/gi, "high school"],
+  [/\bmiddleschool\b/gi, "middle school"],
+  [/\belementaryschool\b/gi, "elementary school"],
+  [/\bjuniorhigh\b/gi, "junior high"],
+];
+
+export function spellOut(query: string): string {
+  return SPELLED_OUT.reduce((q, [re, words]) => q.replace(re, words), query);
+}
+
+export async function searchPlaces(rawQuery: string, lang: "en" | "es", signal?: AbortSignal, fetcher: typeof fetch = fetch): Promise<FoundPlace[]> {
+  const query = spellOut(rawQuery);
   let failure: MapFetchError | null = null;
   try {
     const found = await askGeocoder(nominatimUrl(query, lang), parseNominatim, signal, fetcher);

@@ -3,7 +3,7 @@
 // found nothing on Oct 23, 2026, while Photon found Scripps Ranch High School.
 
 import { describe, expect, it, vi } from "vitest";
-import { MapFetchError, searchPlaces } from "@/lib/map/fetchSpots";
+import { MapFetchError, searchPlaces, spellOut } from "@/lib/map/fetchSpots";
 import { parsePhoton } from "@/lib/map/osm";
 
 /** Photon's real answer for "scrips ranch high" on Oct 23, 2026, trimmed, plus a place outside the US. */
@@ -44,5 +44,17 @@ describe("finding any place in America", () => {
     expect(await searchPlaces("scripps ranch high", "en", undefined, busy as unknown as typeof fetch)).toHaveLength(1);
     const down = vi.fn(async () => reply(429, {}));
     await expect(searchPlaces("x", "en", undefined, down as unknown as typeof fetch)).rejects.toBeInstanceOf(MapFetchError);
+  });
+
+  it("splits run-together school words before searching", async () => {
+    expect(spellOut("scripps ranch highschool")).toBe("scripps ranch high school");
+    expect(spellOut("Pacific Trails Middleschool")).toBe("Pacific Trails middle school");
+    const seen: string[] = [];
+    const fetcher = vi.fn(async (url: string | URL | Request) => {
+      seen.push(decodeURIComponent(String(url)).replace(/\+/g, " "));
+      return reply(200, [{ place_id: 1, lat: "32.9", lon: "-117.1", display_name: "Scripps Ranch High School", boundingbox: ["32.9", "32.91", "-117.12", "-117.1"] }]);
+    });
+    await searchPlaces("scripps ranch highschool", "en", undefined, fetcher as unknown as typeof fetch);
+    expect(seen[0]).toContain("scripps ranch high school");
   });
 });
