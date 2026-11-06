@@ -33,6 +33,8 @@ The interface includes a 3D backdrop, an entrance screen and optional sound, wit
 3. **Evaluate:** a deterministic engine applies the versioned state and local records, rider age, ride date and bike facts.
 4. **Explain:** the answer lists reasons, requirements, sources, dates and coverage gaps. A NO can mean an explicit prohibition **or insufficient information to confirm permission**; the explanation distinguishes them.
 
+The photo pedal check respects edits made while it runs. A call that lands after the family picked a pedals answer while the check ran is dropped. A pedals answer picked before the check started is replaced by the photo's call. An inconclusive photo check leaves the existing answer unchanged.
+
 ## Evidence and limits
 
 [RESULTS.md](RESULTS.md) is a dated snapshot of the source commit named in that report, with generated case counts, gates and test results. The CI badge above shows checks for the current branch. The tests compare the engine with an independently implemented reader of the same rule data. **Agreement with that table does not prove the table matches current law.** The rules were researched with AI assistance, not certified by a lawyer. Check the dates and linked primary sources; laws and local policies can change.
